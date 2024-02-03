@@ -1,0 +1,88 @@
+#!/bin/bash
+# This is a sample script to ingest a day's worth of logs and create a summary
+# report. It shows one way to use Test Clutch, by ingesting all the test logs
+# produced during the last day and creating a new summary report. It MUST be
+# customized with any necessary CI service accounts and with unused services
+# removed. This script could be the basis for one that could run as a daily
+# cron job.
+#
+# It is assumed that ~/.config/testclutchrc exists and sets at least check_repo
+# so that it doesn't need to appear in every command invocation below.
+
+# Exit on any error
+set -e
+
+# How many hours of logs to ingest. This is slightly more than one day so that
+# a daily run that goes long or starts late should still catch everything.
+HOURS=28
+
+# Make it more obvious when an error occurs
+trap 'echo Exiting with code $? 1>&2' EXIT
+
+###########
+# INGESTION
+
+# Here are the commands to read logs from CI services. Some services require
+# the account names used for running jobs against a repo. Some also require an
+# API token be available in a file on the system for authentication. Some
+# services let you name your project on the CI service differently from the
+# source code project name; if that is the case, that must also be added to the
+# relevant command here.
+
+tcingestlog --origin=appveyor --account=myappveyoruser --howrecent $HOURS
+tcingestlog --origin=azure --account myazureuser --howrecent $HOURS
+tcingestlog --origin=circle --howrecent $HOURS
+tcingestlog --origin=cirrus --howrecent $HOURS
+tcingestlog --origin=gha --authfile ~/.myghatokeninfile $HOURS
+
+##############
+# AUGMENTATION
+
+# This is where the test runs ingested above can be augmented with data from
+# elsewhere.  One broadly-useful data set is a complete list of git commits in
+# the repo. These are stored in a separate table in the database and can be
+# used to augment short hashes or find commits that exist between those that
+# trigger a test run. It is not currently needed to create the test summary
+# report.
+
+# Get the latest commits into a local bare git repository
+git -C myrepo.git fetch origin master:master
+
+# Since this is done entirely locally and is fast, always ingest a lot more
+# than we need to to reduce the chance of a commit being missed. This is a
+# big concern because git commits can be created much earlier than they are
+# pushed to the main public repository.
+let GITHOURS=($HOURS * 100)
+tcgitcommitinfo myrepo.git "$GITHOURS hours ago"
+
+# Test the chain of commits up to the first to ensure none are missed.
+# If the next command shows an error, use tcdbutil commitchainrev to start at
+# the given commit and use the last one that shows in the list.  The hard-coded
+# commit number here is the first commit in the chain.
+tcdbutil checkcommitchain https://github.com/myrepo/myrepo master 1111111111111111222222222222222333333333
+
+# If a CI ingestion source does not always provide full git hashes, this can be
+# used to turn short ones into full ones, based on what is loaded by
+# tcgitcommitinfo. The five CI services above all provide full hashes, so this
+# step isn't necessary for them.
+tcaugmentgithash 
+
+##########
+# ANALYSIS
+
+# Create an HTML report summarizing the last few months of tests, or as configured.
+
+tcanalysissum --html >summary.html
+
+##########
+# CLEANUP
+
+# A local copy of downloaded log files is kept so that re-ingestion of the same
+# log doesn't require it to be downloaded again. This can happen regularly
+# because this script is designed to run every 24 hours but it requests logs
+# from the past 28 hours (so none are missed). Delete log files more than 90
+# days old so the cache doesn't keep infinitely growing.
+find ~/.cache/testclutchlogs -xdev -type f -mtime +90 -delete
+
+# You may want to clear old log records from the database as well, but there is
+# currently no built-in way to do that.

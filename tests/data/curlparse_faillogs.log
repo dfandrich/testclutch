@@ -1,0 +1,612 @@
+make[1]: Entering directory '/tmp/c/tests'
+Making all in certs
+make[2]: Entering directory '/tmp/c/tests/certs'
+Making all in scripts
+make[3]: Entering directory '/tmp/c/tests/certs/scripts'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/certs/scripts'
+make[3]: Entering directory '/tmp/c/tests/certs'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/certs'
+make[2]: Leaving directory '/tmp/c/tests/certs'
+Making all in data
+make[2]: Entering directory '/tmp/c/tests/data'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/data'
+Making all in server
+make[2]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/tests/server'
+Making all in libtest
+make[2]: Entering directory '/tmp/c/tests/libtest'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/tests/libtest'
+Making all in http
+make[2]: Entering directory '/tmp/c/tests/http'
+Making all in clients
+make[3]: Entering directory '/tmp/c/tests/http/clients'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Entering directory '/tmp/c/tests/http'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests/http'
+Making all in unit
+make[2]: Entering directory '/tmp/c/tests/unit'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/unit'
+make[2]: Entering directory '/tmp/c/tests'
+cd libtest && make checksrc
+make[3]: Entering directory '/tmp/c/tests/libtest'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/libtest'
+cd unit && make checksrc
+make[3]: Entering directory '/tmp/c/tests/unit'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/unit'
+cd server && make checksrc
+make[3]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/server'
+cd http && make checksrc
+make[3]: Entering directory '/tmp/c/tests/http'
+cd clients && make checksrc
+make[4]: Entering directory '/tmp/c/tests/http/clients'
+  RUN      checksrc
+make[4]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests'
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -p 358 500 719 1007 1013 1014 1015 1016 1017 1018 1105 
+sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
+********* System characteristics ******** 
+* curl 8.2.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.2.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.10.1_DEV nghttp2/1.42.0
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+* Jobs: 14
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: 
+* Seed: 265640
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 1018 SKIPPED: no test
+test 1014 SKIPPED: curl lacks XXXnone server support
+test 1017...[0-Y range on a file:// URL to stdout]
+ 1017: IGNORED: section client=>file has no name attribute
+sh: XXX../curl-config: No such file or directory
+Mismatch in protocols lists:
+curl:        dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtsp scp sftp smb smbs smtp smtps telnet tftp ws wss
+curl-config: 
+test 1016...[X-Y range on a file:// URL to stdout]
+
+ 1016: stdout FAILED:
+--- log/3/check-expected	2023-06-21 15:04:56.848267748 -0700
++++ log/3/check-generated	2023-06-21 15:04:56.848267748 -0700
+@@ -1,2 +1 @@
+-XXX[LF]
+ 2345
+== Contents of files in the log/3/ dir after test 1016
+=== Start of file check-expected
+ XXX[LF]
+ 2345
+=== End of file check-expected
+=== Start of file check-generated
+ 2345
+=== End of file check-generated
+=== Start of file server.cmd
+ Testnum 1016
+=== End of file server.cmd
+=== Start of file stderr1016
+   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                  Dload  Upload   Total   Spent    Left  Speed
+ 
+   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 100     4  100     4    0     0  85106      0 --:--:-- --:--:-- --:--:-- 85106
+=== End of file stderr1016
+=== Start of file stdout1016
+ 2345
+=== End of file stdout1016
+=== Start of file test1016.txt
+ 1234567890
+=== End of file test1016.txt
+=== Start of file trace1016
+ 15:04:56.371327 == Info: !!! WARNING !!
+ 15:04:56.371374 == Info: This is a debug build of libcurl, do not use in production.
+ 15:04:56.371378 == Info: processing: file://localhost/tmp/c/tests/log/3/test1016.txt
+ 15:04:56.371398 == Info: STATE: INIT => CONNECT handle 0x1319ae8; line 1962
+ 15:04:56.371498 == Info: Added connection 0. The cache now contains 1 members
+ 15:04:56.371507 == Info: STATE: CONNECT => PROTOCONNECT handle 0x1319ae8; line 2013
+ 15:04:56.371651 == Info: STATE: PROTOCONNECT => DO handle 0x1319ae8; line 2153
+ 15:04:56.371667 == Info: RANGE from 1 getting 4 bytes
+ 15:04:56.371670 == Info: range-download from 1 to 4, totally 4 bytes
+ 15:04:56.371685 == Info: STATE: DO => DID handle 0x1319ae8; line 2247
+ 15:04:56.371690 == Info: STATE: DID => DONE handle 0x1319ae8; line 2373
+ 15:04:56.371694 == Info: multi_done: status: 0 prem: 0 done: 0
+ 15:04:56.371752 == Info: multi_done, not re-using connection=0, forbid=0, close=1, premature=0, conn_multiplex=0
+ 15:04:56.371760 == Info: The cache now contains 0 members
+ 15:04:56.371763 == Info: Curl_disconnect(conn #0, dead=0)
+ 15:04:56.371766 == Info: Closing connection
+ 15:04:56.371778 == Info: Expire cleared
+=== End of file trace1016
+test 1013...[Compare curl --version with curl-config --protocols]
+ 1013: postcheck FAILED
+== Contents of files in the log/6/ dir after test 1013
+=== Start of file server.cmd
+ Testnum 1013
+=== End of file server.cmd
+=== Start of file stderr1013
+ WARNING: this libcurl is Debug-enabled, do not use in production
+=== End of file stderr1013
+=== Start of file stdout1013
+ curl 8.2.0-DEV (x86_64-pc-linux-gnu) libcurl/8.2.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.10.1_DEV nghttp2/1.42.0
+ Release-Date: [unreleased]
+ Protocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtsp scp sftp smb smbs smtp smtps telnet tftp ws wss
+ Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+=== End of file stdout1013
+test 0500...[simple libcurl HTTP GET tool]
+ 500: IGNORED: The tool set in the test case for this: 'XXXlib500' does not exist
+test 1105 SKIPPED: Test requires default test server host
+test 1007...[TFTP send with invalid permission on server]
+
+curl returned 69, when expecting 999
+ 1007: exit FAILED
+== Contents of files in the log/7/ dir after test 1007
+=== Start of file server.cmd
+ Testnum 1007
+=== End of file server.cmd
+=== Start of file server.input
+ opcode = 2
+ mode = octet
+ tsize = 27
+ blksize = 512
+ timeout = 6
+ filename = /invalid-file
+=== End of file server.input
+=== Start of file stderr1007
+ curl: (69) TFTP: Access Violation
+=== End of file stderr1007
+=== Start of file test1007.txt
+ This data will not be sent
+=== End of file test1007.txt
+=== Start of file tftp_server.log
+ 15:04:56.358929 Wrote pid 16700 to log/7/server/tftp_server.pid
+ 15:04:56.359011 Wrote port 54772 to log/7/server/tftp_server.port
+ 15:04:56.359028 Running IPv4 version on port UDP/54772
+ 15:04:57.349858 trying to get file: verifiedserver mode 1
+ 15:04:57.349884 Are-we-friendly question received
+ 15:04:57.349899 write
+ 15:04:57.350011 read
+ 15:04:57.350029 read: 4
+ 15:04:57.350052 end of one transfer
+ 15:04:57.400008 trying to get file: /invalid-file mode 2
+ 15:04:57.400048 requested test number 0 part 0
+ 15:04:57.400090 fopen() failed with error: 2 No such file or directory
+ 15:04:57.400111   Couldn't open test file 0
+ 15:04:57.400142 fopen() failed with error: 2 No such file or directory
+ 15:04:57.400161 Couldn't open test file for test : 0
+ 15:04:57.400287 end of one transfer
+=== End of file tftp_server.log
+=== Start of file trace1007
+ 15:04:57.399449 == Info: !!! WARNING !!
+ 15:04:57.399492 == Info: This is a debug build of libcurl, do not use in production.
+ 15:04:57.399496 == Info: processing: tftp://127.0.0.1:54772//invalid-file
+ 15:04:57.399516 == Info: STATE: INIT => CONNECT handle 0x127cdf8; line 1962
+ 15:04:57.399635 == Info: Added connection 0. The cache now contains 1 members
+ 15:04:57.399683 == Info: STATE: CONNECT => CONNECTING handle 0x127cdf8; line 2015
+ 15:04:57.399722 == Info:   Trying 127.0.0.1:54772...
+ 15:04:57.399731 == Info: Connected to 127.0.0.1 () port 54772
+ 15:04:57.399736 == Info: STATE: CONNECTING => PROTOCONNECT handle 0x127cdf8; line 2123
+ 15:04:57.399751 == Info: set timeouts for state 0; Total  300000, retry 6 maxtry 50
+ 15:04:57.399760 == Info: STATE: PROTOCONNECT => DO handle 0x127cdf8; line 2153
+ 15:04:57.399764 == Info: TFTP_STATE_START
+ 15:04:57.399831 == Info: STATE: DO => DOING handle 0x127cdf8; line 2236
+ 15:04:57.400305 == Info: TFTP error: Access violation
+ 15:04:57.400315 == Info: TFTP_STATE_START
+ 15:04:57.400322 == Info: DO phase is complete
+ 15:04:57.400329 == Info: STATE: DOING => DID handle 0x127cdf8; line 2316
+ 15:04:57.400338 == Info: STATE: DID => DONE handle 0x127cdf8; line 2373
+ 15:04:57.400345 == Info: multi_done: status: 0 prem: 0 done: 0
+ 15:04:57.400361 == Info: multi_done, not re-using connection=0, forbid=0, close=1, premature=0, conn_multiplex=0
+ 15:04:57.400382 == Info: The cache now contains 0 members
+ 15:04:57.400388 == Info: Curl_disconnect(conn #0, dead=0)
+ 15:04:57.400406 == Info: Closing connection
+ 15:04:57.400486 == Info: Expire cleared
+=== End of file trace1007
+test 1015...[--data-urlencode]
+
+ 1015: protocol FAILED:
+--- log/4/check-expected	2023-06-21 15:04:57.922307558 -0700
++++ log/4/check-generated	2023-06-21 15:04:57.921307521 -0700
+@@ -1,4 +1,3 @@
+-XXX[LF]
+ POST /1015 HTTP/1.1[CR][LF]
+ Host: 127.0.0.1:39015[CR][LF]
+ User-Agent: curl/8.2.0-DEV[CR][LF]
+== Contents of files in the log/4/ dir after test 1015
+=== Start of file 1015.txt
+ content to _?!#$'|<>
+=== End of file 1015.txt
+=== Start of file check-expected
+ XXX[LF]
+ POST /1015 HTTP/1.1[CR][LF]
+ Host: 127.0.0.1:39015[CR][LF]
+ User-Agent: curl/8.2.0-DEV[CR][LF]
+ Accept: */*[CR][LF]
+ Content-Length: 119[CR][LF]
+ Content-Type: application/x-www-form-urlencoded[CR][LF]
+ [CR][LF]
+ my+name+is+moo%5B%5D&y e s=s_i_r&v_alue=content+to+_%3F%21%23%24%27%7C%3C%3E%0A&content+to+_%3F%21%23%24%27%7C%3C%3E%0A
+=== End of file check-expected
+=== Start of file check-generated
+ POST /1015 HTTP/1.1[CR][LF]
+ Host: 127.0.0.1:39015[CR][LF]
+ User-Agent: curl/8.2.0-DEV[CR][LF]
+ Accept: */*[CR][LF]
+ Content-Length: 119[CR][LF]
+ Content-Type: application/x-www-form-urlencoded[CR][LF]
+ [CR][LF]
+ my+name+is+moo%5B%5D&y e s=s_i_r&v_alue=content+to+_%3F%21%23%24%27%7C%3C%3E%0A&content+to+_%3F%21%23%24%27%7C%3C%3E%0A
+=== End of file check-generated
+=== Start of file curl1015.out
+ HTTP/1.1 200 I am cool swsclose
+ Server: Cool server/10.0
+ Content-Length: 0
+=== End of file curl1015.out
+=== Start of file http_server.log
+ 15:04:56.348988 Running HTTP IPv4 version on port 39015
+ 15:04:56.349096 Wrote pid 16696 to log/4/server/http_server.pid
+ 15:04:56.349120 Wrote port 39015 to log/4/server/http_server.port
+ 15:04:57.342864 ====> Client connect
+ 15:04:57.342895 accept_connection 3 returned 4
+ 15:04:57.342912 accept_connection 3 returned 0
+ 15:04:57.343046 Read 96 bytes
+ 15:04:57.343064 Process 96 bytes request
+ 15:04:57.343094 Got request: GET /verifiedserver HTTP/1.1
+ 15:04:57.343108 Are-we-friendly question received
+ 15:04:57.343127 Wrote request (96 bytes) input to log/4/server.input
+ 15:04:57.343150 Identifying ourselves as friends
+ 15:04:57.343211 Response sent (56 bytes) and written to log/4/server.response
+ 15:04:57.343231 special request received, no persistency
+ 15:04:57.343242 ====> Client disconnect 0
+ 15:04:57.393073 ====> Client connect
+ 15:04:57.393106 accept_connection 3 returned 4
+ 15:04:57.393126 accept_connection 3 returned 0
+ 15:04:57.393150 Read 276 bytes
+ 15:04:57.393166 Process 276 bytes request
+ 15:04:57.393188 Got request: POST /1015 HTTP/1.1
+ 15:04:57.393204 Serve test number 1015 part 0
+ 15:04:57.393300 - request found to be complete (1015)
+ 15:04:57.393360 Found Content-Length: 119 in the request
+ 15:04:57.393398 Wrote request (276 bytes) input to log/4/server.input
+ 15:04:57.393433 Send response test1015 section <data>
+ 15:04:57.393503 connection close instruction "swsclose" found in response
+ 15:04:57.393665 Response sent (80 bytes) and written to log/4/server.response
+ 15:04:57.393690 instructed to close connection after server-reply
+ 15:04:57.393709 ====> Client disconnect 0
+=== End of file http_server.log
+=== Start of file http_verify.log
+ * !!! WARNING !!
+ * This is a debug build of libcurl, do not use in production.
+ * processing: http://127.0.0.1:39015/verifiedserver
+ * STATE: INIT => CONNECT handle 0xa3a7d8; line 1962
+ * Added connection 0. The cache now contains 1 members
+ * STATE: CONNECT => CONNECTING handle 0xa3a7d8; line 2015
+ *   Trying 127.0.0.1:39015...
+ * Connected to 127.0.0.1 (127.0.0.1) port 39015
+ * STATE: CONNECTING => PROTOCONNECT handle 0xa3a7d8; line 2123
+ * STATE: PROTOCONNECT => DO handle 0xa3a7d8; line 2153
+ > GET /verifiedserver HTTP/1.1
+ > Host: 127.0.0.1:39015
+ > User-Agent: curl/8.2.0-DEV
+ > Accept: */*
+ > 
+ * STATE: DO => DID handle 0xa3a7d8; line 2247
+ * STATE: DID => PERFORMING handle 0xa3a7d8; line 2365
+ * HTTP 1.1 or later with persistent connection
+ < HTTP/1.1 200 OK
+ < Content-Length: 17
+ < 
+ { [17 bytes data]
+ * STATE: PERFORMING => DONE handle 0xa3a7d8; line 2564
+ * multi_done: status: 0 prem: 0 done: 0
+ * Connection #0 to host 127.0.0.1 left intact
+ * Expire cleared
+=== End of file http_verify.log
+=== Start of file http_verify.out
+ WE ROOLZ: 16696
+=== End of file http_verify.out
+=== Start of file server.cmd
+ Testnum 1015
+=== End of file server.cmd
+=== Start of file server.input
+ POST /1015 HTTP/1.1
+ Host: 127.0.0.1:39015
+ User-Agent: curl/8.2.0-DEV
+ Accept: */*
+ Content-Length: 119
+ Content-Type: application/x-www-form-urlencoded
+ my+name+is+moo%5B%5D&y e s=s_i_r&v_alue=content+to+_%3F%21%23%24%27%7C%3C%3E%0A&content+to+_%3F%21%23%24%27%7C%3C%3E%0A
+=== End of file server.input
+=== Start of file server.response
+ HTTP/1.1 200 OK
+ Content-Length: 17
+ WE ROOLZ: 16696
+ HTTP/1.1 200 I am cool swsclose
+ Server: Cool server/10.0
+ Content-Length: 0
+=== End of file server.response
+=== Start of file stderr1015
+   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                  Dload  Upload   Total   Spent    Left  Speed
+ 
+   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 100   119    0     0  100   119      0   100k --:--:-- --:--:-- --:--:--  116k
+=== End of file stderr1015
+=== Start of file trace1015
+ 15:04:57.392503 == Info: !!! WARNING !!
+ 15:04:57.392548 == Info: This is a debug build of libcurl, do not use in production.
+ 15:04:57.392551 == Info: processing: http://127.0.0.1:39015/1015
+ 15:04:57.392569 == Info: STATE: INIT => CONNECT handle 0xf18ae8; line 1962
+ 15:04:57.392678 == Info: Added connection 0. The cache now contains 1 members
+ 15:04:57.392726 == Info: STATE: CONNECT => CONNECTING handle 0xf18ae8; line 2015
+ 15:04:57.392911 == Info:   Trying 127.0.0.1:39015...
+ 15:04:57.393040 == Info: Connected to 127.0.0.1 (127.0.0.1) port 39015
+ 15:04:57.393047 == Info: STATE: CONNECTING => PROTOCONNECT handle 0xf18ae8; line 2123
+ 15:04:57.393053 == Info: STATE: PROTOCONNECT => DO handle 0xf18ae8; line 2153
+ 15:04:57.393128 => Send header, 157 bytes (0x9d)
+ 0000: POST /1015 HTTP/1.1
+ 0015: Host: 127.0.0.1:39015
+ 002c: User-Agent: curl/8.2.0-DEV
+ 0048: Accept: */*
+ 0055: Content-Length: 119
+ 006a: Content-Type: application/x-www-form-urlencoded
+ 009b: 
+ 15:04:57.393157 => Send data, 119 bytes (0x77)
+ 0000: my+name+is+moo%5B%5D&y e s=s_i_r&v_alue=content+to+_%3F%21%23%24
+ 0040: %27%7C%3C%3E%0A&content+to+_%3F%21%23%24%27%7C%3C%3E%0A
+ 15:04:57.393183 == Info: STATE: DO => DID handle 0xf18ae8; line 2247
+ 15:04:57.393187 == Info: STATE: DID => PERFORMING handle 0xf18ae8; line 2365
+ 15:04:57.393631 == Info: HTTP 1.1 or later with persistent connection
+ 15:04:57.393637 <= Recv header, 33 bytes (0x21)
+ 0000: HTTP/1.1 200 I am cool swsclose
+ 15:04:57.393678 <= Recv header, 26 bytes (0x1a)
+ 0000: Server: Cool server/10.0
+ 15:04:57.393691 <= Recv header, 19 bytes (0x13)
+ 0000: Content-Length: 0
+ 15:04:57.393702 <= Recv header, 2 bytes (0x2)
+ 0000: 
+ 15:04:57.393710 == Info: STATE: PERFORMING => DONE handle 0xf18ae8; line 2564
+ 15:04:57.393714 == Info: multi_done: status: 0 prem: 0 done: 0
+ 15:04:57.393771 == Info: Connection #0 to host 127.0.0.1 left intact
+ 15:04:57.393777 == Info: Expire cleared
+=== End of file trace1015
+test 0719...[HTTP GET with IPv6 numerical via SOCKS5h]
+
+ 719: socks FAILED:
+--- log/8/check-expected	2023-06-21 15:04:58.882343142 -0700
++++ log/8/check-generated	2023-06-21 15:04:58.882343142 -0700
+@@ -1 +1 @@
+-XXXatyp 4 => 22 00 00 00 00 00 00 00 00 00 00 00 00 00 00 33[LF]
++atyp 4 => 22 00 00 00 00 00 00 00 00 00 00 00 00 00 00 33[LF]
+== Contents of files in the log/8/ dir after test 719
+=== Start of file check-expected
+ XXXatyp 4 => 22 00 00 00 00 00 00 00 00 00 00 00 00 00 00 33[LF]
+=== End of file check-expected
+=== Start of file check-generated
+ atyp 4 => 22 00 00 00 00 00 00 00 00 00 00 00 00 00 00 33[LF]
+=== End of file check-generated
+=== Start of file curl719.out
+ HTTP/1.1 200 OK
+ Date: Tue, 09 Nov 2010 14:49:00 GMT
+ Server: test-server/fake
+ Last-Modified: Tue, 13 Jun 2000 12:10:00 GMT
+ ETag: "21025-dc7-39462498"
+ Accept-Ranges: bytes
+ Content-Length: 6
+ Connection: close
+ Content-Type: text/html
+ Funny-head: yesyes
+ -foo-
+=== End of file curl719.out
+=== Start of file http_server.log
+ 15:04:56.359660 Running HTTP IPv4 version on port 33863
+ 15:04:56.359765 Wrote pid 16698 to log/8/server/http_server.pid
+ 15:04:56.359791 Wrote port 33863 to log/8/server/http_server.port
+ 15:04:57.343503 ====> Client connect
+ 15:04:57.343529 accept_connection 3 returned 4
+ 15:04:57.343546 accept_connection 3 returned 0
+ 15:04:57.343667 Read 96 bytes
+ 15:04:57.343684 Process 96 bytes request
+ 15:04:57.343709 Got request: GET /verifiedserver HTTP/1.1
+ 15:04:57.343721 Are-we-friendly question received
+ 15:04:57.343739 Wrote request (96 bytes) input to log/8/server.input
+ 15:04:57.343762 Identifying ourselves as friends
+ 15:04:57.343815 Response sent (56 bytes) and written to log/8/server.response
+ 15:04:57.343828 special request received, no persistency
+ 15:04:57.343838 ====> Client disconnect 0
+ 15:04:58.399847 ====> Client connect
+ 15:04:58.399875 accept_connection 3 returned 4
+ 15:04:58.399891 accept_connection 3 returned 0
+ 15:04:58.400515 Read 86 bytes
+ 15:04:58.400556 Process 86 bytes request
+ 15:04:58.400575 Got request: GET /719 HTTP/1.1
+ 15:04:58.400587 Serve test number 719 part 0
+ 15:04:58.400628 - request found to be complete (719)
+ 15:04:58.400670 Wrote request (86 bytes) input to log/8/server.input
+ 15:04:58.400691 Send response test719 section <data>
+ 15:04:58.401025 Response sent (256 bytes) and written to log/8/server.response
+ 15:04:58.401042 => persistent connection request ended, awaits new request
+ 15:04:58.401787 Connection closed by client
+ 15:04:58.401825 ====> Client disconnect 0
+=== End of file http_server.log
+=== Start of file http_verify.log
+ * !!! WARNING !!
+ * This is a debug build of libcurl, do not use in production.
+ * processing: http://127.0.0.1:33863/verifiedserver
+ * STATE: INIT => CONNECT handle 0x24647d8; line 1962
+ * Added connection 0. The cache now contains 1 members
+ * STATE: CONNECT => CONNECTING handle 0x24647d8; line 2015
+ *   Trying 127.0.0.1:33863...
+ * Connected to 127.0.0.1 (127.0.0.1) port 33863
+ * STATE: CONNECTING => PROTOCONNECT handle 0x24647d8; line 2123
+ * STATE: PROTOCONNECT => DO handle 0x24647d8; line 2153
+ > GET /verifiedserver HTTP/1.1
+ > Host: 127.0.0.1:33863
+ > User-Agent: curl/8.2.0-DEV
+ > Accept: */*
+ > 
+ * STATE: DO => DID handle 0x24647d8; line 2247
+ * STATE: DID => PERFORMING handle 0x24647d8; line 2365
+ * HTTP 1.1 or later with persistent connection
+ < HTTP/1.1 200 OK
+ < Content-Length: 17
+ < 
+ { [17 bytes data]
+ * STATE: PERFORMING => DONE handle 0x24647d8; line 2564
+ * multi_done: status: 0 prem: 0 done: 0
+ * Connection #0 to host 127.0.0.1 left intact
+ * Expire cleared
+=== End of file http_verify.log
+=== Start of file http_verify.out
+ WE ROOLZ: 16698
+=== End of file http_verify.out
+=== Start of file server.cmd
+ Testnum 719
+=== End of file server.cmd
+=== Start of file server.input
+ GET /719 HTTP/1.1
+ Host: [2200::33]:33863
+ User-Agent: curl/8.2.0-DEV
+ Accept: */*
+=== End of file server.input
+=== Start of file server.response
+ HTTP/1.1 200 OK
+ Content-Length: 17
+ WE ROOLZ: 16698
+ HTTP/1.1 200 OK
+ Date: Tue, 09 Nov 2010 14:49:00 GMT
+ Server: test-server/fake
+ Last-Modified: Tue, 13 Jun 2000 12:10:00 GMT
+ ETag: "21025-dc7-39462498"
+ Accept-Ranges: bytes
+ Content-Length: 6
+ Connection: close
+ Content-Type: text/html
+ Funny-head: yesyes
+ -foo-
+=== End of file server.response
+=== Start of file socks_server.log
+ 15:04:57.350723 Running IPv4 version
+ 15:04:57.350851 Listening on port 44311
+ 15:04:57.350883 Wrote pid 16817 to log/8/server/socks_server.pid
+ 15:04:57.350911 Wrote port 44311 to log/8/server/socks_server.port
+ 15:04:58.398871 ====> Client connect, fd 4. Read config from log/8/server.cmd
+ 15:04:58.398982 Reset to defaults
+ 15:04:58.399023 parse config file
+ 15:04:58.399130 READ 3 bytes
+ 15:04:58.399172 '050100'
+ 15:04:58.399204 Incoming request deemed fine
+ 15:04:58.399370 Sent 2 bytes
+ 15:04:58.399414 '0500'
+ 15:04:58.399451 READ 22 bytes
+ 15:04:58.399502 '05010004220000000000000000000000000000338447'
+ 15:04:58.399537 Received ATYP 4
+ 15:04:58.399808 Connected fine to 127.0.0.1:33863
+ 15:04:58.399938 Sent 22 bytes
+ 15:04:58.399971 '05000004220000000000000000000000000000338447'
+ 15:04:58.399990 ====> Tunnel transfer
+ 15:04:58.401651 SOCKS transfer completed. Bytes: < 256 > 86
+=== End of file socks_server.log
+=== Start of file socksd-request.log
+ atyp 4 => 22 00 00 00 00 00 00 00 00 00 00 00 00 00 00 33
+=== End of file socksd-request.log
+=== Start of file stderr719
+   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                  Dload  Upload   Total   Spent    Left  Speed
+ 
+   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 100     6  100     6    0     0   1775      0 --:--:-- --:--:-- --:--:--  2000
+=== End of file stderr719
+=== Start of file trace719
+ 15:04:58.398010 == Info: !!! WARNING !!
+ 15:04:58.398066 == Info: This is a debug build of libcurl, do not use in production.
+ 15:04:58.398071 == Info: processing: http://[2200::33]:33863/719
+ 15:04:58.398094 == Info: STATE: INIT => CONNECT handle 0x192cae8; line 1962
+ 15:04:58.398378 == Info: Added connection 0. The cache now contains 1 members
+ 15:04:58.398432 == Info: STATE: CONNECT => CONNECTING handle 0x192cae8; line 2015
+ 15:04:58.398659 == Info:   Trying 127.0.0.1:44311...
+ 15:04:58.398816 == Info: Connected to 127.0.0.1 (127.0.0.1) port 44311
+ 15:04:58.398829 == Info: SXSTATE: INIT => SOCKS_INIT; line 1133
+ 15:04:58.398866 == Info: SXSTATE: SOCKS_INIT => SOCKS_READ; line 629
+ 15:04:58.399371 == Info: SXSTATE: SOCKS_READ => REQ_INIT; line 661
+ 15:04:58.399377 == Info: SOCKS5 connect to 2200::33:33863 (remotely resolved)
+ 15:04:58.399381 == Info: SXSTATE: REQ_INIT => REQ_SENDING; line 931
+ 15:04:58.399414 == Info: SXSTATE: REQ_SENDING => REQ_READ; line 950
+ 15:04:58.400062 == Info: SXSTATE: REQ_READ => REQ_READ_MORE; line 1031
+ 15:04:58.400093 == Info: SXSTATE: REQ_READ_MORE => DONE; line 1050
+ 15:04:58.400103 == Info: SOCKS5 request granted.
+ 15:04:58.400116 == Info: Connected to 127.0.0.1 (127.0.0.1) port 44311
+ 15:04:58.400159 == Info: STATE: CONNECTING => PROTOCONNECT handle 0x192cae8; line 2123
+ 15:04:58.400200 == Info: STATE: PROTOCONNECT => DO handle 0x192cae8; line 2153
+ 15:04:58.400434 => Send header, 86 bytes (0x56)
+ 0000: GET /719 HTTP/1.1
+ 0013: Host: [2200::33]:33863
+ 002b: User-Agent: curl/8.2.0-DEV
+ 0047: Accept: */*
+ 0054: 
+ 15:04:58.400548 == Info: STATE: DO => DID handle 0x192cae8; line 2247
+ 15:04:58.400566 == Info: STATE: DID => PERFORMING handle 0x192cae8; line 2365
+ 15:04:58.401139 == Info: HTTP 1.1 or later with persistent connection
+ 15:04:58.401148 <= Recv header, 16 bytes (0x10)
+ 0000: HTTP/1.1 200 OK.
+ 15:04:58.401233 <= Recv header, 36 bytes (0x24)
+ 0000: Date: Tue, 09 Nov 2010 14:49:00 GMT.
+ 15:04:58.401260 <= Recv header, 25 bytes (0x19)
+ 0000: Server: test-server/fake.
+ 15:04:58.401280 <= Recv header, 45 bytes (0x2d)
+ 0000: Last-Modified: Tue, 13 Jun 2000 12:10:00 GMT.
+ 15:04:58.401304 <= Recv header, 27 bytes (0x1b)
+ 0000: ETag: "21025-dc7-39462498".
+ 15:04:58.401324 <= Recv header, 21 bytes (0x15)
+ 0000: Accept-Ranges: bytes.
+ 15:04:58.401343 <= Recv header, 18 bytes (0x12)
+ 0000: Content-Length: 6.
+ 15:04:58.401362 <= Recv header, 18 bytes (0x12)
+ 0000: Connection: close.
+ 15:04:58.401386 <= Recv header, 24 bytes (0x18)
+ 0000: Content-Type: text/html.
+ 15:04:58.401406 <= Recv header, 19 bytes (0x13)
+ 0000: Funny-head: yesyes.
+ 15:04:58.401425 <= Recv header, 1 bytes (0x1)
+ 0000: .
+ 15:04:58.401432 <= Recv data, 6 bytes (0x6)
+ 0000: -foo-.
+ 15:04:58.401450 == Info: STATE: PERFORMING => DONE handle 0x192cae8; line 2564
+ 15:04:58.401458 == Info: multi_done: status: 0 prem: 0 done: 0
+ 15:04:58.401563 == Info: multi_done, not re-using connection=0, forbid=0, close=1, premature=0, conn_multiplex=0
+ 15:04:58.401585 == Info: The cache now contains 0 members
+ 15:04:58.401591 == Info: Curl_disconnect(conn #0, dead=0)
+ 15:04:58.401597 == Info: Closing connection
+ 15:04:58.401863 == Info: Expire cleared
+=== End of file trace719
+Warning: http/2 server unexpectedly alive
+RUN: failed to start the HTTP/2 server
+test 0358 SKIPPED: failed starting HTTP/2 server
+TESTDONE: 9 tests were considered during 6 seconds.
+TESTINFO: 4 tests were skipped due to these restraints:
+TESTINFO: "curl lacks XXXnone server support" 1 time (1014)
+TESTINFO: "failed starting HTTP/2 server" 1 time (358)
+TESTINFO: "Test requires default test server host" 1 time (1105)
+TESTINFO: "no test" 1 time (1018)
+TESTDONE: 0 tests out of 5 reported OK: 0%
+
+TESTFAIL: These test cases failed: 1016 1013 1007 1015 719 
+
+make[1]: *** [Makefile:820: quiet-test] Error 1
+make[1]: Leaving directory '/tmp/c/tests'
+make: *** [Makefile:1724: test] Error 2

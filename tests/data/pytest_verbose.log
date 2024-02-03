@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tmp/t
+collecting ... collected 3 items
+
+bar_test.py::TestUupcCvt::test_ex PASSED                                 [ 33%]
+foo_test.py::TestUupcCvt::test_ex FAILED                                 [ 66%]
+skip_test.py::TestUupcCvt::test_ex SKIPPED                               [100%]
+
+=================================== FAILURES ===================================
+_____________________________ TestUupcCvt.test_ex ______________________________
+
+self = <foo_test.TestUupcCvt testMethod=test_ex>
+
+    def test_ex(self):
+        print('Bad')
+>       assert(0)
+E       AssertionError: assert 0
+
+foo_test.py:5: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Bad
+=========================== short test summary info ============================
+FAILED foo_test.py::TestUupcCvt::test_ex - AssertionError: assert 0
+==================== 1 failed, 1 passed, 1 skipped in 0.07s ====================

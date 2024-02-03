@@ -1,0 +1,101 @@
+"""API to access the curl autobuilds system
+"""
+
+import enum
+import html
+import html.parser
+import logging
+import re
+import tempfile
+import urllib
+from typing import List
+
+import requests
+from requests.adapters import HTTPAdapter, Retry
+
+
+BASE_URL = "https://curl.se/dev/inbox/"
+
+LOG_FILE_RE = re.compile(r'^build-.*\.log$')
+
+CHUNK_SIZE = 0x10000
+
+
+# Taken from spec-tree
+class HTMLDirParser(html.parser.HTMLParser):
+    """Parse the HTML resulting from an HTTP directory request.
+
+    This works with the output from Apache, IIS, lighttpd and nginx. The first
+    link in the links attribute is the parent directory.
+    Some servers support returning directories in structured formats (e.g., XML
+    or JSON) but it seems to be controlled server-side and the client doesn't
+    appear to be able to influence it.
+    """
+
+    class TableState(enum.IntEnum):
+        """States for the HTML parser."""
+        NONE = enum.auto()
+        TR = enum.auto()
+        TH = enum.auto()
+
+    def __init__(self):
+        super().__init__()
+        self.table_state = self.TableState.NONE
+        self.links = []
+
+    def error(self, message: str):
+        logging.warning("%s", message)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'th':
+            self.table_state = self.TableState.TH
+
+        elif tag == 'tr':
+            self.table_state = self.TableState.TR
+
+        elif tag == 'a':
+            if self.table_state == self.TableState.TH:
+                # Ignore links in the table header
+                return
+            attrdict = dict(attrs)
+            href = urllib.parse.unquote(html.unescape(attrdict['href']))
+            # Remove Apache & IIS' special column sorting links
+            if not href.startswith('?'):
+                self.links.append(href)
+        # ignore all other tags
+
+
+class CurlAutoApi:
+
+    def __init__(self):
+        # Experimental retry settings
+        # This should delay a total of 5+10+20+40 seconds before aborting
+        retry_strategy = Retry(total=4, backoff_factor=5,
+                               status_forcelist=[429, 500, 502, 503, 504],
+                               allowed_methods=["HEAD", "GET", "OPTIONS"])
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.http = requests.Session()
+        self.http.mount("https://", adapter)
+        self.http.mount("http://", adapter)
+
+    def get_runs(self) -> List[str]:
+        """Returns info about all recent workflow runs"""
+        url = BASE_URL
+        with self.http.get(url) as resp:
+            resp.raise_for_status()
+            htmlp = HTMLDirParser()
+            htmlp.feed(resp.text)
+        htmlp.close()
+
+        # Filter out all but log files
+        return [link for link in htmlp.links if LOG_FILE_RE.search(link)]
+
+    def get_logs(self, log_name: str) -> str:
+        url = BASE_URL + log_name
+        logging.debug('Retrieving log from %s', url)
+        with requests.get(url, stream=True) as resp:
+            resp.raise_for_status()
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                    tmp.write(chunk)
+        return tmp.name

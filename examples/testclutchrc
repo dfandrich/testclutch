@@ -1,0 +1,13 @@
+# Simple example Testclutch configuration file
+# See configdef.py for a full list of possible configuration options
+
+log_cache_path = '/var/lib/testclutch/testlogcache'
+
+# Code repository to work on
+check_repo = 'https://github.com/example/test'
+
+# log parsing functions to try, in order
+log_parsers = [
+    'testclutch.logparser.pytestparse.parse_log_file',
+    'testclutch.logparser.pytestparse.parse_log_file_summary',
+]

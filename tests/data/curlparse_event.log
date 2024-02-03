@@ -1,0 +1,26 @@
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -e 96 100 500 
+sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
+********* System characteristics ******** 
+* curl 8.3.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.3.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.11.1_DEV nghttp2/1.42.0 OpenLDAP/2.4.57
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: event-based 
+* Seed: 256637
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0096 SKIPPED: curl lacks TrackMemory support
+test 0100...[FTP dir list PASV]
+--pd---e--E OK (1   out of 2  , remaining: 00:01, took 1.205s, duration: 00:01)
+test 0500...[simple libcurl HTTP GET tool]
+ 500: IGNORED: This test cannot run event based
+TESTDONE: 2 tests were considered during 2 seconds.
+TESTINFO: 1 tests were skipped due to these restraints:
+TESTINFO: "curl lacks TrackMemory support" 1 time (96)
+TESTDONE: 1 tests out of 1 reported OK: 100%

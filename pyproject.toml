@@ -1,0 +1,64 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "testclutch"
+description = "System to track and analyze regression test runs from CI services"
+version = "0.1dev"
+readme = "README.md"
+authors = [{name = "Dan Fandrich", email = "dan@telarity.com"}]
+license = {text = "AGPLv3+"}
+classifiers = [
+    "Programming Language :: Python",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+]
+requires-python = ">=3.8,<3.9"
+dependencies = [
+    "requests >= 2.25.1, <= 2.27.1",
+    "zstd == 1.4.5.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/dfandrich/testclutch"
+
+[project.scripts]
+tcanalysissum = "testclutch.cli.analysissum:main"
+tcanalyzepr = "testclutch.cli.analyzepr:main"
+tcaugmentcurldaily = "testclutch.cli.augmentcurldaily:main"
+tcaugmentgithash = "testclutch.cli.augmentgithash:main"
+tcdbutil = "testclutch.cli.dbutil:main"
+tcfindtestruns = "testclutch.cli.findtestruns:main"
+tcgitcommitinfo = "testclutch.cli.gitcommitinfo:main"
+tcingestlog = "testclutch.cli.ingestlog:main"
+tclogparse = "testclutch.logparser.logparse:main"
+tcquerytests = "testclutch.cli.querytests:main"
+
+[tool.setuptools]
+license-files = ["COPYING"]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+namespaces = false
+include = [
+    "testclutch",
+    "testclutch.cli",
+    "testclutch.augment",
+    "testclutch.ingest",
+    "testclutch.logparser"
+]
+
+# flake8-pep518 to be installed for flake8 to use these settings
+[tool.flake8]
+max-line-length = "100"
+ignore = "I201,W504,E741,E501,E265"

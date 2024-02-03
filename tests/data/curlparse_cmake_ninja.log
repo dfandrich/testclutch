@@ -1,0 +1,1907 @@
+-- Using CMake version 3.25.1
+-- The C compiler identification is GNU 12.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- curl version=[8.6.0-DEV]
+-- Performing Test OPT_Wdouble_promotion
+-- Performing Test OPT_Wdouble_promotion - Success
+-- Performing Test OPT_Wenum_conversion
+-- Performing Test OPT_Wenum_conversion - Success
+-- Performing Test OPT_Wpragmas
+-- Performing Test OPT_Wpragmas - Success
+-- Performing Test OPT_Wunused_const_variable
+-- Performing Test OPT_Wunused_const_variable - Success
+-- Picky compiler options: -W -Wall -pedantic -Wbad-function-cast -Wconversion -Winline -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-long-long -Wno-multichar -Wpointer-arith -Wshadow -Wsign-compare -Wundef -Wunused -Wwrite-strings -Waddress -Wattributes -Wcast-align -Wdeclaration-after-statement -Wdiv-by-zero -Wempty-body -Wendif-labels -Wfloat-equal -Wformat-security -Wignored-qualifiers -Wmissing-field-initializers -Wmissing-noreturn -Wno-format-nonliteral -Wno-system-headers -Wold-style-definition -Wredundant-decls -Wsign-conversion -Wno-error=sign-conversion -Wstrict-prototypes -Wtype-limits -Wunreachable-code -Wunused-parameter -Wvla -Wclobbered -Wmissing-parameter-type -Wold-style-declaration -Wstrict-aliasing=3 -Wtrampolines -Wformat=2 -Warray-bounds=2 -ftree-vrp -Wduplicated-cond -Wnull-dereference -fdelete-null-pointer-checks -Wshift-negative-value -Wshift-overflow=2 -Walloc-zero -Wduplicated-branches -Wformat-overflow=2 -Wformat-truncation=2 -Wimplicit-fallthrough -Wrestrict -Warith-conversion -Wdouble-promotion -Wenum-conversion -Wpragmas -Wunused-const-variable
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_ADDR
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_ADDR - Success
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID - Success
+-- Found Perl: /usr/bin/perl (found version "5.36.0") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Looking for connect in socket
+-- Looking for connect in socket - not found
+-- Looking for gethostname
+-- Looking for gethostname - found
+-- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
+-- Looking for ldap_init in ldap
+-- Looking for ldap_init in ldap - not found
+-- Looking for ber_init in lber
+-- Looking for ber_init in lber - not found
+-- Looking for include file ldap.h
+-- Looking for include file ldap.h - not found
+-- Looking for include file lber.h
+-- Looking for include file lber.h - not found
+-- LDAP_H not found CURL_DISABLE_LDAP set ON
+-- LDAP needs to be enabled to support LDAPS
+-- Looking for idn2_lookup_ul in idn2
+-- Looking for idn2_lookup_ul in idn2 - not found
+-- Could NOT find LibPSL (missing: LIBPSL_LIBRARY LIBPSL_INCLUDE_DIR) 
+-- Could NOT find LibSSH2 (missing: LIBSSH2_LIBRARY LIBSSH2_INCLUDE_DIR) 
+-- Performing Test USE_UNIX_SOCKETS
+-- Performing Test USE_UNIX_SOCKETS - Success
+-- Found CA bundle: /etc/ssl/certs/ca-certificates.crt
+-- CA path only supported by OpenSSL, wolfSSL, GnuTLS or mbedTLS. Set CURL_CA_PATH=none or enable one of those TLS backends.
+-- Looking for include file sys/filio.h
+-- Looking for include file sys/filio.h - not found
+-- Looking for include file sys/wait.h
+-- Looking for include file sys/wait.h - found
+-- Looking for include files sys/wait.h, sys/ioctl.h
+-- Looking for include files sys/wait.h, sys/ioctl.h - found
+-- Looking for 3 include files sys/wait.h, ..., sys/param.h
+-- Looking for 3 include files sys/wait.h, ..., sys/param.h - found
+-- Looking for 4 include files sys/wait.h, ..., sys/poll.h
+-- Looking for 4 include files sys/wait.h, ..., sys/poll.h - found
+-- Looking for 5 include files sys/wait.h, ..., sys/resource.h
+-- Looking for 5 include files sys/wait.h, ..., sys/resource.h - found
+-- Looking for 6 include files sys/wait.h, ..., sys/select.h
+-- Looking for 6 include files sys/wait.h, ..., sys/select.h - found
+-- Looking for 7 include files sys/wait.h, ..., sys/socket.h
+-- Looking for 7 include files sys/wait.h, ..., sys/socket.h - found
+-- Looking for 8 include files sys/wait.h, ..., sys/sockio.h
+-- Looking for 8 include files sys/wait.h, ..., sys/sockio.h - not found
+-- Looking for 8 include files sys/wait.h, ..., sys/stat.h
+-- Looking for 8 include files sys/wait.h, ..., sys/stat.h - found
+-- Looking for 9 include files sys/wait.h, ..., sys/time.h
+-- Looking for 9 include files sys/wait.h, ..., sys/time.h - found
+-- Looking for 10 include files sys/wait.h, ..., sys/types.h
+-- Looking for 10 include files sys/wait.h, ..., sys/types.h - found
+-- Looking for 11 include files sys/wait.h, ..., sys/un.h
+-- Looking for 11 include files sys/wait.h, ..., sys/un.h - found
+-- Looking for 12 include files sys/wait.h, ..., sys/utime.h
+-- Looking for 12 include files sys/wait.h, ..., sys/utime.h - not found
+-- Looking for 12 include files sys/wait.h, ..., sys/xattr.h
+-- Looking for 12 include files sys/wait.h, ..., sys/xattr.h - found
+-- Looking for 13 include files sys/wait.h, ..., arpa/inet.h
+-- Looking for 13 include files sys/wait.h, ..., arpa/inet.h - found
+-- Looking for 14 include files sys/wait.h, ..., fcntl.h
+-- Looking for 14 include files sys/wait.h, ..., fcntl.h - found
+-- Looking for 15 include files sys/wait.h, ..., ifaddrs.h
+-- Looking for 15 include files sys/wait.h, ..., ifaddrs.h - found
+-- Looking for 16 include files sys/wait.h, ..., io.h
+-- Looking for 16 include files sys/wait.h, ..., io.h - not found
+-- Looking for 16 include files sys/wait.h, ..., libgen.h
+-- Looking for 16 include files sys/wait.h, ..., libgen.h - found
+-- Looking for 17 include files sys/wait.h, ..., locale.h
+-- Looking for 17 include files sys/wait.h, ..., locale.h - found
+-- Looking for 18 include files sys/wait.h, ..., net/if.h
+-- Looking for 18 include files sys/wait.h, ..., net/if.h - found
+-- Looking for 19 include files sys/wait.h, ..., netdb.h
+-- Looking for 19 include files sys/wait.h, ..., netdb.h - found
+-- Looking for 20 include files sys/wait.h, ..., netinet/in.h
+-- Looking for 20 include files sys/wait.h, ..., netinet/in.h - found
+-- Looking for 21 include files sys/wait.h, ..., netinet/tcp.h
+-- Looking for 21 include files sys/wait.h, ..., netinet/tcp.h - found
+-- Looking for 22 include files sys/wait.h, ..., netinet/udp.h
+-- Looking for 22 include files sys/wait.h, ..., netinet/udp.h - found
+-- Looking for linux/tcp.h
+-- Looking for linux/tcp.h - found
+-- Looking for 23 include files sys/wait.h, ..., poll.h
+-- Looking for 23 include files sys/wait.h, ..., poll.h - found
+-- Looking for 24 include files sys/wait.h, ..., pwd.h
+-- Looking for 24 include files sys/wait.h, ..., pwd.h - found
+-- Looking for 25 include files sys/wait.h, ..., stdatomic.h
+-- Looking for 25 include files sys/wait.h, ..., stdatomic.h - found
+-- Looking for 26 include files sys/wait.h, ..., stdbool.h
+-- Looking for 26 include files sys/wait.h, ..., stdbool.h - found
+-- Looking for 27 include files sys/wait.h, ..., strings.h
+-- Looking for 27 include files sys/wait.h, ..., strings.h - found
+-- Looking for 28 include files sys/wait.h, ..., stropts.h
+-- Looking for 28 include files sys/wait.h, ..., stropts.h - not found
+-- Looking for 28 include files sys/wait.h, ..., termio.h
+-- Looking for 28 include files sys/wait.h, ..., termio.h - found
+-- Looking for 29 include files sys/wait.h, ..., termios.h
+-- Looking for 29 include files sys/wait.h, ..., termios.h - found
+-- Looking for 30 include files sys/wait.h, ..., unistd.h
+-- Looking for 30 include files sys/wait.h, ..., unistd.h - found
+-- Looking for 31 include files sys/wait.h, ..., utime.h
+-- Looking for 31 include files sys/wait.h, ..., utime.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of size_t
+-- Check size of size_t - done
+-- Check size of ssize_t
+-- Check size of ssize_t - done
+-- Check size of long long
+-- Check size of long long - done
+-- Check size of long
+-- Check size of long - done
+-- Check size of int
+-- Check size of int - done
+-- Check size of __int64
+-- Check size of __int64 - failed
+-- Check size of time_t
+-- Check size of time_t - done
+-- Check size of suseconds_t
+-- Check size of suseconds_t - done
+-- Looking for fnmatch
+-- Looking for fnmatch - found
+-- Looking for basename
+-- Looking for basename - found
+-- Looking for socket
+-- Looking for socket - found
+-- Looking for sched_yield
+-- Looking for sched_yield - found
+-- Looking for socketpair
+-- Looking for socketpair - found
+-- Looking for recv
+-- Looking for recv - found
+-- Looking for send
+-- Looking for send - found
+-- Looking for sendmsg
+-- Looking for sendmsg - found
+-- Looking for select
+-- Looking for select - found
+-- Looking for strdup
+-- Looking for strdup - found
+-- Looking for strtok_r
+-- Looking for strtok_r - found
+-- Looking for strcasecmp
+-- Looking for strcasecmp - found
+-- Looking for stricmp
+-- Looking for stricmp - not found
+-- Looking for strcmpi
+-- Looking for strcmpi - not found
+-- Looking for memrchr
+-- Looking for memrchr - not found
+-- Looking for alarm
+-- Looking for alarm - found
+-- Looking for arc4random
+-- Looking for arc4random - found
+-- Looking for fcntl
+-- Looking for fcntl - found
+-- Looking for getppid
+-- Looking for getppid - found
+-- Looking for utimes
+-- Looking for utimes - found
+-- Looking for gettimeofday
+-- Looking for gettimeofday - found
+-- Looking for closesocket
+-- Looking for closesocket - not found
+-- Looking for sigsetjmp
+-- Looking for sigsetjmp - found
+-- Looking for getpass_r
+-- Looking for getpass_r - not found
+-- Looking for getpwuid
+-- Looking for getpwuid - found
+-- Looking for getpwuid_r
+-- Looking for getpwuid_r - found
+-- Looking for geteuid
+-- Looking for geteuid - found
+-- Looking for utime
+-- Looking for utime - found
+-- Looking for gmtime_r
+-- Looking for gmtime_r - found
+-- Looking for gethostbyname_r
+-- Looking for gethostbyname_r - found
+-- Looking for signal
+-- Looking for signal - found
+-- Looking for strtoll
+-- Looking for strtoll - found
+-- Looking for strerror_r
+-- Looking for strerror_r - found
+-- Looking for sigaction
+-- Looking for sigaction - found
+-- Looking for siginterrupt
+-- Looking for siginterrupt - found
+-- Looking for getaddrinfo
+-- Looking for getaddrinfo - found
+-- Looking for getifaddrs
+-- Looking for getifaddrs - found
+-- Looking for freeaddrinfo
+-- Looking for freeaddrinfo - found
+-- Looking for pipe
+-- Looking for pipe - found
+-- Looking for ftruncate
+-- Looking for ftruncate - found
+-- Looking for fseeko
+-- Looking for fseeko - found
+-- Looking for _fseeki64
+-- Looking for _fseeki64 - not found
+-- Looking for getpeername
+-- Looking for getpeername - found
+-- Looking for getsockname
+-- Looking for getsockname - found
+-- Looking for if_nametoindex
+-- Looking for if_nametoindex - found
+-- Looking for getrlimit
+-- Looking for getrlimit - found
+-- Looking for setlocale
+-- Looking for setlocale - found
+-- Looking for setmode
+-- Looking for setmode - not found
+-- Looking for setrlimit
+-- Looking for setrlimit - found
+-- Looking for snprintf
+-- Looking for snprintf - found
+-- Looking for mach_absolute_time
+-- Looking for mach_absolute_time - not found
+-- Looking for inet_ntop
+-- Looking for inet_ntop - found
+-- Looking for inet_pton
+-- Looking for inet_pton - found
+-- Looking for fsetxattr
+-- Looking for fsetxattr - found
+-- Performing Test HAVE_FSETXATTR_5
+-- Performing Test HAVE_FSETXATTR_5 - Success
+-- Performing Test HAVE_FSETXATTR_6
+-- Performing Test HAVE_FSETXATTR_6 - Failed
+-- Check size of sa_family_t
+-- Check size of sa_family_t - done
+-- Performing Test HAVE_FCNTL_O_NONBLOCK
+-- Performing Test HAVE_FCNTL_O_NONBLOCK - Success
+-- Performing Test HAVE_IOCTLSOCKET
+-- Performing Test HAVE_IOCTLSOCKET - Failed
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL - Failed
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL_FIONBIO
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL_FIONBIO - Failed
+-- Performing Test HAVE_IOCTLSOCKET_FIONBIO
+-- Performing Test HAVE_IOCTLSOCKET_FIONBIO - Failed
+-- Performing Test HAVE_IOCTL_FIONBIO
+-- Performing Test HAVE_IOCTL_FIONBIO - Success
+-- Performing Test HAVE_IOCTL_SIOCGIFADDR
+-- Performing Test HAVE_IOCTL_SIOCGIFADDR - Success
+-- Performing Test HAVE_SETSOCKOPT_SO_NONBLOCK
+-- Performing Test HAVE_SETSOCKOPT_SO_NONBLOCK - Failed
+-- Performing Test HAVE_O_NONBLOCK
+-- Performing Test HAVE_O_NONBLOCK - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_3
+-- Performing Test HAVE_GETHOSTBYNAME_R_3 - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_5
+-- Performing Test HAVE_GETHOSTBYNAME_R_5 - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_6
+-- Performing Test HAVE_GETHOSTBYNAME_R_6 - Success
+-- Performing Test HAVE_GETHOSTBYNAME_R_3_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_3_REENTRANT - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_5_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_5_REENTRANT - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_6_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_6_REENTRANT - Success
+-- Performing Test HAVE_IN_ADDR_T
+-- Performing Test HAVE_IN_ADDR_T - Success
+-- Performing Test HAVE_BOOL_T
+-- Performing Test HAVE_BOOL_T - Success
+-- Performing Test STDC_HEADERS
+-- Performing Test STDC_HEADERS - Success
+-- Performing Test HAVE_FILE_OFFSET_BITS
+-- Performing Test HAVE_FILE_OFFSET_BITS - Success
+-- Performing Test HAVE_ATOMIC
+-- Performing Test HAVE_ATOMIC - Success
+-- Check size of off_t
+-- Check size of off_t - done
+-- Check size of curl_off_t
+-- Check size of curl_off_t - done
+-- Check size of curl_socket_t
+-- Check size of curl_socket_t - done
+-- Performing Test HAVE_WRITABLE_ARGV
+-- Performing Test HAVE_WRITABLE_ARGV - Success
+-- Performing Test HAVE_GLIBC_STRERROR_R
+-- Performing Test HAVE_GLIBC_STRERROR_R - Failed
+-- Performing Test HAVE_POSIX_STRERROR_R
+-- Performing Test HAVE_POSIX_STRERROR_R - Success
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC - Success
+-- Performing Test HAVE_BUILTIN_AVAILABLE
+-- Performing Test HAVE_BUILTIN_AVAILABLE - Failed
+-- Check size of struct sockaddr_storage
+-- Check size of struct sockaddr_storage - done
+-- Performing Test HAVE_MSG_NOSIGNAL
+-- Performing Test HAVE_MSG_NOSIGNAL - Success
+-- Performing Test HAVE_STRUCT_TIMEVAL
+-- Performing Test HAVE_STRUCT_TIMEVAL - Success
+-- Performing Test HAVE_POLL_FINE
+-- Performing Test HAVE_POLL_FINE - Success
+-- Performing Test HAVE_H_ERRNO
+-- Performing Test HAVE_H_ERRNO - Success
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC_RAW
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC_RAW - Success
+-- Enabled features: IPv6 UnixSockets AsynchDNS Largefile alt-svc HSTS threadsafe
+-- Enabled protocols: DICT FILE FTP GOPHER HTTP IMAP IPFS IPNS MQTT POP3 RTSP SMTP TELNET TFTP
+-- Enabled SSL backends: 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/c
+[1/219] Building C object lib/CMakeFiles/libcurl_shared.dir/c-hyper.c.o
+[2/219] Building C object lib/CMakeFiles/libcurl_shared.dir/asyn-ares.c.o
+[3/219] Building C object lib/CMakeFiles/libcurl_shared.dir/amigaos.c.o
+[4/219] Building C object lib/CMakeFiles/libcurl_shared.dir/bufref.c.o
+[5/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cf-h2-proxy.c.o
+[6/219] Building C object lib/CMakeFiles/libcurl_shared.dir/base64.c.o
+[7/219] Building C object lib/CMakeFiles/libcurl_shared.dir/bufq.c.o
+[8/219] Building C object lib/CMakeFiles/libcurl_shared.dir/altsvc.c.o
+[9/219] Building C object lib/CMakeFiles/libcurl_shared.dir/asyn-thread.c.o
+[10/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cf-h1-proxy.c.o
+[11/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cf-haproxy.c.o
+[12/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cf-https-connect.c.o
+[13/219] Building C object lib/CMakeFiles/libcurl_shared.dir/content_encoding.c.o
+[14/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cfilters.c.o
+[15/219] Building C object lib/CMakeFiles/libcurl_shared.dir/conncache.c.o
+[16/219] Building C object lib/CMakeFiles/libcurl_shared.dir/connect.c.o
+[17/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_addrinfo.c.o
+[18/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_des.c.o
+[19/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_endian.c.o
+[20/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_get_line.c.o
+[21/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_fnmatch.c.o
+[22/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cf-socket.c.o
+[23/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_multibyte.c.o
+[24/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_ntlm_core.c.o
+[25/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_memrchr.c.o
+[26/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_gssapi.c.o
+[27/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_gethostname.c.o
+[28/219] Building C object lib/CMakeFiles/libcurl_shared.dir/cookie.c.o
+[29/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_ntlm_wb.c.o
+[30/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_path.c.o
+[31/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_rtmp.c.o
+[32/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_sspi.c.o
+[33/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_range.c.o
+[34/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_trc.c.o
+[35/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_sasl.c.o
+[36/219] Building C object lib/CMakeFiles/libcurl_shared.dir/dynbuf.c.o
+[37/219] Building C object lib/CMakeFiles/libcurl_shared.dir/curl_threads.c.o
+[38/219] Building C object lib/CMakeFiles/libcurl_shared.dir/dynhds.c.o
+[39/219] Building C object lib/CMakeFiles/libcurl_shared.dir/dict.c.o
+[40/219] Building C object lib/CMakeFiles/libcurl_shared.dir/easygetopt.c.o
+[41/219] Building C object lib/CMakeFiles/libcurl_shared.dir/easyoptions.c.o
+[42/219] Building C object lib/CMakeFiles/libcurl_shared.dir/easy.c.o
+[43/219] Building C object lib/CMakeFiles/libcurl_shared.dir/escape.c.o
+[44/219] Building C object lib/CMakeFiles/libcurl_shared.dir/fileinfo.c.o
+[45/219] Building C object lib/CMakeFiles/libcurl_shared.dir/fopen.c.o
+[46/219] Building C object lib/CMakeFiles/libcurl_shared.dir/doh.c.o
+[47/219] Building C object lib/CMakeFiles/libcurl_shared.dir/file.c.o
+[48/219] Building C object lib/CMakeFiles/libcurl_shared.dir/getenv.c.o
+[49/219] Building C object lib/CMakeFiles/libcurl_shared.dir/formdata.c.o
+[50/219] Building C object lib/CMakeFiles/libcurl_shared.dir/ftplistparser.c.o
+[51/219] Building C object lib/CMakeFiles/libcurl_shared.dir/getinfo.c.o
+[52/219] Building C object lib/CMakeFiles/libcurl_shared.dir/gopher.c.o
+[53/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hmac.c.o
+[54/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hash.c.o
+[55/219] Building C object lib/CMakeFiles/libcurl_shared.dir/headers.c.o
+[56/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hostasyn.c.o
+[57/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hostsyn.c.o
+[58/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hostip4.c.o
+[59/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hostip6.c.o
+[60/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http2.c.o
+[61/219] Building C object lib/CMakeFiles/libcurl_shared.dir/ftp.c.o
+[62/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hostip.c.o
+[63/219] Building C object lib/CMakeFiles/libcurl_shared.dir/hsts.c.o
+[64/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http1.c.o
+[65/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_chunks.c.o
+[66/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_ntlm.c.o
+[67/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_negotiate.c.o
+[68/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_aws_sigv4.c.o
+[69/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_digest.c.o
+[70/219] Building C object lib/CMakeFiles/libcurl_shared.dir/inet_ntop.c.o
+[71/219] Building C object lib/CMakeFiles/libcurl_shared.dir/idn.c.o
+[72/219] Building C object lib/CMakeFiles/libcurl_shared.dir/inet_pton.c.o
+[73/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http_proxy.c.o
+[74/219] Building C object lib/CMakeFiles/libcurl_shared.dir/krb5.c.o
+[75/219] Building C object lib/CMakeFiles/libcurl_shared.dir/ldap.c.o
+[76/219] Building C object lib/CMakeFiles/libcurl_shared.dir/if2ip.c.o
+[77/219] Building C object lib/CMakeFiles/libcurl_shared.dir/macos.c.o
+[78/219] Building C object lib/CMakeFiles/libcurl_shared.dir/memdebug.c.o
+[79/219] Building C object lib/CMakeFiles/libcurl_shared.dir/llist.c.o
+[80/219] Building C object lib/CMakeFiles/libcurl_shared.dir/md4.c.o
+[81/219] Building C object lib/CMakeFiles/libcurl_shared.dir/imap.c.o
+[82/219] Building C object lib/CMakeFiles/libcurl_shared.dir/http.c.o
+[83/219] Building C object lib/CMakeFiles/libcurl_shared.dir/md5.c.o
+[84/219] Building C object lib/CMakeFiles/libcurl_shared.dir/nonblock.c.o
+[85/219] Building C object lib/CMakeFiles/libcurl_shared.dir/netrc.c.o
+[86/219] Building C object lib/CMakeFiles/libcurl_shared.dir/noproxy.c.o
+[87/219] Building C object lib/CMakeFiles/libcurl_shared.dir/openldap.c.o
+[88/219] Building C object lib/CMakeFiles/libcurl_shared.dir/mime.c.o
+[89/219] Building C object lib/CMakeFiles/libcurl_shared.dir/mprintf.c.o
+[90/219] Building C object lib/CMakeFiles/libcurl_shared.dir/mqtt.c.o
+[91/219] Building C object lib/CMakeFiles/libcurl_shared.dir/parsedate.c.o
+[92/219] Building C object lib/CMakeFiles/libcurl_shared.dir/psl.c.o
+[93/219] Building C object lib/CMakeFiles/libcurl_shared.dir/multi.c.o
+[94/219] Building C object lib/CMakeFiles/libcurl_shared.dir/pingpong.c.o
+[95/219] Building C object lib/CMakeFiles/libcurl_shared.dir/progress.c.o
+[96/219] Building C object lib/CMakeFiles/libcurl_shared.dir/rand.c.o
+[97/219] Building C object lib/CMakeFiles/libcurl_shared.dir/rename.c.o
+[98/219] Building C object lib/CMakeFiles/libcurl_shared.dir/pop3.c.o
+[99/219] Building C object lib/CMakeFiles/libcurl_shared.dir/rtsp.c.o
+[100/219] Building C object lib/CMakeFiles/libcurl_shared.dir/select.c.o
+[101/219] Building C object lib/CMakeFiles/libcurl_shared.dir/sha256.c.o
+[102/219] Building C object lib/CMakeFiles/libcurl_shared.dir/smb.c.o
+[103/219] Building C object lib/CMakeFiles/libcurl_shared.dir/sendf.c.o
+[104/219] Building C object lib/CMakeFiles/libcurl_shared.dir/slist.c.o
+[105/219] Building C object lib/CMakeFiles/libcurl_shared.dir/share.c.o
+[106/219] Building C object lib/CMakeFiles/libcurl_shared.dir/socks_sspi.c.o
+[107/219] Building C object lib/CMakeFiles/libcurl_shared.dir/socks_gssapi.c.o
+[108/219] Building C object lib/CMakeFiles/libcurl_shared.dir/socketpair.c.o
+[109/219] Building C object lib/CMakeFiles/libcurl_shared.dir/strdup.c.o
+[110/219] Building C object lib/CMakeFiles/libcurl_shared.dir/strcase.c.o
+[111/219] Building C object lib/CMakeFiles/libcurl_shared.dir/strtok.c.o
+[112/219] Building C object lib/CMakeFiles/libcurl_shared.dir/splay.c.o
+[113/219] Building C object lib/CMakeFiles/libcurl_shared.dir/speedcheck.c.o
+[114/219] Building C object lib/CMakeFiles/libcurl_shared.dir/smtp.c.o
+[115/219] Building C object lib/CMakeFiles/libcurl_shared.dir/socks.c.o
+[116/219] Building C object lib/CMakeFiles/libcurl_shared.dir/strtoofft.c.o
+[117/219] Building C object lib/CMakeFiles/libcurl_shared.dir/system_win32.c.o
+[118/219] Building C object lib/CMakeFiles/libcurl_shared.dir/strerror.c.o
+[119/219] Building C object lib/CMakeFiles/libcurl_shared.dir/setopt.c.o
+[120/219] Building C object lib/CMakeFiles/libcurl_shared.dir/timediff.c.o
+[121/219] Building C object lib/CMakeFiles/libcurl_shared.dir/timeval.c.o
+[122/219] Building C object lib/CMakeFiles/libcurl_shared.dir/version_win32.c.o
+[123/219] Building C object lib/CMakeFiles/libcurl_shared.dir/version.c.o
+[124/219] Building C object lib/CMakeFiles/libcurl_shared.dir/telnet.c.o
+[125/219] Building C object lib/CMakeFiles/libcurl_shared.dir/tftp.c.o
+[126/219] Building C object lib/CMakeFiles/libcurl_shared.dir/warnless.c.o
+[127/219] Building C object lib/CMakeFiles/libcurl_shared.dir/transfer.c.o
+[128/219] Building C object lib/CMakeFiles/libcurl_shared.dir/ws.c.o
+[129/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/digest_sspi.c.o
+[130/219] Building C object lib/CMakeFiles/libcurl_shared.dir/urlapi.c.o
+[131/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/cram.c.o
+[132/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/gsasl.c.o
+[133/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/cleartext.c.o
+[134/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/krb5_gssapi.c.o
+[135/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/krb5_sspi.c.o
+[136/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/ntlm.c.o
+[137/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/digest.c.o
+[138/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/ntlm_sspi.c.o
+[139/219] Building C object lib/CMakeFiles/libcurl_shared.dir/url.c.o
+[140/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/spnego_sspi.c.o
+[141/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/spnego_gssapi.c.o
+[142/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/gtls.c.o
+[143/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/bearssl.c.o
+[144/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/oauth2.c.o
+[145/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/hostcheck.c.o
+[146/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vauth/vauth.c.o
+[147/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/keylog.c.o
+[148/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/mbedtls.c.o
+[149/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/rustls.c.o
+[150/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/mbedtls_threadlock.c.o
+[151/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/openssl.c.o
+[152/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/schannel.c.o
+[153/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/schannel_verify.c.o
+[154/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/wolfssl.c.o
+[155/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/x509asn1.c.o
+[156/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vquic/curl_msh3.c.o
+[157/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/sectransp.c.o
+[158/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vquic/vquic-tls.c.o
+[159/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vquic/curl_ngtcp2.c.o
+[160/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vquic/curl_quiche.c.o
+[161/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vssh/libssh.c.o
+[162/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vtls/vtls.c.o
+[163/219] Generating tool_hugehelp.c
+[164/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vssh/wolfssh.c.o
+[165/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vssh/libssh2.c.o
+[166/219] Building C object lib/CMakeFiles/libcurl_shared.dir/vquic/vquic.c.o
+[167/219] Building C object src/CMakeFiles/curl.dir/tool_bname.c.o
+[168/219] Linking C shared library lib/libcurl.so.4.8.0
+[169/219] Building C object src/CMakeFiles/curl.dir/tool_binmode.c.o
+[170/219] Creating library symlink lib/libcurl.so.4 lib/libcurl.so
+[171/219] Building C object src/CMakeFiles/curl.dir/slist_wc.c.o
+[172/219] Building C object src/CMakeFiles/curl.dir/tool_cb_dbg.c.o
+[173/219] Building C object src/CMakeFiles/curl.dir/tool_cb_hdr.c.o
+[174/219] Building C object src/CMakeFiles/curl.dir/tool_cb_rea.c.o
+[175/219] Building C object src/CMakeFiles/curl.dir/tool_cb_prg.c.o
+[176/219] Building C object src/CMakeFiles/curl.dir/tool_cb_see.c.o
+[177/219] Building C object src/CMakeFiles/curl.dir/tool_dirhie.c.o
+[178/219] Building C object src/CMakeFiles/curl.dir/tool_cb_wrt.c.o
+[179/219] Building C object src/CMakeFiles/curl.dir/tool_doswin.c.o
+[180/219] Building C object src/CMakeFiles/curl.dir/tool_easysrc.c.o
+[181/219] Building C object src/CMakeFiles/curl.dir/tool_filetime.c.o
+[182/219] Building C object src/CMakeFiles/curl.dir/tool_findfile.c.o
+[183/219] Building C object src/CMakeFiles/curl.dir/tool_cfgable.c.o
+[184/219] Building C object src/CMakeFiles/curl.dir/tool_getpass.c.o
+[185/219] Building C object src/CMakeFiles/curl.dir/tool_formparse.c.o
+[186/219] Building C object src/CMakeFiles/curl.dir/tool_help.c.o
+[187/219] Building C object src/CMakeFiles/curl.dir/tool_helpers.c.o
+[188/219] Building C object src/CMakeFiles/curl.dir/tool_libinfo.c.o
+[189/219] Building C object src/CMakeFiles/curl.dir/tool_hugehelp.c.o
+[190/219] Building C object src/CMakeFiles/curl.dir/tool_ipfs.c.o
+[191/219] Building C object src/CMakeFiles/curl.dir/tool_listhelp.c.o
+[192/219] Building C object src/CMakeFiles/curl.dir/tool_main.c.o
+[193/219] Building C object src/CMakeFiles/curl.dir/tool_msgs.c.o
+[194/219] Building C object src/CMakeFiles/curl.dir/tool_getparam.c.o
+[195/219] Building C object src/CMakeFiles/curl.dir/tool_progress.c.o
+[196/219] Building C object src/CMakeFiles/curl.dir/tool_parsecfg.c.o
+[197/219] Building C object src/CMakeFiles/curl.dir/tool_paramhlp.c.o
+[198/219] Building C object src/CMakeFiles/curl.dir/tool_operhlp.c.o
+[199/219] Building C object src/CMakeFiles/curl.dir/tool_setopt.c.o
+[200/219] Building C object src/CMakeFiles/curl.dir/tool_sleep.c.o
+[201/219] Building C object src/CMakeFiles/curl.dir/tool_stderr.c.o
+[202/219] Building C object src/CMakeFiles/curl.dir/tool_strdup.c.o
+[203/219] Building C object src/CMakeFiles/curl.dir/tool_vms.c.o
+[204/219] Building C object src/CMakeFiles/curl.dir/tool_util.c.o
+[205/219] Building C object src/CMakeFiles/curl.dir/tool_urlglob.c.o
+[206/219] Building C object src/CMakeFiles/curl.dir/tool_writeout_json.c.o
+[207/219] Building C object src/CMakeFiles/curl.dir/tool_xattr.c.o
+[208/219] Building C object src/CMakeFiles/curl.dir/tool_writeout.c.o
+[209/219] Building C object src/CMakeFiles/curl.dir/tool_operate.c.o
+[210/219] Building C object src/CMakeFiles/curl.dir/__/lib/base64.c.o
+[211/219] Building C object src/CMakeFiles/curl.dir/__/lib/curl_multibyte.c.o
+[212/219] Building C object src/CMakeFiles/curl.dir/__/lib/strtoofft.c.o
+[213/219] Building C object src/CMakeFiles/curl.dir/var.c.o
+[214/219] Building C object src/CMakeFiles/curl.dir/__/lib/timediff.c.o
+[215/219] Building C object src/CMakeFiles/curl.dir/__/lib/version_win32.c.o
+[216/219] Building C object src/CMakeFiles/curl.dir/__/lib/nonblock.c.o
+[217/219] Building C object src/CMakeFiles/curl.dir/__/lib/dynbuf.c.o
+[218/219] Building C object src/CMakeFiles/curl.dir/__/lib/warnless.c.o
+[219/219] Linking C executable src/curl
+[1/1331] Building C object tests/libtest/CMakeFiles/libauthretry.dir/__/__/lib/timediff.c.o
+[2/1331] Building C object tests/libtest/CMakeFiles/chkhostname.dir/chkhostname.c.o
+[3/1331] Building C object tests/libtest/CMakeFiles/chkhostname.dir/__/__/lib/curl_gethostname.c.o
+[4/1331] Building C object tests/libtest/CMakeFiles/libntlmconnect.dir/__/__/lib/timediff.c.o
+[5/1331] Building C object tests/libtest/CMakeFiles/libauthretry.dir/first.c.o
+[6/1331] Building C object tests/libtest/CMakeFiles/libauthretry.dir/libauthretry.c.o
+[7/1331] Building C object tests/libtest/CMakeFiles/libntlmconnect.dir/first.c.o
+[8/1331] Building C object tests/libtest/CMakeFiles/libntlmconnect.dir/testutil.c.o
+[9/1331] Building C object tests/libtest/CMakeFiles/libntlmconnect.dir/__/__/lib/warnless.c.o
+[10/1331] Linking C executable tests/libtest/chkhostname
+[11/1331] Building C object tests/libtest/CMakeFiles/libntlmconnect.dir/libntlmconnect.c.o
+[12/1331] Linking C executable tests/libtest/libauthretry
+[13/1331] Building C object tests/libtest/CMakeFiles/libprereq.dir/libprereq.c.o
+[14/1331] Linking C executable tests/libtest/libntlmconnect
+[15/1331] Building C object tests/libtest/CMakeFiles/libprereq.dir/__/__/lib/timediff.c.o
+[16/1331] Building C object tests/libtest/CMakeFiles/libprereq.dir/first.c.o
+[17/1331] Building C object tests/libtest/CMakeFiles/libprereq.dir/__/__/lib/warnless.c.o
+[18/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/__/__/lib/timediff.c.o
+[19/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/lib500.c.o
+[20/1331] Building C object tests/libtest/CMakeFiles/libprereq.dir/testutil.c.o
+[21/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/first.c.o
+[22/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/testutil.c.o
+[23/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/__/__/lib/curl_multibyte.c.o
+[24/1331] Building C object tests/libtest/CMakeFiles/lib500.dir/testtrace.c.o
+[25/1331] Linking C executable tests/libtest/libprereq
+[26/1331] Building C object tests/libtest/CMakeFiles/lib501.dir/lib501.c.o
+[27/1331] Linking C executable tests/libtest/lib500
+[28/1331] Building C object tests/libtest/CMakeFiles/lib501.dir/__/__/lib/timediff.c.o
+[29/1331] Building C object tests/libtest/CMakeFiles/lib501.dir/first.c.o
+[30/1331] Building C object tests/libtest/CMakeFiles/lib502.dir/__/__/lib/timediff.c.o
+[31/1331] Building C object tests/libtest/CMakeFiles/lib502.dir/testutil.c.o
+[32/1331] Building C object tests/libtest/CMakeFiles/lib502.dir/lib502.c.o
+[33/1331] Building C object tests/libtest/CMakeFiles/lib502.dir/__/__/lib/warnless.c.o
+[34/1331] Linking C executable tests/libtest/lib501
+[35/1331] Building C object tests/libtest/CMakeFiles/lib503.dir/testutil.c.o
+[36/1331] Building C object tests/libtest/CMakeFiles/lib503.dir/__/__/lib/timediff.c.o
+[37/1331] Building C object tests/libtest/CMakeFiles/lib502.dir/first.c.o
+[38/1331] Linking C executable tests/libtest/lib502
+[39/1331] Building C object tests/libtest/CMakeFiles/lib503.dir/lib503.c.o
+[40/1331] Building C object tests/libtest/CMakeFiles/lib504.dir/__/__/lib/timediff.c.o
+[41/1331] Building C object tests/libtest/CMakeFiles/lib503.dir/__/__/lib/warnless.c.o
+[42/1331] Building C object tests/libtest/CMakeFiles/lib504.dir/first.c.o
+[43/1331] Building C object tests/libtest/CMakeFiles/lib503.dir/first.c.o
+[44/1331] Building C object tests/libtest/CMakeFiles/lib504.dir/lib504.c.o
+[45/1331] Building C object tests/libtest/CMakeFiles/lib505.dir/__/__/lib/timediff.c.o
+[46/1331] Building C object tests/libtest/CMakeFiles/lib504.dir/__/__/lib/warnless.c.o
+[47/1331] Building C object tests/libtest/CMakeFiles/lib504.dir/testutil.c.o
+[48/1331] Building C object tests/libtest/CMakeFiles/lib505.dir/__/__/lib/curl_multibyte.c.o
+[49/1331] Building C object tests/libtest/CMakeFiles/lib505.dir/first.c.o
+[50/1331] Linking C executable tests/libtest/lib503
+[51/1331] Linking C executable tests/libtest/lib504
+[52/1331] Building C object tests/libtest/CMakeFiles/lib505.dir/lib505.c.o
+[53/1331] Building C object tests/libtest/CMakeFiles/lib506.dir/__/__/lib/timediff.c.o
+[54/1331] Linking C executable tests/libtest/lib505
+[55/1331] Building C object tests/libtest/CMakeFiles/lib506.dir/first.c.o
+[56/1331] Building C object tests/libtest/CMakeFiles/lib507.dir/__/__/lib/timediff.c.o
+[57/1331] Building C object tests/libtest/CMakeFiles/lib507.dir/first.c.o
+[58/1331] Building C object tests/libtest/CMakeFiles/lib507.dir/testutil.c.o
+[59/1331] Building C object tests/libtest/CMakeFiles/lib506.dir/lib506.c.o
+[60/1331] Building C object tests/libtest/CMakeFiles/lib507.dir/__/__/lib/warnless.c.o
+[61/1331] Building C object tests/libtest/CMakeFiles/lib507.dir/lib507.c.o
+[62/1331] Linking C executable tests/libtest/lib506
+[63/1331] Building C object tests/libtest/CMakeFiles/lib508.dir/__/__/lib/timediff.c.o
+[64/1331] Building C object tests/libtest/CMakeFiles/lib508.dir/lib508.c.o
+[65/1331] Building C object tests/libtest/CMakeFiles/lib509.dir/lib509.c.o
+[66/1331] Linking C executable tests/libtest/lib507
+[67/1331] Building C object tests/libtest/CMakeFiles/lib509.dir/__/__/lib/timediff.c.o
+[68/1331] Building C object tests/libtest/CMakeFiles/lib508.dir/first.c.o
+[69/1331] Building C object tests/libtest/CMakeFiles/lib510.dir/__/__/lib/timediff.c.o
+[70/1331] Building C object tests/libtest/CMakeFiles/lib510.dir/lib510.c.o
+[71/1331] Building C object tests/libtest/CMakeFiles/lib509.dir/first.c.o
+[72/1331] Building C object tests/libtest/CMakeFiles/lib511.dir/lib511.c.o
+[73/1331] Building C object tests/libtest/CMakeFiles/lib510.dir/first.c.o
+[74/1331] Linking C executable tests/libtest/lib508
+[75/1331] Building C object tests/libtest/CMakeFiles/lib511.dir/__/__/lib/timediff.c.o
+[76/1331] Linking C executable tests/libtest/lib509
+[77/1331] Building C object tests/libtest/CMakeFiles/lib511.dir/first.c.o
+[78/1331] Linking C executable tests/libtest/lib510
+[79/1331] Building C object tests/libtest/CMakeFiles/lib512.dir/lib512.c.o
+[80/1331] Building C object tests/libtest/CMakeFiles/lib512.dir/__/__/lib/timediff.c.o
+[81/1331] Building C object tests/libtest/CMakeFiles/lib512.dir/first.c.o
+[82/1331] Linking C executable tests/libtest/lib511
+[83/1331] Building C object tests/libtest/CMakeFiles/lib513.dir/__/__/lib/timediff.c.o
+[84/1331] Building C object tests/libtest/CMakeFiles/lib513.dir/lib513.c.o
+[85/1331] Linking C executable tests/libtest/lib512
+[86/1331] Building C object tests/libtest/CMakeFiles/lib513.dir/first.c.o
+[87/1331] Building C object tests/libtest/CMakeFiles/lib514.dir/lib514.c.o
+[88/1331] Building C object tests/libtest/CMakeFiles/lib515.dir/__/__/lib/timediff.c.o
+[89/1331] Building C object tests/libtest/CMakeFiles/lib514.dir/__/__/lib/timediff.c.o
+[90/1331] Linking C executable tests/libtest/lib513
+[91/1331] Building C object tests/libtest/CMakeFiles/lib514.dir/first.c.o
+[92/1331] Building C object tests/libtest/CMakeFiles/lib515.dir/lib515.c.o
+[93/1331] Building C object tests/libtest/CMakeFiles/lib515.dir/first.c.o
+[94/1331] Building C object tests/libtest/CMakeFiles/lib516.dir/lib516.c.o
+[95/1331] Building C object tests/libtest/CMakeFiles/lib516.dir/first.c.o
+[96/1331] Building C object tests/libtest/CMakeFiles/lib516.dir/__/__/lib/timediff.c.o
+[97/1331] Linking C executable tests/libtest/lib514
+[98/1331] Building C object tests/libtest/CMakeFiles/lib517.dir/lib517.c.o
+[99/1331] Linking C executable tests/libtest/lib515
+[100/1331] Building C object tests/libtest/CMakeFiles/lib517.dir/__/__/lib/timediff.c.o
+[101/1331] Linking C executable tests/libtest/lib516
+[102/1331] Building C object tests/libtest/CMakeFiles/lib518.dir/__/__/lib/timediff.c.o
+[103/1331] Building C object tests/libtest/CMakeFiles/lib517.dir/first.c.o
+[104/1331] Building C object tests/libtest/CMakeFiles/lib518.dir/__/__/lib/curl_multibyte.c.o
+[105/1331] Building C object tests/libtest/CMakeFiles/lib518.dir/first.c.o
+[106/1331] Building C object tests/libtest/CMakeFiles/lib518.dir/__/__/lib/warnless.c.o
+[107/1331] Linking C executable tests/libtest/lib517
+[108/1331] Building C object tests/libtest/CMakeFiles/lib518.dir/lib518.c.o
+[109/1331] Building C object tests/libtest/CMakeFiles/lib519.dir/__/__/lib/timediff.c.o
+[110/1331] Building C object tests/libtest/CMakeFiles/lib519.dir/lib519.c.o
+[111/1331] Building C object tests/libtest/CMakeFiles/lib519.dir/first.c.o
+[112/1331] Building C object tests/libtest/CMakeFiles/lib520.dir/__/__/lib/timediff.c.o
+[113/1331] Linking C executable tests/libtest/lib518
+[114/1331] Building C object tests/libtest/CMakeFiles/lib520.dir/lib520.c.o
+[115/1331] Building C object tests/libtest/CMakeFiles/lib520.dir/first.c.o
+[116/1331] Building C object tests/libtest/CMakeFiles/lib521.dir/lib521.c.o
+[117/1331] Building C object tests/libtest/CMakeFiles/lib521.dir/__/__/lib/timediff.c.o
+[118/1331] Linking C executable tests/libtest/lib519
+[119/1331] Linking C executable tests/libtest/lib520
+[120/1331] Building C object tests/libtest/CMakeFiles/lib523.dir/__/__/lib/timediff.c.o
+[121/1331] Building C object tests/libtest/CMakeFiles/lib521.dir/first.c.o
+[122/1331] Building C object tests/libtest/CMakeFiles/lib523.dir/lib523.c.o
+[123/1331] Building C object tests/libtest/CMakeFiles/lib524.dir/lib524.c.o
+[124/1331] Linking C executable tests/libtest/lib521
+[125/1331] Building C object tests/libtest/CMakeFiles/lib523.dir/first.c.o
+[126/1331] Building C object tests/libtest/CMakeFiles/lib524.dir/first.c.o
+[127/1331] Building C object tests/libtest/CMakeFiles/lib524.dir/__/__/lib/timediff.c.o
+[128/1331] Linking C executable tests/libtest/lib523
+[129/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/__/__/lib/timediff.c.o
+[130/1331] Linking C executable tests/libtest/lib524
+[131/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/__/__/lib/warnless.c.o
+[132/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/first.c.o
+[133/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/testutil.c.o
+[134/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/lib525.c.o
+[135/1331] Building C object tests/libtest/CMakeFiles/lib525.dir/__/__/lib/curl_multibyte.c.o
+[136/1331] Building C object tests/libtest/CMakeFiles/lib526.dir/__/__/lib/timediff.c.o
+[137/1331] Linking C executable tests/libtest/lib525
+[138/1331] Building C object tests/libtest/CMakeFiles/lib526.dir/lib526.c.o
+[139/1331] Building C object tests/libtest/CMakeFiles/lib526.dir/first.c.o
+[140/1331] Building C object tests/libtest/CMakeFiles/lib526.dir/__/__/lib/warnless.c.o
+[141/1331] Building C object tests/libtest/CMakeFiles/lib526.dir/testutil.c.o
+[142/1331] Building C object tests/libtest/CMakeFiles/lib527.dir/lib526.c.o
+[143/1331] Building C object tests/libtest/CMakeFiles/lib527.dir/__/__/lib/timediff.c.o
+[144/1331] Linking C executable tests/libtest/lib526
+[145/1331] Building C object tests/libtest/CMakeFiles/lib527.dir/testutil.c.o
+[146/1331] Building C object tests/libtest/CMakeFiles/lib527.dir/__/__/lib/warnless.c.o
+[147/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/__/__/lib/timediff.c.o
+[148/1331] Building C object tests/libtest/CMakeFiles/lib527.dir/first.c.o
+[149/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/__/__/lib/warnless.c.o
+[150/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/lib525.c.o
+[151/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/first.c.o
+[152/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/testutil.c.o
+[153/1331] Building C object tests/libtest/CMakeFiles/lib530.dir/__/__/lib/timediff.c.o
+[154/1331] Linking C executable tests/libtest/lib527
+[155/1331] Building C object tests/libtest/CMakeFiles/lib529.dir/__/__/lib/curl_multibyte.c.o
+[156/1331] Building C object tests/libtest/CMakeFiles/lib530.dir/first.c.o
+[157/1331] Building C object tests/libtest/CMakeFiles/lib532.dir/__/__/lib/timediff.c.o
+[158/1331] Building C object tests/libtest/CMakeFiles/lib530.dir/testutil.c.o
+[159/1331] Linking C executable tests/libtest/lib529
+[160/1331] Building C object tests/libtest/CMakeFiles/lib530.dir/__/__/lib/warnless.c.o
+[161/1331] Building C object tests/libtest/CMakeFiles/lib532.dir/__/__/lib/warnless.c.o
+[162/1331] Building C object tests/libtest/CMakeFiles/lib532.dir/lib526.c.o
+[163/1331] Building C object tests/libtest/CMakeFiles/lib532.dir/first.c.o
+[164/1331] Building C object tests/libtest/CMakeFiles/lib530.dir/lib530.c.o
+[165/1331] Building C object tests/libtest/CMakeFiles/lib532.dir/testutil.c.o
+[166/1331] Linking C executable tests/libtest/lib530
+[167/1331] Building C object tests/libtest/CMakeFiles/lib533.dir/__/__/lib/timediff.c.o
+[168/1331] Building C object tests/libtest/CMakeFiles/lib533.dir/lib533.c.o
+[169/1331] Linking C executable tests/libtest/lib532
+[170/1331] Building C object tests/libtest/CMakeFiles/lib533.dir/first.c.o
+[171/1331] Building C object tests/libtest/CMakeFiles/lib533.dir/__/__/lib/warnless.c.o
+[172/1331] Building C object tests/libtest/CMakeFiles/lib533.dir/testutil.c.o
+[173/1331] Building C object tests/libtest/CMakeFiles/lib537.dir/__/__/lib/timediff.c.o
+[174/1331] Building C object tests/libtest/CMakeFiles/lib537.dir/__/__/lib/warnless.c.o
+[175/1331] Building C object tests/libtest/CMakeFiles/lib537.dir/lib537.c.o
+[176/1331] Linking C executable tests/libtest/lib533
+[177/1331] Building C object tests/libtest/CMakeFiles/lib537.dir/__/__/lib/curl_multibyte.c.o
+[178/1331] Building C object tests/libtest/CMakeFiles/lib537.dir/first.c.o
+[179/1331] Building C object tests/libtest/CMakeFiles/lib539.dir/__/__/lib/timediff.c.o
+[180/1331] Building C object tests/libtest/CMakeFiles/lib539.dir/first.c.o
+[181/1331] Building C object tests/libtest/CMakeFiles/lib539.dir/lib539.c.o
+[182/1331] Linking C executable tests/libtest/lib537
+[183/1331] Building C object tests/libtest/CMakeFiles/lib540.dir/__/__/lib/timediff.c.o
+[184/1331] Building C object tests/libtest/CMakeFiles/lib540.dir/first.c.o
+[185/1331] Linking C executable tests/libtest/lib539
+[186/1331] Building C object tests/libtest/CMakeFiles/lib540.dir/__/__/lib/warnless.c.o
+[187/1331] Building C object tests/libtest/CMakeFiles/lib540.dir/testutil.c.o
+[188/1331] Building C object tests/libtest/CMakeFiles/lib540.dir/lib540.c.o
+[189/1331] Building C object tests/libtest/CMakeFiles/lib541.dir/__/__/lib/timediff.c.o
+[190/1331] Building C object tests/libtest/CMakeFiles/lib541.dir/first.c.o
+[191/1331] Building C object tests/libtest/CMakeFiles/lib541.dir/lib541.c.o
+[192/1331] Building C object tests/libtest/CMakeFiles/lib541.dir/__/__/lib/curl_multibyte.c.o
+[193/1331] Linking C executable tests/libtest/lib540
+[194/1331] Building C object tests/libtest/CMakeFiles/lib542.dir/lib542.c.o
+[195/1331] Building C object tests/libtest/CMakeFiles/lib542.dir/__/__/lib/timediff.c.o
+[196/1331] Building C object tests/libtest/CMakeFiles/lib543.dir/__/__/lib/timediff.c.o
+[197/1331] Building C object tests/libtest/CMakeFiles/lib543.dir/lib543.c.o
+[198/1331] Building C object tests/libtest/CMakeFiles/lib542.dir/first.c.o
+[199/1331] Linking C executable tests/libtest/lib541
+[200/1331] Building C object tests/libtest/CMakeFiles/lib543.dir/first.c.o
+[201/1331] Building C object tests/libtest/CMakeFiles/lib544.dir/__/__/lib/timediff.c.o
+[202/1331] Building C object tests/libtest/CMakeFiles/lib545.dir/__/__/lib/timediff.c.o
+[203/1331] Building C object tests/libtest/CMakeFiles/lib544.dir/lib544.c.o
+[204/1331] Building C object tests/libtest/CMakeFiles/lib544.dir/first.c.o
+[205/1331] Linking C executable tests/libtest/lib543
+[206/1331] Linking C executable tests/libtest/lib542
+[207/1331] Building C object tests/libtest/CMakeFiles/lib545.dir/lib544.c.o
+[208/1331] Linking C executable tests/libtest/lib544
+[209/1331] Building C object tests/libtest/CMakeFiles/lib547.dir/__/__/lib/timediff.c.o
+[210/1331] Building C object tests/libtest/CMakeFiles/lib545.dir/first.c.o
+[211/1331] Building C object tests/libtest/CMakeFiles/lib547.dir/first.c.o
+[212/1331] Building C object tests/libtest/CMakeFiles/lib548.dir/__/__/lib/timediff.c.o
+[213/1331] Building C object tests/libtest/CMakeFiles/lib549.dir/__/__/lib/timediff.c.o
+[214/1331] Linking C executable tests/libtest/lib545
+[215/1331] Building C object tests/libtest/CMakeFiles/lib547.dir/lib547.c.o
+[216/1331] Building C object tests/libtest/CMakeFiles/lib548.dir/first.c.o
+[217/1331] Building C object tests/libtest/CMakeFiles/lib548.dir/lib547.c.o
+[218/1331] Linking C executable tests/libtest/lib547
+[219/1331] Building C object tests/libtest/CMakeFiles/lib549.dir/first.c.o
+[220/1331] Linking C executable tests/libtest/lib548
+[221/1331] Building C object tests/libtest/CMakeFiles/lib552.dir/__/__/lib/warnless.c.o
+[222/1331] Building C object tests/libtest/CMakeFiles/lib549.dir/lib549.c.o
+[223/1331] Building C object tests/libtest/CMakeFiles/lib552.dir/__/__/lib/timediff.c.o
+[224/1331] Building C object tests/libtest/CMakeFiles/lib552.dir/first.c.o
+[225/1331] Building C object tests/libtest/CMakeFiles/lib553.dir/__/__/lib/timediff.c.o
+[226/1331] Building C object tests/libtest/CMakeFiles/lib552.dir/lib552.c.o
+[227/1331] Linking C executable tests/libtest/lib549
+[228/1331] Building C object tests/libtest/CMakeFiles/lib553.dir/lib553.c.o
+[229/1331] Building C object tests/libtest/CMakeFiles/lib554.dir/__/__/lib/timediff.c.o
+[230/1331] Building C object tests/libtest/CMakeFiles/lib553.dir/first.c.o
+[231/1331] Linking C executable tests/libtest/lib552
+[232/1331] Building C object tests/libtest/CMakeFiles/lib554.dir/lib554.c.o
+[233/1331] Building C object tests/libtest/CMakeFiles/lib554.dir/first.c.o
+[234/1331] Linking C executable tests/libtest/lib553
+[235/1331] Building C object tests/libtest/CMakeFiles/lib555.dir/__/__/lib/timediff.c.o
+[236/1331] Building C object tests/libtest/CMakeFiles/lib555.dir/testutil.c.o
+[237/1331] Building C object tests/libtest/CMakeFiles/lib555.dir/__/__/lib/warnless.c.o
+[238/1331] Linking C executable tests/libtest/lib554
+[239/1331] Building C object tests/libtest/CMakeFiles/lib555.dir/lib555.c.o
+[240/1331] Building C object tests/libtest/CMakeFiles/lib556.dir/__/__/lib/timediff.c.o
+[241/1331] Building C object tests/libtest/CMakeFiles/lib555.dir/first.c.o
+[242/1331] Building C object tests/libtest/CMakeFiles/lib556.dir/lib556.c.o
+[243/1331] Linking C executable tests/libtest/lib555
+[244/1331] Building C object tests/libtest/CMakeFiles/lib556.dir/first.c.o
+[245/1331] Building C object tests/libtest/CMakeFiles/lib557.dir/__/__/lib/timediff.c.o
+[246/1331] Building C object tests/libtest/CMakeFiles/lib556.dir/__/__/lib/warnless.c.o
+[247/1331] Building C object tests/libtest/CMakeFiles/lib558.dir/lib558.c.o
+[248/1331] Building C object tests/libtest/CMakeFiles/lib558.dir/__/__/lib/timediff.c.o
+[249/1331] Building C object tests/libtest/CMakeFiles/lib559.dir/__/__/lib/timediff.c.o
+[250/1331] Linking C executable tests/libtest/lib556
+[251/1331] Building C object tests/libtest/CMakeFiles/lib557.dir/first.c.o
+[252/1331] Building C object tests/libtest/CMakeFiles/lib558.dir/first.c.o
+[253/1331] Building C object tests/libtest/CMakeFiles/lib559.dir/first.c.o
+[254/1331] Building C object tests/libtest/CMakeFiles/lib559.dir/lib559.c.o
+[255/1331] Linking C executable tests/libtest/lib558
+[256/1331] Building C object tests/libtest/CMakeFiles/lib560.dir/__/__/lib/timediff.c.o
+[257/1331] Building C object tests/libtest/CMakeFiles/lib560.dir/first.c.o
+[258/1331] Building C object tests/libtest/CMakeFiles/lib560.dir/lib560.c.o
+[259/1331] Linking C executable tests/libtest/lib559
+[260/1331] Building C object tests/libtest/CMakeFiles/lib560.dir/testutil.c.o
+[261/1331] Building C object tests/libtest/CMakeFiles/lib560.dir/__/__/lib/warnless.c.o
+[262/1331] Building C object tests/libtest/CMakeFiles/lib562.dir/__/__/lib/timediff.c.o
+[263/1331] Building C object tests/libtest/CMakeFiles/lib562.dir/lib562.c.o
+[264/1331] Building C object tests/libtest/CMakeFiles/lib557.dir/lib557.c.o
+[265/1331] Building C object tests/libtest/CMakeFiles/lib564.dir/__/__/lib/timediff.c.o
+[266/1331] Linking C executable tests/libtest/lib560
+[267/1331] Building C object tests/libtest/CMakeFiles/lib564.dir/lib564.c.o
+[268/1331] Building C object tests/libtest/CMakeFiles/lib562.dir/first.c.o
+[269/1331] Building C object tests/libtest/CMakeFiles/lib564.dir/first.c.o
+[270/1331] Linking C executable tests/libtest/lib557
+[271/1331] Building C object tests/libtest/CMakeFiles/lib564.dir/__/__/lib/warnless.c.o
+[272/1331] Linking C executable tests/libtest/lib562
+[273/1331] Building C object tests/libtest/CMakeFiles/lib565.dir/__/__/lib/timediff.c.o
+[274/1331] Building C object tests/libtest/CMakeFiles/lib566.dir/__/__/lib/timediff.c.o
+[275/1331] Building C object tests/libtest/CMakeFiles/lib564.dir/testutil.c.o
+[276/1331] Building C object tests/libtest/CMakeFiles/lib565.dir/lib510.c.o
+[277/1331] Building C object tests/libtest/CMakeFiles/lib565.dir/first.c.o
+[278/1331] Building C object tests/libtest/CMakeFiles/lib566.dir/lib566.c.o
+[279/1331] Building C object tests/libtest/CMakeFiles/lib566.dir/first.c.o
+[280/1331] Linking C executable tests/libtest/lib564
+[281/1331] Building C object tests/libtest/CMakeFiles/lib567.dir/__/__/lib/timediff.c.o
+[282/1331] Building C object tests/libtest/CMakeFiles/lib566.dir/__/__/lib/curl_multibyte.c.o
+[283/1331] Linking C executable tests/libtest/lib565
+[284/1331] Building C object tests/libtest/CMakeFiles/lib567.dir/lib567.c.o
+[285/1331] Linking C executable tests/libtest/lib566
+[286/1331] Building C object tests/libtest/CMakeFiles/lib567.dir/first.c.o
+[287/1331] Building C object tests/libtest/CMakeFiles/lib568.dir/__/__/lib/timediff.c.o
+[288/1331] Linking C executable tests/libtest/lib567
+[289/1331] Building C object tests/libtest/CMakeFiles/lib568.dir/first.c.o
+[290/1331] Building C object tests/libtest/CMakeFiles/lib568.dir/__/__/lib/curl_multibyte.c.o
+[291/1331] Building C object tests/libtest/CMakeFiles/lib569.dir/__/__/lib/curl_multibyte.c.o
+[292/1331] Building C object tests/libtest/CMakeFiles/lib569.dir/__/__/lib/timediff.c.o
+[293/1331] Building C object tests/libtest/CMakeFiles/lib568.dir/lib568.c.o
+[294/1331] Building C object tests/libtest/CMakeFiles/lib570.dir/__/__/lib/timediff.c.o
+[295/1331] Building C object tests/libtest/CMakeFiles/lib569.dir/first.c.o
+[296/1331] Building C object tests/libtest/CMakeFiles/lib570.dir/lib570.c.o
+[297/1331] Building C object tests/libtest/CMakeFiles/lib569.dir/lib569.c.o
+[298/1331] Building C object tests/libtest/CMakeFiles/lib570.dir/first.c.o
+[299/1331] Building C object tests/libtest/CMakeFiles/lib571.dir/__/__/lib/timediff.c.o
+[300/1331] Linking C executable tests/libtest/lib568
+[301/1331] Linking C executable tests/libtest/lib570
+[302/1331] Building C object tests/libtest/CMakeFiles/lib571.dir/__/__/lib/curl_multibyte.c.o
+[303/1331] Linking C executable tests/libtest/lib569
+[304/1331] Building C object tests/libtest/CMakeFiles/lib571.dir/first.c.o
+[305/1331] Building C object tests/libtest/CMakeFiles/lib571.dir/lib571.c.o
+[306/1331] Building C object tests/libtest/CMakeFiles/lib571.dir/__/__/lib/warnless.c.o
+[307/1331] Building C object tests/libtest/CMakeFiles/lib572.dir/__/__/lib/curl_multibyte.c.o
+[308/1331] Building C object tests/libtest/CMakeFiles/lib572.dir/__/__/lib/timediff.c.o
+[309/1331] Linking C executable tests/libtest/lib571
+[310/1331] Building C object tests/libtest/CMakeFiles/lib572.dir/first.c.o
+[311/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/__/__/lib/timediff.c.o
+[312/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/lib573.c.o
+[313/1331] Building C object tests/libtest/CMakeFiles/lib572.dir/lib572.c.o
+[314/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/first.c.o
+[315/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/__/__/lib/warnless.c.o
+[316/1331] Building C object tests/libtest/CMakeFiles/lib574.dir/__/__/lib/timediff.c.o
+[317/1331] Linking C executable tests/libtest/lib572
+[318/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/testtrace.c.o
+[319/1331] Building C object tests/libtest/CMakeFiles/lib573.dir/testutil.c.o
+[320/1331] Building C object tests/libtest/CMakeFiles/lib574.dir/lib574.c.o
+[321/1331] Building C object tests/libtest/CMakeFiles/lib574.dir/first.c.o
+[322/1331] Linking C executable tests/libtest/lib573
+[323/1331] Building C object tests/libtest/CMakeFiles/lib575.dir/__/__/lib/timediff.c.o
+[324/1331] Linking C executable tests/libtest/lib574
+[325/1331] Building C object tests/libtest/CMakeFiles/lib575.dir/lib575.c.o
+[326/1331] Building C object tests/libtest/CMakeFiles/lib575.dir/testutil.c.o
+[327/1331] Building C object tests/libtest/CMakeFiles/lib575.dir/__/__/lib/warnless.c.o
+[328/1331] Building C object tests/libtest/CMakeFiles/lib576.dir/lib576.c.o
+[329/1331] Building C object tests/libtest/CMakeFiles/lib576.dir/__/__/lib/timediff.c.o
+[330/1331] Building C object tests/libtest/CMakeFiles/lib575.dir/first.c.o
+[331/1331] Building C object tests/libtest/CMakeFiles/lib576.dir/first.c.o
+[332/1331] Linking C executable tests/libtest/lib575
+[333/1331] Building C object tests/libtest/CMakeFiles/lib578.dir/lib578.c.o
+[334/1331] Building C object tests/libtest/CMakeFiles/lib578.dir/__/__/lib/curl_multibyte.c.o
+[335/1331] Linking C executable tests/libtest/lib576
+[336/1331] Building C object tests/libtest/CMakeFiles/lib578.dir/__/__/lib/timediff.c.o
+[337/1331] Building C object tests/libtest/CMakeFiles/lib579.dir/__/__/lib/timediff.c.o
+[338/1331] Building C object tests/libtest/CMakeFiles/lib578.dir/first.c.o
+[339/1331] Building C object tests/libtest/CMakeFiles/lib579.dir/__/__/lib/curl_multibyte.c.o
+[340/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/__/__/lib/timediff.c.o
+[341/1331] Building C object tests/libtest/CMakeFiles/lib579.dir/lib579.c.o
+[342/1331] Linking C executable tests/libtest/lib578
+[343/1331] Building C object tests/libtest/CMakeFiles/lib579.dir/first.c.o
+[344/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/first.c.o
+[345/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/__/__/lib/warnless.c.o
+[346/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/__/__/lib/curl_multibyte.c.o
+[347/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/lib582.c.o
+/src/tests/libtest/lib582.c: In function 'addFd':
+/src/tests/libtest/lib582.c:92:24: warning: pointer 'oldptr' may be used after 'realloc' [-Wuse-after-free]
+   92 |       sockets->sockets = oldptr;
+      |       ~~~~~~~~~~~~~~~~~^~~~~~~~
+/src/tests/libtest/lib582.c:88:24: note: call to 'realloc' here
+   88 |     sockets->sockets = realloc(oldptr, sizeof(curl_socket_t) *
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   89 |                                (sockets->max_count + 20));
+      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+[348/1331] Building C object tests/libtest/CMakeFiles/lib582.dir/testutil.c.o
+[349/1331] Linking C executable tests/libtest/lib579
+[350/1331] Building C object tests/libtest/CMakeFiles/lib583.dir/__/__/lib/timediff.c.o
+[351/1331] Building C object tests/libtest/CMakeFiles/lib583.dir/first.c.o
+[352/1331] Linking C executable tests/libtest/lib582
+[353/1331] Building C object tests/libtest/CMakeFiles/lib583.dir/lib583.c.o
+[354/1331] Building C object tests/libtest/CMakeFiles/lib584.dir/__/__/lib/timediff.c.o
+[355/1331] Building C object tests/libtest/CMakeFiles/lib584.dir/lib589.c.o
+[356/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/__/__/lib/timediff.c.o
+[357/1331] Building C object tests/libtest/CMakeFiles/lib584.dir/first.c.o
+[358/1331] Linking C executable tests/libtest/lib583
+[359/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/first.c.o
+[360/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/__/__/lib/curl_multibyte.c.o
+[361/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/testutil.c.o
+[362/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/lib500.c.o
+[363/1331] Linking C executable tests/libtest/lib584
+[364/1331] Building C object tests/libtest/CMakeFiles/lib585.dir/testtrace.c.o
+[365/1331] Building C object tests/libtest/CMakeFiles/lib586.dir/__/__/lib/timediff.c.o
+[366/1331] Building C object tests/libtest/CMakeFiles/lib587.dir/__/__/lib/timediff.c.o
+[367/1331] Building C object tests/libtest/CMakeFiles/lib586.dir/lib586.c.o
+[368/1331] Linking C executable tests/libtest/lib585
+[369/1331] Building C object tests/libtest/CMakeFiles/lib586.dir/first.c.o
+[370/1331] Linking C executable tests/libtest/lib586
+[371/1331] Building C object tests/libtest/CMakeFiles/lib587.dir/lib554.c.o
+[372/1331] Building C object tests/libtest/CMakeFiles/lib587.dir/first.c.o
+[373/1331] Building C object tests/libtest/CMakeFiles/lib589.dir/lib589.c.o
+[374/1331] Building C object tests/libtest/CMakeFiles/lib589.dir/__/__/lib/timediff.c.o
+[375/1331] Building C object tests/libtest/CMakeFiles/lib590.dir/__/__/lib/timediff.c.o
+[376/1331] Building C object tests/libtest/CMakeFiles/lib589.dir/first.c.o
+[377/1331] Linking C executable tests/libtest/lib587
+[378/1331] Building C object tests/libtest/CMakeFiles/lib590.dir/lib590.c.o
+[379/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/__/__/lib/timediff.c.o
+[380/1331] Building C object tests/libtest/CMakeFiles/lib590.dir/first.c.o
+[381/1331] Linking C executable tests/libtest/lib589
+[382/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/first.c.o
+[383/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/__/__/lib/curl_multibyte.c.o
+[384/1331] Linking C executable tests/libtest/lib590
+[385/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/__/__/lib/warnless.c.o
+[386/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/testutil.c.o
+[387/1331] Building C object tests/libtest/CMakeFiles/lib591.dir/lib591.c.o
+[388/1331] Building C object tests/libtest/CMakeFiles/lib597.dir/lib597.c.o
+[389/1331] Building C object tests/libtest/CMakeFiles/lib597.dir/__/__/lib/timediff.c.o
+[390/1331] Building C object tests/libtest/CMakeFiles/lib597.dir/testutil.c.o
+[391/1331] Building C object tests/libtest/CMakeFiles/lib597.dir/first.c.o
+[392/1331] Building C object tests/libtest/CMakeFiles/lib598.dir/__/__/lib/timediff.c.o
+[393/1331] Linking C executable tests/libtest/lib591
+[394/1331] Building C object tests/libtest/CMakeFiles/lib597.dir/__/__/lib/warnless.c.o
+[395/1331] Building C object tests/libtest/CMakeFiles/lib598.dir/first.c.o
+[396/1331] Building C object tests/libtest/CMakeFiles/lib598.dir/lib598.c.o
+[397/1331] Building C object tests/libtest/CMakeFiles/lib599.dir/first.c.o
+[398/1331] Building C object tests/libtest/CMakeFiles/lib599.dir/__/__/lib/curl_multibyte.c.o
+[399/1331] Building C object tests/libtest/CMakeFiles/lib599.dir/lib599.c.o
+[400/1331] Building C object tests/libtest/CMakeFiles/lib599.dir/__/__/lib/timediff.c.o
+[401/1331] Linking C executable tests/libtest/lib597
+[402/1331] Building C object tests/libtest/CMakeFiles/lib643.dir/lib643.c.o
+[403/1331] Linking C executable tests/libtest/lib598
+[404/1331] Linking C executable tests/libtest/lib599
+[405/1331] Building C object tests/libtest/CMakeFiles/lib643.dir/__/__/lib/timediff.c.o
+[406/1331] Building C object tests/libtest/CMakeFiles/lib645.dir/__/__/lib/timediff.c.o
+[407/1331] Building C object tests/libtest/CMakeFiles/lib650.dir/__/__/lib/timediff.c.o
+[408/1331] Building C object tests/libtest/CMakeFiles/lib645.dir/lib643.c.o
+[409/1331] Building C object tests/libtest/CMakeFiles/lib643.dir/first.c.o
+[410/1331] Building C object tests/libtest/CMakeFiles/lib650.dir/lib650.c.o
+[411/1331] Building C object tests/libtest/CMakeFiles/lib650.dir/first.c.o
+[412/1331] Building C object tests/libtest/CMakeFiles/lib645.dir/first.c.o
+[413/1331] Building C object tests/libtest/CMakeFiles/lib651.dir/__/__/lib/timediff.c.o
+[414/1331] Building C object tests/libtest/CMakeFiles/lib651.dir/lib651.c.o
+[415/1331] Linking C executable tests/libtest/lib650
+[416/1331] Linking C executable tests/libtest/lib643
+[417/1331] Linking C executable tests/libtest/lib645
+[418/1331] Building C object tests/libtest/CMakeFiles/lib652.dir/__/__/lib/timediff.c.o
+[419/1331] Building C object tests/libtest/CMakeFiles/lib651.dir/first.c.o
+[420/1331] Building C object tests/libtest/CMakeFiles/lib652.dir/lib652.c.o
+[421/1331] Building C object tests/libtest/CMakeFiles/lib653.dir/__/__/lib/timediff.c.o
+[422/1331] Linking C executable tests/libtest/lib651
+[423/1331] Building C object tests/libtest/CMakeFiles/lib653.dir/lib653.c.o
+[424/1331] Building C object tests/libtest/CMakeFiles/lib654.dir/lib654.c.o
+[425/1331] Building C object tests/libtest/CMakeFiles/lib653.dir/first.c.o
+[426/1331] Building C object tests/libtest/CMakeFiles/lib652.dir/first.c.o
+[427/1331] Building C object tests/libtest/CMakeFiles/lib654.dir/__/__/lib/timediff.c.o
+[428/1331] Building C object tests/libtest/CMakeFiles/lib655.dir/__/__/lib/timediff.c.o
+[429/1331] Building C object tests/libtest/CMakeFiles/lib654.dir/first.c.o
+[430/1331] Linking C executable tests/libtest/lib652
+[431/1331] Building C object tests/libtest/CMakeFiles/lib655.dir/first.c.o
+[432/1331] Linking C executable tests/libtest/lib653
+[433/1331] Building C object tests/libtest/CMakeFiles/lib655.dir/lib655.c.o
+[434/1331] Building C object tests/libtest/CMakeFiles/lib658.dir/__/__/lib/timediff.c.o
+[435/1331] Linking C executable tests/libtest/lib654
+[436/1331] Building C object tests/libtest/CMakeFiles/lib658.dir/lib658.c.o
+[437/1331] Building C object tests/libtest/CMakeFiles/lib658.dir/first.c.o
+[438/1331] Linking C executable tests/libtest/lib655
+[439/1331] Building C object tests/libtest/CMakeFiles/lib658.dir/__/__/lib/warnless.c.o
+[440/1331] Building C object tests/libtest/CMakeFiles/lib658.dir/testutil.c.o
+[441/1331] Building C object tests/libtest/CMakeFiles/lib659.dir/__/__/lib/timediff.c.o
+[442/1331] Building C object tests/libtest/CMakeFiles/lib659.dir/testutil.c.o
+[443/1331] Building C object tests/libtest/CMakeFiles/lib659.dir/lib659.c.o
+[444/1331] Building C object tests/libtest/CMakeFiles/lib659.dir/__/__/lib/warnless.c.o
+[445/1331] Building C object tests/libtest/CMakeFiles/lib659.dir/first.c.o
+[446/1331] Building C object tests/libtest/CMakeFiles/lib661.dir/__/__/lib/timediff.c.o
+[447/1331] Linking C executable tests/libtest/lib658
+[448/1331] Linking C executable tests/libtest/lib659
+[449/1331] Building C object tests/libtest/CMakeFiles/lib666.dir/__/__/lib/timediff.c.o
+[450/1331] Building C object tests/libtest/CMakeFiles/lib667.dir/first.c.o
+[451/1331] Building C object tests/libtest/CMakeFiles/lib667.dir/__/__/lib/timediff.c.o
+[452/1331] Building C object tests/libtest/CMakeFiles/lib666.dir/first.c.o
+[453/1331] Building C object tests/libtest/CMakeFiles/lib667.dir/lib667.c.o
+[454/1331] Building C object tests/libtest/CMakeFiles/lib667.dir/testutil.c.o
+[455/1331] Building C object tests/libtest/CMakeFiles/lib666.dir/lib666.c.o
+[456/1331] Building C object tests/libtest/CMakeFiles/lib661.dir/first.c.o
+[457/1331] Building C object tests/libtest/CMakeFiles/lib661.dir/lib661.c.o
+[458/1331] Linking C executable tests/libtest/lib666
+[459/1331] Building C object tests/libtest/CMakeFiles/lib667.dir/__/__/lib/warnless.c.o
+[460/1331] Linking C executable tests/libtest/lib661
+[461/1331] Building C object tests/libtest/CMakeFiles/lib668.dir/lib668.c.o
+[462/1331] Building C object tests/libtest/CMakeFiles/lib668.dir/testutil.c.o
+[463/1331] Building C object tests/libtest/CMakeFiles/lib668.dir/__/__/lib/timediff.c.o
+[464/1331] Building C object tests/libtest/CMakeFiles/lib668.dir/__/__/lib/warnless.c.o
+[465/1331] Building C object tests/libtest/CMakeFiles/lib670.dir/lib670.c.o
+[466/1331] Linking C executable tests/libtest/lib667
+[467/1331] Building C object tests/libtest/CMakeFiles/lib668.dir/first.c.o
+[468/1331] Building C object tests/libtest/CMakeFiles/lib670.dir/first.c.o
+[469/1331] Building C object tests/libtest/CMakeFiles/lib670.dir/testutil.c.o
+[470/1331] Building C object tests/libtest/CMakeFiles/lib670.dir/__/__/lib/timediff.c.o
+[471/1331] Building C object tests/libtest/CMakeFiles/lib670.dir/__/__/lib/warnless.c.o
+[472/1331] Linking C executable tests/libtest/lib668
+[473/1331] Building C object tests/libtest/CMakeFiles/lib671.dir/first.c.o
+[474/1331] Building C object tests/libtest/CMakeFiles/lib671.dir/__/__/lib/timediff.c.o
+[475/1331] Linking C executable tests/libtest/lib670
+[476/1331] Building C object tests/libtest/CMakeFiles/lib671.dir/testutil.c.o
+[477/1331] Building C object tests/libtest/CMakeFiles/lib671.dir/lib670.c.o
+[478/1331] Building C object tests/libtest/CMakeFiles/lib672.dir/lib670.c.o
+[479/1331] Building C object tests/libtest/CMakeFiles/lib671.dir/__/__/lib/warnless.c.o
+[480/1331] Building C object tests/libtest/CMakeFiles/lib672.dir/testutil.c.o
+[481/1331] Building C object tests/libtest/CMakeFiles/lib672.dir/__/__/lib/timediff.c.o
+[482/1331] Building C object tests/libtest/CMakeFiles/lib672.dir/__/__/lib/warnless.c.o
+[483/1331] Building C object tests/libtest/CMakeFiles/lib672.dir/first.c.o
+[484/1331] Linking C executable tests/libtest/lib671
+[485/1331] Building C object tests/libtest/CMakeFiles/lib673.dir/__/__/lib/timediff.c.o
+[486/1331] Linking C executable tests/libtest/lib672
+[487/1331] Building C object tests/libtest/CMakeFiles/lib673.dir/first.c.o
+[488/1331] Building C object tests/libtest/CMakeFiles/lib673.dir/testutil.c.o
+[489/1331] Building C object tests/libtest/CMakeFiles/lib673.dir/lib670.c.o
+[490/1331] Building C object tests/libtest/CMakeFiles/lib674.dir/__/__/lib/timediff.c.o
+[491/1331] Building C object tests/libtest/CMakeFiles/lib673.dir/__/__/lib/warnless.c.o
+[492/1331] Building C object tests/libtest/CMakeFiles/lib674.dir/lib674.c.o
+[493/1331] Building C object tests/libtest/CMakeFiles/lib674.dir/__/__/lib/warnless.c.o
+[494/1331] Building C object tests/libtest/CMakeFiles/lib674.dir/first.c.o
+[495/1331] Building C object tests/libtest/CMakeFiles/lib674.dir/testutil.c.o
+[496/1331] Building C object tests/libtest/CMakeFiles/lib676.dir/__/__/lib/timediff.c.o
+[497/1331] Linking C executable tests/libtest/lib673
+[498/1331] Building C object tests/libtest/CMakeFiles/lib676.dir/testutil.c.o
+[499/1331] Building C object tests/libtest/CMakeFiles/lib676.dir/lib676.c.o
+[500/1331] Building C object tests/libtest/CMakeFiles/lib676.dir/first.c.o
+[501/1331] Linking C executable tests/libtest/lib674
+[502/1331] Building C object tests/libtest/CMakeFiles/lib676.dir/__/__/lib/warnless.c.o
+[503/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/__/__/lib/curl_multibyte.c.o
+[504/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/lib677.c.o
+[505/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/__/__/lib/timediff.c.o
+[506/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/__/__/lib/warnless.c.o
+[507/1331] Linking C executable tests/libtest/lib676
+[508/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/first.c.o
+[509/1331] Building C object tests/libtest/CMakeFiles/lib677.dir/testutil.c.o
+[510/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/__/__/lib/timediff.c.o
+[511/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/lib678.c.o
+[512/1331] Linking C executable tests/libtest/lib677
+[513/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/first.c.o
+[514/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/__/__/lib/warnless.c.o
+[515/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/__/__/lib/curl_multibyte.c.o
+[516/1331] Building C object tests/libtest/CMakeFiles/lib678.dir/testutil.c.o
+[517/1331] Building C object tests/libtest/CMakeFiles/lib1156.dir/__/__/lib/timediff.c.o
+[518/1331] Building C object tests/libtest/CMakeFiles/lib1156.dir/testutil.c.o
+[519/1331] Building C object tests/libtest/CMakeFiles/lib1156.dir/first.c.o
+[520/1331] Building C object tests/libtest/CMakeFiles/lib1156.dir/lib1156.c.o
+[521/1331] Linking C executable tests/libtest/lib678
+[522/1331] Building C object tests/libtest/CMakeFiles/lib1156.dir/__/__/lib/warnless.c.o
+[523/1331] Building C object tests/libtest/CMakeFiles/lib1301.dir/lib1301.c.o
+[524/1331] Building C object tests/libtest/CMakeFiles/lib1301.dir/__/__/lib/timediff.c.o
+[525/1331] Linking C executable tests/libtest/lib1156
+[526/1331] Building C object tests/libtest/CMakeFiles/lib1301.dir/testutil.c.o
+[527/1331] Building C object tests/libtest/CMakeFiles/lib1301.dir/first.c.o
+[528/1331] Building C object tests/libtest/CMakeFiles/lib1500.dir/__/__/lib/timediff.c.o
+[529/1331] Building C object tests/libtest/CMakeFiles/lib1500.dir/testutil.c.o
+[530/1331] Building C object tests/libtest/CMakeFiles/lib1500.dir/first.c.o
+[531/1331] Linking C executable tests/libtest/lib1301
+[532/1331] Building C object tests/libtest/CMakeFiles/lib1500.dir/lib1500.c.o
+[533/1331] Linking C executable tests/libtest/lib1500
+[534/1331] Building C object tests/libtest/CMakeFiles/lib1501.dir/__/__/lib/timediff.c.o
+[535/1331] Building C object tests/libtest/CMakeFiles/lib1501.dir/__/__/lib/warnless.c.o
+[536/1331] Building C object tests/libtest/CMakeFiles/lib1501.dir/lib1501.c.o
+[537/1331] Building C object tests/libtest/CMakeFiles/lib1501.dir/testutil.c.o
+[538/1331] Building C object tests/libtest/CMakeFiles/lib1501.dir/first.c.o
+[539/1331] Building C object tests/libtest/CMakeFiles/lib1502.dir/lib1502.c.o
+[540/1331] Building C object tests/libtest/CMakeFiles/lib1502.dir/__/__/lib/timediff.c.o
+[541/1331] Building C object tests/libtest/CMakeFiles/lib1502.dir/__/__/lib/warnless.c.o
+[542/1331] Linking C executable tests/libtest/lib1501
+[543/1331] Building C object tests/libtest/CMakeFiles/lib1502.dir/testutil.c.o
+[544/1331] Building C object tests/libtest/CMakeFiles/lib1502.dir/first.c.o
+[545/1331] Building C object tests/libtest/CMakeFiles/lib1503.dir/__/__/lib/timediff.c.o
+[546/1331] Building C object tests/libtest/CMakeFiles/lib1503.dir/testutil.c.o
+[547/1331] Building C object tests/libtest/CMakeFiles/lib1503.dir/first.c.o
+[548/1331] Building C object tests/libtest/CMakeFiles/lib1503.dir/lib1502.c.o
+[549/1331] Building C object tests/libtest/CMakeFiles/lib1503.dir/__/__/lib/warnless.c.o
+[550/1331] Linking C executable tests/libtest/lib1502
+[551/1331] Building C object tests/libtest/CMakeFiles/lib1504.dir/__/__/lib/timediff.c.o
+[552/1331] Building C object tests/libtest/CMakeFiles/lib1504.dir/lib1502.c.o
+[553/1331] Building C object tests/libtest/CMakeFiles/lib1504.dir/first.c.o
+[554/1331] Building C object tests/libtest/CMakeFiles/lib1504.dir/__/__/lib/warnless.c.o
+[555/1331] Linking C executable tests/libtest/lib1503
+[556/1331] Building C object tests/libtest/CMakeFiles/lib1504.dir/testutil.c.o
+[557/1331] Building C object tests/libtest/CMakeFiles/lib1505.dir/__/__/lib/timediff.c.o
+[558/1331] Building C object tests/libtest/CMakeFiles/lib1505.dir/first.c.o
+[559/1331] Building C object tests/libtest/CMakeFiles/lib1505.dir/lib1502.c.o
+[560/1331] Linking C executable tests/libtest/lib1504
+[561/1331] Building C object tests/libtest/CMakeFiles/lib1505.dir/testutil.c.o
+[562/1331] Building C object tests/libtest/CMakeFiles/lib1506.dir/__/__/lib/timediff.c.o
+[563/1331] Building C object tests/libtest/CMakeFiles/lib1505.dir/__/__/lib/warnless.c.o
+[564/1331] Building C object tests/libtest/CMakeFiles/lib1506.dir/lib1506.c.o
+[565/1331] Building C object tests/libtest/CMakeFiles/lib1507.dir/__/__/lib/timediff.c.o
+[566/1331] Building C object tests/libtest/CMakeFiles/lib1506.dir/testutil.c.o
+[567/1331] Linking C executable tests/libtest/lib1505
+[568/1331] Building C object tests/libtest/CMakeFiles/lib1506.dir/first.c.o
+[569/1331] Building C object tests/libtest/CMakeFiles/lib1506.dir/__/__/lib/warnless.c.o
+[570/1331] Building C object tests/libtest/CMakeFiles/lib1507.dir/lib1507.c.o
+[571/1331] Building C object tests/libtest/CMakeFiles/lib1507.dir/first.c.o
+[572/1331] Building C object tests/libtest/CMakeFiles/lib1507.dir/testutil.c.o
+[573/1331] Building C object tests/libtest/CMakeFiles/lib1508.dir/lib1508.c.o
+[574/1331] Building C object tests/libtest/CMakeFiles/lib1507.dir/__/__/lib/warnless.c.o
+[575/1331] Linking C executable tests/libtest/lib1506
+[576/1331] Building C object tests/libtest/CMakeFiles/lib1508.dir/__/__/lib/timediff.c.o
+[577/1331] Building C object tests/libtest/CMakeFiles/lib1508.dir/testutil.c.o
+[578/1331] Building C object tests/libtest/CMakeFiles/lib1508.dir/__/__/lib/warnless.c.o
+[579/1331] Linking C executable tests/libtest/lib1507
+[580/1331] Building C object tests/libtest/CMakeFiles/lib1508.dir/first.c.o
+[581/1331] Building C object tests/libtest/CMakeFiles/lib1509.dir/__/__/lib/timediff.c.o
+[582/1331] Building C object tests/libtest/CMakeFiles/lib1509.dir/lib1509.c.o
+[583/1331] Building C object tests/libtest/CMakeFiles/lib1509.dir/testutil.c.o
+[584/1331] Building C object tests/libtest/CMakeFiles/lib1510.dir/__/__/lib/timediff.c.o
+[585/1331] Building C object tests/libtest/CMakeFiles/lib1509.dir/__/__/lib/warnless.c.o
+[586/1331] Linking C executable tests/libtest/lib1508
+[587/1331] Building C object tests/libtest/CMakeFiles/lib1509.dir/first.c.o
+[588/1331] Building C object tests/libtest/CMakeFiles/lib1510.dir/lib1510.c.o
+[589/1331] Linking C executable tests/libtest/lib1509
+[590/1331] Building C object tests/libtest/CMakeFiles/lib1510.dir/testutil.c.o
+[591/1331] Building C object tests/libtest/CMakeFiles/lib1510.dir/first.c.o
+[592/1331] Building C object tests/libtest/CMakeFiles/lib1511.dir/__/__/lib/timediff.c.o
+[593/1331] Building C object tests/libtest/CMakeFiles/lib1510.dir/__/__/lib/warnless.c.o
+[594/1331] Building C object tests/libtest/CMakeFiles/lib1511.dir/__/__/lib/warnless.c.o
+[595/1331] Linking C executable tests/libtest/lib1510
+[596/1331] Building C object tests/libtest/CMakeFiles/lib1511.dir/first.c.o
+[597/1331] Building C object tests/libtest/CMakeFiles/lib1511.dir/lib1511.c.o
+[598/1331] Building C object tests/libtest/CMakeFiles/lib1511.dir/testutil.c.o
+[599/1331] Building C object tests/libtest/CMakeFiles/lib1512.dir/__/__/lib/timediff.c.o
+[600/1331] Building C object tests/libtest/CMakeFiles/lib1512.dir/__/__/lib/warnless.c.o
+[601/1331] Building C object tests/libtest/CMakeFiles/lib1512.dir/lib1512.c.o
+[602/1331] Building C object tests/libtest/CMakeFiles/lib1512.dir/first.c.o
+[603/1331] Linking C executable tests/libtest/lib1511
+[604/1331] Building C object tests/libtest/CMakeFiles/lib1512.dir/testutil.c.o
+[605/1331] Building C object tests/libtest/CMakeFiles/lib1513.dir/__/__/lib/timediff.c.o
+[606/1331] Linking C executable tests/libtest/lib1512
+[607/1331] Building C object tests/libtest/CMakeFiles/lib1513.dir/first.c.o
+[608/1331] Building C object tests/libtest/CMakeFiles/lib1513.dir/lib1513.c.o
+[609/1331] Building C object tests/libtest/CMakeFiles/lib1514.dir/__/__/lib/timediff.c.o
+[610/1331] Building C object tests/libtest/CMakeFiles/lib1513.dir/testutil.c.o
+[611/1331] Building C object tests/libtest/CMakeFiles/lib1513.dir/__/__/lib/warnless.c.o
+[612/1331] Building C object tests/libtest/CMakeFiles/lib1514.dir/__/__/lib/warnless.c.o
+[613/1331] Building C object tests/libtest/CMakeFiles/lib1514.dir/testutil.c.o
+[614/1331] Building C object tests/libtest/CMakeFiles/lib1514.dir/first.c.o
+[615/1331] Building C object tests/libtest/CMakeFiles/lib1514.dir/lib1514.c.o
+[616/1331] Linking C executable tests/libtest/lib1513
+[617/1331] Building C object tests/libtest/CMakeFiles/lib1515.dir/__/__/lib/timediff.c.o
+[618/1331] Building C object tests/libtest/CMakeFiles/lib1515.dir/__/__/lib/warnless.c.o
+[619/1331] Linking C executable tests/libtest/lib1514
+[620/1331] Building C object tests/libtest/CMakeFiles/lib1515.dir/first.c.o
+[621/1331] Building C object tests/libtest/CMakeFiles/lib1517.dir/__/__/lib/timediff.c.o
+[622/1331] Building C object tests/libtest/CMakeFiles/lib1515.dir/testutil.c.o
+[623/1331] Building C object tests/libtest/CMakeFiles/lib1515.dir/lib1515.c.o
+[624/1331] Building C object tests/libtest/CMakeFiles/lib1517.dir/first.c.o
+[625/1331] Building C object tests/libtest/CMakeFiles/lib1517.dir/lib1517.c.o
+[626/1331] Linking C executable tests/libtest/lib1515
+[627/1331] Building C object tests/libtest/CMakeFiles/lib1518.dir/__/__/lib/timediff.c.o
+[628/1331] Building C object tests/libtest/CMakeFiles/lib1518.dir/first.c.o
+[629/1331] Building C object tests/libtest/CMakeFiles/lib1518.dir/lib1518.c.o
+[630/1331] Building C object tests/libtest/CMakeFiles/lib1520.dir/__/__/lib/timediff.c.o
+[631/1331] Linking C executable tests/libtest/lib1517
+[632/1331] Building C object tests/libtest/CMakeFiles/lib1520.dir/first.c.o
+[633/1331] Building C object tests/libtest/CMakeFiles/lib1520.dir/lib1520.c.o
+[634/1331] Linking C executable tests/libtest/lib1518
+[635/1331] Linking C executable tests/libtest/lib1520
+[636/1331] Building C object tests/libtest/CMakeFiles/lib1522.dir/__/__/lib/timediff.c.o
+[637/1331] Building C object tests/libtest/CMakeFiles/lib1522.dir/testtrace.c.o
+[638/1331] Building C object tests/libtest/CMakeFiles/lib1522.dir/testutil.c.o
+[639/1331] Building C object tests/libtest/CMakeFiles/lib1522.dir/first.c.o
+[640/1331] Building C object tests/libtest/CMakeFiles/lib1522.dir/lib1522.c.o
+[641/1331] Building C object tests/libtest/CMakeFiles/lib1523.dir/lib1523.c.o
+[642/1331] Building C object tests/libtest/CMakeFiles/lib1523.dir/__/__/lib/timediff.c.o
+[643/1331] Building C object tests/libtest/CMakeFiles/lib1525.dir/__/__/lib/timediff.c.o
+[644/1331] Building C object tests/libtest/CMakeFiles/lib1523.dir/first.c.o
+[645/1331] Linking C executable tests/libtest/lib1522
+[646/1331] Building C object tests/libtest/CMakeFiles/lib1525.dir/first.c.o
+[647/1331] Building C object tests/libtest/CMakeFiles/lib1525.dir/testutil.c.o
+[648/1331] Building C object tests/libtest/CMakeFiles/lib1525.dir/__/__/lib/warnless.c.o
+[649/1331] Linking C executable tests/libtest/lib1523
+[650/1331] Building C object tests/libtest/CMakeFiles/lib1525.dir/lib1525.c.o
+[651/1331] Building C object tests/libtest/CMakeFiles/lib1526.dir/first.c.o
+[652/1331] Building C object tests/libtest/CMakeFiles/lib1526.dir/__/__/lib/timediff.c.o
+[653/1331] Building C object tests/libtest/CMakeFiles/lib1527.dir/__/__/lib/timediff.c.o
+[654/1331] Building C object tests/libtest/CMakeFiles/lib1526.dir/testutil.c.o
+[655/1331] Linking C executable tests/libtest/lib1525
+[656/1331] Building C object tests/libtest/CMakeFiles/lib1526.dir/__/__/lib/warnless.c.o
+[657/1331] Building C object tests/libtest/CMakeFiles/lib1526.dir/lib1526.c.o
+[658/1331] Building C object tests/libtest/CMakeFiles/lib1527.dir/first.c.o
+[659/1331] Building C object tests/libtest/CMakeFiles/lib1527.dir/__/__/lib/warnless.c.o
+[660/1331] Linking C executable tests/libtest/lib1526
+[661/1331] Building C object tests/libtest/CMakeFiles/lib1527.dir/lib1527.c.o
+[662/1331] Building C object tests/libtest/CMakeFiles/lib1527.dir/testutil.c.o
+[663/1331] Building C object tests/libtest/CMakeFiles/lib1528.dir/lib1528.c.o
+[664/1331] Building C object tests/libtest/CMakeFiles/lib1528.dir/__/__/lib/timediff.c.o
+[665/1331] Building C object tests/libtest/CMakeFiles/lib1528.dir/__/__/lib/warnless.c.o
+[666/1331] Building C object tests/libtest/CMakeFiles/lib1528.dir/first.c.o
+[667/1331] Linking C executable tests/libtest/lib1527
+[668/1331] Building C object tests/libtest/CMakeFiles/lib1528.dir/testutil.c.o
+[669/1331] Building C object tests/libtest/CMakeFiles/lib1529.dir/lib1529.c.o
+[670/1331] Building C object tests/libtest/CMakeFiles/lib1529.dir/__/__/lib/timediff.c.o
+[671/1331] Linking C executable tests/libtest/lib1528
+[672/1331] Building C object tests/libtest/CMakeFiles/lib1529.dir/testutil.c.o
+[673/1331] Building C object tests/libtest/CMakeFiles/lib1529.dir/first.c.o
+[674/1331] Building C object tests/libtest/CMakeFiles/lib1529.dir/__/__/lib/warnless.c.o
+[675/1331] Building C object tests/libtest/CMakeFiles/lib1530.dir/lib1530.c.o
+[676/1331] Building C object tests/libtest/CMakeFiles/lib1530.dir/__/__/lib/timediff.c.o
+[677/1331] Linking C executable tests/libtest/lib1529
+[678/1331] Building C object tests/libtest/CMakeFiles/lib1530.dir/first.c.o
+[679/1331] Building C object tests/libtest/CMakeFiles/lib1530.dir/testutil.c.o
+[680/1331] Building C object tests/libtest/CMakeFiles/lib1531.dir/__/__/lib/timediff.c.o
+[681/1331] Building C object tests/libtest/CMakeFiles/lib1530.dir/__/__/lib/warnless.c.o
+[682/1331] Building C object tests/libtest/CMakeFiles/lib1531.dir/lib1531.c.o
+[683/1331] Building C object tests/libtest/CMakeFiles/lib1532.dir/__/__/lib/timediff.c.o
+[684/1331] Linking C executable tests/libtest/lib1530
+[685/1331] Building C object tests/libtest/CMakeFiles/lib1531.dir/first.c.o
+[686/1331] Building C object tests/libtest/CMakeFiles/lib1531.dir/testutil.c.o
+[687/1331] Building C object tests/libtest/CMakeFiles/lib1531.dir/__/__/lib/warnless.c.o
+[688/1331] Building C object tests/libtest/CMakeFiles/lib1532.dir/lib1532.c.o
+[689/1331] Building C object tests/libtest/CMakeFiles/lib1532.dir/first.c.o
+[690/1331] Building C object tests/libtest/CMakeFiles/lib1532.dir/testutil.c.o
+[691/1331] Linking C executable tests/libtest/lib1531
+[692/1331] Building C object tests/libtest/CMakeFiles/lib1532.dir/__/__/lib/warnless.c.o
+[693/1331] Building C object tests/libtest/CMakeFiles/lib1533.dir/__/__/lib/timediff.c.o
+[694/1331] Linking C executable tests/libtest/lib1532
+[695/1331] Building C object tests/libtest/CMakeFiles/lib1533.dir/testutil.c.o
+[696/1331] Building C object tests/libtest/CMakeFiles/lib1533.dir/lib1533.c.o
+[697/1331] Building C object tests/libtest/CMakeFiles/lib1533.dir/__/__/lib/warnless.c.o
+[698/1331] Building C object tests/libtest/CMakeFiles/lib1534.dir/__/__/lib/timediff.c.o
+[699/1331] Building C object tests/libtest/CMakeFiles/lib1533.dir/first.c.o
+[700/1331] Building C object tests/libtest/CMakeFiles/lib1534.dir/lib1534.c.o
+[701/1331] Linking C executable tests/libtest/lib1533
+[702/1331] Building C object tests/libtest/CMakeFiles/lib1534.dir/first.c.o
+[703/1331] Building C object tests/libtest/CMakeFiles/lib1534.dir/__/__/lib/warnless.c.o
+[704/1331] Building C object tests/libtest/CMakeFiles/lib1535.dir/__/__/lib/timediff.c.o
+[705/1331] Building C object tests/libtest/CMakeFiles/lib1534.dir/testutil.c.o
+[706/1331] Building C object tests/libtest/CMakeFiles/lib1535.dir/first.c.o
+[707/1331] Building C object tests/libtest/CMakeFiles/lib1535.dir/lib1535.c.o
+[708/1331] Linking C executable tests/libtest/lib1534
+[709/1331] Building C object tests/libtest/CMakeFiles/lib1535.dir/__/__/lib/warnless.c.o
+[710/1331] Building C object tests/libtest/CMakeFiles/lib1536.dir/__/__/lib/timediff.c.o
+[711/1331] Building C object tests/libtest/CMakeFiles/lib1535.dir/testutil.c.o
+[712/1331] Building C object tests/libtest/CMakeFiles/lib1536.dir/__/__/lib/warnless.c.o
+[713/1331] Building C object tests/libtest/CMakeFiles/lib1536.dir/lib1536.c.o
+[714/1331] Building C object tests/libtest/CMakeFiles/lib1536.dir/first.c.o
+[715/1331] Building C object tests/libtest/CMakeFiles/lib1536.dir/testutil.c.o
+[716/1331] Linking C executable tests/libtest/lib1535
+[717/1331] Building C object tests/libtest/CMakeFiles/lib1537.dir/__/__/lib/timediff.c.o
+[718/1331] Building C object tests/libtest/CMakeFiles/lib1537.dir/lib1537.c.o
+[719/1331] Linking C executable tests/libtest/lib1536
+[720/1331] Building C object tests/libtest/CMakeFiles/lib1537.dir/__/__/lib/warnless.c.o
+[721/1331] Building C object tests/libtest/CMakeFiles/lib1537.dir/first.c.o
+[722/1331] Building C object tests/libtest/CMakeFiles/lib1538.dir/__/__/lib/timediff.c.o
+[723/1331] Building C object tests/libtest/CMakeFiles/lib1537.dir/testutil.c.o
+[724/1331] Building C object tests/libtest/CMakeFiles/lib1538.dir/lib1538.c.o
+[725/1331] Building C object tests/libtest/CMakeFiles/lib1538.dir/testutil.c.o
+[726/1331] Building C object tests/libtest/CMakeFiles/lib1538.dir/first.c.o
+[727/1331] Linking C executable tests/libtest/lib1537
+[728/1331] Building C object tests/libtest/CMakeFiles/lib1538.dir/__/__/lib/warnless.c.o
+[729/1331] Building C object tests/libtest/CMakeFiles/lib1539.dir/__/__/lib/timediff.c.o
+[730/1331] Building C object tests/libtest/CMakeFiles/lib1539.dir/testutil.c.o
+[731/1331] Building C object tests/libtest/CMakeFiles/lib1539.dir/first.c.o
+[732/1331] Building C object tests/libtest/CMakeFiles/lib1539.dir/lib1514.c.o
+[733/1331] Building C object tests/libtest/CMakeFiles/lib1539.dir/__/__/lib/warnless.c.o
+[734/1331] Linking C executable tests/libtest/lib1538
+[735/1331] Building C object tests/libtest/CMakeFiles/lib1540.dir/__/__/lib/timediff.c.o
+[736/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/__/__/lib/timediff.c.o
+[737/1331] Building C object tests/libtest/CMakeFiles/lib1540.dir/first.c.o
+[738/1331] Linking C executable tests/libtest/lib1539
+[739/1331] Building C object tests/libtest/CMakeFiles/lib1540.dir/testutil.c.o
+[740/1331] Building C object tests/libtest/CMakeFiles/lib1540.dir/lib1540.c.o
+[741/1331] Building C object tests/libtest/CMakeFiles/lib1540.dir/__/__/lib/warnless.c.o
+[742/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/lib1542.c.o
+[743/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/first.c.o
+[744/1331] Linking C executable tests/libtest/lib1540
+[745/1331] Building C object tests/libtest/CMakeFiles/lib1543.dir/__/__/lib/timediff.c.o
+[746/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/testutil.c.o
+[747/1331] Building C object tests/libtest/CMakeFiles/lib1543.dir/lib1518.c.o
+[748/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/testtrace.c.o
+[749/1331] Building C object tests/libtest/CMakeFiles/lib1542.dir/__/__/lib/warnless.c.o
+[750/1331] Building C object tests/libtest/CMakeFiles/lib1545.dir/__/__/lib/timediff.c.o
+[751/1331] Building C object tests/libtest/CMakeFiles/lib1550.dir/lib1550.c.o
+[752/1331] Building C object tests/libtest/CMakeFiles/lib1545.dir/first.c.o
+[753/1331] Building C object tests/libtest/CMakeFiles/lib1543.dir/first.c.o
+[754/1331] Linking C executable tests/libtest/lib1542
+[755/1331] Building C object tests/libtest/CMakeFiles/lib1545.dir/lib1545.c.o
+[756/1331] Building C object tests/libtest/CMakeFiles/lib1550.dir/__/__/lib/timediff.c.o
+[757/1331] Linking C executable tests/libtest/lib1543
+[758/1331] Linking C executable tests/libtest/lib1545
+[759/1331] Building C object tests/libtest/CMakeFiles/lib1550.dir/first.c.o
+[760/1331] Linking C executable tests/libtest/lib1550
+[761/1331] Building C object tests/libtest/CMakeFiles/lib1551.dir/__/__/lib/timediff.c.o
+[762/1331] Building C object tests/libtest/CMakeFiles/lib1552.dir/__/__/lib/timediff.c.o
+[763/1331] Building C object tests/libtest/CMakeFiles/lib1551.dir/lib1551.c.o
+[764/1331] Building C object tests/libtest/CMakeFiles/lib1552.dir/lib1552.c.o
+[765/1331] Building C object tests/libtest/CMakeFiles/lib1551.dir/first.c.o
+[766/1331] Building C object tests/libtest/CMakeFiles/lib1552.dir/testutil.c.o
+[767/1331] Building C object tests/libtest/CMakeFiles/lib1552.dir/first.c.o
+[768/1331] Building C object tests/libtest/CMakeFiles/lib1553.dir/__/__/lib/timediff.c.o
+[769/1331] Building C object tests/libtest/CMakeFiles/lib1553.dir/first.c.o
+[770/1331] Linking C executable tests/libtest/lib1552
+[771/1331] Linking C executable tests/libtest/lib1551
+[772/1331] Building C object tests/libtest/CMakeFiles/lib1554.dir/__/__/lib/timediff.c.o
+[773/1331] Building C object tests/libtest/CMakeFiles/lib1553.dir/lib1553.c.o
+[774/1331] Building C object tests/libtest/CMakeFiles/lib1554.dir/lib1554.c.o
+[775/1331] Building C object tests/libtest/CMakeFiles/lib1553.dir/testutil.c.o
+[776/1331] Building C object tests/libtest/CMakeFiles/lib1555.dir/__/__/lib/timediff.c.o
+[777/1331] Building C object tests/libtest/CMakeFiles/lib1554.dir/first.c.o
+[778/1331] Building C object tests/libtest/CMakeFiles/lib1555.dir/lib1555.c.o
+[779/1331] Linking C executable tests/libtest/lib1553
+[780/1331] Building C object tests/libtest/CMakeFiles/lib1555.dir/testutil.c.o
+[781/1331] Building C object tests/libtest/CMakeFiles/lib1555.dir/__/__/lib/warnless.c.o
+[782/1331] Building C object tests/libtest/CMakeFiles/lib1555.dir/first.c.o
+[783/1331] Linking C executable tests/libtest/lib1554
+[784/1331] Building C object tests/libtest/CMakeFiles/lib1556.dir/__/__/lib/timediff.c.o
+[785/1331] Building C object tests/libtest/CMakeFiles/lib1556.dir/lib1556.c.o
+[786/1331] Building C object tests/libtest/CMakeFiles/lib1556.dir/testutil.c.o
+[787/1331] Linking C executable tests/libtest/lib1555
+[788/1331] Building C object tests/libtest/CMakeFiles/lib1556.dir/first.c.o
+[789/1331] Building C object tests/libtest/CMakeFiles/lib1556.dir/__/__/lib/warnless.c.o
+[790/1331] Building C object tests/libtest/CMakeFiles/lib1557.dir/__/__/lib/timediff.c.o
+[791/1331] Building C object tests/libtest/CMakeFiles/lib1557.dir/lib1557.c.o
+[792/1331] Building C object tests/libtest/CMakeFiles/lib1557.dir/first.c.o
+[793/1331] Building C object tests/libtest/CMakeFiles/lib1557.dir/testutil.c.o
+[794/1331] Building C object tests/libtest/CMakeFiles/lib1557.dir/__/__/lib/warnless.c.o
+[795/1331] Linking C executable tests/libtest/lib1556
+[796/1331] Building C object tests/libtest/CMakeFiles/lib1558.dir/__/__/lib/timediff.c.o
+[797/1331] Building C object tests/libtest/CMakeFiles/lib1558.dir/lib1558.c.o
+[798/1331] Linking C executable tests/libtest/lib1557
+[799/1331] Building C object tests/libtest/CMakeFiles/lib1558.dir/first.c.o
+[800/1331] Building C object tests/libtest/CMakeFiles/lib1558.dir/testutil.c.o
+[801/1331] Building C object tests/libtest/CMakeFiles/lib1559.dir/lib1559.c.o
+[802/1331] Building C object tests/libtest/CMakeFiles/lib1559.dir/testutil.c.o
+[803/1331] Building C object tests/libtest/CMakeFiles/lib1559.dir/__/__/lib/timediff.c.o
+[804/1331] Building C object tests/libtest/CMakeFiles/lib1558.dir/__/__/lib/warnless.c.o
+[805/1331] Building C object tests/libtest/CMakeFiles/lib1559.dir/first.c.o
+[806/1331] Building C object tests/libtest/CMakeFiles/lib1559.dir/__/__/lib/warnless.c.o
+[807/1331] Linking C executable tests/libtest/lib1558
+[808/1331] Building C object tests/libtest/CMakeFiles/lib1560.dir/__/__/lib/timediff.c.o
+[809/1331] Linking C executable tests/libtest/lib1559
+[810/1331] Building C object tests/libtest/CMakeFiles/lib1560.dir/__/__/lib/warnless.c.o
+[811/1331] Building C object tests/libtest/CMakeFiles/lib1560.dir/first.c.o
+[812/1331] Building C object tests/libtest/CMakeFiles/lib1560.dir/testutil.c.o
+[813/1331] Building C object tests/libtest/CMakeFiles/lib1564.dir/lib1564.c.o
+[814/1331] Building C object tests/libtest/CMakeFiles/lib1564.dir/testutil.c.o
+[815/1331] Building C object tests/libtest/CMakeFiles/lib1560.dir/lib1560.c.o
+[816/1331] Building C object tests/libtest/CMakeFiles/lib1564.dir/__/__/lib/timediff.c.o
+[817/1331] Building C object tests/libtest/CMakeFiles/lib1564.dir/__/__/lib/warnless.c.o
+[818/1331] Building C object tests/libtest/CMakeFiles/lib1564.dir/first.c.o
+[819/1331] Linking C executable tests/libtest/lib1560
+[820/1331] Building C object tests/libtest/CMakeFiles/lib1565.dir/lib1565.c.o
+[821/1331] Building C object tests/libtest/CMakeFiles/lib1565.dir/__/__/lib/timediff.c.o
+[822/1331] Linking C executable tests/libtest/lib1564
+[823/1331] Building C object tests/libtest/CMakeFiles/lib1565.dir/testutil.c.o
+[824/1331] Building C object tests/libtest/CMakeFiles/lib1565.dir/first.c.o
+[825/1331] Building C object tests/libtest/CMakeFiles/lib1567.dir/lib1567.c.o
+[826/1331] Building C object tests/libtest/CMakeFiles/lib1565.dir/__/__/lib/warnless.c.o
+[827/1331] Building C object tests/libtest/CMakeFiles/lib1568.dir/__/__/lib/timediff.c.o
+[828/1331] Building C object tests/libtest/CMakeFiles/lib1569.dir/__/__/lib/timediff.c.o
+[829/1331] Building C object tests/libtest/CMakeFiles/lib1567.dir/__/__/lib/timediff.c.o
+[830/1331] Building C object tests/libtest/CMakeFiles/lib1567.dir/first.c.o
+[831/1331] Building C object tests/libtest/CMakeFiles/lib1568.dir/lib1568.c.o
+[832/1331] Linking C executable tests/libtest/lib1565
+[833/1331] Building C object tests/libtest/CMakeFiles/lib1569.dir/lib1569.c.o
+[834/1331] Building C object tests/libtest/CMakeFiles/lib1568.dir/first.c.o
+[835/1331] Linking C executable tests/libtest/lib1567
+[836/1331] Building C object tests/libtest/CMakeFiles/lib1569.dir/first.c.o
+[837/1331] Linking C executable tests/libtest/lib1568
+[838/1331] Building C object tests/libtest/CMakeFiles/lib1591.dir/__/__/lib/timediff.c.o
+[839/1331] Linking C executable tests/libtest/lib1569
+[840/1331] Building C object tests/libtest/CMakeFiles/lib1591.dir/testutil.c.o
+[841/1331] Building C object tests/libtest/CMakeFiles/lib1591.dir/__/__/lib/warnless.c.o
+[842/1331] Building C object tests/libtest/CMakeFiles/lib1591.dir/lib1591.c.o
+[843/1331] Building C object tests/libtest/CMakeFiles/lib1591.dir/first.c.o
+[844/1331] Building C object tests/libtest/CMakeFiles/lib1592.dir/__/__/lib/timediff.c.o
+[845/1331] Linking C executable tests/libtest/lib1591
+[846/1331] Building C object tests/libtest/CMakeFiles/lib1592.dir/lib1592.c.o
+[847/1331] Building C object tests/libtest/CMakeFiles/lib1593.dir/__/__/lib/timediff.c.o
+[848/1331] Building C object tests/libtest/CMakeFiles/lib1592.dir/__/__/lib/warnless.c.o
+[849/1331] Building C object tests/libtest/CMakeFiles/lib1592.dir/testutil.c.o
+[850/1331] Building C object tests/libtest/CMakeFiles/lib1592.dir/first.c.o
+[851/1331] Building C object tests/libtest/CMakeFiles/lib1593.dir/lib1593.c.o
+[852/1331] Linking C executable tests/libtest/lib1592
+[853/1331] Building C object tests/libtest/CMakeFiles/lib1593.dir/testutil.c.o
+[854/1331] Building C object tests/libtest/CMakeFiles/lib1594.dir/__/__/lib/timediff.c.o
+[855/1331] Building C object tests/libtest/CMakeFiles/lib1594.dir/__/__/lib/warnless.c.o
+[856/1331] Building C object tests/libtest/CMakeFiles/lib1593.dir/first.c.o
+[857/1331] Building C object tests/libtest/CMakeFiles/lib1593.dir/__/__/lib/warnless.c.o
+[858/1331] Building C object tests/libtest/CMakeFiles/lib1594.dir/lib1594.c.o
+[859/1331] Building C object tests/libtest/CMakeFiles/lib1594.dir/first.c.o
+[860/1331] Building C object tests/libtest/CMakeFiles/lib1596.dir/lib1594.c.o
+[861/1331] Linking C executable tests/libtest/lib1593
+[862/1331] Building C object tests/libtest/CMakeFiles/lib1594.dir/testutil.c.o
+[863/1331] Building C object tests/libtest/CMakeFiles/lib1596.dir/__/__/lib/timediff.c.o
+[864/1331] Linking C executable tests/libtest/lib1594
+[865/1331] Building C object tests/libtest/CMakeFiles/lib1596.dir/testutil.c.o
+[866/1331] Building C object tests/libtest/CMakeFiles/lib1596.dir/__/__/lib/warnless.c.o
+[867/1331] Building C object tests/libtest/CMakeFiles/lib1596.dir/first.c.o
+[868/1331] Building C object tests/libtest/CMakeFiles/lib1597.dir/lib1597.c.o
+[869/1331] Building C object tests/libtest/CMakeFiles/lib1597.dir/__/__/lib/warnless.c.o
+[870/1331] Building C object tests/libtest/CMakeFiles/lib1597.dir/__/__/lib/timediff.c.o
+[871/1331] Building C object tests/libtest/CMakeFiles/lib1662.dir/__/__/lib/timediff.c.o
+[872/1331] Building C object tests/libtest/CMakeFiles/lib1597.dir/first.c.o
+[873/1331] Linking C executable tests/libtest/lib1596
+[874/1331] Building C object tests/libtest/CMakeFiles/lib1597.dir/testutil.c.o
+[875/1331] Linking C executable tests/libtest/lib1597
+[876/1331] Building C object tests/libtest/CMakeFiles/lib1662.dir/lib1662.c.o
+[877/1331] Building C object tests/libtest/CMakeFiles/lib1662.dir/first.c.o
+[878/1331] Building C object tests/libtest/CMakeFiles/lib1662.dir/testutil.c.o
+[879/1331] Building C object tests/libtest/CMakeFiles/lib1662.dir/__/__/lib/warnless.c.o
+[880/1331] Building C object tests/libtest/CMakeFiles/lib1900.dir/__/__/lib/timediff.c.o
+[881/1331] Building C object tests/libtest/CMakeFiles/lib1900.dir/lib1900.c.o
+[882/1331] Building C object tests/libtest/CMakeFiles/lib1900.dir/first.c.o
+[883/1331] Linking C executable tests/libtest/lib1662
+[884/1331] Building C object tests/libtest/CMakeFiles/lib1903.dir/__/__/lib/timediff.c.o
+[885/1331] Building C object tests/libtest/CMakeFiles/lib1903.dir/first.c.o
+[886/1331] Building C object tests/libtest/CMakeFiles/lib1903.dir/lib1903.c.o
+[887/1331] Building C object tests/libtest/CMakeFiles/lib1903.dir/__/__/lib/warnless.c.o
+[888/1331] Building C object tests/libtest/CMakeFiles/lib1903.dir/testutil.c.o
+[889/1331] Linking C executable tests/libtest/lib1900
+[890/1331] Building C object tests/libtest/CMakeFiles/lib1905.dir/__/__/lib/timediff.c.o
+[891/1331] Linking C executable tests/libtest/lib1903
+[892/1331] Building C object tests/libtest/CMakeFiles/lib1905.dir/__/__/lib/warnless.c.o
+[893/1331] Building C object tests/libtest/CMakeFiles/lib1905.dir/lib1905.c.o
+[894/1331] Building C object tests/libtest/CMakeFiles/lib1905.dir/first.c.o
+[895/1331] Building C object tests/libtest/CMakeFiles/lib1905.dir/testutil.c.o
+[896/1331] Building C object tests/libtest/CMakeFiles/lib1906.dir/__/__/lib/timediff.c.o
+[897/1331] Linking C executable tests/libtest/lib1905
+[898/1331] Building C object tests/libtest/CMakeFiles/lib1906.dir/lib1906.c.o
+[899/1331] Building C object tests/libtest/CMakeFiles/lib1906.dir/first.c.o
+[900/1331] Building C object tests/libtest/CMakeFiles/lib1906.dir/testutil.c.o
+[901/1331] Building C object tests/libtest/CMakeFiles/lib1906.dir/__/__/lib/warnless.c.o
+[902/1331] Building C object tests/libtest/CMakeFiles/lib1907.dir/__/__/lib/timediff.c.o
+[903/1331] Building C object tests/libtest/CMakeFiles/lib1907.dir/lib1907.c.o
+[904/1331] Linking C executable tests/libtest/lib1906
+[905/1331] Building C object tests/libtest/CMakeFiles/lib1907.dir/testutil.c.o
+[906/1331] Building C object tests/libtest/CMakeFiles/lib1907.dir/__/__/lib/warnless.c.o
+[907/1331] Building C object tests/libtest/CMakeFiles/lib1907.dir/first.c.o
+[908/1331] Building C object tests/libtest/CMakeFiles/lib1908.dir/lib1908.c.o
+[909/1331] Building C object tests/libtest/CMakeFiles/lib1908.dir/__/__/lib/warnless.c.o
+[910/1331] Building C object tests/libtest/CMakeFiles/lib1908.dir/first.c.o
+[911/1331] Building C object tests/libtest/CMakeFiles/lib1908.dir/__/__/lib/timediff.c.o
+[912/1331] Linking C executable tests/libtest/lib1907
+[913/1331] Building C object tests/libtest/CMakeFiles/lib1910.dir/__/__/lib/timediff.c.o
+[914/1331] Building C object tests/libtest/CMakeFiles/lib1908.dir/testutil.c.o
+[915/1331] Building C object tests/libtest/CMakeFiles/lib1910.dir/lib1910.c.o
+[916/1331] Building C object tests/libtest/CMakeFiles/lib1910.dir/first.c.o
+[917/1331] Building C object tests/libtest/CMakeFiles/lib1911.dir/__/__/lib/timediff.c.o
+[918/1331] Linking C executable tests/libtest/lib1908
+[919/1331] Building C object tests/libtest/CMakeFiles/lib1910.dir/__/__/lib/warnless.c.o
+[920/1331] Building C object tests/libtest/CMakeFiles/lib1910.dir/testutil.c.o
+[921/1331] Building C object tests/libtest/CMakeFiles/lib1911.dir/lib1911.c.o
+[922/1331] Building C object tests/libtest/CMakeFiles/lib1911.dir/first.c.o
+[923/1331] Building C object tests/libtest/CMakeFiles/lib1911.dir/__/__/lib/warnless.c.o
+[924/1331] Linking C executable tests/libtest/lib1910
+[925/1331] Building C object tests/libtest/CMakeFiles/lib1911.dir/testutil.c.o
+[926/1331] Building C object tests/libtest/CMakeFiles/lib1912.dir/__/__/lib/timediff.c.o
+[927/1331] Building C object tests/libtest/CMakeFiles/lib1912.dir/lib1912.c.o
+[928/1331] Building C object tests/libtest/CMakeFiles/lib1912.dir/__/__/lib/warnless.c.o
+[929/1331] Building C object tests/libtest/CMakeFiles/lib1912.dir/first.c.o
+[930/1331] Linking C executable tests/libtest/lib1911
+[931/1331] Building C object tests/libtest/CMakeFiles/lib1913.dir/__/__/lib/timediff.c.o
+[932/1331] Building C object tests/libtest/CMakeFiles/lib1912.dir/testutil.c.o
+[933/1331] Building C object tests/libtest/CMakeFiles/lib1913.dir/first.c.o
+[934/1331] Building C object tests/libtest/CMakeFiles/lib1913.dir/lib1913.c.o
+[935/1331] Building C object tests/libtest/CMakeFiles/lib1913.dir/__/__/lib/warnless.c.o
+[936/1331] Building C object tests/libtest/CMakeFiles/lib1915.dir/__/__/lib/timediff.c.o
+[937/1331] Linking C executable tests/libtest/lib1912
+[938/1331] Building C object tests/libtest/CMakeFiles/lib1913.dir/testutil.c.o
+[939/1331] Linking C executable tests/libtest/lib1913
+[940/1331] Building C object tests/libtest/CMakeFiles/lib1915.dir/testutil.c.o
+[941/1331] Building C object tests/libtest/CMakeFiles/lib1915.dir/first.c.o
+[942/1331] Building C object tests/libtest/CMakeFiles/lib1915.dir/__/__/lib/warnless.c.o
+[943/1331] Building C object tests/libtest/CMakeFiles/lib1915.dir/lib1915.c.o
+[944/1331] Building C object tests/libtest/CMakeFiles/lib1916.dir/__/__/lib/warnless.c.o
+[945/1331] Building C object tests/libtest/CMakeFiles/lib1916.dir/__/__/lib/timediff.c.o
+[946/1331] Building C object tests/libtest/CMakeFiles/lib1916.dir/lib1916.c.o
+[947/1331] Linking C executable tests/libtest/lib1915
+[948/1331] Building C object tests/libtest/CMakeFiles/lib1917.dir/__/__/lib/timediff.c.o
+[949/1331] Building C object tests/libtest/CMakeFiles/lib1917.dir/lib1916.c.o
+[950/1331] Building C object tests/libtest/CMakeFiles/lib1916.dir/first.c.o
+[951/1331] Building C object tests/libtest/CMakeFiles/lib1917.dir/__/__/lib/warnless.c.o
+[952/1331] Building C object tests/libtest/CMakeFiles/lib1917.dir/first.c.o
+[953/1331] Building C object tests/libtest/CMakeFiles/lib1918.dir/lib1918.c.o
+[954/1331] Linking C executable tests/libtest/lib1917
+[955/1331] Linking C executable tests/libtest/lib1916
+[956/1331] Building C object tests/libtest/CMakeFiles/lib1918.dir/__/__/lib/timediff.c.o
+[957/1331] Building C object tests/libtest/CMakeFiles/lib1918.dir/__/__/lib/warnless.c.o
+[958/1331] Building C object tests/libtest/CMakeFiles/lib1919.dir/lib1919.c.o
+[959/1331] Building C object tests/libtest/CMakeFiles/lib1919.dir/__/__/lib/timediff.c.o
+[960/1331] Building C object tests/libtest/CMakeFiles/lib1918.dir/first.c.o
+[961/1331] Building C object tests/libtest/CMakeFiles/lib1919.dir/first.c.o
+[962/1331] Building C object tests/libtest/CMakeFiles/lib1919.dir/__/__/lib/warnless.c.o
+[963/1331] Linking C executable tests/libtest/lib1919
+[964/1331] Building C object tests/libtest/CMakeFiles/lib1933.dir/__/__/lib/timediff.c.o
+[965/1331] Building C object tests/libtest/CMakeFiles/lib1933.dir/testutil.c.o
+[966/1331] Linking C executable tests/libtest/lib1918
+[967/1331] Building C object tests/libtest/CMakeFiles/lib1933.dir/__/__/lib/warnless.c.o
+[968/1331] Building C object tests/libtest/CMakeFiles/lib1934.dir/lib1934.c.o
+[969/1331] Building C object tests/libtest/CMakeFiles/lib1933.dir/first.c.o
+[970/1331] Building C object tests/libtest/CMakeFiles/lib1933.dir/lib1933.c.o
+[971/1331] Building C object tests/libtest/CMakeFiles/lib1934.dir/__/__/lib/timediff.c.o
+[972/1331] Building C object tests/libtest/CMakeFiles/lib1934.dir/first.c.o
+[973/1331] Building C object tests/libtest/CMakeFiles/lib1935.dir/__/__/lib/timediff.c.o
+[974/1331] Linking C executable tests/libtest/lib1933
+[975/1331] Building C object tests/libtest/CMakeFiles/lib1934.dir/__/__/lib/warnless.c.o
+[976/1331] Building C object tests/libtest/CMakeFiles/lib1934.dir/testutil.c.o
+[977/1331] Building C object tests/libtest/CMakeFiles/lib1935.dir/first.c.o
+[978/1331] Building C object tests/libtest/CMakeFiles/lib1935.dir/lib1935.c.o
+[979/1331] Building C object tests/libtest/CMakeFiles/lib1935.dir/__/__/lib/warnless.c.o
+[980/1331] Building C object tests/libtest/CMakeFiles/lib1936.dir/__/__/lib/timediff.c.o
+[981/1331] Building C object tests/libtest/CMakeFiles/lib1935.dir/testutil.c.o
+[982/1331] Building C object tests/libtest/CMakeFiles/lib1936.dir/first.c.o
+[983/1331] Linking C executable tests/libtest/lib1934
+[984/1331] Linking C executable tests/libtest/lib1935
+[985/1331] Building C object tests/libtest/CMakeFiles/lib1936.dir/lib1936.c.o
+[986/1331] Building C object tests/libtest/CMakeFiles/lib1936.dir/testutil.c.o
+[987/1331] Building C object tests/libtest/CMakeFiles/lib1936.dir/__/__/lib/warnless.c.o
+[988/1331] Building C object tests/libtest/CMakeFiles/lib1937.dir/lib1937.c.o
+[989/1331] Building C object tests/libtest/CMakeFiles/lib1937.dir/__/__/lib/timediff.c.o
+[990/1331] Linking C executable tests/libtest/lib1936
+[991/1331] Building C object tests/libtest/CMakeFiles/lib1938.dir/__/__/lib/timediff.c.o
+[992/1331] Building C object tests/libtest/CMakeFiles/lib1937.dir/first.c.o
+[993/1331] Building C object tests/libtest/CMakeFiles/lib1938.dir/first.c.o
+[994/1331] Building C object tests/libtest/CMakeFiles/lib1940.dir/__/__/lib/timediff.c.o
+[995/1331] Building C object tests/libtest/CMakeFiles/lib1938.dir/lib1938.c.o
+[996/1331] Linking C executable tests/libtest/lib1937
+[997/1331] Building C object tests/libtest/CMakeFiles/lib1939.dir/lib1939.c.o
+[998/1331] Building C object tests/libtest/CMakeFiles/lib1939.dir/__/__/lib/timediff.c.o
+[999/1331] Building C object tests/libtest/CMakeFiles/lib1939.dir/first.c.o
+[1000/1331] Building C object tests/libtest/CMakeFiles/lib1940.dir/first.c.o
+[1001/1331] Linking C executable tests/libtest/lib1938
+[1002/1331] Building C object tests/libtest/CMakeFiles/lib1940.dir/lib1940.c.o
+[1003/1331] Linking C executable tests/libtest/lib1939
+[1004/1331] Building C object tests/libtest/CMakeFiles/lib1945.dir/__/__/lib/timediff.c.o
+[1005/1331] Linking C executable tests/libtest/lib1940
+[1006/1331] Building C object tests/libtest/CMakeFiles/lib1945.dir/first.c.o
+[1007/1331] Building C object tests/libtest/CMakeFiles/lib1946.dir/__/__/lib/timediff.c.o
+[1008/1331] Building C object tests/libtest/CMakeFiles/lib1946.dir/lib1940.c.o
+[1009/1331] Building C object tests/libtest/CMakeFiles/lib1945.dir/lib1945.c.o
+[1010/1331] Building C object tests/libtest/CMakeFiles/lib1947.dir/__/__/lib/timediff.c.o
+[1011/1331] Building C object tests/libtest/CMakeFiles/lib1946.dir/first.c.o
+[1012/1331] Building C object tests/libtest/CMakeFiles/lib1947.dir/lib1947.c.o
+[1013/1331] Linking C executable tests/libtest/lib1945
+[1014/1331] Building C object tests/libtest/CMakeFiles/lib1948.dir/__/__/lib/timediff.c.o
+[1015/1331] Building C object tests/libtest/CMakeFiles/lib1947.dir/first.c.o
+[1016/1331] Building C object tests/libtest/CMakeFiles/lib1948.dir/first.c.o
+[1017/1331] Linking C executable tests/libtest/lib1946
+[1018/1331] Building C object tests/libtest/CMakeFiles/lib1948.dir/lib1948.c.o
+[1019/1331] Building C object tests/libtest/CMakeFiles/lib1955.dir/__/__/lib/timediff.c.o
+[1020/1331] Linking C executable tests/libtest/lib1947
+[1021/1331] Building C object tests/libtest/CMakeFiles/lib1955.dir/lib1955.c.o
+[1022/1331] Building C object tests/libtest/CMakeFiles/lib1955.dir/first.c.o
+[1023/1331] Linking C executable tests/libtest/lib1948
+[1024/1331] Building C object tests/libtest/CMakeFiles/lib1955.dir/testutil.c.o
+[1025/1331] Building C object tests/libtest/CMakeFiles/lib1956.dir/__/__/lib/timediff.c.o
+[1026/1331] Building C object tests/libtest/CMakeFiles/lib1955.dir/__/__/lib/warnless.c.o
+[1027/1331] Building C object tests/libtest/CMakeFiles/lib1956.dir/first.c.o
+[1028/1331] Building C object tests/libtest/CMakeFiles/lib1956.dir/testutil.c.o
+[1029/1331] Linking C executable tests/libtest/lib1955
+[1030/1331] Building C object tests/libtest/CMakeFiles/lib1956.dir/lib1956.c.o
+[1031/1331] Building C object tests/libtest/CMakeFiles/lib1957.dir/__/__/lib/timediff.c.o
+[1032/1331] Building C object tests/libtest/CMakeFiles/lib1956.dir/__/__/lib/warnless.c.o
+[1033/1331] Building C object tests/libtest/CMakeFiles/lib1957.dir/first.c.o
+[1034/1331] Building C object tests/libtest/CMakeFiles/lib1957.dir/lib1957.c.o
+[1035/1331] Building C object tests/libtest/CMakeFiles/lib1957.dir/__/__/lib/warnless.c.o
+[1036/1331] Building C object tests/libtest/CMakeFiles/lib1958.dir/__/__/lib/timediff.c.o
+[1037/1331] Building C object tests/libtest/CMakeFiles/lib1957.dir/testutil.c.o
+[1038/1331] Linking C executable tests/libtest/lib1956
+[1039/1331] Building C object tests/libtest/CMakeFiles/lib1958.dir/lib1958.c.o
+[1040/1331] Building C object tests/libtest/CMakeFiles/lib1958.dir/first.c.o
+[1041/1331] Building C object tests/libtest/CMakeFiles/lib1958.dir/testutil.c.o
+[1042/1331] Linking C executable tests/libtest/lib1957
+[1043/1331] Building C object tests/libtest/CMakeFiles/lib1958.dir/__/__/lib/warnless.c.o
+[1044/1331] Building C object tests/libtest/CMakeFiles/lib1959.dir/lib1959.c.o
+[1045/1331] Building C object tests/libtest/CMakeFiles/lib1959.dir/__/__/lib/timediff.c.o
+[1046/1331] Linking C executable tests/libtest/lib1958
+[1047/1331] Building C object tests/libtest/CMakeFiles/lib1959.dir/first.c.o
+[1048/1331] Building C object tests/libtest/CMakeFiles/lib1960.dir/__/__/lib/timediff.c.o
+[1049/1331] Building C object tests/libtest/CMakeFiles/lib1960.dir/first.c.o
+[1050/1331] Building C object tests/libtest/CMakeFiles/lib1959.dir/__/__/lib/warnless.c.o
+[1051/1331] Building C object tests/libtest/CMakeFiles/lib1964.dir/__/__/lib/timediff.c.o
+[1052/1331] Building C object tests/libtest/CMakeFiles/lib1959.dir/testutil.c.o
+[1053/1331] Building C object tests/libtest/CMakeFiles/lib1964.dir/first.c.o
+[1054/1331] Building C object tests/libtest/CMakeFiles/lib1964.dir/lib1964.c.o
+[1055/1331] Linking C executable tests/libtest/lib1959
+[1056/1331] Building C object tests/libtest/CMakeFiles/lib1960.dir/lib1960.c.o
+[1057/1331] Building C object tests/libtest/CMakeFiles/lib1970.dir/__/__/lib/timediff.c.o
+[1058/1331] Building C object tests/libtest/CMakeFiles/lib1964.dir/__/__/lib/warnless.c.o
+[1059/1331] Linking C executable tests/libtest/lib1960
+[1060/1331] Building C object tests/libtest/CMakeFiles/lib1964.dir/testutil.c.o
+[1061/1331] Building C object tests/libtest/CMakeFiles/lib1970.dir/lib1970.c.o
+[1062/1331] Building C object tests/libtest/CMakeFiles/lib1970.dir/testutil.c.o
+[1063/1331] Linking C executable tests/libtest/lib1964
+[1064/1331] Building C object tests/libtest/CMakeFiles/lib1970.dir/__/__/lib/warnless.c.o
+[1065/1331] Building C object tests/libtest/CMakeFiles/lib1971.dir/__/__/lib/timediff.c.o
+[1066/1331] Building C object tests/libtest/CMakeFiles/lib1970.dir/first.c.o
+[1067/1331] Building C object tests/libtest/CMakeFiles/lib1971.dir/first.c.o
+[1068/1331] Building C object tests/libtest/CMakeFiles/lib1971.dir/lib1971.c.o
+[1069/1331] Linking C executable tests/libtest/lib1970
+[1070/1331] Building C object tests/libtest/CMakeFiles/lib1971.dir/__/__/lib/warnless.c.o
+[1071/1331] Building C object tests/libtest/CMakeFiles/lib1972.dir/__/__/lib/timediff.c.o
+[1072/1331] Building C object tests/libtest/CMakeFiles/lib1971.dir/testutil.c.o
+[1073/1331] Building C object tests/libtest/CMakeFiles/lib1972.dir/first.c.o
+[1074/1331] Building C object tests/libtest/CMakeFiles/lib1972.dir/__/__/lib/warnless.c.o
+[1075/1331] Building C object tests/libtest/CMakeFiles/lib1972.dir/lib1972.c.o
+[1076/1331] Building C object tests/libtest/CMakeFiles/lib1972.dir/testutil.c.o
+[1077/1331] Linking C executable tests/libtest/lib1971
+[1078/1331] Building C object tests/libtest/CMakeFiles/lib1973.dir/__/__/lib/timediff.c.o
+[1079/1331] Building C object tests/libtest/CMakeFiles/lib1973.dir/testutil.c.o
+[1080/1331] Building C object tests/libtest/CMakeFiles/lib1973.dir/first.c.o
+[1081/1331] Building C object tests/libtest/CMakeFiles/lib1973.dir/lib1973.c.o
+[1082/1331] Linking C executable tests/libtest/lib1972
+[1083/1331] Building C object tests/libtest/CMakeFiles/lib1973.dir/__/__/lib/warnless.c.o
+[1084/1331] Building C object tests/libtest/CMakeFiles/lib1974.dir/__/__/lib/timediff.c.o
+[1085/1331] Linking C executable tests/libtest/lib1973
+[1086/1331] Building C object tests/libtest/CMakeFiles/lib1975.dir/first.c.o
+[1087/1331] Building C object tests/libtest/CMakeFiles/lib1974.dir/__/__/lib/warnless.c.o
+[1088/1331] Building C object tests/libtest/CMakeFiles/lib1974.dir/first.c.o
+[1089/1331] Building C object tests/libtest/CMakeFiles/lib1975.dir/__/__/lib/timediff.c.o
+[1090/1331] Building C object tests/libtest/CMakeFiles/lib1974.dir/lib1974.c.o
+[1091/1331] Building C object tests/libtest/CMakeFiles/lib1974.dir/testutil.c.o
+[1092/1331] Building C object tests/libtest/CMakeFiles/lib1975.dir/lib1975.c.o
+[1093/1331] Building C object tests/libtest/CMakeFiles/lib1975.dir/testutil.c.o
+[1094/1331] Building C object tests/libtest/CMakeFiles/lib1975.dir/__/__/lib/warnless.c.o
+[1095/1331] Linking C executable tests/libtest/lib1974
+[1096/1331] Building C object tests/libtest/CMakeFiles/lib2301.dir/__/__/lib/timediff.c.o
+[1097/1331] Linking C executable tests/libtest/lib1975
+[1098/1331] Building C object tests/libtest/CMakeFiles/lib2302.dir/__/__/lib/timediff.c.o
+[1099/1331] Building C object tests/libtest/CMakeFiles/lib2301.dir/first.c.o
+[1100/1331] Building C object tests/libtest/CMakeFiles/lib2301.dir/lib2301.c.o
+[1101/1331] Building C object tests/libtest/CMakeFiles/lib2302.dir/lib2302.c.o
+[1102/1331] Building C object tests/libtest/CMakeFiles/lib2304.dir/lib2304.c.o
+[1103/1331] Building C object tests/libtest/CMakeFiles/lib2304.dir/__/__/lib/timediff.c.o
+[1104/1331] Linking C executable tests/libtest/lib2301
+[1105/1331] Building C object tests/libtest/CMakeFiles/lib2302.dir/first.c.o
+[1106/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/__/__/lib/timediff.c.o
+[1107/1331] Building C object tests/libtest/CMakeFiles/lib2304.dir/first.c.o
+[1108/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/lib2305.c.o
+[1109/1331] Linking C executable tests/libtest/lib2302
+[1110/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/testutil.c.o
+[1111/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/first.c.o
+[1112/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/__/__/lib/curl_multibyte.c.o
+[1113/1331] Linking C executable tests/libtest/lib2304
+[1114/1331] Building C object tests/libtest/CMakeFiles/lib2305.dir/testtrace.c.o
+[1115/1331] Building C object tests/libtest/CMakeFiles/lib2306.dir/__/__/lib/timediff.c.o
+[1116/1331] Building C object tests/libtest/CMakeFiles/lib2306.dir/lib2306.c.o
+[1117/1331] Linking C executable tests/libtest/lib2305
+[1118/1331] Building C object tests/libtest/CMakeFiles/lib2306.dir/first.c.o
+[1119/1331] Building C object tests/libtest/CMakeFiles/lib2402.dir/lib2402.c.o
+[1120/1331] Building C object tests/libtest/CMakeFiles/lib2402.dir/__/__/lib/timediff.c.o
+[1121/1331] Building C object tests/libtest/CMakeFiles/lib2402.dir/first.c.o
+[1122/1331] Building C object tests/libtest/CMakeFiles/lib2402.dir/testutil.c.o
+[1123/1331] Building C object tests/libtest/CMakeFiles/lib2402.dir/__/__/lib/warnless.c.o
+[1124/1331] Linking C executable tests/libtest/lib2306
+[1125/1331] Building C object tests/libtest/CMakeFiles/lib2404.dir/__/__/lib/timediff.c.o
+[1126/1331] Building C object tests/libtest/CMakeFiles/lib2404.dir/lib2404.c.o
+[1127/1331] Linking C executable tests/libtest/lib2402
+[1128/1331] Building C object tests/libtest/CMakeFiles/lib2502.dir/__/__/lib/timediff.c.o
+[1129/1331] Building C object tests/libtest/CMakeFiles/lib2404.dir/testutil.c.o
+[1130/1331] Building C object tests/libtest/CMakeFiles/lib2404.dir/first.c.o
+[1131/1331] Building C object tests/libtest/CMakeFiles/lib2404.dir/__/__/lib/warnless.c.o
+[1132/1331] Building C object tests/libtest/CMakeFiles/lib2502.dir/first.c.o
+[1133/1331] Building C object tests/libtest/CMakeFiles/lib2502.dir/__/__/lib/warnless.c.o
+[1134/1331] Linking C executable tests/libtest/lib2404
+[1135/1331] Building C object tests/libtest/CMakeFiles/lib2502.dir/lib2502.c.o
+[1136/1331] Building C object tests/libtest/CMakeFiles/lib2502.dir/testutil.c.o
+[1137/1331] Linking C executable tests/libtest/lib2502
+[1138/1331] Building C object tests/libtest/CMakeFiles/lib3010.dir/__/__/lib/timediff.c.o
+[1139/1331] Building C object tests/libtest/CMakeFiles/lib3010.dir/first.c.o
+[1140/1331] Building C object tests/libtest/CMakeFiles/lib3010.dir/lib3010.c.o
+[1141/1331] Building C object tests/libtest/CMakeFiles/lib3010.dir/testutil.c.o
+[1142/1331] Building C object tests/libtest/CMakeFiles/lib3010.dir/__/__/lib/warnless.c.o
+[1143/1331] Building C object tests/libtest/CMakeFiles/lib3025.dir/__/__/lib/timediff.c.o
+[1144/1331] Building C object tests/libtest/CMakeFiles/lib3025.dir/first.c.o
+[1145/1331] Building C object tests/libtest/CMakeFiles/lib3025.dir/lib3025.c.o
+[1146/1331] Linking C executable tests/libtest/lib3010
+[1147/1331] Building C object tests/libtest/CMakeFiles/lib3025.dir/testutil.c.o
+[1148/1331] Building C object tests/libtest/CMakeFiles/lib3025.dir/__/__/lib/warnless.c.o
+[1149/1331] Building C object tests/libtest/CMakeFiles/lib3026.dir/lib3026.c.o
+[1150/1331] Building C object tests/libtest/CMakeFiles/lib3026.dir/__/__/lib/timediff.c.o
+[1151/1331] Linking C executable tests/libtest/lib3025
+[1152/1331] Building C object tests/libtest/CMakeFiles/lib3026.dir/__/__/lib/warnless.c.o
+[1153/1331] Building C object tests/libtest/CMakeFiles/lib3026.dir/first.c.o
+[1154/1331] Building C object tests/libtest/CMakeFiles/lib3027.dir/__/__/lib/timediff.c.o
+[1155/1331] Building C object tests/libtest/CMakeFiles/lib3027.dir/lib3027.c.o
+[1156/1331] Building C object tests/libtest/CMakeFiles/lib3026.dir/testutil.c.o
+[1157/1331] Building C object tests/libtest/CMakeFiles/lib3027.dir/first.c.o
+[1158/1331] Linking C executable tests/libtest/lib3026
+[1159/1331] Building C object tests/libtest/CMakeFiles/lib3027.dir/__/__/lib/warnless.c.o
+[1160/1331] Building C object tests/libtest/CMakeFiles/lib3027.dir/testutil.c.o
+[1161/1331] Building C object tests/libtest/CMakeFiles/lib3100.dir/__/__/lib/timediff.c.o
+[1162/1331] Building C object tests/libtest/CMakeFiles/lib3100.dir/first.c.o
+[1163/1331] Building C object tests/libtest/CMakeFiles/lib3100.dir/testutil.c.o
+[1164/1331] Linking C executable tests/libtest/lib3027
+[1165/1331] Building C object tests/libtest/CMakeFiles/lib3101.dir/__/__/lib/timediff.c.o
+[1166/1331] Building C object tests/libtest/CMakeFiles/lib3100.dir/__/__/lib/warnless.c.o
+[1167/1331] Building C object tests/libtest/CMakeFiles/lib3100.dir/lib3100.c.o
+[1168/1331] Building C object tests/libtest/CMakeFiles/lib3101.dir/testutil.c.o
+[1169/1331] Building C object tests/libtest/CMakeFiles/lib3101.dir/first.c.o
+[1170/1331] Building C object tests/libtest/CMakeFiles/lib3102.dir/__/__/lib/timediff.c.o
+[1171/1331] Building C object tests/libtest/CMakeFiles/lib3101.dir/__/__/lib/warnless.c.o
+[1172/1331] Building C object tests/libtest/CMakeFiles/lib3101.dir/lib3101.c.o
+[1173/1331] Linking C executable tests/libtest/lib3100
+[1174/1331] Linking C executable tests/libtest/lib3101
+[1175/1331] Building C object tests/libtest/CMakeFiles/lib3102.dir/testutil.c.o
+[1176/1331] Building C object tests/libtest/CMakeFiles/lib3102.dir/first.c.o
+[1177/1331] Building C object tests/libtest/CMakeFiles/lib3102.dir/__/__/lib/warnless.c.o
+[1178/1331] Building C object tests/libtest/CMakeFiles/lib3103.dir/__/__/lib/timediff.c.o
+[1179/1331] Building C object tests/libtest/CMakeFiles/lib3102.dir/lib3102.c.o
+[1180/1331] Building C object tests/libtest/CMakeFiles/lib3103.dir/lib3103.c.o
+[1181/1331] Generating lib1521.c
+[1182/1331] Linking C executable tests/libtest/lib3102
+[1183/1331] Building C object tests/libtest/CMakeFiles/hostname.dir/sethostname.c.o
+[1184/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/strtoofft.c.o
+[1185/1331] Building C object tests/libtest/CMakeFiles/lib3103.dir/first.c.o
+[1186/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/nonblock.c.o
+[1187/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/warnless.c.o
+[1188/1331] Linking C shared module tests/libtest/.libs/libhostname.so
+[1189/1331] Linking C executable tests/libtest/lib3103
+[1190/1331] Building C object tests/libtest/CMakeFiles/lib1521.dir/__/__/lib/timediff.c.o
+[1191/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/mprintf.c.o
+[1192/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/timediff.c.o
+[1193/1331] Building C object tests/libtest/CMakeFiles/lib1521.dir/first.c.o
+[1194/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/curl_multibyte.c.o
+[1195/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/strdup.c.o
+[1196/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/strcase.c.o
+[1197/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/dynbuf.c.o
+[1198/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/base64.c.o
+[1199/1331] Building C object tests/server/CMakeFiles/getpart.dir/__/__/lib/memdebug.c.o
+[1200/1331] Building C object tests/server/CMakeFiles/getpart.dir/getpart.c.o
+[1201/1331] Building C object tests/server/CMakeFiles/getpart.dir/testpart.c.o
+[1202/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/strtoofft.c.o
+[1203/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/warnless.c.o
+[1204/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/nonblock.c.o
+[1205/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/mprintf.c.o
+[1206/1331] Linking C executable tests/server/getpart
+[1207/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/timediff.c.o
+[1208/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/curl_multibyte.c.o
+[1209/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/strdup.c.o
+[1210/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/dynbuf.c.o
+[1211/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/memdebug.c.o
+[1212/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/strcase.c.o
+[1213/1331] Building C object tests/server/CMakeFiles/resolve.dir/getpart.c.o
+[1214/1331] Building C object tests/server/CMakeFiles/resolve.dir/__/__/lib/base64.c.o
+[1215/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/nonblock.c.o
+[1216/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/strtoofft.c.o
+[1217/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/warnless.c.o
+[1218/1331] Building C object tests/server/CMakeFiles/resolve.dir/resolve.c.o
+[1219/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/timediff.c.o
+[1220/1331] Building C object tests/server/CMakeFiles/resolve.dir/util.c.o
+[1221/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/mprintf.c.o
+[1222/1331] Linking C executable tests/server/resolve
+[1223/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/curl_multibyte.c.o
+[1224/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/strcase.c.o
+[1225/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/dynbuf.c.o
+[1226/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/memdebug.c.o
+[1227/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/strdup.c.o
+[1228/1331] Building C object tests/server/CMakeFiles/rtspd.dir/__/__/lib/base64.c.o
+[1229/1331] Building C object tests/server/CMakeFiles/rtspd.dir/getpart.c.o
+[1230/1331] Building C object tests/server/CMakeFiles/rtspd.dir/util.c.o
+[1231/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/strtoofft.c.o
+[1232/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/warnless.c.o
+[1233/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/nonblock.c.o
+[1234/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/timediff.c.o
+[1235/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/dynbuf.c.o
+[1236/1331] Building C object tests/server/CMakeFiles/rtspd.dir/rtspd.c.o
+[1237/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/strdup.c.o
+[1238/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/mprintf.c.o
+[1239/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/curl_multibyte.c.o
+[1240/1331] Linking C executable tests/server/rtspd
+[1241/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/strcase.c.o
+[1242/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/inet_pton.c.o
+[1243/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/memdebug.c.o
+[1244/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/__/__/lib/base64.c.o
+[1245/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/getpart.c.o
+[1246/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/nonblock.c.o
+[1247/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/strtoofft.c.o
+[1248/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/util.c.o
+[1249/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/warnless.c.o
+[1250/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/mprintf.c.o
+[1251/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/timediff.c.o
+[1252/1331] Building C object tests/server/CMakeFiles/sockfilt.dir/sockfilt.c.o
+[1253/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/curl_multibyte.c.o
+[1254/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/dynbuf.c.o
+[1255/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/strcase.c.o
+[1256/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/strdup.c.o
+[1257/1331] Linking C executable tests/server/sockfilt
+[1258/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/base64.c.o
+[1259/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/memdebug.c.o
+[1260/1331] Building C object tests/server/CMakeFiles/sws.dir/getpart.c.o
+[1261/1331] Building C object tests/server/CMakeFiles/sws.dir/__/__/lib/inet_pton.c.o
+[1262/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/nonblock.c.o
+[1263/1331] Building C object tests/server/CMakeFiles/sws.dir/util.c.o
+[1264/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/strtoofft.c.o
+[1265/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/timediff.c.o
+[1266/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/warnless.c.o
+[1267/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/mprintf.c.o
+[1268/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/strdup.c.o
+[1269/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/curl_multibyte.c.o
+[1270/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/memdebug.c.o
+[1271/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/dynbuf.c.o
+[1272/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/strcase.c.o
+[1273/1331] Building C object tests/server/CMakeFiles/tftpd.dir/__/__/lib/base64.c.o
+[1274/1331] Building C object tests/server/CMakeFiles/sws.dir/sws.c.o
+[1275/1331] Linking C executable tests/server/sws
+[1276/1331] Building C object tests/server/CMakeFiles/tftpd.dir/getpart.c.o
+[1277/1331] Building C object tests/server/CMakeFiles/tftpd.dir/util.c.o
+[1278/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/strtoofft.c.o
+[1279/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/nonblock.c.o
+[1280/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/mprintf.c.o
+[1281/1331] Building C object tests/server/CMakeFiles/tftpd.dir/tftpd.c.o
+[1282/1331] Linking C executable tests/server/tftpd
+[1283/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/timediff.c.o
+[1284/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/warnless.c.o
+[1285/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/dynbuf.c.o
+[1286/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/curl_multibyte.c.o
+[1287/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/strdup.c.o
+[1288/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/strcase.c.o
+[1289/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/getpart.c.o
+[1290/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/memdebug.c.o
+[1291/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/__/__/lib/base64.c.o
+[1292/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/util.c.o
+[1293/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/strtoofft.c.o
+[1294/1331] Building C object tests/server/CMakeFiles/fake_ntlm.dir/fake_ntlm.c.o
+[1295/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/nonblock.c.o
+[1296/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/timediff.c.o
+[1297/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/warnless.c.o
+[1298/1331] Linking C executable tests/server/fake_ntlm
+[1299/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/dynbuf.c.o
+[1300/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/curl_multibyte.c.o
+[1301/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/mprintf.c.o
+[1302/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/strdup.c.o
+[1303/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/strcase.c.o
+[1304/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/base64.c.o
+[1305/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/memdebug.c.o
+[1306/1331] Building C object tests/server/CMakeFiles/socksd.dir/__/__/lib/inet_pton.c.o
+[1307/1331] Building C object tests/server/CMakeFiles/socksd.dir/getpart.c.o
+[1308/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/strtoofft.c.o
+[1309/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/nonblock.c.o
+[1310/1331] Building C object tests/server/CMakeFiles/socksd.dir/util.c.o
+[1311/1331] Building C object tests/server/CMakeFiles/socksd.dir/socksd.c.o
+[1312/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/warnless.c.o
+[1313/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/mprintf.c.o
+[1314/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/timediff.c.o
+[1315/1331] Building C object tests/server/CMakeFiles/disabled.dir/disabled.c.o
+[1316/1331] Linking C executable tests/server/socksd
+[1317/1331] Linking C executable tests/server/disabled
+[1318/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/curl_multibyte.c.o
+[1319/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/strdup.c.o
+[1320/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/strcase.c.o
+[1321/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/memdebug.c.o
+[1322/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/dynbuf.c.o
+[1323/1331] Building C object tests/server/CMakeFiles/mqttd.dir/getpart.c.o
+[1324/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/base64.c.o
+[1325/1331] Building C object tests/server/CMakeFiles/mqttd.dir/__/__/lib/inet_pton.c.o
+[1326/1331] Building C object tests/server/CMakeFiles/mqttd.dir/util.c.o
+[1327/1331] Building C object tests/server/CMakeFiles/mqttd.dir/mqttd.c.o
+[1328/1331] Linking C executable tests/server/mqttd
+[1329/1331] Building C object tests/libtest/CMakeFiles/lib1521.dir/lib1521.c.o
+[1330/1331] Linking C executable tests/libtest/lib1521
+[1330/1331] cd /tmp/c/tests && /usr/bin/perl /src/tests/runtests.pl -a -s "\$TFLAGS"
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.6.0-DEV (Linux) 
+* libcurl/8.6.0-DEV
+* Features: alt-svc AsynchDNS HSTS IPv6 Largefile threadsafe UnixSockets
+* Disabled: 
+* Host: 256077c2fe39
+* System: Linux 256077c2fe39 5.15.126 #1 SMP Fri Aug 11 21:17:00 UTC 2023 x86_64 GNU/Linux
+* OS: linux
+* Env: 0
+* Seed: 211720
+* Servers: HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0001...OK (1   out of 3  , remaining: 00:02, took 1.039s, duration: 00:01)
+test 0002...OK (2   out of 3  , remaining: 00:00, took 0.080s, duration: 00:01)
+test 0003...OK (3   out of 3  , remaining: 00:00, took 0.032s, duration: 00:01)
+TESTDONE: 3 tests were considered during 1 seconds.
+TESTDONE: 3 tests out of 3 reported OK: 100%

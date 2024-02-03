@@ -1,0 +1,288 @@
+make[1]: Entering directory '/tmp/c/tests'
+Making check in lib
+Making all in certs
+make[1]: Entering directory '/tmp/c/docs/libcurl'
+make[2]: Entering directory '/tmp/c/tests/certs'
+Making check in opts
+Making all in scripts
+make[3]: Entering directory '/tmp/c/tests/certs/scripts'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/certs/scripts'
+make[3]: Entering directory '/tmp/c/tests/certs'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/certs'
+make[2]: Leaving directory '/tmp/c/tests/certs'
+Making all in data
+make[2]: Entering directory '/tmp/c/tests/data'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/data'
+Making all in server
+make[2]: Entering directory '/tmp/c/docs/libcurl/opts'
+make[2]: Nothing to be done for 'check'.
+make[2]: Leaving directory '/tmp/c/docs/libcurl/opts'
+make[1]: Entering directory '/tmp/c/docs/examples'
+make  10-at-a-time altsvc anyauthput certinfo chkspeed connect-to cookie_interface debug default-scheme externalsocket fileupload ftp-wildcard ftpget ftpgetinfo ftpgetresp ftpsget ftpupload ftpuploadfrommem ftpuploadresume getinfo getinmemory getredirect getreferrer headerapi hsts-preload http-options http-post http2-download http2-pushinmemory http2-serverpush http2-upload http3 http3-present httpcustomheader httpput httpput-postfields https imap-append imap-authzid imap-copy imap-create imap-delete imap-examine imap-fetch imap-list imap-lsub imap-multi imap-noop imap-search imap-ssl imap-store imap-tls ipv6 maxconnects multi-app multi-debugcallback multi-double multi-formadd multi-legacy multi-post multi-single parseurl persistent pop3-authzid pop3-dele pop3-list pop3-multi pop3-noop pop3-retr pop3-ssl pop3-stat pop3-tls pop3-top pop3-uidl post-callback postinmemory postit2 postit2-formadd progressfunc protofeats resolve sendrecv sepheaders sftpget sftpuploadresume shared-connection-cache simple simplepost simplessl smtp-authzid smtp-expn smtp-mail smtp-mime smtp-multi smtp-ssl smtp-tls smtp-vrfy sslbackend unixsocket url2file urlapi websocket websocket-cb
+make[2]: Entering directory '/tmp/c/docs/libcurl'
+make  check-TESTS
+make[3]: Entering directory '/tmp/c/docs/libcurl'
+make[4]: Entering directory '/tmp/c/docs/libcurl'
+make[2]: Entering directory '/tmp/c/docs/examples'
+make[2]: '10-at-a-time' is up to date.
+make[2]: 'altsvc' is up to date.
+make[2]: 'anyauthput' is up to date.
+make[2]: 'certinfo' is up to date.
+make[2]: 'chkspeed' is up to date.
+make[2]: 'connect-to' is up to date.
+make[2]: 'cookie_interface' is up to date.
+make[2]: 'debug' is up to date.
+make[2]: 'default-scheme' is up to date.
+make[2]: 'externalsocket' is up to date.
+make[2]: 'fileupload' is up to date.
+make[2]: 'ftp-wildcard' is up to date.
+make[2]: 'ftpget' is up to date.
+make[2]: 'ftpgetinfo' is up to date.
+make[2]: 'ftpgetresp' is up to date.
+make[2]: 'ftpsget' is up to date.
+make[2]: 'ftpupload' is up to date.
+make[2]: 'ftpuploadfrommem' is up to date.
+make[2]: 'ftpuploadresume' is up to date.
+make[2]: 'getinfo' is up to date.
+make[2]: 'getinmemory' is up to date.
+make[2]: 'getredirect' is up to date.
+make[2]: 'getreferrer' is up to date.
+make[2]: 'headerapi' is up to date.
+make[2]: 'hsts-preload' is up to date.
+make[2]: 'http-options' is up to date.
+make[2]: 'http-post' is up to date.
+make[2]: 'http2-download' is up to date.
+make[2]: 'http2-pushinmemory' is up to date.
+make[2]: 'http2-serverpush' is up to date.
+make[2]: 'http2-upload' is up to date.
+make[2]: 'http3' is up to date.
+make[2]: 'http3-present' is up to date.
+make[2]: 'httpcustomheader' is up to date.
+make[2]: 'httpput' is up to date.
+make[2]: 'httpput-postfields' is up to date.
+make[2]: 'https' is up to date.
+make[2]: 'imap-append' is up to date.
+make[2]: 'imap-authzid' is up to date.
+make[2]: 'imap-copy' is up to date.
+make[2]: 'imap-create' is up to date.
+make[2]: 'imap-delete' is up to date.
+make[2]: 'imap-examine' is up to date.
+make[2]: 'imap-fetch' is up to date.
+make[2]: 'imap-list' is up to date.
+make[2]: 'imap-lsub' is up to date.
+make[2]: 'imap-multi' is up to date.
+make[2]: 'imap-noop' is up to date.
+make[2]: 'imap-search' is up to date.
+make[2]: 'imap-ssl' is up to date.
+make[2]: 'imap-store' is up to date.
+make[2]: 'imap-tls' is up to date.
+make[2]: 'ipv6' is up to date.
+make[2]: 'maxconnects' is up to date.
+make[2]: 'multi-app' is up to date.
+make[2]: 'multi-debugcallback' is up to date.
+make[2]: 'multi-double' is up to date.
+make[2]: 'multi-formadd' is up to date.
+make[2]: 'multi-legacy' is up to date.
+make[2]: 'multi-post' is up to date.
+make[2]: 'multi-single' is up to date.
+make[2]: 'parseurl' is up to date.
+make[2]: 'persistent' is up to date.
+make[2]: 'pop3-authzid' is up to date.
+make[2]: 'pop3-dele' is up to date.
+make[2]: 'pop3-list' is up to date.
+make[2]: 'pop3-multi' is up to date.
+make[2]: 'pop3-noop' is up to date.
+make[2]: 'pop3-retr' is up to date.
+make[2]: 'pop3-ssl' is up to date.
+make[2]: 'pop3-stat' is up to date.
+make[2]: 'pop3-tls' is up to date.
+make[2]: 'pop3-top' is up to date.
+make[2]: 'pop3-uidl' is up to date.
+make[2]: 'post-callback' is up to date.
+make[2]: 'postinmemory' is up to date.
+make[2]: 'postit2' is up to date.
+make[2]: 'postit2-formadd' is up to date.
+make[2]: 'progressfunc' is up to date.
+make[2]: 'protofeats' is up to date.
+make[2]: 'resolve' is up to date.
+make[2]: 'sendrecv' is up to date.
+make[2]: 'sepheaders' is up to date.
+make[2]: 'sftpget' is up to date.
+make[2]: 'sftpuploadresume' is up to date.
+make[2]: 'shared-connection-cache' is up to date.
+make[2]: 'simple' is up to date.
+make[2]: 'simplepost' is up to date.
+make[2]: 'simplessl' is up to date.
+make[2]: 'smtp-authzid' is up to date.
+make[2]: 'smtp-expn' is up to date.
+make[2]: 'smtp-mail' is up to date.
+make[2]: 'smtp-mime' is up to date.
+make[2]: 'smtp-multi' is up to date.
+make[2]: 'smtp-ssl' is up to date.
+make[2]: 'smtp-tls' is up to date.
+make[2]: 'smtp-vrfy' is up to date.
+make[2]: 'sslbackend' is up to date.
+make[2]: 'unixsocket' is up to date.
+make[2]: 'url2file' is up to date.
+make[2]: 'urlapi' is up to date.
+make[2]: 'websocket' is up to date.
+make[2]: 'websocket-cb' is up to date.
+make[2]: Leaving directory '/tmp/c/docs/examples'
+make[1]: Leaving directory '/tmp/c/docs/examples'
+PASS: check-easy
+PASS: check-multi
+make[2]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+============================================================================
+Testsuite summary for curl -
+============================================================================
+# TOTAL: 2
+# PASS:  2
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[4]: Leaving directory '/tmp/c/docs/libcurl'
+make[3]: Leaving directory '/tmp/c/docs/libcurl'
+make[2]: Leaving directory '/tmp/c/docs/libcurl'
+make[1]: Leaving directory '/tmp/c/docs/libcurl'
+make[1]: Entering directory '/tmp/c/lib'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/tests/server'
+Making all in libtest
+make[2]: Entering directory '/tmp/c/tests/libtest'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/tests/libtest'
+Making all in http
+make[2]: Entering directory '/tmp/c/tests/http'
+Making all in clients
+make[3]: Entering directory '/tmp/c/tests/http/clients'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Entering directory '/tmp/c/tests/http'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests/http'
+Making all in unit
+make[2]: Entering directory '/tmp/c/tests/unit'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/unit'
+make[2]: Entering directory '/tmp/c/tests'
+cd libtest && make checksrc
+make[3]: Entering directory '/tmp/c/tests/libtest'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/libtest'
+cd unit && make checksrc
+make[3]: Entering directory '/tmp/c/tests/unit'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/unit'
+cd server && make checksrc
+make[3]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/server'
+cd http && make checksrc
+make[3]: Entering directory '/tmp/c/tests/http'
+cd clients && make checksrc
+make[4]: Entering directory '/tmp/c/tests/http/clients'
+  RUN      checksrc
+make[4]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests'
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -am -n -j42 unittest "server sha256 key check" 
+********* System characteristics ******** 
+* curl 8.2.1-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.2.1-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.11.1_DEV nghttp2/1.42.0 OpenLDAP/2.4.57
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+* Jobs: 42
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: 
+* Seed: 223038
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+make[1]: Leaving directory '/tmp/c/lib'
+Making check in src
+make[1]: Entering directory '/tmp/c/src'
+Making check in ../docs
+make[2]: Entering directory '/tmp/c/docs'
+Making check in .
+make[3]: Entering directory '/tmp/c/docs'
+make[3]: Nothing to be done for 'check-am'.
+make[3]: Leaving directory '/tmp/c/docs'
+Making check in cmdline-opts
+make[3]: Entering directory '/tmp/c/docs/cmdline-opts'
+make[3]: Nothing to be done for 'check'.
+make[3]: Leaving directory '/tmp/c/docs/cmdline-opts'
+make[2]: Leaving directory '/tmp/c/docs'
+make[2]: Entering directory '/tmp/c/src'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/src'
+make[1]: Leaving directory '/tmp/c/src'
+make[1]: Entering directory '/tmp/c'
+make[1]: Nothing to be done for 'check-am'.
+make[1]: Leaving directory '/tmp/c'
+PASS: 1305 - internal hash create/destroy testing
+PASS: 1397 - Curl_cert_hostcheck unit tests
+PASS: 1396 - curl_easy_escape and curl_easy_unescape
+PASS: 1398 - curl_msnprintf unit tests
+PASS: 1600 - NTLM unit tests
+PASS: 1612 - HMAC unit tests
+PASS: 1614 - noproxy and cidr comparisons
+PASS: 1650 - DOH
+PASS: 1620 - unit tests for url.c
+PASS: 1655 - unit test for doh_encode
+PASS: 2603 - http1 parser unit tests
+PASS: 1654 - alt-svc
+PASS: 1653 - urlapi port number parsing
+PASS: 1621 - unit tests for stripcredentials from URL
+PASS: 2602 - dynhds unit tests
+PASS: 1610 - SHA256 unit tests
+PASS: 2601 - bufq unit tests
+PASS: 1608 - verify DNS shuffling
+PASS: 3200 - curl_get_line unit tests
+PASS: 1607 - CURLOPT_RESOLVE parsing
+PASS: 1606 - verify speedcheck
+PASS: 1604 - Test WIN32/MSDOS filename sanitization
+PASS: 1603 - Internal hash add, retrieval, deletion testing
+PASS: 1651 - x509 parsing
+PASS: 1660 - HSTS
+PASS: 1661 - bufref unit tests
+PASS: 1560 - URL API
+PASS: 1609 - CURLOPT_RESOLVE parsing
+PASS: 1399 - Curl_pgrsTime unit tests
+PASS: 1611 - MD4 unit tests
+PASS: 1652 - infof
+PASS: 1601 - MD5 unit tests
+PASS: 1323 - curlx_tvdiff
+PASS: 1308 - formpost unit tests
+PASS: 1306 - internal hash create/add/destroy testing
+PASS: 1394 - unit test for parse_cert_parameter()
+PASS: 1304 - netrc parsing unit tests
+PASS: 1303 - Curl_timeleft unit tests
+PASS: 1605 - Test negative data lengths as input to libcurl functions
+PASS: 1395 - Curl_dedotdotify
+PASS: 1602 - Internal hash create/add/destroy testing, exercising clean functions
+PASS: 1300 - llist unit tests
+PASS: 1302 - base64 encode/decode unit tests
+PASS: 517 - curl_getdate() testing
+PASS: 557 - curl_mprintf() testing
+PASS: 1309 - splay unit tests
+FAIL: 3021 - SFTP correct sha256 host key - data
+FAIL: 3022 - SCP correct sha256 host key - data
+PASS: 2600 - connection filter connect/destroy unit tests
+TESTDONE: 1611 tests were considered during 4 seconds.
+TESTDONE: 47 tests out of 49 reported OK: 95%
+
+TESTFAIL: These test cases failed: 3021 3022 
+
+make[1]: Leaving directory '/tmp/c/tests'

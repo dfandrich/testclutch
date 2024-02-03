@@ -1,0 +1,365 @@
+"""Retrieve logs from Cirrus CI runs
+"""
+
+import json
+import logging
+import tempfile
+import urllib.parse
+from typing import Any, Dict, Optional, Tuple
+
+import requests
+from requests.adapters import HTTPAdapter, Retry
+
+HTTPError = requests.exceptions.HTTPError
+
+# See https://cirrus-ci.org/api/
+GRAPHQL_URL = "https://api.cirrus-ci.com/graphql"
+#GRAPHQL_URL = "http://localhost:8000"
+LOGS_URL = "https://api.cirrus-ci.com/v1/task/{task_id}/logs/{command_name}.log"
+DATA_TYPE = "application/json"
+
+MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
+
+CHUNK_SIZE = 0x10000
+
+# GraphQL schema is at https://github.com/cirruslabs/cirrus-ci-web/blob/master/schema.gql
+# Retrieve a list of test runs
+RUNS_GRAPHQL = r"""
+query OwnerRepositoryQuery(
+  $platform: String!
+  $owner: String!
+  $name: String!
+  $branch: String
+  $numbuilds: Int
+) {
+  ownerRepository(platform: $platform, owner: $owner, name: $name) {
+    ...RepositoryBuildList_repository_SmLDq
+    id
+  }
+}
+
+fragment BuildBranchNameChipNew_build on Build {
+  id
+  branch
+  tag
+  repository {
+    id
+    owner
+    name
+  }
+}
+
+fragment BuildCard_build on Build {
+  id
+  status
+  changeMessageTitle
+  buildCreatedTimestamp
+  clockDurationInSeconds
+  changeIdInRepo
+  pullRequest
+  repository {
+    ...RepositoryNameChipNew_repository
+    ...RepositoryOwnerChipNew_repository
+    id
+  }
+  ...BuildBranchNameChipNew_build
+}
+
+fragment CreateBuildDialog_repository on Repository {
+  id
+  owner
+  name
+  masterBranch
+}
+
+fragment RepositoryBuildList_repository_SmLDq on Repository {
+  id
+  platform
+  owner
+  name
+  viewerPermission
+  ...CreateBuildDialog_repository
+  builds(last: $numbuilds, branch: $branch) {
+    edges {
+      node {
+        ...BuildCard_build
+      }
+    }
+  }
+}
+
+fragment RepositoryNameChipNew_repository on Repository {
+  owner
+  name
+}
+
+fragment RepositoryOwnerChipNew_repository on Repository {
+  owner
+}
+"""
+
+# Retrieve information about one test run
+RUN_GRAPHQL = r'''
+query BuildByIdQuery(
+  $buildId: ID!
+) {
+  build(id: $buildId) {
+    ...BuildDetails_build
+    ...AppBreadcrumbs_build
+    id
+  }
+  viewer {
+    ...AppBreadcrumbs_viewer
+    id
+  }
+}
+
+fragment AccountSwitch_viewer on User {
+  relatedOwners {
+    platform
+    name
+  }
+}
+
+fragment AppBreadcrumbs_build on Build {
+  id
+  branch
+  changeIdInRepo
+  repository {
+    id
+    platform
+    owner
+    name
+  }
+}
+
+fragment AppBreadcrumbs_viewer on User {
+  ...AccountSwitch_viewer
+}
+
+fragment BuildCreatedChip_build on Build {
+  id
+  buildCreatedTimestamp
+}
+
+fragment BuildDebuggingInformation_build on Build {
+  parsingResult {
+    outputLogs
+    environment
+  }
+}
+
+fragment BuildDetails_build on Build {
+  id
+  branch
+  status
+  changeIdInRepo
+  pullRequest
+  changeMessageTitle
+  ...BuildCreatedChip_build
+  ...BuildStatusChip_build
+  notifications {
+    message
+    ...Notification_notification
+  }
+  ...ConfigurationWithIssues_build
+  ...BuildDebuggingInformation_build
+  latestGroupTasks {
+    id
+    name
+    status
+    creationTimestamp
+    executingTimestamp
+    durationInSeconds
+    requiredGroups
+    instanceArchitecture
+    instancePlatform
+    artifacts {
+      name
+      type
+      format
+      files {
+        path
+      }
+    }
+    ...TaskList_tasks
+  }
+  repository {
+    cloneUrl
+    viewerPermission
+    id
+  }
+  hooks {
+    ...HookList_hooks
+    id
+  }
+}
+
+fragment BuildStatusChip_build on Build {
+  id
+  status
+  durationInSeconds
+  clockDurationInSeconds
+}
+
+fragment ConfigurationWithIssues_build on Build {
+  parsingResult {
+    issues {
+      level
+      message
+      path
+      line
+      column
+    }
+  }
+}
+
+fragment HookCreatedChip_hook on Hook {
+  id
+  timestamp
+}
+
+fragment HookListRow_hook on Hook {
+  id
+  ...HookStatusChip_hook
+  ...HookCreatedChip_hook
+  ...HookNameChip_hook
+}
+
+fragment HookList_hooks on Hook {
+  id
+  timestamp
+  ...HookListRow_hook
+}
+
+fragment HookNameChip_hook on Hook {
+  id
+  name
+}
+
+fragment HookStatusChip_hook on Hook {
+  info {
+    error
+    durationNanos
+  }
+}
+
+fragment Notification_notification on Notification {
+  level
+  message
+  link
+}
+
+fragment TaskCreatedChip_task on Task {
+  creationTimestamp
+}
+
+fragment TaskDurationChip_task on Task {
+  id
+  status
+  creationTimestamp
+  scheduledTimestamp
+  executingTimestamp
+  durationInSeconds
+}
+
+fragment TaskListRow_task on Task {
+  id
+  status
+  executingTimestamp
+  scheduledTimestamp
+  finalStatusTimestamp
+  commands {
+    name
+  }
+  ...TaskDurationChip_task
+  ...TaskNameChip_task
+  ...TaskCreatedChip_task
+  uniqueLabels
+}
+
+fragment TaskList_tasks on Task {
+  id
+  localGroupId
+  requiredGroups
+  executingTimestamp
+  scheduledTimestamp
+  finalStatusTimestamp
+  ...TaskListRow_task
+}
+
+fragment TaskNameChip_task on Task {
+  id
+  name
+}
+'''
+
+
+class CirrusApi:
+    def __init__(self, checkurl: str, token):
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkurl)
+        parts = path.split('/')
+        if len(parts) != 3:
+            raise RuntimeError('Invalid checkurl ' + checkurl)
+        self.owner = parts[1]
+        self.repo = parts[2]
+        if netloc != 'github.com':
+            raise RuntimeError('Unsupported checkurl ' + checkurl)
+        self.platform = 'github'
+        self.token = token
+
+        # Experimental retry settings
+        # This should delay a total of 10+20+40+80 seconds before aborting
+        retry_strategy = Retry(total=4, backoff_factor=10,
+                               status_forcelist=[429, 500, 502, 503, 504],
+                               allowed_methods=["HEAD", "GET", "OPTIONS"])
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.http = requests.Session()
+        self.http.mount("https://", adapter)
+        self.http.mount("http://", adapter)
+
+    def _standard_headers(self) -> Dict:
+        return {"Accept": DATA_TYPE
+                }
+
+    def query_graphql(self, query: str, var: Dict) -> Dict:
+        """Send a GraphQL query to the server and return the raw Python data response"""
+        jsonreq = {"query": query,
+                   "variables": var,
+                   }
+        resp = self.http.post(GRAPHQL_URL, headers=self._standard_headers(),
+                              data=json.dumps(jsonreq))
+        resp.raise_for_status()
+        return json.loads(resp.text)
+
+    def get_runs(self, branch: str) -> Dict[str, Any]:
+        """Returns info about all recent workflow runs on Cirrus CI
+
+        If branch is an empty string, no branch matching is performed.
+        """
+        var = {"platform": self.platform,
+               "owner": self.owner,
+               "name": self.repo,
+               "branch": branch,
+               "numbuilds": MAX_RETRIEVED
+               }
+        return self.query_graphql(RUNS_GRAPHQL, var)
+
+    def get_run(self, run_id: int) -> Dict[str, Any]:
+        var = {"buildId": run_id
+               }
+        return self.query_graphql(RUN_GRAPHQL, var)
+
+    def get_logs(self, task_id: int, command_name: str) -> Tuple[str, Optional[str]]:
+        url = LOGS_URL.format(task_id=task_id, command_name=command_name)
+        logging.info('Retrieving log from %s', url)
+        with self.http.get(url, headers=self._standard_headers(), stream=True) as resp:
+            resp.raise_for_status()
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                    tmp.write(chunk)
+            if 'Content-Type' in resp.headers:
+                content_type = resp.headers['Content-Type']
+            else:
+                content_type = None
+        return (tmp.name, content_type)

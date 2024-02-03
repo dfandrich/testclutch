@@ -1,0 +1,63 @@
+make[1]: Entering directory '/tmp/curl-build/tests'
+Making all in certs
+make[2]: Entering directory '/tmp/curl-build/tests/certs'
+Making all in scripts
+make[3]: Entering directory '/tmp/curl-build/tests/certs/scripts'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/curl-build/tests/certs/scripts'
+make[3]: Entering directory '/tmp/curl-build/tests/certs'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/curl-build/tests/certs'
+make[2]: Leaving directory '/tmp/curl-build/tests/certs'
+Making all in data
+make[2]: Entering directory '/tmp/curl-build/tests/data'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/curl-build/tests/data'
+Making all in server
+make[2]: Entering directory '/tmp/curl-build/tests/server'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/curl-build/tests/server'
+Making all in libtest
+make[2]: Entering directory '/tmp/curl-build/tests/libtest'
+/bin/sh ../../libtool  --tag=CC   --mode=compile /usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0 -DHAVE_CONFIG_H   -I/tmp/curl/include -I../../lib -I/tmp/curl/lib  -DCURL_HIDDEN_SYMBOLS   -fvisibility=hidden -Werror-implicit-function-declaration -O2 -Wno-system-headers  -MT libhostname_la-sethostname.lo -MD -MP -MF .deps/libhostname_la-sethostname.Tpo -c -o libhostname_la-sethostname.lo `test -f 'sethostname.c' || echo '/tmp/curl/tests/libtest/'`sethostname.c
+libtool: compile:  /usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0 -DHAVE_CONFIG_H -I/tmp/curl/include -I../../lib -I/tmp/curl/lib -DCURL_HIDDEN_SYMBOLS -fvisibility=hidden -Werror-implicit-function-declaration -O2 -Wno-system-headers -MT libhostname_la-sethostname.lo -MD -MP -MF .deps/libhostname_la-sethostname.Tpo -c /tmp/curl/tests/libtest/sethostname.c  -fPIC -DPIC -o .libs/libhostname_la-sethostname.o
+libtool: compile:  /usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0 -DHAVE_CONFIG_H -I/tmp/curl/include -I../../lib -I/tmp/curl/lib -DCURL_HIDDEN_SYMBOLS -fvisibility=hidden -Werror-implicit-function-declaration -O2 -Wno-system-headers -MT libhostname_la-sethostname.lo -MD -MP -MF .deps/libhostname_la-sethostname.Tpo -c /tmp/curl/tests/libtest/sethostname.c -o libhostname_la-sethostname.o >/dev/null 2>&1
+mv -f .deps/libhostname_la-sethostname.Tpo .deps/libhostname_la-sethostname.Plo
+/bin/sh ../../libtool  --tag=CC   --mode=link /usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0  -fvisibility=hidden -Werror-implicit-function-declaration -O2 -Wno-system-headers   -module -avoid-version -rpath /nowhere    -o libhostname.la  libhostname_la-sethostname.lo  
+libtool: link: rm -fr  .libs/libhostname.a .libs/libhostname.la .libs/libhostname.lai .libs/libhostname.so
+libtool: link: /usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0 -shared  -fPIC -DPIC  .libs/libhostname_la-sethostname.o    -O2   -Wl,-soname -Wl,libhostname.so -o .libs/libhostname.so
+libtool: link: /usr/bin/ar cr .libs/libhostname.a  libhostname_la-sethostname.o
+libtool: link: ranlib .libs/libhostname.a
+libtool: link: ( cd ".libs" && rm -f "libhostname.la" && ln -s "../libhostname.la" "libhostname.la" )
+make[2]: Leaving directory '/tmp/curl-build/tests/libtest'
+Making all in http
+make[2]: Entering directory '/tmp/curl-build/tests/http'
+Making all in clients
+make[3]: Entering directory '/tmp/curl-build/tests/http/clients'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/curl-build/tests/http/clients'
+make[3]: Entering directory '/tmp/curl-build/tests/http'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/curl-build/tests/http'
+make[2]: Leaving directory '/tmp/curl-build/tests/http'
+make[2]: Entering directory '/tmp/curl-build/tests'
+make[2]: Nothing to be done for 'all-am'.
+make[2]: Leaving directory '/tmp/curl-build/tests'
+srcdir=/tmp/curl/tests /usr/bin/perl -I/tmp/curl/tests /tmp/curl/tests/runtests.pl -a -s 500
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.6.1-DEV (aarch64-unknown-linux-gnu) 
+* libcurl/8.6.1-DEV zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.58.0 librtmp/2.3 libgsasl/2.2.0 OpenLDAP/2.6.6
+* Features: alt-svc AsynchDNS brotli gsasl HTTP2 IDN IPv6 Largefile libz PSL threadsafe UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.7.19-1 #1 SMP Wed Sep 2 20:43:09 +03 2020 aarch64 GNU/Linux
+* OS: linux
+* Env: 
+* Seed: 254013
+* Servers: HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0500...OK (1   out of 1  , remaining: 00:00, took 1.352s, duration: 00:01)
+TESTDONE: 1 tests were considered during 1 seconds.
+TESTDONE: 1 tests out of 1 reported OK: 100%
+make[1]: Leaving directory '/tmp/curl-build/tests'

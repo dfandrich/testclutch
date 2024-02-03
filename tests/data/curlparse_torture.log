@@ -1,0 +1,222 @@
+make[1]: Entering directory '/tmp/c/tests'
+Making all in certs
+make[2]: Entering directory '/tmp/c/tests/certs'
+Making all in scripts
+make[3]: Entering directory '/tmp/c/tests/certs/scripts'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/certs/scripts'
+make[3]: Entering directory '/tmp/c/tests/certs'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/certs'
+make[2]: Leaving directory '/tmp/c/tests/certs'
+Making all in data
+make[2]: Entering directory '/tmp/c/tests/data'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/data'
+Making all in server
+make[2]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+make[2]: Leaving directory '/tmp/c/tests/server'
+Making all in libtest
+make[2]: Entering directory '/tmp/c/tests/libtest'
+  CC       lib500.o
+  CC       lib585-lib500.o
+  RUN      checksrc
+  CCLD     lib585
+  CCLD     lib500
+make[2]: Leaving directory '/tmp/c/tests/libtest'
+Making all in http
+make[2]: Entering directory '/tmp/c/tests/http'
+Making all in clients
+make[3]: Entering directory '/tmp/c/tests/http/clients'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Entering directory '/tmp/c/tests/http'
+make[3]: Nothing to be done for 'all-am'.
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests/http'
+Making all in unit
+make[2]: Entering directory '/tmp/c/tests/unit'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/tmp/c/tests/unit'
+make[2]: Entering directory '/tmp/c/tests'
+cd libtest && make checksrc
+make[3]: Entering directory '/tmp/c/tests/libtest'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/libtest'
+cd unit && make checksrc
+make[3]: Entering directory '/tmp/c/tests/unit'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/unit'
+cd server && make checksrc
+make[3]: Entering directory '/tmp/c/tests/server'
+  RUN      checksrc
+make[3]: Leaving directory '/tmp/c/tests/server'
+cd http && make checksrc
+make[3]: Entering directory '/tmp/c/tests/http'
+cd clients && make checksrc
+make[4]: Entering directory '/tmp/c/tests/http/clients'
+  RUN      checksrc
+make[4]: Leaving directory '/tmp/c/tests/http/clients'
+make[3]: Leaving directory '/tmp/c/tests/http'
+make[2]: Leaving directory '/tmp/c/tests'
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -p -n  -j9 -t 1 to 10 500 
+sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
+********* System characteristics ******** 
+* curl 8.2.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.2.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.10.1_DEV nghttp2/1.42.0
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+* Jobs: 9
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: 
+* Seed: 265640
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0001...[HTTP GET]
+ 124 functions to make fail
+torture OK
+test 0003...[HTTP POST with auth and contents but with content-length set to 0]
+ 130 functions to make fail
+torture OK
+test 0002...[HTTP GET with user and password]
+ 131 functions to make fail
+torture OK
+test 0006...[HTTP with simple cookie send]
+ 132 functions to make fail
+torture OK
+test 0005...[HTTP over proxy]
+ 143 functions to make fail
+torture OK
+test 0007...[HTTP with cookie parser and header recording]
+ 146 functions to make fail
+torture OK
+test 0009...[HTTP RFC1867-type formposting]
+ 167 functions to make fail
+torture OK
+test 0500...[simple libcurl HTTP GET tool]
+ 67 functions to make fail
+** MEMORY FAILURE
+Leak detected: memory still allocated: 1 bytes
+At 1d12318, there's 1 bytes.
+ allocated by /home/user/curl/lib/easy.c:207
+LIMIT /home/user/curl/lib/setopt.c:70 strdup reached memlimit
+ 500: torture FAILED: function number 5 in test.
+ invoke with "-t5" to repeat this single case.
+== Contents of files in the log/7/ dir after test 500
+=== Start of file http_server.log
+ 23:31:43.378181 ====> Client connect
+ 23:31:43.378211 accept_connection 3 returned 4
+ 23:31:43.378248 accept_connection 3 returned 0
+ 23:31:43.378380 Read 96 bytes
+ 23:31:43.378396 Process 96 bytes request
+ 23:31:43.378412 Got request: GET /verifiedserver HTTP/1.1
+ 23:31:43.378423 Are-we-friendly question received
+ 23:31:43.378439 Wrote request (96 bytes) input to log/7/server.input
+ 23:31:43.378457 Identifying ourselves as friends
+ 23:31:43.378504 Response sent (57 bytes) and written to log/7/server.response
+ 23:31:43.378516 special request received, no persistency
+ 23:31:43.378526 ====> Client disconnect 0
+ 23:31:43.581338 ====> Client connect
+ 23:31:43.581360 accept_connection 3 returned 4
+ 23:31:43.581376 accept_connection 3 returned 0
+ 23:31:43.581657 Read 57 bytes
+ 23:31:43.581673 Process 57 bytes request
+ 23:31:43.581691 Got request: GET /500 HTTP/1.1
+ 23:31:43.581703 Serve test number 500 part 0
+ 23:31:43.581737 - request found to be complete (500)
+ 23:31:43.581776 Wrote request (57 bytes) input to log/7/server.input
+ 23:31:43.581794 Send response test500 section <data>
+ 23:31:43.581917 Response sent (267 bytes) and written to log/7/server.response
+ 23:31:43.581929 => persistent connection request ended, awaits new request
+ 23:31:43.583220 Connection closed by client
+ 23:31:43.583238 ====> Client disconnect 0
+ 23:31:43.842556 exit_signal_handler: 15
+ 23:31:43.842769 signalled to die
+ 23:31:43.842799 ========> IPv4 sws (port 43249 pid: 108909) exits with signal (15)
+ 23:31:43.842818 ========> sws quits
+=== End of file http_server.log
+=== Start of file http_verify.log
+ * !!! WARNING !!
+ * This is a debug build of libcurl, do not use in production.
+ * processing: http://127.0.0.1:43249/verifiedserver
+ * STATE: INIT => CONNECT handle 0x1beb7d8; line 1962
+ * Added connection 0. The cache now contains 1 members
+ * STATE: CONNECT => CONNECTING handle 0x1beb7d8; line 2015
+ *   Trying 127.0.0.1:43249...
+ * Connected to 127.0.0.1 (127.0.0.1) port 43249
+ * STATE: CONNECTING => PROTOCONNECT handle 0x1beb7d8; line 2123
+ * STATE: PROTOCONNECT => DO handle 0x1beb7d8; line 2153
+ > GET /verifiedserver HTTP/1.1
+ > Host: 127.0.0.1:43249
+ > User-Agent: curl/8.2.0-DEV
+ > Accept: */*
+ > 
+ * STATE: DO => DID handle 0x1beb7d8; line 2247
+ * STATE: DID => PERFORMING handle 0x1beb7d8; line 2365
+ * HTTP 1.1 or later with persistent connection
+ < HTTP/1.1 200 OK
+ < Content-Length: 18
+ < 
+ { [18 bytes data]
+ * STATE: PERFORMING => DONE handle 0x1beb7d8; line 2564
+ * multi_done: status: 0 prem: 0 done: 0
+ * Connection #0 to host 127.0.0.1 left intact
+ * Expire cleared
+=== End of file http_verify.log
+=== Start of file http_verify.out
+ WE ROOLZ: 108909
+=== End of file http_verify.out
+=== Start of file ip500
+ IP 127.0.0.1
+=== End of file ip500
+=== Start of file server.cmd
+ Testnum 500
+=== End of file server.cmd
+=== Start of file server.input
+ GET /500 HTTP/1.1
+ Host: 127.0.0.1:43249
+ Accept: */*
+=== End of file server.input
+=== Start of file server.response
+ HTTP/1.1 200 OK
+ Content-Length: 18
+ WE ROOLZ: 108909
+ HTTP/1.1 200 OK
+ Date: Tue, 09 Nov 2010 14:49:00 GMT
+ Server: test-server/fake
+ Last-Modified: Tue, 13 Jun 2000 12:10:00 GMT
+ ETag: "21025-dc7-39462498"
+ Accept-Ranges: bytes
+ Content-Length: 6
+ Connection: close
+ Content-Type: text/html
+ Funny-head: yesyes
+ -foo-
+=== End of file server.response
+=== Start of file stderr500
+ URL: http://127.0.0.1:43249/500
+ LIMIT /home/user/curl/lib/setopt.c:70 strdup reached memlimit
+=== End of file stderr500
+test 0010...[simple HTTP PUT from file]
+ 133 functions to make fail
+torture OK
+test 0004...[Replaced internal and added custom HTTP headers]
+ 222 functions to make fail
+torture OK
+test 0008...[HTTP with cookie parsing from header file]
+ 327 functions to make fail
+torture OK
+TESTDONE: 11 tests were considered during 18 seconds.
+TESTDONE: 10 tests out of 11 reported OK: 90%
+
+TESTFAIL: These test cases failed: 500 
+
+make[1]: *** [Makefile:820: quiet-test] Error 1
+make[1]: Leaving directory '/tmp/c/tests'
+make: *** [Makefile:1724: test] Error 2

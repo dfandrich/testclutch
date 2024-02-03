@@ -1,0 +1,116 @@
+Making check in m4m
+make[1]: Entering directory '/tmp/libexif/m4m'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/tmp/libexif/m4m'
+Making check in po
+make[1]: Entering directory '/tmp/libexif/po'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/tmp/libexif/po'
+Making check in libexif
+make[1]: Entering directory '/tmp/libexif/libexif'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/tmp/libexif/libexif'
+Making check in test
+make[1]: Entering directory '/tmp/libexif/test'
+Making check in nls
+make[2]: Entering directory '/tmp/libexif/test/nls'
+Makefile:1042: warning: ignoring prerequisites on suffix rule definition
+make  print-localedir check-localedir.sh 
+make[3]: Entering directory '/tmp/libexif/test/nls'
+Makefile:1042: warning: ignoring prerequisites on suffix rule definition
+make[3]: 'print-localedir' is up to date.
+make[3]: 'check-localedir.sh' is up to date.
+make[3]: Leaving directory '/tmp/libexif/test/nls'
+make  check-TESTS
+make[3]: Entering directory '/tmp/libexif/test/nls'
+Makefile:1042: warning: ignoring prerequisites on suffix rule definition
+make[4]: Entering directory '/tmp/libexif/test/nls'
+Makefile:1042: warning: ignoring prerequisites on suffix rule definition
+PASS: check-localedir.sh
+============================================================================
+Testsuite summary for EXIF library 0.6.24.1
+============================================================================
+# TOTAL: 1
+# PASS:  1
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[4]: Leaving directory '/tmp/libexif/test/nls'
+make[3]: Leaving directory '/tmp/libexif/test/nls'
+make[2]: Leaving directory '/tmp/libexif/test/nls'
+make[2]: Entering directory '/tmp/libexif/test'
+make  test-mem test-mnote test-value test-integers test-parse test-parse-from-data test-tagtable test-sorted test-fuzzer test-extract test-null test-gps
+make[3]: Entering directory '/tmp/libexif/test'
+make[3]: 'test-mem' is up to date.
+make[3]: 'test-mnote' is up to date.
+make[3]: 'test-value' is up to date.
+make[3]: 'test-integers' is up to date.
+make[3]: 'test-parse' is up to date.
+make[3]: 'test-parse-from-data' is up to date.
+make[3]: 'test-tagtable' is up to date.
+make[3]: 'test-sorted' is up to date.
+make[3]: 'test-fuzzer' is up to date.
+make[3]: 'test-extract' is up to date.
+make[3]: 'test-null' is up to date.
+make[3]: 'test-gps' is up to date.
+make[3]: Leaving directory '/tmp/libexif/test'
+make  check-TESTS
+make[3]: Entering directory '/tmp/libexif/test'
+make[4]: Entering directory '/tmp/libexif/test'
+PASS: test-fuzzer
+PASS: test-mem
+PASS: test-value
+PASS: test-sorted
+PASS: test-tagtable
+PASS: test-parse-from-data
+PASS: test-integers
+PASS: test-parse
+PASS: test-null
+SKIP: check-failmalloc.sh
+PASS: test-gps
+PASS: parse-regression.sh
+PASS: swap-byte-order.sh
+PASS: extract-parse.sh
+============================================================================
+Testsuite summary for EXIF library 0.6.24.1
+============================================================================
+# TOTAL: 14
+# PASS:  13
+# SKIP:  1
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[4]: Leaving directory '/tmp/libexif/test'
+make[3]: Leaving directory '/tmp/libexif/test'
+make[2]: Leaving directory '/tmp/libexif/test'
+make[1]: Leaving directory '/tmp/libexif/test'
+Making check in doc
+make[1]: Entering directory '/tmp/libexif/doc'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/tmp/libexif/doc'
+Making check in binary-dist
+make[1]: Entering directory '/tmp/libexif/binary-dist'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/tmp/libexif/binary-dist'
+Making check in contrib
+make[1]: Entering directory '/tmp/libexif/contrib'
+Making check in examples
+make[2]: Entering directory '/tmp/libexif/contrib/examples'
+make  photographer thumbnail write-exif
+make[3]: Entering directory '/tmp/libexif/contrib/examples'
+make[3]: 'photographer' is up to date.
+make[3]: 'thumbnail' is up to date.
+make[3]: 'write-exif' is up to date.
+make[3]: Leaving directory '/tmp/libexif/contrib/examples'
+make[2]: Leaving directory '/tmp/libexif/contrib/examples'
+make[2]: Entering directory '/tmp/libexif/contrib'
+make[2]: Nothing to be done for 'check-am'.
+make[2]: Leaving directory '/tmp/libexif/contrib'
+make[1]: Leaving directory '/tmp/libexif/contrib'
+make[1]: Entering directory '/tmp/libexif'
+make[1]: Leaving directory '/tmp/libexif'

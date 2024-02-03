@@ -1,0 +1,25 @@
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -s 3020 3021 3030 
+sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
+********* System characteristics ******** 
+* curl 8.3.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.3.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.11.1_DEV nghttp2/1.42.0 OpenLDAP/2.4.57
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: 
+* Seed: 256637
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 3020...OK (1   out of 3  , remaining: 00:02, took 1.091s, duration: 00:01)
+test 3021...FAILED
+test 3030...OK (3   out of 3  , remaining: 00:00, took 0.049s, duration: 00:02)
+TESTDONE: 3 tests were considered during 2 seconds.
+TESTDONE: 2 tests out of 3 reported OK: 66%
+
+TESTFAIL: These test cases failed: 3021 
+

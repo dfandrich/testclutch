@@ -1,0 +1,45 @@
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a  -j3 
+sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
+********* System characteristics ******** 
+* curl 8.3.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.3.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.11.1_DEV nghttp2/1.42.0 OpenLDAP/2.4.57
+* Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 5.15.88 #1 SMP Sat Jan 14 15:00:41 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+* Jobs: 3
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: Valgrind 
+* Seed: 256637
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0096 SKIPPED: curl lacks TrackMemory support
+test 0375 SKIPPED: curl has proxy support
+test 0506 SKIPPED: curl has threaded-resolver support
+test 0558 SKIPPED: curl lacks TrackMemory support
+test 0959 SKIPPED: curl has idn support
+test 0960 SKIPPED: curl has idn support
+test 0961 SKIPPED: curl has idn support
+test 1282 SKIPPED: curl lacks GSS-API support
+test 1330 SKIPPED: curl lacks TrackMemory support
+test 1454 SKIPPED: curl has ipv6 support
+test 1703 SKIPPED: curl lacks Unicode support
+test 2033 SKIPPED: curl lacks Schannel support
+test 2056 SKIPPED: curl lacks GSS-API support
+test 2057 SKIPPED: curl lacks GSS-API support
+test 2070 SKIPPED: curl lacks Schannel support
+test 2079 SKIPPED: curl lacks Schannel support
+test 2500 SKIPPED: curl lacks http/3 support
+test 2501 SKIPPED: curl lacks http/3 support
+test 2502 SKIPPED: curl lacks http/3 support
+test 0001...[HTTP GET]
+--pd---e-v- OK (1   out of 1570, remaining: 82:35, took 2.772s, duration: 00:03)
+test 0002...[HTTP GET with user and password]
+make: *** [Makefile:1736: test-ci] Terminated
+
+
+Too long with no output (exceeded 10m0s): context deadline exceeded
+

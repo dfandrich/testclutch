@@ -1,0 +1,92 @@
+============================= test session starts ==============================
+platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/user/testclutch
+collecting ... collected 14 items
+
+tests/test_curldailyinfo.py::TestCurlDailyInfo::test_dailyinfo PASSED    [  7%]
+tests/test_curlparse.py::TestCurlParse::test_aborted XFAIL               [ 14%]
+tests/test_curlparse.py::TestCurlParse::test_daily PASSED                [ 21%]
+tests/test_curlparse.py::TestCurlParse::test_event PASSED                [ 28%]
+tests/test_curlparse.py::TestCurlParse::test_faillogs PASSED             [ 35%]
+tests/test_curlparse.py::TestCurlParse::test_short PASSED                [ 42%]
+tests/test_curlparse.py::TestCurlParse::test_testcurlgit PASSED          [ 50%]
+tests/test_curlparse.py::TestCurlParse::test_torture FAILED              [ 57%]
+tests/test_curlparse.py::TestCurlParse::test_truncated PASSED            [ 64%]
+tests/test_curlparse.py::TestCurlParse::test_valgrind SKIPPED            [ 71%]
+tests/test_gitcommitinfo.py::TestGitCommitInfo::test_gitcommitinfo PASSED [ 78%]
+tests/test_pytestparse.py::TestCurlParse::test_success PASSED            [ 85%]
+tests/test_pytestparse.py::TestCurlParse::test_truncated PASSED          [ 92%]
+tests/test_pytestparse.py::TestCurlParse::test_verbose PASSED            [100%]
+
+=================================== FAILURES ===================================
+__________________________ TestCurlParse.test_torture __________________________
+
+self = <tests.test_curlparse.TestCurlParse testMethod=test_torture>
+
+    def test_torture(self):
+        # -t mode
+        with self.open_data('curlparse_torture.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'runtestsopts': '-a -p -n  -j9 -t 1 to 10 500 ',
+            'testformat': 'curl',
+            'testresult': 'failure',
+            'testmode': 'torture',
+            'withvalgrind': 'no',
+            'testingver': '8.2.0-DEV',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetarch': 'x86_64',
+            'targetvendor': 'pc',
+            'targetos': 'linux-gnu',
+            'curldeps': 'libcurl/8.2.0-DEV OpenSSL/1.1.1u zlib/1.2.12 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.0 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.10.1_DEV nghttp2/1.42.0',
+            'features': 'alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM NTLM_WB PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd',
+            'host': 'localhost',
+            'systemos': 'Linux',
+            'systemhost': 'localhost',
+            'systemosver': '5.15.88',
+            'arch': 'x86_64',
+            'os': 'linux',
+            'paralleljobs': '9',
+            'runteststime': '18000000',
+        }, meta)
+>       self.assertEqual([
+            ('1', curlparse.TestResult.PASS, '', 0),
+            ('3', curlparse.TestResult.PASS, '', 0),
+            ('2', curlparse.TestResult.PASS, '', 0),
+            ('6', curlparse.TestResult.PASS, '', 0),
+            ('5', curlparse.TestResult.PASS, '', 0),
+            ('7', curlparse.TestResult.PASS, '', 0),
+            ('9', curlparse.TestResult.PASS, '', 0),
+            ('500', curlparse.TestResult.FAIL, 'torture', 0),
+            ('10', curlparse.TestResult.PASS, '', 0),
+            ('4', curlparse.TestResult.PASS, '', 0),
+            #('8', curlparse.TestResult.PASS, '', 0)
+        ], testcases)
+E       AssertionError: Lists differ: [('1'[338 chars]estResult.PASS: 1>, '', 0)] != [('1'[338 chars]estResult.PASS: 1>, '', 0), ('8', <TestResult.PASS: 1>, '', 0)]
+E       
+E       Second list contains 1 additional elements.
+E       First extra element 10:
+E       ('8', <TestResult.PASS: 1>, '', 0)
+E       
+E         [('1', <TestResult.PASS: 1>, '', 0),
+E          ('3', <TestResult.PASS: 1>, '', 0),
+E          ('2', <TestResult.PASS: 1>, '', 0),
+E          ('6', <TestResult.PASS: 1>, '', 0),
+E          ('5', <TestResult.PASS: 1>, '', 0),
+E          ('7', <TestResult.PASS: 1>, '', 0),
+E          ('9', <TestResult.PASS: 1>, '', 0),
+E          ('500', <TestResult.FAIL: 2>, 'torture', 0),
+E          ('10', <TestResult.PASS: 1>, '', 0),
+E       -  ('4', <TestResult.PASS: 1>, '', 0)]
+E       ?                                    ^
+E       
+E       +  ('4', <TestResult.PASS: 1>, '', 0),
+E       ?                                    ^
+E       
+E       +  ('8', <TestResult.PASS: 1>, '', 0)]
+
+tests/test_curlparse.py:146: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_curlparse.py::TestCurlParse::test_torture - AssertionError:...
+============== 1 failed, 11 passed, 1 skipped, 1 xfailed in 0.49s ==============

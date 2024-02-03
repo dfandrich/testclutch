@@ -1,0 +1,61 @@
+"""Generate analysis summary of test data.
+"""
+
+import argparse
+import logging
+import sys
+
+from testclutch import analysis
+from testclutch import argparsing
+from testclutch import config
+from testclutch import db
+
+
+def parse_args(args=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description='Analyze test results in the database')
+    argparsing.arguments_logging(parser)
+    parser.add_argument(
+        '--checkrepo',
+        required=not config.expand('check_repo'),
+        default=config.expand('check_repo'),
+        help="URL of the source repository we're dealing with")
+    parser.add_argument(
+        '--uniquejob',
+        nargs=1,
+        help='unique test job ID')
+    parser.add_argument(
+        '--html',
+        action='store_true',
+        help='Output test summary in HTML')
+    return parser.parse_args(args=args)
+
+
+def main():
+    args = parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
+        args.verbose = True
+    elif args.verbose:
+        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+
+    if args.uniquejob and args.html:
+        print('--uniquejob and --html are not compatible')
+        sys.exit(1)
+
+    ds = db.Datastore()
+    ds.connect()
+    analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
+
+    if args.uniquejob:
+        analyzer.analyze_by_unique_job(args.uniquejob[0])
+    elif args.html:
+        analyzer.show_job_failure_table(args.checkrepo)
+    else:
+        analyzer.analyze_all_by_unique_job(args.checkrepo)
+    ds.close()
+
+
+if __name__ == '__main__':
+    main()

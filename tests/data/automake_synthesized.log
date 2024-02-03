@@ -1,0 +1,115 @@
+Making check in src
+make[1]: Entering directory '/build/libssh2/src'
+make[1]: Leaving directory '/build/libssh2/src'
+Making check in docs
+make[1]: Entering directory '/build/libssh2/docs'
+make[1]: Nothing to be done for 'check'.
+make[1]: Leaving directory '/build/libssh2/docs'
+Making check in tests
+make[1]: Entering directory '/build/libssh2/tests'
+Making check in ossfuzz
+make[2]: Entering directory '/build/libssh2/tests/ossfuzz'
+make[2]: Nothing to be done for 'check'.
+make[2]: Leaving directory '/build/libssh2/tests/ossfuzz'
+make[2]: Entering directory '/build/libssh2/tests'
+make  test_aa_warmup test_agent_forward_ok test_auth_keyboard_fail test_auth_keyboard_ok test_auth_password_fail_password test_auth_password_fail_username test_auth_password_ok test_auth_pubkey_fail test_auth_pubkey_ok_dsa test_auth_pubkey_ok_ecdsa test_auth_pubkey_ok_ecdsa_signed test_auth_pubkey_ok_ed25519 test_auth_pubkey_ok_ed25519_encrypted test_auth_pubkey_ok_ed25519_mem test_auth_pubkey_ok_rsa test_auth_pubkey_ok_rsa_aes256gcm test_auth_pubkey_ok_rsa_encrypted test_auth_pubkey_ok_rsa_openssh test_auth_pubkey_ok_rsa_signed test_hostkey_hash test_read test_auth_keyboard_info_request test_hostkey test_simple test_ssh2 test_auth_pubkey_ok_ed25519 librunner.la
+make[3]: Entering directory '/build/libssh2/tests'
+make[3]: 'test_aa_warmup' is up to date.
+make[3]: 'test_agent_forward_ok' is up to date.
+make[3]: 'test_auth_keyboard_fail' is up to date.
+make[3]: 'test_auth_keyboard_ok' is up to date.
+make[3]: 'test_auth_password_fail_password' is up to date.
+make[3]: 'test_auth_password_fail_username' is up to date.
+make[3]: 'test_auth_password_ok' is up to date.
+make[3]: 'test_auth_pubkey_fail' is up to date.
+make[3]: 'test_auth_pubkey_ok_dsa' is up to date.
+make[3]: 'test_auth_pubkey_ok_ecdsa' is up to date.
+make[3]: 'test_auth_pubkey_ok_ecdsa_signed' is up to date.
+make[3]: 'test_auth_pubkey_ok_ed25519' is up to date.
+make[3]: 'test_auth_pubkey_ok_ed25519_encrypted' is up to date.
+make[3]: 'test_auth_pubkey_ok_ed25519_mem' is up to date.
+make[3]: 'test_auth_pubkey_ok_rsa' is up to date.
+make[3]: 'test_auth_pubkey_ok_rsa_aes256gcm' is up to date.
+make[3]: 'test_auth_pubkey_ok_rsa_encrypted' is up to date.
+make[3]: 'test_auth_pubkey_ok_rsa_openssh' is up to date.
+make[3]: 'test_auth_pubkey_ok_rsa_signed' is up to date.
+make[3]: 'test_hostkey_hash' is up to date.
+make[3]: 'test_read' is up to date.
+make[3]: 'test_auth_keyboard_info_request' is up to date.
+make[3]: 'test_hostkey' is up to date.
+make[3]: 'test_simple' is up to date.
+make[3]: 'test_ssh2' is up to date.
+make[3]: 'test_auth_pubkey_ok_ed25519' is up to date.
+make[3]: 'librunner.la' is up to date.
+make[3]: Leaving directory '/build/libssh2/tests'
+make  check-TESTS
+make[3]: Entering directory '/build/libssh2/tests'
+make[4]: Entering directory '/build/libssh2/tests'
+FAIL: test_auth_password_fail_password
+FAIL: test_auth_password_ok
+FAIL: test_auth_password_fail_username
+FAIL: test_agent_forward_ok
+FAIL: test_auth_keyboard_ok
+FAIL: test_auth_pubkey_fail
+FAIL: test_auth_keyboard_fail
+FAIL: test_auth_pubkey_ok_ed25519
+FAIL: test_auth_pubkey_ok_dsa
+FAIL: test_auth_pubkey_ok_ed25519_mem
+FAIL: test_auth_pubkey_ok_ecdsa_signed
+FAIL: test_auth_pubkey_ok_rsa
+FAIL: test_auth_pubkey_ok_ed25519_encrypted
+FAIL: test_auth_pubkey_ok_rsa_encrypted
+PASS: test_auth_keyboard_info_request
+FAIL: test_auth_pubkey_ok_rsa_openssh
+PASS: test_simple
+FAIL: test_read
+FAIL: test_hostkey_hash
+FAIL: test_aa_warmup
+FAIL: test_auth_pubkey_ok_ecdsa
+FAIL: test_hostkey
+FAIL: test_auth_pubkey_ok_rsa_aes256gcm
+FAIL: test_auth_pubkey_ok_rsa_signed
+PASS: test_sshd.test 1 - sshd-test_ssh2
+FAIL: test_sshd.test 2 - sshd-test_auth_pubkey_ok_ed25519
+FAIL: test_read_algos.test 1 - test_read-3des-cbc
+FAIL: test_read_algos.test 2 - test_read-aes128-cbc
+FAIL: test_read_algos.test 3 - test_read-aes128-ctr
+FAIL: test_read_algos.test 4 - test_read-aes128-gcm@openssh.com
+FAIL: test_read_algos.test 5 - test_read-aes192-cbc
+FAIL: test_read_algos.test 6 - test_read-aes192-ctr
+FAIL: test_read_algos.test 7 - test_read-aes256-cbc
+FAIL: test_read_algos.test 8 - test_read-aes256-ctr
+FAIL: test_read_algos.test 9 - test_read-aes256-gcm@openssh.com
+FAIL: test_read_algos.test 10 - test_read-hmac-md5
+FAIL: test_read_algos.test 11 - test_read-hmac-md5-96
+FAIL: test_read_algos.test 12 - test_read-hmac-sha1
+FAIL: test_read_algos.test 13 - test_read-hmac-sha1-96
+FAIL: test_read_algos.test 14 - test_read-hmac-sha1-etm@openssh.com
+FAIL: test_read_algos.test 15 - test_read-hmac-sha2-256
+FAIL: test_read_algos.test 16 - test_read-hmac-sha2-256-etm@openssh.com
+FAIL: test_read_algos.test 17 - test_read-hmac-sha2-512
+FAIL: test_read_algos.test 18 - test_read-hmac-sha2-512-etm@openssh.com
+PASS: mansyntax.sh
+============================================================================
+Testsuite summary for libssh2 -
+============================================================================
+# TOTAL: 45
+# PASS:  4
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  41
+# XPASS: 0
+# ERROR: 0
+============================================================================
+See tests/test-suite.log
+Please report to libssh2-devel@lists.haxx.se
+============================================================================
+make[4]: *** [Makefile:1260: test-suite.log] Error 1
+make[4]: Leaving directory '/build/libssh2/tests'
+make[3]: *** [Makefile:1368: check-TESTS] Error 2
+make[3]: Leaving directory '/build/libssh2/tests'
+make[2]: *** [Makefile:1635: check-am] Error 2
+make[2]: Leaving directory '/build/libssh2/tests'
+make[1]: *** [Makefile:1152: check-recursive] Error 1
+make[1]: Leaving directory '/build/libssh2/tests'
+make: *** [Makefile:535: check-recursive] Error 1
