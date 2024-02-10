@@ -23,10 +23,10 @@ classifiers = [
     "Topic :: Software Development :: Testing",
     "Typing :: Typed",
 ]
-requires-python = ">=3.8,<3.9"
+requires-python = ">=3.8,<3.13"
 dependencies = [
-    "requests >= 2.25.1, <= 2.27.1",
-    "zstd == 1.4.5.1",
+    "requests >= 2.25.1, <= 2.31.0",
+    "zstd >= 1.4.5.1, <= 1.5.5.1",
 ]
 
 [project.urls]
