@@ -26,7 +26,7 @@ classifiers = [
 requires-python = ">=3.8,<3.9"
 dependencies = [
     "requests >= 2.25.1, <= 2.27.1",
-    "zstd == 1.4.5.1",
+    "zstd == 1.5.4.0",
 ]
 
 [project.urls]
