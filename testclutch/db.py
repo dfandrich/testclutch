@@ -43,7 +43,7 @@ class Datastore:
             # See if table exists
             self.cur.execute("SELECT 1 FROM testruns LIMIT 1")
         except sqlite3.OperationalError:
-            # DB hasn't been created yet
+            logging.warning("Creating new DB")
             self.create_new_db()
         self.cur.execute("PRAGMA foreign_keys = ON")
         self.cur.fetchall()
@@ -66,9 +66,9 @@ class Datastore:
         self.cur.execute("CREATE INDEX testruns_index ON testruns (time)")
         # 0..n per test run
         self.cur.execute("CREATE TABLE testrunmeta(id INTEGER, name TEXT, value TEXT, "
-                         "FOREIGN KEY (id) REFERENCES testruns (id)) "
+                         "FOREIGN KEY (id) REFERENCES testruns (id) "
                          "ON UPDATE RESTRICT "
-                         "ON DELETE RESTRICT")
+                         "ON DELETE RESTRICT)")
         self.cur.execute("CREATE INDEX testrunmeta_index ON testrunmeta (id, name, value)")
         # 0..n per test run
         # testid is the test number or identifier
@@ -77,9 +77,9 @@ class Datastore:
         # runtime is the time it took to run the test in microsec
         self.cur.execute("CREATE TABLE testresults(id INTEGER, testid TEXT, result INTEGER, "
                          "resulttext TEXT, runtime INTEGER, "
-                         "FOREIGN KEY (id) REFERENCES testruns (id)) "
+                         "FOREIGN KEY (id) REFERENCES testruns (id) "
                          "ON UPDATE RESTRICT "
-                         "ON DELETE RESTRICT")
+                         "ON DELETE RESTRICT)")
         self.cur.execute("CREATE INDEX testresults_index ON testresults (id)")
 
         self.cur.execute("CREATE TABLE commitinfo (commithash TEXT NOT NULL PRIMARY KEY, "
