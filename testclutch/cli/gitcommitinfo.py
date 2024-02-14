@@ -9,6 +9,7 @@ from typing import List, Optional
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 from testclutch.gitdef import CommitInfo
 
 
@@ -110,12 +111,7 @@ def parse_args(args=None) -> argparse.Namespace:
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if not args.checkrepo.startswith('https://github.com/'):
         logging.error('--checkrepo value seems wrong; using anyway')

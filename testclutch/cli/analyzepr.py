@@ -14,6 +14,7 @@ from testclutch import analysis
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 from testclutch import summarize
 from testclutch.ingest import prappveyor
 from testclutch.ingest import prazure
@@ -394,12 +395,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if args.dry_run:
         logging.warning('--dry-run does nothing in thie program')

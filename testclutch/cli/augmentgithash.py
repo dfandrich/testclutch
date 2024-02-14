@@ -6,8 +6,10 @@ This can currently happen for origin=curlauto builds, but the code doesn't discr
 import argparse
 import logging
 
+from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 
 
 # Select records with short hashes
@@ -68,20 +70,7 @@ def augment_short_hashes(args):
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Replace short git hashes in the database with long ones')
-    parser.add_argument(
-        '--dry-run',
-        dest='dry_run',
-        action='store_true',
-        help="Parse file but don't store it in the database")
-    parser.add_argument(
-        '-v', '--verbose',
-        dest='verbose',
-        action='store_true',
-        help="Show more logging")
-    parser.add_argument(
-        '--debug',
-        action='store_true',
-        help="Show debug level logging")
+    argparsing.arguments_logging(parser)
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),
@@ -93,12 +82,7 @@ def parse_args(args=None) -> argparse.Namespace:
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if not args.checkrepo.startswith('https://github.com/'):
         logging.error('--checkrepo value seems wrong; using anyway')

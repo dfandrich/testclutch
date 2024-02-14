@@ -12,6 +12,7 @@ from typing import Dict, Optional
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 from testclutch import summarize
 from testclutch.ingest import appveyor
 from testclutch.ingest import azure
@@ -309,12 +310,7 @@ def ingest_files(args: argparse.Namespace):
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if args.runid:
         if not args.authfile and args.origin == 'gha':

@@ -17,22 +17,53 @@ class ExpandUserFileType(argparse.FileType):
         return super().__call__(os.path.expanduser(string))
 
 
+class StoreMultipleConstAction(argparse.Action):
+    """Store the value of the const to multiple attributes.
+
+    const holds the value to store (defaults to True) and attrs is an iterable
+    of attribute names to store the value, in addition to dest.
+    """
+    def __init__(self,
+                 option_strings,
+                 dest,
+                 const=True,
+                 attrs='',
+                 default=None,
+                 required=False,
+                 help=None,     # noqa: A002
+                 metavar=None):
+        super().__init__(
+            option_strings=option_strings,
+            dest=dest,
+            nargs=0,
+            const=const,
+            default=default,
+            required=required,
+            help=help)
+        self.attrs = attrs
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, self.const)
+        for attr in self.attrs:
+            setattr(namespace, attr, self.const)
+
+
 def arguments_logging(parser: argparse.ArgumentParser):
     "Add arguments needed for logging"
     parser.add_argument(
         '--dry-run',
-        #dest='dry_run',
         action='store_true',
-        help="Parse file but don't store it in the database")
+        help="Go through the motions but don't make permanent changes")
     parser.add_argument(
         '-v', '--verbose',
         dest='verbose',
         action='store_true',
-        help="Show more logging")
+        help="Show more log messages")
     parser.add_argument(
         '--debug',
-        action='store_true',
-        help="Show debug level logging")
+        action=StoreMultipleConstAction,
+        attrs=['verbose'],
+        help="Show debug level log messages")
 
 
 def arguments_ci(parser: argparse.ArgumentParser):

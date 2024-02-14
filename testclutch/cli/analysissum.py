@@ -2,13 +2,13 @@
 """
 
 import argparse
-import logging
 import sys
 
 from testclutch import analysis
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 
 
 def parse_args(args=None) -> argparse.Namespace:
@@ -33,12 +33,7 @@ def parse_args(args=None) -> argparse.Namespace:
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if args.uniquejob and args.html:
         print('--uniquejob and --html are not compatible')

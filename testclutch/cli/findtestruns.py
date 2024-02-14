@@ -3,12 +3,12 @@
 
 import argparse
 import datetime
-import logging
 from typing import Collection, List, Tuple
 
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
+from testclutch import log
 from testclutch.testcasedef import TestResult
 
 
@@ -89,12 +89,7 @@ def parse_args(args=None) -> argparse.Namespace:
 
 def main():
     args = parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
-        args.verbose = True
-    elif args.verbose:
-        logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    log.setup(args)
 
     if args.since:
         try:
