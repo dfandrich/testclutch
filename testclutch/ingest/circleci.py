@@ -34,22 +34,22 @@ SYSTEM_TASKS = frozenset(('Spin up environment', 'Preparing environment variable
 # https://circleci.com/docs/configuration-reference/#resourceclass
 RESOURCE_ARCH = {'arm-medium': 'aarch64',
                  'arm-large': 'aarch64',
-                 #'m1-free': 'aarch64',     # only valid >= Dec/23
+                 'm1-free': 'aarch64',
+                 'macos-m1-medium-gen1': 'aarch64',
                  'medium': 'x86_64',
                  'large': 'x86_64',
+                 'macos-x86-medium-gen2': 'x86_64',     # deprecated June 28, 2024
 
-                 # the following keys are guesses only so far; mac ones are definitely wrong
+                 # the following keys are guesses only so far & haven't been verified
+                 'arm-xlarge': 'aarch64',
+                 'arm-2xlarge': 'aarch64',
+                 'macos-m1-large-gen1': 'aarch64',
                  'small': 'x86_64',
                  'medium+': 'x86_64',
                  'xlarge': 'x86_64',
                  '2xlarge': 'x86_64',
                  '2xlarge+': 'x86_64',
-                 #'macos.m1.medium.gen1': 'aarch64',
-                 #'macos-m1-medium-gen1': 'aarch64',
-                 'macos.m1.large.gen1': 'aarch64',
-                 'macos-m1-large-gen1': 'aarch64',
                  'macos.x86.medium.gen2': 'x86_64',
-                 'macos-x86-medium-gen2': 'x86_64',
                  }
 
 
