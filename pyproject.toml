@@ -41,7 +41,7 @@ dev = [
     "flake8 >= 5.0.4, <= 7.0.0",
     "flake8-builtins",
     "flake8-import-order",
-    "flake8-pep518",
+    "flake8-pyproject",
     "pytype >= 2023.9.19, <= 2024.2.13"
 ]
 
@@ -74,8 +74,8 @@ include = [
     "testclutch.logparser"
 ]
 
-# flake8-pep518 must be installed for flake8 to use these settings
+# flake8-pyproject must be installed for flake8 to use these settings
 [tool.flake8]
-max-line-length = "100"
-ignore = "W503,E741,E501"
+ignore = ["W503", "E741", "E501"]
+max-line-length = 100
 max-complexity = 25

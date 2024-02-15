@@ -30,13 +30,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install '.[dev]' '.[test]'
-      - if: matrix.python-version != '3.12'
-        # flake8 5.0.4  on Python 3.12 messes up on f-strings for some reason
-        name: Lint with flake8
+      - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # stop the build on any warnings, too
+          # stop the build on any other warnings, too
           flake8 . --count --statistics
       - if: matrix.python-version != '3.12'
         # pytype 2024.2.13 doesn't support Python 3.12
