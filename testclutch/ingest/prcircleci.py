@@ -32,8 +32,8 @@ class CircleAnalyzer:
         runs = self.circle.get_runs()
         logging.debug('Search found %d runs', len(runs))
         for run in runs:
-            if (run['lifecycle'] == 'finished' and
-                    run['pull_requests']):
+            if (run['lifecycle'] == 'finished'
+                    and run['pull_requests']):
                 url = run['pull_requests'][0]['url']
                 build_pr = self.circlei.pr_from_url(url)
                 if pr == build_pr:

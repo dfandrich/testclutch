@@ -42,8 +42,8 @@ RUNS_BY_UNIQUE_JOB_SQL = f"SELECT testruns.id, testruns.time from ({RUNS_WITH_UN
 
 # Internal configuration consistency checks
 assert config.get('flaky_builds_min') >= config.get('flaky_failures_min') * 2
-assert (config.get('flaky_builds_min') >=
-        config.get('report_consecutive_failures') * 2 + config.get('flaky_failures_min'))
+assert (config.get('flaky_builds_min')
+        >= config.get('report_consecutive_failures') * 2 + config.get('flaky_failures_min'))
 
 
 @dataclass
@@ -95,8 +95,8 @@ class ResultsOverTimeByUniqueJob:
         if meta['origin'] == 'cirrus' and meta['ciresult'] == 'aborted':
             return True
         # This was only added 2023-08-03
-        if (meta['origin'] == 'gha' and
-                'cistepresult' in meta and meta['cistepresult'] == 'cancelled'):
+        if (meta['origin'] == 'gha'
+                and 'cistepresult' in meta and meta['cistepresult'] == 'cancelled'):
             return True
         # There seems to be no way to unambiguously determine this on Appveyor (checking if
         # the test run time >1h is too brittle).
@@ -284,8 +284,8 @@ class ResultsOverTimeByUniqueJob:
                 # TODO: can I get the info from first_failure somewhere else instead?
                 _, _, current_failure_counts = first_failure
                 permafails = [failure for failure in job_status.failed_tests
-                              if (current_failure_counts[failure] >
-                                  config.get('permafail_failures_min'))]
+                              if (current_failure_counts[failure]
+                                  > config.get('permafail_failures_min'))]
                 if permafails:
                     if job_status.test_result == 'success':
                         print("Some tests are failing but the test was marked as successful. "
@@ -379,8 +379,8 @@ class ResultsOverTimeByUniqueJob:
         """Perform the bulk of the analysis work of a uniquejob"""
         logging.info('Analyzing unique job %s', globaluniquejob)
         to_time = int(datetime.datetime.now().timestamp())
-        from_time = int((datetime.datetime.now() -
-                         datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        from_time = int((datetime.datetime.now()
+                         - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
         self.load_unique_job(globaluniquejob, from_time, to_time)
 
         # print('Failures over time:')
@@ -433,8 +433,8 @@ class ResultsOverTimeByUniqueJob:
                 permafails = [failure for failure in last_job_status.failed_tests
                               if (current_failure_counts[failure] > min_fails)]
 
-        oldjobtimestamp = (datetime.datetime.now() -
-                           datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
+        oldjobtimestamp = (datetime.datetime.now()
+                           - datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
 
         disabledjobtimestamp = (datetime.datetime.now() - datetime.timedelta(
             hours=config.get('disabled_job_hours'))).timestamp()
@@ -460,8 +460,8 @@ class ResultsOverTimeByUniqueJob:
         badtitle = []  # in raw HTML
         if permafails:
             permafails.sort(key=self._try_integer)
-            badtitle = (['These tests are now consistently failing:'] +
-                        [testname for testname in permafails])
+            badtitle = (['These tests are now consistently failing:']
+                        + [testname for testname in permafails])
             badtext = 'permafail'
         elif flaky:
             flaky.sort(key=lambda x: self._try_integer(x[0]))
@@ -480,11 +480,11 @@ class ResultsOverTimeByUniqueJob:
             title = datetime.datetime.fromtimestamp(
                 job_status.jobtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S %z')
             # Cannot use summarize_totals here because we have the wrong structure
-            title = (title +
-                     f'&#10;Success: {len(job_status.successful_tests)}' +
-                     f', Failed: {len(job_status.failed_tests)}' +
-                     f', Attempted: {len(job_status.attempted_tests)}' +
-                     f'&#10;Result: {escape(job_status.test_result)}')
+            title = (title
+                     + f'&#10;Success: {len(job_status.successful_tests)}'
+                     + f', Failed: {len(job_status.failed_tests)}'
+                     + f', Attempted: {len(job_status.attempted_tests)}'
+                     + f'&#10;Result: {escape(job_status.test_result)}')
 
             prefix_char = ''
             if job_status.test_result == 'success':
@@ -631,8 +631,8 @@ class ResultsOverTimeByUniqueJob:
         # (i.e. flaky_builds_min, which is checked at the entrance to this function).
         flaky_tests = [test
                        for test in fail_changes
-                       if test in successes and
-                       fail_changes[test] >= config.get('flaky_failures_min')]
+                       if test in successes
+                       and fail_changes[test] >= config.get('flaky_failures_min')]
         #print('flaky_tests',flaky_tests)
         test_attempt_counts = self.find_uniquejob_attempts()
         test_fail_counts = self.find_uniquejob_failures()

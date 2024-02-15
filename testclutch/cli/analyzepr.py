@@ -185,8 +185,8 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
                 # TODO: can I get the info from first_failure somewhere else instead?
                 _, _, current_failure_counts = first_failure
                 permafails = [failure for failure in job_status.failed_tests
-                              if (current_failure_counts[failure] >
-                                  config.get('permafail_failures_min'))]
+                              if (current_failure_counts[failure]
+                                  > config.get('permafail_failures_min'))]
                 if permafails:
                     if job_status.test_result == 'success':
                         permafailtitle = ("Some tests are failing but the test was marked as "
@@ -230,8 +230,8 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
             test_result = 'aborted'
         else:
             test_result = meta.get('testresult', 'unknown')
-        title = (title + '\n' + escape(', '.join([s.strip() for s in summary])) +
-                 '\nResult: ' + escape(test_result))
+        title = (title + '\n' + escape(', '.join([s.strip() for s in summary]))
+                 + '\nResult: ' + escape(test_result))
 
         num, cssclass = success_fail_count(meta, testcases, is_aborted)
 

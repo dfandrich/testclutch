@@ -288,8 +288,8 @@ class GithubIngestor:
                                         cimeta['runid'], job['status'])
                         return
                     meta['ciresult'] = job['conclusion']
-                    duration = (self._convert_time(job['completed_at']) -
-                                self._convert_time(job['started_at']))
+                    duration = (self._convert_time(job['completed_at'])
+                                - self._convert_time(job['started_at']))
                     meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
                     step = self.find_job_step(jobs, meta)
                     if step:
@@ -300,10 +300,10 @@ class GithubIngestor:
                             # This happens in a timeout scenario, for example.
                             meta['cistepresult'] = job['conclusion']
                         if step['completed_at'] and step['started_at']:
-                            duration = (self._convert_time(step['completed_at']) -
-                                        self._convert_time(step['started_at']))
-                            meta['steprunduration'] = (duration.seconds * 1000000 +
-                                                       duration.microseconds)
+                            duration = (self._convert_time(step['completed_at'])
+                                        - self._convert_time(step['started_at']))
+                            meta['steprunduration'] = (duration.seconds * 1000000
+                                                       + duration.microseconds)
 
                 for n, v in meta.items():
                     logging.debug(f'{n}={v}')

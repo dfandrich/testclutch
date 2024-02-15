@@ -30,8 +30,8 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         rsp = self.cirrus.get_runs(branch)
         for run in rsp['data']['ownerRepository']['builds']['edges']:
             node = run['node']
-            if (node['status'] in frozenset(('ABORTED', 'FAILED', 'COMPLETED')) and
-                    node['pullRequest'] == pr):
+            if (node['status'] in frozenset(('ABORTED', 'FAILED', 'COMPLETED'))
+                    and node['pullRequest'] == pr):
                 matches.append(int(node['id']))
         return matches
 

@@ -60,8 +60,8 @@ def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
     build_day = datetime.datetime.strptime(day_code + BUILDER_TZ, '%Y%m%d%z').date()
     # Get the date of the first generated file in the tarball
     sentinel = tar.getmember(posixpath.join(first, SENTINEL_FILE))
-    generated_time = (datetime.datetime.fromtimestamp(sentinel.mtime, tz=datetime.timezone.utc) -
-                      datetime.timedelta(seconds=-PULL_TIME_LAG))
+    generated_time = (datetime.datetime.fromtimestamp(sentinel.mtime, tz=datetime.timezone.utc)
+                      - datetime.timedelta(seconds=-PULL_TIME_LAG))
     generated_date = generated_time.date()
 
     # Sanity check the dates

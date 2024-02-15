@@ -269,8 +269,8 @@ class CircleIngestor:
             jobmeta['cistepid'] = action['step']
             jobmeta['stepstarttime'] = int(self._convert_time(action['start_time']).timestamp())
             jobmeta['stepfinishtime'] = int(self._convert_time(action['end_time']).timestamp())
-            duration = (self._convert_time(action['end_time']) -
-                        self._convert_time(action['start_time']))
+            duration = (self._convert_time(action['end_time'])
+                        - self._convert_time(action['start_time']))
             jobmeta['steprunduration'] = duration.seconds * 1000000 + duration.microseconds
             jobmeta['cistepresult'] = action['status']
 

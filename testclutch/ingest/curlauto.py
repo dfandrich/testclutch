@@ -46,9 +46,9 @@ class MassagedLog(TextIO):
 
     def readline(self):
         l = self.file_obj.readline()
-        if (RE_FAILED.search(l) or RE_IGNORED.search(l) or RE_SKIPAFTERSTART_PART.search(l) or
-                RE_EXITFAILED.search(l) or RE_TORTURESKIPPED.search(l) or
-                RE_VALGRINDFAILED.search(l)):
+        if (RE_FAILED.search(l) or RE_IGNORED.search(l) or RE_SKIPAFTERSTART_PART.search(l)
+            or RE_EXITFAILED.search(l) or RE_TORTURESKIPPED.search(l)
+                or RE_VALGRINDFAILED.search(l)):
             l = ' ' + l
         return l
 

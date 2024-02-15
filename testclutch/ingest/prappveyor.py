@@ -33,8 +33,8 @@ class AppveyorAnalyzeJob:
         results = []
         for job in runs['builds']:
             # Only look at completed runs
-            if (job['status'] in frozenset(('success', 'failed', 'cancelled')) and
-                    'pullRequestId' in job and int(job['pullRequestId']) == pr):
+            if (job['status'] in frozenset(('success', 'failed', 'cancelled'))
+                    and 'pullRequestId' in job and int(job['pullRequestId']) == pr):
                 results.append(job['version'])
         return results
 

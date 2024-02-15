@@ -27,9 +27,9 @@ class GithubAnalyzeJob:
         self.prmeta = {}  # type: TestMeta
 
     def _is_matching_run(self, run: TestMeta, commit: str) -> bool:
-        return (run['event'] == PR_EVENT and
-                run['status'] == 'completed' and
-                run['head_sha'] == commit)
+        return (run['event'] == PR_EVENT
+                and run['status'] == 'completed'
+                and run['head_sha'] == commit)
 
     def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> List[int]:
         "Find all runs on PRs for a particular commit"

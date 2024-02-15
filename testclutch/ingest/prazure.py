@@ -34,9 +34,9 @@ class AzureAnalyzer(azure.AzureIngestor):
         # 2) we don't really care about the branch as long as the PR number matches.
         builds = self.azure.get_builds(None, hours)
         for build in builds['value']:
-            if (build['status'] == 'completed' and
-                    'pr.sourceSha' in build['triggerInfo'] and
-                    int(build['triggerInfo']['pr.number']) == pr):
+            if (build['status'] == 'completed'
+                and 'pr.sourceSha' in build['triggerInfo']
+                    and int(build['triggerInfo']['pr.number']) == pr):
                 matches.append(build['id'])
         return matches
 

@@ -171,8 +171,8 @@ class AppveyorIngestor:
             jobmeta['runtriggertime'] = int(self._convert_time(job['created']).timestamp())
             jobmeta['jobfinishtime'] = int(self._convert_time(job['finished']).timestamp())
             jobmeta['jobstarttime'] = int(self._convert_time(job['started']).timestamp())
-            runduration = (self._convert_time(job['finished']) -
-                           self._convert_time(job['started']))
+            runduration = (self._convert_time(job['finished'])
+                           - self._convert_time(job['started']))
             jobmeta['runduration'] = runduration.seconds * 1000000 + runduration.microseconds
             jobmeta['cios'] = job['osType']
             jobmeta['ciresult'] = job['status']

@@ -125,8 +125,8 @@ class AzureIngestor:
         cimeta['runfinishtime'] = int(self._convert_time(build['finishTime']).timestamp())
         # TODO: This is the length of the entire run, which isn't that interesting. Better would be
         # the length of each individual build, but that probably means looking at the timeline
-        runduration = (self._convert_time(build['finishTime']) -
-                       self._convert_time(build['startTime']))
+        runduration = (self._convert_time(build['finishTime'])
+                       - self._convert_time(build['startTime']))
         cimeta['runduration'] = runduration.seconds * 1000000 + runduration.microseconds
         if build['repository']['type'] == 'GitHub':
             cimeta['sourcerepo'] = 'https://github.com/' + build['repository']['id']

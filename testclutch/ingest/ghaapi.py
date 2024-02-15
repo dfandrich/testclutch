@@ -80,8 +80,8 @@ class GithubApi:
             params["created"] = ">" + since.isoformat()
         page = 1
         combined_resp = {}
-        while ('workflow_runs' not in combined_resp or
-               len(combined_resp['workflow_runs']) < MAX_RETRIEVED):
+        while ('workflow_runs' not in combined_resp
+               or len(combined_resp['workflow_runs']) < MAX_RETRIEVED):
             params['page'] = page
             resp = self.http.get(url, headers=self._standard_headers(), params=params)
             resp.raise_for_status()
