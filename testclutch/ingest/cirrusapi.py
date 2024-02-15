@@ -14,7 +14,6 @@ HTTPError = requests.exceptions.HTTPError
 
 # See https://cirrus-ci.org/api/
 GRAPHQL_URL = "https://api.cirrus-ci.com/graphql"
-#GRAPHQL_URL = "http://localhost:8000"
 LOGS_URL = "https://api.cirrus-ci.com/v1/task/{task_id}/logs/{command_name}.log"
 DATA_TYPE = "application/json"
 

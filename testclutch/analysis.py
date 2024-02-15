@@ -21,8 +21,8 @@ TestFailCount = Tuple[int, int, Dict[str, int]]
 
 # Select a set of all the unique test jobs. The uniqueness is a single string which
 # is the concatenation of: [account,]repo,origin,uniquejobname
-# THIS ISN'T FILTERED BY repo
-#UNIQUE_JOBS = r"SELECT DISTINCT GROUP_CONCAT(value) uniquejob FROM testrunmeta WHERE name IN ('uniquejobname', 'origin', 'account', 'checkrepo') GROUP BY id ORDER BY uniquejob"
+# NOTE: THIS ISN'T FILTERED BY repo
+# UNIQUE_JOBS = r"SELECT DISTINCT GROUP_CONCAT(value) uniquejob FROM testrunmeta WHERE name IN ('uniquejobname', 'origin', 'account', 'checkrepo') GROUP BY id ORDER BY uniquejob"
 
 # Returns testids for all tests matching a repo
 REPO_ID_SQL = r"SELECT id FROM testruns WHERE repo=?"
@@ -204,16 +204,12 @@ class ResultsOverTimeByUniqueJob:
         branch = config.expand('branch')
         commits = self.ds.select_all_commit_after_commit(
             last_good.checkrepo, branch, last_good.commit)
-        # List must hvae at least one good and one bad commit
+        # List must have at least one good and one bad commit
         assert len(commits) >= 2
         first_bad = commits[-2]  # commit immediately before the good one
 
         # Count the commits in the range
         for i, commit in enumerate(commits):
-            #if commit.commit_hash == last.commit_hash:
-            #    last_bad_index = i
-            #if commit.commit_hash == last_good.commit:
-            #    first_good_index = i
             if commit.commit_hash == first_bad.commit_hash:
                 first_bad_index = i
             if commit.commit_hash == first_fail.commit:
@@ -302,7 +298,6 @@ class ResultsOverTimeByUniqueJob:
                     # candidates
                     for testname in permafails:
                         num_fails = current_failure_counts[testname]
-                        #print('test',testname,'num_fails',num_fails,len(self.all_jobs_status))
                         print(self.report_permafail(testname, num_fails))
 
                     print('Latest failure:', job_status.url)
@@ -619,10 +614,8 @@ class ResultsOverTimeByUniqueJob:
             fail_changes[failed_test] = len([
                 1
                 for recid, jobtime, failure_counts in unique_failures
-                #if failure_counts.setdefault(failed_test, 0) == 1
                 if failure_counts[failed_test] == 1
             ])
-            #print('failed_test',failed_test, fail_changes[failed_test])
 
         # A flaky test must have at least one success; a test can't be flaky unless it
         # both succeeds and fails.
@@ -633,7 +626,6 @@ class ResultsOverTimeByUniqueJob:
                        for test in fail_changes
                        if test in successes
                        and fail_changes[test] >= config.get('flaky_failures_min')]
-        #print('flaky_tests',flaky_tests)
         test_attempt_counts = self.find_uniquejob_attempts()
         test_fail_counts = self.find_uniquejob_failures()
         flaky_tests.sort(key=self._try_integer)

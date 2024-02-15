@@ -73,10 +73,10 @@ class MsBuildLog(MassagedLog):
             # appear in the middle. So, just leave it in dedenting mode once we detect msbuild
             # is in use; it's highly likely that any log we're interested in in this case will
             # be run under msbuild so it will work just fine.
-            #elif (not l.startswith('[Microsoft .NET Framework')
-            #    and not l.startswith('Copyright (C) Microsoft Corporation')
-            #    and l.rstrip('\r\n')):
-            #    self.in_msbuild = False
+            #  elif (not l.startswith('[Microsoft .NET Framework')
+            #      and not l.startswith('Copyright (C) Microsoft Corporation')
+            #      and l.rstrip('\r\n')):
+            #      self.in_msbuild = False
         return l
 
 

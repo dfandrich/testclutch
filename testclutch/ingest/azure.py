@@ -136,8 +136,8 @@ class AzureIngestor:
             cimeta['pullrequest'] = build['triggerInfo']['pr.number']
             cimeta['commit'] = build['triggerInfo']['pr.sourceSha']
             cimeta['summary'] = build['triggerInfo']['pr.title']
-            # This gives the PR souce branch, which isn't interesting
-            #cimeta['branch'] = build['triggerInfo']['pr.sourceBranch']
+            # This gives the PR source branch, which isn't interesting
+            # cimeta['branch'] = build['triggerInfo']['pr.sourceBranch']
         else:
             # This is a CI build
             cimeta['commit'] = build['triggerInfo']['ci.sourceSha']

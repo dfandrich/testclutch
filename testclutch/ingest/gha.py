@@ -177,8 +177,8 @@ class GithubIngestor:
                 if e.response.status_code == 404:
                     logging.error('Log for for run %d reported by servers as Not Found', run_id)
                 else:
-                    #logging.error(e.args[0])
-                    # Re-raise the exception for visibility for now
+                    logging.error(e.args[0])
+                    # Re-raise the exception for better visibility for now
                     raise e
                 return None
 

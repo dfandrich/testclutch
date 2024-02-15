@@ -20,8 +20,8 @@ from testclutch.testcasedef import TestResult
 
 # Early headers
 RE_RUNTESTS = re.compile(r'perl.*/runtests\.pl (.*)$')
-# If a log is truncated, this line won't be found
-#RE_USINGAUTOMAKE = re.compile(r'make +all-am')
+# If a log is truncated, this line won't be found; use a different one (that may not be as reliable)
+# RE_USINGAUTOMAKE = re.compile(r'make +all-am')
 RE_USINGAUTOMAKE = re.compile(r'^Making all in ')
 # It's easier to figure out the compiler path on a libtool invocation, so restrict checking to that
 RE_COMPILERPATHAC = re.compile(r'''libtool .*--mode=compile (\S+) ''')
