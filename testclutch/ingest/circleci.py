@@ -66,8 +66,9 @@ class MassagedLog(io.StringIO):
         # slowdown.
         for log in log_content:
             content += log['message']
-            if log['truncated']:
+            if 'truncated' in log and log['truncated']:
                 logging.warning('Log was truncated by server')
+                # Truncation will also be detected by the log parser
         super().__init__(content)
 
 
