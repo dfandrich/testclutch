@@ -3,6 +3,7 @@ import unittest
 from typing import TextIO
 
 from .context import testclutch  # noqa: F401
+
 from testclutch.logparser import pytestparse  # noqa: I100
 
 DATADIR = 'data'

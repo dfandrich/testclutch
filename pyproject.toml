@@ -77,5 +77,5 @@ include = [
 # flake8-pep518 must be installed for flake8 to use these settings
 [tool.flake8]
 max-line-length = "100"
-ignore = "I201,W504,E741,E501,E265"
+ignore = "W504,E741,E501,E265"
 max-complexity = 25

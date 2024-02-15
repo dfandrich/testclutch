@@ -3,6 +3,7 @@ import os
 import unittest
 
 from .context import testclutch  # noqa: F401
+
 from testclutch.augment import curldailyinfo  # noqa: I100
 
 DATADIR = 'data'
