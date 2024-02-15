@@ -310,7 +310,7 @@ def ingest_files(args: argparse.Namespace):
 
 def main():
     args = parse_args()
-    log.setup(args)
+    log.setup(args, subprogram=args.origin)
 
     if args.runid:
         if not args.authfile and args.origin == 'gha':
