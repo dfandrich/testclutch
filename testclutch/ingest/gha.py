@@ -49,7 +49,9 @@ def file_ext_from_type(content_type: str) -> str:
 
 class MassagedLog(io.TextIOWrapper):
     """TextIOWrapper that removes the timestamp at the head of every log line"""
-    def readline(self):
+    def readline(self, size: int = -1):
+        # Earlier Python versions don't support size, so assume the default is never changed
+        assert (size == -1)
         l = super().readline()
         if l:
             l = l[29:]
