@@ -3313,7 +3313,6 @@ class TestCurlParse(unittest.TestCase):
             ('3', curlparse.TestResult.PASS, '', 32000),
         ], testcases)
 
-
     # Log created with: touch /tmp/curl/tests/libtest/sethostname.c && make test V=1 TFLAGS='500'
     def test_automake_compiler(self):
         with self.open_data('curlparse_automake_compiler.log') as f:

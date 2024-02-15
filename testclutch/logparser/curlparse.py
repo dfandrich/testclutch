@@ -116,7 +116,7 @@ def check_found_result(testcases: TestCases):
     return
 
 
-def parse_log_file(f: TextIO) -> ParsedLog:
+def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     """Parses curl's runtests.pl test log output.
 
     Returns: tuple of dict with metadata, list of tests
