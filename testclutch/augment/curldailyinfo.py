@@ -74,6 +74,7 @@ def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
 
     commit_msg = ''
     encodings = iter(CHANGES_CHARMAPS)
+    encoding = ''
     while True:
         try:
             encoding = next(encodings)
