@@ -33,7 +33,12 @@ class Datastore:
 
     def connect(self):
         """Opens an existing DB or creates a new one"""
-        self.db = sqlite3.connect(self.filename, timeout=DB_TIMEOUT)
+        try:
+            self.db = sqlite3.connect(self.filename, timeout=DB_TIMEOUT)
+        except sqlite3.OperationalError:
+            logging.error(f'Cannot open or create database (permission? missing dir?): {self.filename}')
+            raise
+
         self.cur = self.db.cursor()
         # Use WAL mode to allow multiple concurrent readers/writers
         self.cur.execute("PRAGMA journal_mode=WAL")
