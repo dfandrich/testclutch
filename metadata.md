@@ -19,6 +19,25 @@ Using these data types, where appropriate, will make analysis of data easier.
   they can be treated as integers.
 - Times are stored as POSIX-style integer seconds past the epoch (Jan. 1, 1970)
 - Durations are stored in microseconds
+- Booleans are stored as strings with "yes" or "no"
+- Arrays are stored as strings with array values separated with a special
+  character, usually a space
+
+## General rules
+
+- Don't include any information that you don't want made public. This is
+  usually not a problem because the data will probably all be derived from
+  public log files.
+- Try to keep data mostly unchanged from its originally form in the name of
+  data preservation. It can always be massaged later. In some cases, it may
+  make sense to store an altered version in a separate field for ease of use.
+  In other cases, altering the format of a field may make sense if it is
+  information-preserving and if the alternate is easier to work with.
+- Because of the previous rule, some fields may have different values but the
+  same meaning. The interpretation of some fields may need to be gated by the
+  contents of another field. e.g. the format of the "compiler" field might
+  depend on the "buildsystem" field, or the values in the "ciarch" field might
+  depend on the "origin" field.
 
 ## Mandatory
 

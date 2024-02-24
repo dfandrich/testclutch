@@ -201,6 +201,13 @@ as existing parsers, if possible and relevant, to make future analysis tasks
 simpler.  See [metadata](metadata.md) for a list of standard mandatory and some
 optional metadata types.
 
+## Compatibility
+
+Test Clutch is in rapid development and no guarantees of compatibility with
+future or previous versions is currently being made. Contact the developers if
+you would like to propose an API be stabilized. The first one is likely to be
+the test log parsing API.
+
 ## Future Work
 
 Having a database filled with test run information opens up a range of
