@@ -17,15 +17,14 @@ from testclutch.testcasedef import TestResult
 
 # pytest -r A format
 SUMMARY_START_RE = re.compile(r'^={5,} short test summary info =+$')
-SUMMARY_END_RE = re.compile(r'^={5,} ')
+# uses SESSION_END_RE to end
 RESULT_RE = re.compile(r'^(\w+) (.*::\S*) *(- )?(.*)$')
 SKIPPED_RE = re.compile(r'^(\w+) \[\S*\] (\S*): (.*)$')
 NONVERBOSE_SENTINAL_RE = re.compile(r'^collected ([0-9]+) items$')
 SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?')
 
 # pytest -v format
-SESSION_END_FAIL_RE = re.compile(r'^={5,} (\d+) fail')
-SESSION_END_RE = re.compile(r'^={5,} (\d+) (\w)')
+SESSION_END_RE = re.compile(r'^={5,} (\d+) (\w+).* in ([0-9.]+)s =')
 RESULTV_RE = re.compile(r'^(\S+::\S+) (\w+) *\[[ \d]+%\]$')
 VERBOSE_SENTINAL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
 PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)?')
@@ -51,7 +50,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
             logging.debug("Found the start of a pytest log")
             meta = {
                 'testformat': 'pytest',
-                'testresult': 'truncated',  # this type of log is always truncated; info is missing
+                'testresult': 'truncated',  # will be overwritten if the real end is found
             }
             while l := f.readline():
                 l = l.rstrip()
@@ -67,7 +66,12 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                     logging.debug("Found the start of a pytest short log")
                     while l := f.readline():
                         l = l.rstrip()
-                        if SUMMARY_END_RE.search(l):
+                        if r := SESSION_END_RE.search(l):
+                            if r.group(2) == 'failed':
+                                meta['testresult'] = 'failure'
+                            else:
+                                meta['testresult'] = 'success'
+                            meta['runtestsduration'] = str(int(float(r.group(3)) * 1000000))
                             break
                         elif r := RESULT_RE.search(l):
                             if r.group(1) == 'PASSED':
@@ -117,11 +121,12 @@ def parse_log_file(f: TextIO) -> ParsedLog:
             }
             while l := f.readline():
                 l = l.rstrip()
-                if SESSION_END_FAIL_RE.search(l):
-                    meta['testresult'] = 'failure'
-                    break
-                elif SESSION_END_RE.search(l):
-                    meta['testresult'] = 'success'
+                if r := SESSION_END_RE.search(l):
+                    if r.group(2) == 'failed':
+                        meta['testresult'] = 'failure'
+                    else:
+                        meta['testresult'] = 'success'
+                    meta['runtestsduration'] = str(int(float(r.group(3)) * 1000000))
                     break
                 elif r := PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)

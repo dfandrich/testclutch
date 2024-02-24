@@ -22,6 +22,7 @@ class TestCurlParse(unittest.TestCase):
         self.assertDictEqual({
             'os': 'linux',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
+            'runtestsduration': '80000',
             'testformat': 'pytest',
             'testresult': 'success'
         }, meta)
@@ -49,6 +50,7 @@ class TestCurlParse(unittest.TestCase):
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
+            'runtestsduration': '70000',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
             'testresult': 'failure'
@@ -79,6 +81,7 @@ class TestCurlParse(unittest.TestCase):
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
+            'runtestsduration': '490000',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
             'testresult': 'failure'
@@ -120,9 +123,10 @@ class TestCurlParse(unittest.TestCase):
             meta, testcases = pytestparse.parse_log_file_summary(f)
         self.assertDictEqual({
             'os': 'linux',
+            'runtestsduration': '450000',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
-            'testresult': 'truncated'
+            'testresult': 'failure'
         }, meta)
         self.assertEqual([
             ('tests/test_curlparse.py::TestCurlParse::test_torture',
