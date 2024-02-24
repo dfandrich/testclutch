@@ -133,6 +133,29 @@ class TestCurlParse(unittest.TestCase):
              pytestparse.TestResult.FAIL, 'AssertionError:...', 0),
         ], testcases)
 
+    def test_longtime(self):
+        # test takes over a minute, resulting in a slightly different summary line
+        with self.open_data('pytest_longtime.log') as f:
+            meta, testcases = pytestparse.parse_log_file(f)
+        self.assertDictEqual({
+            'os': 'linux',
+            'runtestsduration': '61160000',
+            'testdeps': 'Python 3.12.2, pytest-8.0.1, pluggy-1.4.0',
+            'testformat': 'pytest',
+            'testresult': 'failure'
+        }, meta)
+        self.assertEqual([
+            ('adddate_test.py::TestAdddateCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            ('adddate_test.py::TestAdddateCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            ('compuservecvt_test.py::TestCompuserveCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
+            ('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            ('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
+            ('maillogcvt_test.py::TestMaillogCvt::test_message_2', pytestparse.TestResult.FAILIGNORE, '', 0),
+            ('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            ('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            ('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+        ], testcases)
+
     def test_verbose_as_summary(self):
         # use the wrong parser
         with self.open_data('pytest_faillogs.log') as f:

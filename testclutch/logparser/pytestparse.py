@@ -24,8 +24,8 @@ NONVERBOSE_SENTINAL_RE = re.compile(r'^collected ([0-9]+) items$')
 SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?')
 
 # pytest -v format
-SESSION_END_RE = re.compile(r'^={5,} (\d+) (\w+).* in ([0-9.]+)s =')
-RESULTV_RE = re.compile(r'^(\S+::\S+) (\w+) *\[[ \d]+%\]$')
+SESSION_END_RE = re.compile(r'^={3,} (\d+) (\w+).* in ([0-9.]+)s ([()\d:]+)? *=')
+RESULTV_RE = re.compile(r'^(\S+::\S+) (\w+) +(\(.*\) +)?\[[ \d]+%\]$')
 VERBOSE_SENTINAL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
 PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)?')
 

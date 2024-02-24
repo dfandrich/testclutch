@@ -1,0 +1,53 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tmp
+collecting ... collected 9 items
+
+adddate_test.py::TestAdddateCvt::test_message_1 PASSED                   [ 11%]
+adddate_test.py::TestAdddateCvt::test_message_2 PASSED                   [ 22%]
+compuservecvt_test.py::TestCompuserveCvt::test_message_1 FAILED          [ 33%]
+compuservecvt_test.py::TestCompuserveCvt::test_message_2 PASSED          [ 44%]
+maillogcvt_test.py::TestMaillogCvt::test_message_1 SKIPPED (delibera...) [ 55%]
+maillogcvt_test.py::TestMaillogCvt::test_message_2 XFAIL (xfail this...) [ 66%]
+mantes_test.py::TestMantesCvt::test_message_1 PASSED                     [ 77%]
+uupccvt_test.py::TestUupcCvt::test_message_1 PASSED                      [ 88%]
+uupccvt_test.py::TestUupcCvt::test_message_2 PASSED                      [100%]
+
+=================================== FAILURES ===================================
+_______________________ TestCompuserveCvt.test_message_1 _______________________
+
+self = <compuservecvt_test.TestCompuserveCvt testMethod=test_message_1>
+
+    def test_message_1(self):
+>       self.run_inout_test('testdata/compuserve.input.1', 'testdata/compuserve.expected.1')
+
+compuservecvt_test.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+compuservecvt_test.py:41: in run_inout_test
+    self.assertEqual(expecteddata, actualdata)
+E   AssertionError: "Date[266 chars]'t touch this\n\nThank-you.\n\nBill\nBut deliberately fail\n\n" != "Date[266 chars]'t touch this\n\nThank-you.\n\nBill\n\n\n"
+E     Date: Sat, 06 Jun 1992 15:03:00 -0400
+E     To: 77777.111@compuserve.com
+E     From: Bill B. Ball <76543.210@compuserve.com>
+E     Subject: Re: Message to be converted
+E     
+E     Please convert this into a standard format. Do not convert these lines:
+E     Date:  01-Jan-92 12:34 EST
+E     Reply to: don't touch this
+E     
+E     Thank-you.
+E     
+E     Bill
+E   - But deliberately fail
+E     
+E   +
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/site-packages/dateutil/tz/tz.py:37
+  /usr/local/lib/python3.12/site-packages/dateutil/tz/tz.py:37: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+    EPOCH = datetime.datetime.utcfromtimestamp(0)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED compuservecvt_test.py::TestCompuserveCvt::test_message_1 - AssertionEr...
+=== 1 failed, 6 passed, 1 skipped, 1 xfailed, 1 warning in 61.16s (0:01:01) ====
