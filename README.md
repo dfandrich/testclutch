@@ -147,6 +147,10 @@ Reads in information about git commits into the database.
 Reads test results from log files from CI services and ingests them into the
 database.
 
+### tcmetadatastats
+
+Create a report summarizing the metadata and statistics about recent test logs.
+
 
 ## Debugging Programs
 

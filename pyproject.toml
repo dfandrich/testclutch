@@ -58,6 +58,7 @@ tcfindtestruns = "testclutch.cli.findtestruns:main"
 tcgitcommitinfo = "testclutch.cli.gitcommitinfo:main"
 tcingestlog = "testclutch.cli.ingestlog:main"
 tclogparse = "testclutch.logparser.logparse:main"
+tcmetadatastats = "testclutch.cli.metadatastats:main"
 tcquerytests = "testclutch.cli.querytests:main"
 
 [tool.setuptools]
