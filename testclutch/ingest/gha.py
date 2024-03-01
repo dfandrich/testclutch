@@ -142,19 +142,22 @@ class GithubIngestor:
         skipped = 0
         if self.dry_run:
             logging.info('Skipping ingestion into database')
-        for run in self.gh.get_runs(branch=branch,
-                                    since=datetime.datetime.now() - datetime.timedelta(hours=hours)
-                                    )['workflow_runs']:
-            if run['head_branch'] == branch and run['event'] == EVENT:
-                run_id = run['id']
-                logging.debug('%s #%s', run['name'], run_id)
-                count += 1
-                self.ingest_a_run(run_id)
-            else:
-                logging.debug('Job %s is on wrong branch: %s or event: %s',
-                              run['id'], run['head_branch'], run['event'])
-                skipped += 1
-                continue
+        runs = self.gh.get_runs(branch=branch,
+                                since=datetime.datetime.now() - datetime.timedelta(hours=hours))
+        if runs:
+            for run in runs['workflow_runs']:
+                if run['head_branch'] == branch and run['event'] == EVENT:
+                    run_id = run['id']
+                    logging.debug('%s #%s', run['name'], run_id)
+                    count += 1
+                    self.ingest_a_run(run_id)
+                else:
+                    logging.debug('Job %s is on wrong branch: %s or event: %s',
+                                  run['id'], run['head_branch'], run['event'])
+                    skipped += 1
+                    continue
+        else:
+            logging.info(f'No runs found in the last {hours} hours')
 
         logging.debug(f'{count} matching runs found, {skipped} skipped')
 
