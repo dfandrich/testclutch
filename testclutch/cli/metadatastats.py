@@ -215,10 +215,11 @@ def output_test_run_stats(trstats: TestRunStats, print_func):
     print_func('All tests results:')
     for status, count in results_count:
         code = TestResult(status)
-        print_func(f'{code.name}:', f'{count} ({count / total_tests * 100:.1f}%)', indent=1)
+        pct = count / total_tests * 100
+        print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
     print_func('TOTAL tests considered:', f'{total_tests} (100%)')
     truncated = trstats.get_count_for_name_value('testresult', 'truncated')
-    pct = truncated / total_tests_run * 100
+    pct = truncated / total_count * 100
     print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
 
     total_run_time = trstats.get_test_run_time()
