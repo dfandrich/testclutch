@@ -213,7 +213,8 @@ def output_test_run_stats(trstats: TestRunStats, print_func):
     print_func('Tests run per day:', f'{total_tests_run / days:.1f}')
 
     print_func('All tests results:')
-    for status, count in results_count:
+    # This sort key makes the results appear in a more logical progression
+    for status, count in sorted(results_count, key=lambda x: x[0] if x[0] else 99):
         code = TestResult(status)
         pct = count / total_tests * 100
         print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
