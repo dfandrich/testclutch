@@ -33,16 +33,18 @@ dependencies = [
     "zstd >= 1.4.5.1, <= 1.5.5.1",
 ]
 
+# The version dependencies listed are conservative and reflect ones that have
+# actually been tested
 [project.optional-dependencies]
 test = [
-    "pytest >= 6.1.5, <= 8.0.0"
+    "pytest >= 6.1.5, <= 8.0.2"
 ]
 dev = [
     "flake8 >= 5.0.4, <= 7.0.0",
     "flake8-builtins",
     "flake8-import-order",
     "flake8-pyproject",
-    "pytype >= 2023.9.19, <= 2024.2.13"
+    "pytype >= 2023.9.19, <= 2024.2.27"
 ]
 
 [project.urls]
