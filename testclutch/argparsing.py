@@ -56,7 +56,6 @@ def arguments_logging(parser: argparse.ArgumentParser):
         help="Go through the motions but don't make permanent changes")
     parser.add_argument(
         '-v', '--verbose',
-        dest='verbose',
         action='store_true',
         help="Show more log messages")
     parser.add_argument(
@@ -64,6 +63,10 @@ def arguments_logging(parser: argparse.ArgumentParser):
         action=StoreMultipleConstAction,
         attrs=['verbose'],
         help="Show debug level log messages")
+    parser.add_argument(
+        '--level-prefix',
+        action='store_true',
+        help="Include syslog priority level in log message as <N> prefix")
 
 
 def arguments_ci(parser: argparse.ArgumentParser):
