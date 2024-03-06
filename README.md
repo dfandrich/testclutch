@@ -68,6 +68,10 @@ The regression test suite can be run with the command:
 
   pytest
 
+Test Clutch does not require git for its basic functions, but those directly
+involved in querying git (like tcgitcommitinfo) require the git command-line
+tool be installed (version 1.8.3 and newer are known to work).
+
 ## Configuration
 
 ### Configuration File

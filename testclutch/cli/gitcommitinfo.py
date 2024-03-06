@@ -22,7 +22,9 @@ class GitCommitIngestor:
     def extract_git_commit_info(self, repo: str, branch: str, since: str) -> List[CommitInfo]:
         "Returns information about git commits"
         try:
-            commands = ['git', '-C', repo, 'log',
+            # git nowadays has -C to select the repo to use, but this way works with
+            # much older versions
+            commands = ['env', f'GIT_DIR={repo}', 'git', 'log',
                         '--pretty=format:%ct%n%H%n%cn%n%ce%n%an%n%ae%n%s%n',
                         '--since', since, branch]
             logging.debug('Running: %s', ' '.join(commands))

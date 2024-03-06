@@ -46,7 +46,7 @@ tcingestlog --origin=gha --authfile ~/.myghatokeninfile $HOURS
 # report.
 
 # Get the latest commits into a local bare git repository
-git -C myrepo.git fetch origin master:master
+env GIT_DIR=myrepo.git git fetch origin master:master
 
 # Since this is done entirely locally and is fast, always ingest a lot more
 # than we need to to reduce the chance of a commit being missed. This is a
@@ -65,7 +65,7 @@ tcdbutil checkcommitchain https://github.com/myrepo/myrepo master 11111111111111
 # used to turn short ones into full ones, based on what is loaded by
 # tcgitcommitinfo. The five CI services above all provide full hashes, so this
 # step isn't necessary for them.
-tcaugmentgithash 
+tcaugmentgithash
 
 ##########
 # ANALYSIS
