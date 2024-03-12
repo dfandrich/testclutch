@@ -46,19 +46,29 @@ def main():
             print(f'prev {c.prev_hash}')
             print(f'Author: {c.author_name} <{c.author_email}>')
             print(f'Commit: {c.committer_name} <{c.committer_email}>')
-            format_date = utils.format_datetime(datetime.datetime.fromtimestamp(c.commit_time).astimezone(datetime.timezone.utc))
+            format_date = utils.format_datetime(datetime.datetime.fromtimestamp(
+                c.commit_time).astimezone(datetime.timezone.utc))
             print(f'CommitDate: {format_date}')
             print()
             print(f'    {c.title}')
             print()
 
     elif sys.argv[1] == 'commitchainrev':
-        if len(sys.argv) not in (3, 5):
-            print('Usage: dbutil commitchainrev [<repo> <branch>] <commit>')
+        if len(sys.argv) not in (3, 4, 5):
+            print('Usage: dbutil commitchainrev [<repo> <branch> [<commit>]]')
             sys.exit(1)
         if len(sys.argv) == 5:
             repo, branch, commit = sys.argv[2:6]
-        else:
+        elif len(sys.argv) == 4:
+            repo, branch = sys.argv[2:5]
+            # Get the most recent commit
+            commits = ds.select_commit_before_time(repo, branch,
+                                                   int(datetime.datetime.now().timestamp()), 1)
+            if not commits:
+                print('Error: no matching commits found in db')
+                sys.exit(1)
+            commit = commits[0][0]
+        else:  # len(sys.argv) == 3
             repo = config.expand('check_repo')
             branch = config.expand('branch')
             commit = sys.argv[2]

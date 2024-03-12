@@ -56,9 +56,9 @@ let GITHOURS=($HOURS * 100)
 tcgitcommitinfo myrepo.git "$GITHOURS hours ago"
 
 # Test the chain of commits up to the first to ensure none are missed.
-# If the next command shows an error, use tcdbutil commitchainrev to start at
-# the given commit and use the last one that shows in the list.  The hard-coded
-# commit number here is the first commit in the chain.
+# If the next command shows an error, use tcdbutil commitchainrev and use the
+# last commit that shows in the list.  The hard-coded commit number here is the
+# oldest commit in the chain to start checking.
 tcdbutil checkcommitchain https://github.com/myrepo/myrepo master 1111111111111111222222222222222333333333
 
 # If a CI ingestion source does not always provide full git hashes, this can be
