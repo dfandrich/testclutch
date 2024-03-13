@@ -27,7 +27,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
 
     # Try all functions in order until one returns a result
     for mod, func in module_functions:
-        logging.info('Calling %s.%s()', mod, func)
+        logging.debug('Calling %s.%s()', mod, func)
         module = importlib.import_module(mod)
         meta, testcases = module.__dict__.get(func)(f)
         if testcases:

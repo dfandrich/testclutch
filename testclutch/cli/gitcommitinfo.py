@@ -72,7 +72,7 @@ class GitCommitIngestor:
                 try:
                     self.ds.store_commit_info(self.repo, branch, info)
                 except db.IntegrityError:
-                    logging.warning('Commit %s has already been ingested!', info.commit_hash[:8])
+                    logging.debug('Commit %s has already been ingested!', info.commit_hash[:8])
 
 
 def ingest_commits(args):

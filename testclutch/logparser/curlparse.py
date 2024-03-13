@@ -356,7 +356,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
 
     # Log major problems in parsing
     if 'testingver' not in meta:
-        logging.info('The file does not appear to be a curl test log')
+        logging.debug('The file does not appear to be a curl test log')
 
     if not testcases:
         logging.info('No curl tests could be found in the file')
