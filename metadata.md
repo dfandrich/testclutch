@@ -125,7 +125,9 @@ repo.
 
 ### commit
 
-Identifier of the source being tested. This is relative to `sourcerepo`.
+Identifier of the source being tested. This is relative to `sourcerepo`. This
+field may end up becoming mandatory, since knowing the source is essential to
+understanding the test results.
 
 ### branch
 
