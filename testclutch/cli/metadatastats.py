@@ -212,13 +212,12 @@ def output_test_run_stats(trstats: TestRunStats, print_func):
     print_func('Total tests run:', f'{total_tests_run}')
     print_func('Tests run per day:', f'{total_tests_run / days:.1f}')
 
-    print_func('All tests results:')
+    print_func('TOTAL tests considered:', f'{total_tests} (100%)')
     # This sort key makes the results appear in a more logical progression
     for status, count in sorted(results_count, key=lambda x: x[0] if x[0] else 99):
         code = TestResult(status)
         pct = count / total_tests * 100
         print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
-    print_func('TOTAL tests considered:', f'{total_tests} (100%)')
     truncated = trstats.get_count_for_name_value('testresult', 'truncated')
     pct = truncated / total_count * 100
     print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
