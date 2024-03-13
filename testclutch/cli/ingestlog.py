@@ -154,7 +154,11 @@ def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore])
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    token = args.authfile.read().strip()
+    if args.authfile:
+        token = args.authfile.read().strip()
+    else:
+        logging.warning('Supply a token to avoid errors downloading GHA logs')
+        token = ''
     ghi = gha.GithubIngestor(parts[1], parts[2], token, ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} from GHA')

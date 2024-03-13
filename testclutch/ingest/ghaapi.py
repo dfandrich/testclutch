@@ -1,7 +1,8 @@
 """Retrieve logs from GitHub Actions runs
 
 The token must be created from the GitHub personal settings "Developer Settings" menu as a
-fine-grained personal access token with repository permission "Read access to actions and metadata".
+fine-grained personal access token. It can be set for only public repositories and does not need any
+fine-grained repository permissions in order to read GitHub Actions logs.
 """
 
 import datetime
