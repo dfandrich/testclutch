@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from html import escape
 from typing import Dict, List, Optional, Set, Tuple, Union
 
+import testclutch
 from testclutch import config
 from testclutch import db
 from testclutch.gitdef import CommitInfo
@@ -339,11 +340,12 @@ class ResultsOverTimeByUniqueJob:
              .arrow {font-size: 200%;}
 
              .jobname {min-width: 30em; }
-            </style>
-            </head>
-            <body>
+            </style>\
             """))
         print(textwrap.dedent(f"""\
+            <meta name="generator" content="Test Clutch {testclutch.__version__}">
+            </head>
+            <body>
             <h1>Test report for {escape(repo)}</h1>
             Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
             covering runs over the past {config.get('analysis_hours') / 24:.0f} days

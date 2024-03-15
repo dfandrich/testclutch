@@ -9,6 +9,7 @@ import textwrap
 from html import escape
 from typing import Iterable, List, Tuple
 
+import testclutch
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
@@ -123,9 +124,12 @@ def output_nv_summary_text(nv: Iterable, full_list: bool):
 
 def output_nv_summary_html(nv: Iterable, repo: str, hours: int, full_list: bool):
     now = datetime.datetime.now(datetime.timezone.utc)
-    print(textwrap.dedent(f"""
+    print(textwrap.dedent(f"""\
         <!DOCTYPE html>
-        <html><head><title>Metadata values</title></head><body>
+        <html><head><title>Metadata values</title>
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        </head>
+        <body>
         <h1>Metadata for test runs on {escape(repo)}</h1>
         Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
         covering runs over the past {hours / 24:.0f} days.
@@ -158,7 +162,10 @@ def output_test_run_stats_html(trstats: TestRunStats):
     days = (now - trstats.since).days
     print(textwrap.dedent(f"""
         <!DOCTYPE html>
-        <html><head><title>Test run statistics</title></head><body>
+        <html><head><title>Test run statistics</title>
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        </head>
+        <body>
         <h1>Test run statistics for test runs on {escape(trstats.repo)}</h1>
         Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
         covering runs over the past {days:.0f} days.

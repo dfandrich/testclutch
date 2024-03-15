@@ -10,6 +10,7 @@ import urllib
 from html import escape
 from typing import Optional, Sequence, Tuple
 
+import testclutch
 from testclutch import analysis
 from testclutch import argparsing
 from testclutch import config
@@ -90,6 +91,7 @@ def print_html_header(pr: int):
     print(textwrap.dedent(f"""\
         <!DOCTYPE html>
         <html><head><title>PR#{pr} Test Analysis</title>
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
         """))
     print(textwrap.dedent("""\
         <style type="text/css">
