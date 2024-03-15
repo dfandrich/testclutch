@@ -6,8 +6,7 @@ import logging
 import tempfile
 from typing import Any, Dict, Optional, Tuple
 
-import requests
-from requests.adapters import HTTPAdapter, Retry
+from testclutch import netreq
 
 
 # See https://www.appveyor.com/docs/api/
@@ -29,20 +28,12 @@ class AppveyorApi:
         self.account = account
         self.project = project
         self.token = token
-
-        # Experimental retry settings
-        # This should delay a total of 10+20+40+80 seconds before aborting
-        retry_strategy = Retry(total=4, backoff_factor=10,
-                               status_forcelist=[429, 500, 502, 503, 504],
-                               allowed_methods=["HEAD", "GET", "OPTIONS"])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.http = requests.Session()
-        self.http.mount("https://", adapter)
-        self.http.mount("http://", adapter)
+        self.http = netreq.Session()
 
     def _standard_headers(self) -> Dict:
         return {"Accept": DATA_TYPE,
-                "Content-Type": DATA_TYPE
+                "Content-Type": DATA_TYPE,
+                "User-Agent": netreq.USER_AGENT
                 }
 
     def get_runs(self, branch: str) -> Dict[str, Any]:

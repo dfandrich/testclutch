@@ -7,10 +7,10 @@ import tempfile
 import urllib.parse
 from typing import Any, Dict, Optional, Tuple
 
-import requests
-from requests.adapters import HTTPAdapter, Retry
+from testclutch import netreq
 
-HTTPError = requests.exceptions.HTTPError
+
+HTTPError = netreq.HTTPError
 
 # See https://cirrus-ci.org/api/
 GRAPHQL_URL = "https://api.cirrus-ci.com/graphql"
@@ -306,19 +306,11 @@ class CirrusApi:
             raise RuntimeError('Unsupported checkurl ' + checkurl)
         self.platform = 'github'
         self.token = token
-
-        # Experimental retry settings
-        # This should delay a total of 10+20+40+80 seconds before aborting
-        retry_strategy = Retry(total=4, backoff_factor=10,
-                               status_forcelist=[429, 500, 502, 503, 504],
-                               allowed_methods=["HEAD", "GET", "OPTIONS"])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.http = requests.Session()
-        self.http.mount("https://", adapter)
-        self.http.mount("http://", adapter)
+        self.http = netreq.Session()
 
     def _standard_headers(self) -> Dict:
-        return {"Accept": DATA_TYPE
+        return {"Accept": DATA_TYPE,
+                "User-Agent": netreq.USER_AGENT
                 }
 
     def query_graphql(self, query: str, var: Dict) -> Dict:

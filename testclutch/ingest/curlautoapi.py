@@ -8,13 +8,13 @@ import logging
 import re
 import tempfile
 import urllib
-from typing import List
+from typing import Dict, List
 
-import requests
-from requests.adapters import HTTPAdapter, Retry
+from testclutch import netreq
 
 
 BASE_URL = "https://curl.se/dev/inbox/"
+DATA_TYPE = "text/html,text/plain"
 
 LOG_FILE_RE = re.compile(r'^build-.*\.log$')
 
@@ -68,20 +68,19 @@ class HTMLDirParser(html.parser.HTMLParser):
 class CurlAutoApi:
 
     def __init__(self):
-        # Experimental retry settings
         # This should delay a total of 5+10+20+40 seconds before aborting
-        retry_strategy = Retry(total=4, backoff_factor=5,
-                               status_forcelist=[429, 500, 502, 503, 504],
-                               allowed_methods=["HEAD", "GET", "OPTIONS"])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.http = requests.Session()
-        self.http.mount("https://", adapter)
-        self.http.mount("http://", adapter)
+        self.http = netreq.Session(backoff_factor=5)
+
+    def _standard_headers(self) -> Dict:
+        return {"Accept": DATA_TYPE,
+                "User-Agent": netreq.USER_AGENT
+                }
 
     def get_runs(self) -> List[str]:
         """Returns info about all recent workflow runs"""
         url = BASE_URL
-        with self.http.get(url) as resp:
+        logging.debug('Retrieving index from %s', url)
+        with self.http.get(url, headers=self._standard_headers()) as resp:
             resp.raise_for_status()
             htmlp = HTMLDirParser()
             htmlp.feed(resp.text)
@@ -93,7 +92,7 @@ class CurlAutoApi:
     def get_logs(self, log_name: str) -> str:
         url = BASE_URL + log_name
         logging.debug('Retrieving log from %s', url)
-        with requests.get(url, stream=True) as resp:
+        with netreq.get(url, stream=True) as resp:
             resp.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
                 for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):

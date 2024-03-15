@@ -7,9 +7,9 @@ import tempfile
 import urllib
 from typing import Any, Dict, List, Optional, Tuple
 
-import requests
-from requests.adapters import HTTPAdapter, Retry
+from testclutch import netreq
 
+HTTPError = netreq.HTTPError
 
 # See https://circleci.com/docs/api/v1/
 BASE_URL = "https://circleci.com/api/v1.1"
@@ -35,20 +35,13 @@ class CircleApi:
         if netloc != 'github.com':
             raise RuntimeError('Unsupported checkurl ' + checkurl)
         self.vcs = 'github'
-
-        # Experimental retry settings
-        # This should delay a total of 10+20+40+80 seconds before aborting
-        retry_strategy = Retry(total=4, backoff_factor=10,
-                               status_forcelist=[429, 500, 502, 503, 504],
-                               allowed_methods=["HEAD", "GET", "OPTIONS"])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.http = requests.Session()
-        self.http.mount("https://", adapter)
-        self.http.mount("http://", adapter)
+        self.http = netreq.Session()
 
     def _standard_headers(self) -> Dict:
         return {"Accept": DATA_TYPE,
-                "Content-Type": DATA_TYPE}
+                "Content-Type": DATA_TYPE,
+                "User-Agent": netreq.USER_AGENT
+                }
 
     def get_runs(self) -> List[Dict[str, Any]]:
         """Returns info about all recent workflow runs on Cirrus CI"""

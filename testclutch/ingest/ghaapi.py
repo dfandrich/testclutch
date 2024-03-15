@@ -10,11 +10,10 @@ import json
 import tempfile
 from typing import Any, Dict, Optional, Tuple
 
-import requests
-from requests.adapters import HTTPAdapter, Retry
+from testclutch import netreq
 
 
-HTTPError = requests.exceptions.HTTPError
+HTTPError = netreq.HTTPError
 
 # See https://docs.github.com/en/rest?apiVersion=2022-11-28
 BASE_URL = "https://api.github.com/repos/{owner}/{repo}/actions/{endpoint}"
@@ -40,21 +39,17 @@ class GithubApi:
         self.repo = repo
         self.token = token
 
-        # Experimental retry settings
         # This should delay a total of 30+60+120+240+480 seconds before aborting
         # Oddly, GitHub uses 403 and not 429 for Client Error: rate limit exceeded
         # TODO: subclass Retry to override get_retry_after and support the
         # GitHub x-ratelimit-remaining and x-ratelimit-reset headers
-        retry_strategy = Retry(total=5, backoff_factor=30,
-                               status_forcelist=[403, 429, 500, 502, 503, 504])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.http = requests.Session()
-        self.http.mount("https://", adapter)
-        self.http.mount("http://", adapter)
+        self.http = netreq.Session(total=5, backoff_factor=30,
+                                   status_forcelist=[403, 429, 500, 502, 503, 504])
 
     def _standard_headers(self) -> Dict:
         headers = {"Accept": DATA_TYPE,
-                   "X-GitHub-Api-Version": API_VERSION
+                   "X-GitHub-Api-Version": API_VERSION,
+                   "User-Agent": netreq.USER_AGENT
                    }
         if ALWAYS_AUTH:
             headers['Authorization'] = 'Bearer ' + self.token
