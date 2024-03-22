@@ -139,7 +139,7 @@ def output_nv_summary_html(nv: Iterable, repo: str, hours: int, full_list: bool)
         <br>
         """))
     for n, v in itertools.groupby(nv, key=lambda x: x[0]):
-        print(f'<details><summary>{escape(n)}</summary><ul>')
+        print(f'<details><summary id="{escape(n)}">{escape(n)}</summary><ul>')
         if not full_list and n in IGNORED_NAMES:
             print('<li>(redacted)</li>')
         else:
