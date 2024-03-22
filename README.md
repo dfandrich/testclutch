@@ -1,4 +1,4 @@
-# Test Clutch
+![Test Clutch logo](test-clutch-logo.svg)
 
 Test Clutch is a system for tracking and analyzing automated regression test
 results over multiple continuous integration services. It was born from the
