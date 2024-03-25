@@ -76,7 +76,8 @@ tool be installed (version 1.8.3 and newer are known to work).
 
 ### Configuration File
 
-Create a file `~/.config/testclutchrc` in the same format as `configdef.py`.
+Create a file `~/.config/testclutchrc` in the same format as `configdef.py`
+(you can use the file `examples/testclutchrc` as a template).
 Most items have sane defaults, but `check_repo` must be set to a URL for the
 repository of your source code. This is used as an identifier in the database
 and can be used by augmentation jobs.
@@ -112,6 +113,12 @@ The most interesting report currently available is obtained by running
 `tcanalysissum`. Another program `tcanalyzepr` is also available to download
 test results relating to a GitHub PR to summarize the run tests and indicate
 which failing tests have recently been flaky.
+
+### Sample Update Script
+
+The file `examples/daily-update` is an example that you can use to create a
+custom periodic update script for your own use case. It can be installed as a
+cron job to generate up-to-date test reports.
 
 ## Programs
 
