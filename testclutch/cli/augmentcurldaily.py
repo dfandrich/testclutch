@@ -95,11 +95,11 @@ class CurlDailyAugmenter:
 
         # Find daily build test logs that already have commits
         res = self.ds.cur.execute(DAILY_BUILDS_WITH_COMMIT_SQL, (day_code, ))
-        with_commit = set(x[0] for x in res.fetchall())
+        with_commit = frozenset(x[0] for x in res.fetchall())
         if with_commit:
             logging.info('...but %d jobs already have a commit', len(with_commit))
 
-        # Remove records that already have a commit
+        # Drop records from list that already have a commit
         recs_to_add_commits = [job[0] for job in daily if job[0] not in with_commit]
         logging.info('...leaving %d jobs to modify', len(recs_to_add_commits))
 
