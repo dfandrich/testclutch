@@ -15,10 +15,10 @@
 
 Using these data types, where appropriate, will make analysis of data easier.
 
-- All metadata is stored as strings, but some commonly contain only digits so
+- All metadata is stored as strings, but some only ever contain digits so
   they can be treated as integers.
 - Times are stored as POSIX-style integer seconds past the epoch (Jan. 1, 1970)
-- Durations are stored in microseconds
+- Durations are stored in integer microseconds
 - Booleans are stored as strings with "yes" or "no"
 - Arrays are stored as strings with array values separated with a special
   character, usually a space
@@ -96,6 +96,7 @@ later commits). These are important points to consider in choosing a value:
 When the test run was requested to start running (in seconds after 1970).
 If this is not available, then runstarttime can be supplied instead.
 If this is not available, then runfinishtime can be supplied instead.
+One of those three is mandatory.
 
 ## Recommended
 
