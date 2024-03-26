@@ -45,16 +45,16 @@ class GitHashAugmenter:
             logging.info('Looking up hash %s', shorthash)
             res = self.ds.cur.execute(SHORT_HASH_SQL, (len(shorthash), shorthash))
             long = res.fetchall()
-            if len(long) > 1:
-                logging.warning('More than one commit hash matches for %s; skipping', shorthash)
             if not long:
                 logging.warning('Cannot find long hash for %s', shorthash)
+            elif len(long) > 1:
+                logging.warning('More than one commit hash matches for %s; skipping', shorthash)
             else:
                 longhash = long[0][0]
                 logging.debug('Replacing %s with %s', shorthash, longhash)
                 if not self.dry_run:
                     res = self.ds.cur.execute(UPDATE_HASH_SQL, (longhash, recid, shorthash))
-        self.ds.db.commit()
+                    self.ds.db.commit()
 
 
 def augment_short_hashes(args):
