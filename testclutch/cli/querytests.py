@@ -50,7 +50,10 @@ def main():
         except ValueError:
             since = datetime.datetime.fromisoformat(args.since)
     else:
-        since = datetime.datetime.fromtimestamp(0)
+        # Default to same time as logfile analysis time since it's probably only
+        # recent tests we would want to see
+        since = (datetime.datetime.now()
+                 - datetime.timedelta(hours=int(config.get('analysis_hours'))))
 
     ds = db.Datastore()
     ds.connect()
