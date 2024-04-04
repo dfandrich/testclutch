@@ -1,44 +1,74 @@
 """Query database of tests
 """
 
+import argparse
+import datetime
 import logging
 import re
 import sys
 
+from testclutch import argparsing
+from testclutch import config
 from testclutch import db
+from testclutch import log
 from testclutch import summarize
 
 
 NVO_RE = re.compile(r'^([^<>=!]+)(=|<>|!=|<=|>=|<|>)(.*)$')
 
 
+def parse_args(args=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description='Query database of tests')
+    argparsing.arguments_logging(parser)
+    parser.add_argument(
+        '-t', '--show-tests',
+        action='store_true',
+        help="Show test results")
+    parser.add_argument(
+        '--checkrepo',
+        required=not config.expand('check_repo'),
+        default=config.expand('check_repo'),
+        help="URL of the source repository we're dealing with")
+    parser.add_argument(
+        '--since',
+        help='Only look at logs created since this ISO date or number of hours')
+    parser.add_argument(
+        'query',
+        nargs='?',
+        help="DB query arguments")
+    return parser.parse_args(args=args)
+
+
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(filename)s: %(message)s',)
+    args = parse_args()
+    log.setup(args)
+
+    if args.since:
+        try:
+            since = datetime.datetime.now() - datetime.timedelta(hours=int(args.since))
+        except ValueError:
+            since = datetime.datetime.fromisoformat(args.since)
+    else:
+        since = datetime.datetime.fromtimestamp(0)
+
     ds = db.Datastore()
     ds.connect()
 
-    showtests = False
-    if len(sys.argv) > 1:
-        argn = 1
-        if sys.argv[argn] == '-t':
-            showtests = True
-            argn += 1
-            if len(sys.argv) <= argn:
-                logging.error('Missing match query')
-                sys.exit(1)
-
+    if args.query:
         # Search for logs matching metadata
         # e.g. runid=1234567, runtestsduration>555000000
-        val = NVO_RE.search(sys.argv[argn])
+        val = NVO_RE.search(args.query)
         if not val:
-            logging.error('Invalid match query: %s', sys.argv[argn])
+            logging.error('Invalid match query: %s', args.query)
             sys.exit(1)
 
-        rows = ds.select_meta_test_runs(val.group(1), val.group(2), val.group(3))
+        rows = ds.select_meta_test_runs(args.checkrepo, since,
+                                        val.group(1), val.group(2), val.group(3))
 
     else:
         # Show all logs
-        rows = ds.select_all_test_runs()
+        rows = ds.select_all_test_runs(args.checkrepo, since)
 
     for row in rows:
         print(row[0], row[1])
@@ -47,7 +77,7 @@ def main():
             print(f'{n}={v}')
         testcases = ds.select_test_results(row[0])
         summarize.show_totals(testcases)
-        if showtests:
+        if args.show_tests:
             testcases.sort(key=lambda x: summarize.try_integer(x[0]))
             for t in testcases:
                 print(t)

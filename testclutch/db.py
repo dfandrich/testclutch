@@ -145,13 +145,18 @@ class Datastore:
                      metadict))
         return results
 
-    def select_all_test_runs(self) -> TestRunRow:
+    def select_all_test_runs(self, repo: str, since: datetime.datetime) -> TestRunRow:
         """Returns a list of all test runs"""
-        runs = self.cur.execute("SELECT id, time FROM testruns")
+        oldest = int(since.timestamp())
+        runs = self.cur.execute("SELECT id, time FROM testruns "
+                                "WHERE testruns.repo = ? AND testruns.time >= ?",
+                                (repo, oldest))
         return self._collect_row(runs)
 
-    def select_meta_test_runs(self, name: str, op: str, value: str) -> TestRunRow:
+    def select_meta_test_runs(self, repo: str, since: datetime.datetime,
+                              name: str, op: str, value: str) -> TestRunRow:
         "Returns the tests matching a given piece of metadata"
+        oldest = int(since.timestamp())
         VALID_OPERATORS = frozenset(("=", "<", ">", "<=", ">=", "<>", "!="))
         if op not in VALID_OPERATORS:
             logging.error("Invalid operator %s", op)
@@ -159,7 +164,9 @@ class Datastore:
         logging.debug("testrunmeta.name = %s AND value %s %s", name, op, value)
         runs = self.cur.execute("SELECT testruns.id, time FROM testrunmeta "
                                 "INNER JOIN testruns ON testruns.id=testrunmeta.id "
-                                f"WHERE testrunmeta.name = ? AND value {op} ?", (name, value))
+                                "WHERE testruns.repo = ? AND testruns.time >= ? "
+                                f"AND testrunmeta.name = ? AND value {op} ?",
+                                (repo, oldest, name, value))
         return self._collect_row(runs)
 
     def select_test_results(self, testid: int) -> List[Tuple[str, int, str, int]]:
