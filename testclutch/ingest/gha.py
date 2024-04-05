@@ -28,7 +28,7 @@ EVENT = 'push'  # only look at logs of this event type
 LOG_CHARMAP = 'ISO-8859-1'
 
 # Matches may fail if GHA does filename substitution on characters other that this
-KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}]*$')
+KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}$]*$')
 
 # Strip these characters from filename to make them storable in a ZIP file
 # This MUST match the way that GHA does it. Update KNOWN_LOG_FN_RE if this is changed.
