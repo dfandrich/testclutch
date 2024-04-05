@@ -34,7 +34,9 @@ class Datastore:
     def connect(self):
         """Opens an existing DB or creates a new one"""
         try:
-            self.db = sqlite3.connect(self.filename, timeout=DB_TIMEOUT)
+            # Need IMMEDIATE to respect the timeout on writes
+            self.db = sqlite3.connect(self.filename,
+                                      timeout=DB_TIMEOUT, isolation_level="IMMEDIATE")
         except sqlite3.OperationalError:
             logging.error(f'Cannot open or create database (permission? missing dir?): {self.filename}')
             raise
