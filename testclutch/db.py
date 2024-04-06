@@ -42,6 +42,10 @@ class Datastore:
             raise
 
         self.cur = self.db.cursor()
+        # Increase cache to improve performance (negative means KiB)
+        self.cur.execute("PRAGMA cache_size = -10000")
+        # Store temporary tables in memory
+        self.cur.execute("PRAGMA temp_store = memory")
         # Use WAL mode to allow multiple concurrent readers/writers
         self.cur.execute("PRAGMA journal_mode=WAL")
         if self.cur.fetchone()[0] != 'wal':
