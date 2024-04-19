@@ -296,7 +296,7 @@ class TestCurlParse(unittest.TestCase):
         self.assertEqual([
             ('3020', curlparse.TestResult.PASS, '', 1091000),
             ('3021', curlparse.TestResult.FAIL, '', 0),
-            ('3030', curlparse.TestResult.PASS, '', 49000),
+            ('3030', curlparse.TestResult.PASS, '', 0),
         ], testcases)
 
     def test_event(self):
@@ -681,7 +681,7 @@ class TestCurlParse(unittest.TestCase):
             ('298', curlparse.TestResult.PASS, '', 102000),
             ('299', curlparse.TestResult.PASS, '', 97000),
             ('317', curlparse.TestResult.PASS, '', 170000),
-            ('318', curlparse.TestResult.PASS, '', 168000),
+            ('318', curlparse.TestResult.PASS, '', 0),
             ('326', curlparse.TestResult.PASS, '', 49000),
             ('327', curlparse.TestResult.PASS, '', 161000),
             ('329', curlparse.TestResult.PASS, '', 58000),

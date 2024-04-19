@@ -63,7 +63,7 @@ RE_SKIPAFTERSTART = re.compile(r'(^(CMD |RUN: |Warning: |postcheck |curl returne
                                r'(^\s?$)|( log/(\d+/)?std)|(^\S+ returned .* expecting (\d)+$)')
 RE_ABORTED = re.compile(r'Aborting tests$')
 # Should be just {11} after 2023-06-21
-RE_TESTRESULTOK = re.compile(r'^.{10,11} OK \(.*, took (\d+\.\d+)s')
+RE_TESTRESULTOK = re.compile(r'^.{10,11} OK \(.*, took (-?\d+\.\d+)s')
 RE_TORTUREOK = re.compile(r'^torture OK$')
 RE_TORTUREFAILED = re.compile(r'MEMORY FAILURE$')
 RE_TORTURESKIPPED = re.compile(r'^ found (no functions to make fail)$')
@@ -73,7 +73,7 @@ RE_FAILSUMMARY = re.compile(r'^TESTFAIL: These test cases failed: ')
 
 # Test log results with -s option
 RE_TESTSTARTSHORT = re.compile(r'^test (\d{4,5})\.\.\.$')
-RE_TESTRESULTSHORT = re.compile(r'^test (\d{4,5})\.\.\.(\w+) \(.*, took (\d+\.\d+)s')
+RE_TESTRESULTSHORT = re.compile(r'^test (\d{4,5})\.\.\.(\w+) \(.*, took (-?\d+\.\d+)s')
 RE_TESTFAILEDSHORT = re.compile(r'^test (\d{4,5})\.\.\.FAILED$')
 
 # testcurl headers
@@ -237,6 +237,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 l = l.rstrip()
                                 if rr := RE_TESTRESULTOK.search(l):
                                     duration = int(float(rr.group(1)) * 1000000)
+                                    if duration < 0:
+                                        duration = 0  # bug in the test harness
                                     testno = strip0(r.group(1))
                                     testcases.append((testno, TestResult.PASS, "", duration))
                                 elif rr := RE_TORTUREOK.search(l):
@@ -283,6 +285,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                             elif r := RE_TESTRESULTSHORT.search(l):
                                 assert r.group(2) == "OK"  # I think this is true
                                 duration = int(float(r.group(3)) * 1000000)
+                                if duration < 0:
+                                    duration = 0  # bug in the test harness
                                 testno = str(int(r.group(1)))
                                 testcases.append((testno, TestResult.PASS, "", duration))
                             elif r := RE_TESTFAILEDSHORT.search(l):

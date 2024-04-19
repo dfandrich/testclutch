@@ -2797,7 +2797,7 @@ test 0299...[FTP over HTTP proxy with user:pass not in url]
 test 0317...[HTTP with custom Authorization: and redirect to new host]
 --pd---e--- OK (253 out of 1301, remaining: 10:53, took 0.170s, duration: 02:37)
 test 0318...[HTTP with custom Authorization: and redirect to new host]
---pd---e--- OK (254 out of 1301, remaining: 10:50, took 0.168s, duration: 02:37)
+--pd---e--- OK (254 out of 1301, remaining: 10:50, took -2.168s, duration: 02:37)
 test 0326...[HTTP GET chunked data in raw mode]
 --pd---e--- OK (255 out of 1301, remaining: 10:47, took 0.049s, duration: 02:37)
 test 0327...[HTTP with cookiejar without cookies left]
