@@ -37,7 +37,7 @@ jobs:
           # stop the build on any other warnings, too
           flake8 . --count --statistics
       - if: matrix.python-version != '3.12'
-        # pytype 2024.2.13 doesn't support Python 3.12
+        # pytype as of 2024.4.11 doesn't support Python 3.12
         name: Type check with pytype
         run: |
           pytype -j auto $(find testclutch tests -name '*.py')

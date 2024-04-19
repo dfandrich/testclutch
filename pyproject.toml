@@ -44,7 +44,7 @@ dev = [
     "flake8-builtins",
     "flake8-import-order",
     "flake8-pyproject",
-    "pytype >= 2023.9.19, <= 2024.3.19"
+    "pytype >= 2023.9.19, <= 2024.4.11"
 ]
 
 [project.urls]
