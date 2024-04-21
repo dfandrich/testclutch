@@ -176,9 +176,9 @@ class GithubIngestor:
             try:
                 fn, ft = self.gh.get_logs(run_id)
             except ghaapi.HTTPError as e:
-                # Not sure why GHA ever has no logs ready when we ask for them
+                # Not sure why GHA would ever have no logs ready when we ask for them, but it does
                 if e.response.status_code == 404:
-                    logging.error('Log for for run %d reported by servers as Not Found', run_id)
+                    logging.error('Log for run %d reported by server as Not Found', run_id)
                 else:
                     logging.error(e.args[0])
                     # Re-raise the exception for better visibility for now
