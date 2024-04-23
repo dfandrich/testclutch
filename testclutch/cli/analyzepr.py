@@ -28,7 +28,7 @@ from testclutch.testcasedef import TestResult
 
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='Ingest curl log files into the database')
+        description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
     argparsing.arguments_ci(parser)
     parser.add_argument(
@@ -381,7 +381,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    token = args.authfile.read()
+    token = args.authfile.read().strip()
     ghi = prgha.GithubAnalyzeJob(parts[1], parts[2], token, ds)
 
     for pr in args.pr:
