@@ -1728,7 +1728,8 @@ class TestCurlParse(unittest.TestCase):
             'os': 'linux',
             'paralleljobs': '14',
             'randomseed': '265640',
-            'runtestsopts': '-a -n -p 358 500 719 1007 1013 1014 1015 1016 1017 1018 1105 ',
+            'runtestsopts': '-a -n -p 358 500 719 1007 1013 1014 1015 1016 1017 1018 1105 ~1459 '
+                            'SIMULATED',
             'runtestsduration': '6000000',
             'systemhost': 'localhost',
             'systemos': 'Linux',
@@ -1755,7 +1756,8 @@ class TestCurlParse(unittest.TestCase):
             ('1007', curlparse.TestResult.FAIL, 'exit', 0),
             ('1015', curlparse.TestResult.FAIL, 'protocol', 0),
             ('719', curlparse.TestResult.FAIL, 'socks', 0),
-            ('358', curlparse.TestResult.SKIP, 'failed starting HTTP/2 server', 0)
+            ('358', curlparse.TestResult.SKIP, 'failed starting HTTP/2 server', 0),
+            ('1459', curlparse.TestResult.FAILIGNORE, 'exit', 0)
         ], testcases)
 
     # TODO: msbuild indents logs with spaces, which the curl parser doesn't know about.

@@ -1,15 +1,12 @@
 """Parses curl test log files
 
-TODO:
-    - handle test fail but ignore TestResult.FAILIGNORE
-    - see what other statuses CI systems let you set
 """
 
 import datetime
 import logging
 import re
 import zlib
-from typing import TextIO
+from typing import Set, TextIO  # noqa: F401
 
 from testclutch.logdef import ParsedLog, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
@@ -50,6 +47,7 @@ RE_SEED = re.compile(r'^\* Seed: (\d+)')
 
 # Test log results
 RE_STARTRESULTS = re.compile(r'^\*{41}')
+RE_TOIGNORE = re.compile(r'^Warning: test(\d{1,5}) result is ignored')
 RE_SKIPPED = re.compile(r'^test (\d{4,5}) SKIPPED: (.*)$')
 RE_FAILED = re.compile(r'^ (\d{1,5}): ((\w+)( \(.*\))?) FAILED')
 RE_VALGRINDFAILED = re.compile(r'^ (valgrind) ERROR')
@@ -124,6 +122,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     """
     meta = {}       # type: TestMeta
     testcases = []  # type: TestCases
+    toignore = set()  # type: Set[str]
     while l := f.readline():
         if RE_START.search(l):
             logging.debug("Found the start of a curl test log")
@@ -246,12 +245,20 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     testcases.append((testno, TestResult.PASS, "", 0))
                                     meta['testmode'] = 'torture'
                                 elif rr := RE_FAILED.search(l):
-                                    testcases.append((rr.group(1), TestResult.FAIL, rr.group(2), 0))
+                                    if rr.group(1) in toignore:
+                                        result = TestResult.FAILIGNORE
+                                    else:
+                                        result = TestResult.FAIL
+                                    testcases.append((rr.group(1), result, rr.group(2), 0))
                                 elif rr := RE_IGNORED.search(l):
                                     testcases.append((rr.group(1), TestResult.SKIP, rr.group(2), 0))
                                 elif rr := RE_EXITFAILED.search(l):
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.FAIL, rr.group(1), 0))
+                                    if testno in toignore:
+                                        result = TestResult.FAILIGNORE
+                                    else:
+                                        result = TestResult.FAIL
+                                    testcases.append((testno, result, rr.group(1), 0))
                                 elif rr := RE_ABORTED.search(l):
                                     testno = strip0(r.group(1))
                                     testcases.append((testno, TestResult.ABORT, rr.group(0), 0))
@@ -260,7 +267,11 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     meta['testmode'] = 'torture'
                                 elif rr := RE_VALGRINDFAILED.search(l):
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.FAIL, rr.group(1), 0))
+                                    if testno in toignore:
+                                        result = TestResult.FAILIGNORE
+                                    else:
+                                        result = TestResult.FAIL
+                                    testcases.append((testno, result, rr.group(1), 0))
                                 elif rr := RE_TORTURESKIPPED.search(l):
                                     testno = strip0(r.group(1))
                                     testcases.append((testno, TestResult.SKIP, r.group(1), 0))
@@ -275,7 +286,11 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 # it will be handled on the next pass below
                                 pass
                             elif r := RE_FAILED.search(l):
-                                testcases.append((r.group(1), TestResult.FAIL, r.group(2), 0))
+                                if r.group(1) in toignore:
+                                    result = TestResult.FAILIGNORE
+                                else:
+                                    result = TestResult.FAIL
+                                testcases.append((r.group(1), result, r.group(2), 0))
                             elif r := RE_IGNORED.search(l):
                                 testcases.append((r.group(1), TestResult.SKIP, r.group(2), 0))
                             elif r := RE_ABORTED.search(l):
@@ -290,7 +305,11 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 testno = str(int(r.group(1)))
                                 testcases.append((testno, TestResult.PASS, "", duration))
                             elif r := RE_TESTFAILEDSHORT.search(l):
-                                testcases.append((r.group(1), TestResult.FAIL, "", 0))
+                                if r.group(1) in toignore:
+                                    result = TestResult.FAILIGNORE
+                                else:
+                                    result = TestResult.FAIL
+                                testcases.append((r.group(1), result, "", 0))
                             elif r := RE_TOTALTIME.search(l):
                                 meta['runtestsduration'] = str(int(r.group(1)) * 1000000)
                             elif r := RE_OKSUMMARY.search(l):
@@ -302,6 +321,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 # This one will appear as well as the previous line, but this line
                                 # will prevail
                                 meta['testresult'] = 'failure'
+                            elif r := RE_TOIGNORE.search(l):
+                                toignore.add(r.group(1))
                             check_found_result(testcases)
 
         elif RE_TESTCURLCOMMITSTART.search(l):

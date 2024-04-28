@@ -56,7 +56,7 @@ make[4]: Entering directory '/tmp/c/tests/http/clients'
 make[4]: Leaving directory '/tmp/c/tests/http/clients'
 make[3]: Leaving directory '/tmp/c/tests/http'
 make[2]: Leaving directory '/tmp/c/tests'
-srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -p 358 500 719 1007 1013 1014 1015 1016 1017 1018 1105 
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -p 358 500 719 1007 1013 1014 1015 1016 1017 1018 1105 ~1459 SIMULATED
 sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
 ********* System characteristics ******** 
 * curl 8.2.0-DEV (x86_64-pc-linux-gnu) 
@@ -76,6 +76,7 @@ sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
 ***************************************** 
 test 1018 SKIPPED: no test
 test 1014 SKIPPED: curl lacks XXXnone server support
+Warning: test1459 result is ignored
 test 1017...[0-Y range on a file:// URL to stdout]
  1017: IGNORED: section client=>file has no name attribute
 sh: XXX../curl-config: No such file or directory
@@ -597,12 +598,21 @@ test 0719...[HTTP GET with IPv6 numerical via SOCKS5h]
 Warning: http/2 server unexpectedly alive
 RUN: failed to start the HTTP/2 server
 test 0358 SKIPPED: failed starting HTTP/2 server
-TESTDONE: 9 tests were considered during 6 seconds.
+test 1459...[SFTP with corrupted known_hosts]
+
+curl returned 67, when expecting 60
+ 1459: exit FAILED
+== Contents of files in the log/2/ dir after test 1459
+=== Start of file server.cmd
+ Testnum 1459
+=== End of file server.cmd
+TESTDONE: 10 tests were considered during 6 seconds.
 TESTINFO: 4 tests were skipped due to these restraints:
 TESTINFO: "curl lacks XXXnone server support" 1 time (1014)
 TESTINFO: "failed starting HTTP/2 server" 1 time (358)
 TESTINFO: "Test requires default test server host" 1 time (1105)
 TESTINFO: "no test" 1 time (1018)
+IGNORED: failed tests: 1459
 TESTDONE: 0 tests out of 5 reported OK: 0%
 
 TESTFAIL: These test cases failed: 1016 1013 1007 1015 719 
