@@ -59,14 +59,18 @@ jobs manually.
 The latest source code can be obtained from
 https://github.com/dfandrich/testclutch/
 
-The code is written entirely in Python.  Build and install the latest release
-of code from Github with:
+The code is written entirely in Python.  Build and install the latest code
+from Github with:
 
-  pip3 install https://glare.now.sh/dfandrich/testclutch/
+  python -m pip install https://github.com/dfandrich/testclutch/archive/refs/heads/master.tar.gz
 
 The regression test suite can be run with the command:
 
   pytest
+
+or
+
+  python -m unittest
 
 Test Clutch does not require git for its basic functions, but those directly
 involved in querying git (like tcgitcommitinfo) require the git command-line
