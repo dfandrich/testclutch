@@ -32,6 +32,8 @@ RECENT_IDS_SQL = r'''SELECT id FROM testruns WHERE time >= ? AND repo = ?'''
 
 # Returns a count of each kind of test result since the given time
 TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY result;'
+# Alternate formulation for memory efficiency testing
+#  TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testresults WHERE testresults.id in (SELECT id from testruns WHERE time >= ? AND repo = ?) GROUP BY result'
 
 # Returns the sum of a time spent on each test since the given time
 TEST_RUN_TIME_SQL = r'SELECT SUM(runtime) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ?;'
