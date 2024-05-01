@@ -225,15 +225,17 @@ def output_test_run_stats(trstats: TestRunStats, print_func):
         code = TestResult(status)
         pct = count / total_tests * 100
         print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
-    truncated = trstats.get_count_for_name_value('testresult', 'truncated')
-    pct = truncated / total_count * 100
-    print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
+    # Skip these on an empty DB
+    if total_count:
+        truncated = trstats.get_count_for_name_value('testresult', 'truncated')
+        pct = truncated / total_count * 100
+        print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
 
-    total_run_time = trstats.get_test_run_time()
-    print_func('Total time spent running tests:', f'{total_run_time / 1000000:.0f} sec.')
-    print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
-               f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
-    print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
+        total_run_time = trstats.get_test_run_time()
+        print_func('Total time spent running tests:', f'{total_run_time / 1000000:.0f} sec.')
+        print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
+                   f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
+        print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
     try:
         # This name isn't mandatory and an exception will be raised if there is nothing there
         largest, smallest = trstats.get_max_min_for_name('runtestsduration')
