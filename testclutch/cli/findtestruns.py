@@ -63,7 +63,7 @@ class FindFailedRuns:
 
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='Analyze test results in the database')
+        description='Find test runs matching specific tests')
     argparsing.arguments_logging(parser)
     query = parser.add_argument_group('query arguments', 'Specifying test matches')
     query.add_argument(
