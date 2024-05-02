@@ -155,3 +155,7 @@ The step name.
 ### url
 
 A URL to a page giving more details of the results of this test run.
+
+### testformat
+
+The kind of test log that was parsed to obtain these results.

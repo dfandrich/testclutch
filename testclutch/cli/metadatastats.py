@@ -7,7 +7,7 @@ import itertools
 import math
 import textwrap
 from html import escape
-from typing import Iterable, List, Tuple
+from typing import Callable, Iterable, List, Tuple
 
 import testclutch
 from testclutch import argparsing
@@ -23,7 +23,7 @@ NAME_VALUES_SQL = r'SELECT name, value FROM testruns INNER JOIN testrunmeta ON t
 # Returns a count of the number of test runs since the given time
 TEST_RUNS_COUNT_SQL = r'SELECT count(1) FROM testruns WHERE time >= ? AND repo = ?;'
 
-# Returns a count of each kind fo test result since the given time
+# Returns a count of each kind of test result since the given time
 TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time > ? AND repo = ? GROUP BY result;'
 
 # Returns the sum of a time spent on each test since the given time
@@ -40,6 +40,9 @@ MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FRO
 
 # Return count of matching name/value pairs since the given time
 COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? and value = ?;'
+
+# Job with highest number of tests run by test format, ignoring SKIP tests (result==3)
+MAX_TESTS_BY_TYPE_SQL = r'''SELECT testformat, MAX(numtests) FROM (SELECT testresults.id, value AS testformat, COUNT(1) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN (SELECT id FROM testruns WHERE time >= ? AND repo = ?) AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, value) GROUP BY testformat ORDER BY testformat;'''
 
 IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'jobstarttime',
                            'runduration', 'runfinishtime', 'runid', 'runprocesstime',
@@ -75,7 +78,7 @@ class TestRunStats:
         count.execute(TEST_RUNS_COUNT_SQL, (self.oldest, self.repo))
         return count.fetchone()[0]
 
-    def get_test_results_count(self):
+    def get_test_results_count(self) -> List[Tuple[int, int]]:
         assert self.ds.db  # satisfy pytype that this isn't None
         count = self.ds.db.cursor()
         count.execute(TEST_RESULTS_COUNT_SQL, (self.oldest, self.repo))
@@ -110,6 +113,12 @@ class TestRunStats:
         nvalues = self.ds.db.cursor()
         nvalues.execute(COUNT_NAME_VALUE_SQL, (self.oldest, self.repo, name, value))
         return nvalues.fetchone()[0]
+
+    def get_max_tests_by_type(self) -> List[Tuple[str, int]]:
+        assert self.ds.db  # satisfy pytype that this isn't None
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(MAX_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
+        return nvalues.fetchall()
 
 
 def output_nv_summary_text(nv: Iterable, full_list: bool):
@@ -202,7 +211,7 @@ def num_precision(n: float, p: int) -> int:
     return max(int(-math.log10(n) + p), 0) if n != 0 else p
 
 
-def output_test_run_stats(trstats: TestRunStats, print_func):
+def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - trstats.since).days
     print_func('Days of stats:', f'{days}')
@@ -244,6 +253,9 @@ def output_test_run_stats(trstats: TestRunStats, print_func):
     except TypeError:
         # No durations were found
         pass
+    print_func('Most number of tests attempted in one run by type:')
+    for testtype, maxtests in trstats.get_max_tests_by_type():
+        print_func(f'{testtype}: {maxtests}', indent=1)
     print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
     print_func('Number of unique CI systems:', len(trstats.get_values_for_name('origin')))
     print_func('Number of unique build systems:', len(trstats.get_values_for_name('buildsystem')))
