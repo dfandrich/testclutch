@@ -33,7 +33,7 @@ tcingestlog --origin=appveyor --account=myappveyoruser --howrecent $HOURS
 tcingestlog --origin=azure --account myazureuser --howrecent $HOURS
 tcingestlog --origin=circle --howrecent $HOURS
 tcingestlog --origin=cirrus --howrecent $HOURS
-tcingestlog --origin=gha --authfile ~/.myghatokeninfile $HOURS
+tcingestlog --origin=gha --authfile ~/.myghatokeninfile --howrecent $HOURS
 
 ##############
 # AUGMENTATION
