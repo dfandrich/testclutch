@@ -163,8 +163,10 @@ class Datastore:
                               name: str, op: str, value: str) -> TestRunRow:
         "Returns the tests matching a given piece of metadata"
         oldest = int(since.timestamp())
-        VALID_OPERATORS = frozenset(("=", "<", ">", "<=", ">=", "<>", "!="))
+        VALID_OPERATORS = frozenset(("=", "<", ">", "<=", ">=", "<>", "!=", "like", "LIKE",
+                                     "not like", "NOT LIKE"))
         if op not in VALID_OPERATORS:
+            # Safety check
             logging.error("Invalid operator %s", op)
             return []
         logging.debug("testrunmeta.name = %s AND value %s %s", name, op, value)

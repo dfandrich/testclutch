@@ -14,7 +14,7 @@ from testclutch import log
 from testclutch import summarize
 
 
-NVO_RE = re.compile(r'^([^<>=!]+)(=|<>|!=|<=|>=|<|>)(.*)$')
+NVO_RE = re.compile(r'^([^<>=!%]+)(=|<>|!=|<=|>=|<|>|%|!%)(.*)$')
 
 
 def parse_args(args=None) -> argparse.Namespace:
@@ -38,6 +38,15 @@ def parse_args(args=None) -> argparse.Namespace:
         nargs='?',
         help="DB query arguments")
     return parser.parse_args(args=args)
+
+
+def operator_from_matcher(matcher: str) -> str:
+    '''Convert the command-line operator to a SQL operator'''
+    if matcher == '%':
+        return 'LIKE'
+    if matcher == '!%':
+        return 'NOT LIKE'
+    return matcher
 
 
 def main():
@@ -65,9 +74,9 @@ def main():
         if not val:
             logging.error('Invalid match query: %s', args.query)
             sys.exit(1)
-
+        op = operator_from_matcher(val.group(2))
         rows = ds.select_meta_test_runs(args.checkrepo, since,
-                                        val.group(1), val.group(2), val.group(3))
+                                        val.group(1), op, val.group(3))
 
     else:
         # Show all logs
