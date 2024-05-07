@@ -76,8 +76,10 @@ tcmetadatastats --html --report=metadata_values >metadata-summary.html
 # Create an HTML summary of statistics about recent tests
 tcmetadatastats --html --report=test_run_stats >test-stats.html
 
-# Create an HTML report summarizing the last few months of tests, or as configured.
+# Create an HTML report of recent tests that failed
+tcmetadatastats --html --report=test_results_count >results-count.html
 
+# Create an HTML report summarizing the last few months of tests, or as configured.
 tcanalysissum --html >summary.html
 
 ##########

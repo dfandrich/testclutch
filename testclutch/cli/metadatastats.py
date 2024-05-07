@@ -5,9 +5,10 @@ import argparse
 import datetime
 import itertools
 import math
+import sys
 import textwrap
 from html import escape
-from typing import Callable, Iterable, List, Tuple
+from typing import Callable, Iterable, List, Tuple, Union
 
 import testclutch
 from testclutch import argparsing
@@ -22,6 +23,9 @@ NAME_VALUES_SQL = r'SELECT name, value FROM testruns INNER JOIN testrunmeta ON t
 
 # Returns a count of the number of test runs since the given time
 TEST_RUNS_COUNT_SQL = r'SELECT count(1) FROM testruns WHERE time >= ? AND repo = ?;'
+
+# Count of all rest results by test and format
+TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,count(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
 
 # Subquery to select all recent test run IDs for a project
 RECENT_IDS_SQL = r'''SELECT id FROM testruns WHERE time >= ? AND repo = ?'''
@@ -45,7 +49,7 @@ MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FRO
 COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? and value = ?;'
 
 # Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
-# {function} must be defined by the user
+# {function} must be defined by the caller
 FUNCTION_TESTS_BY_TYPE_SQL = f'''SELECT testformat, {{function}}(numtests) FROM (
     SELECT testresults.id, value AS testformat, COUNT(1) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN
         ({RECENT_IDS_SQL})
@@ -64,6 +68,32 @@ IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'job
                            'runstarttime', 'runtestsduration', 'runtriggertime', 'runurl',
                            'stepfinishtime', 'steprunduration', 'stepstarttime', 'systemhost',
                            'url', 'workflowid'))
+
+
+def _try_integer(val: str) -> Union[int, str]:
+    """Try to convert the value to a low-value 0-prefixed integer in string form
+
+    Returns plain string if it cannot. Use a sort key function to sort numeric
+    test names by numeric value and string test names alphabetically.  A more
+    general alternative would be natsort.natsorted()
+    """
+    try:
+        return '%09d' % int(val)
+    except ValueError:
+        return val
+
+
+def _try_integer_rev(val: str) -> Union[int, str]:
+    """Try to convert the value to an inverse low-value 0-prefixed integer in string form
+
+    Returns plain string if it cannot. Use a sort key function to sort numeric
+    test names by numeric value and string test names alphabetically.  A more
+    general alternative would be natsort.natsorted()
+    """
+    try:
+        return '%09d' % (2**sys.int_info.bits_per_digit - int(val))
+    except ValueError:
+        return val
 
 
 class MetadataStats:
@@ -139,6 +169,12 @@ class TestRunStats:
         assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(AVG_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
+        return nvalues.fetchall()
+
+    def get_test_results_count_by_test(self) -> List[Tuple[str, int, int]]:
+        assert self.ds.db  # satisfy pytype that this isn't None
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(TEST_RESULTS_COUNT_BY_TEST_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
 
@@ -289,6 +325,62 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
 
 
+def output_test_results_count(trstats: TestRunStats, print_func: Callable):
+    print_func('Test', 'Result', 'Count', title=True)
+
+    total_counts = trstats.get_test_results_count_by_test()
+    # Sort by count descending, then by increasing test number
+    total_counts.sort(key=lambda x: (_try_integer(x[2]), _try_integer_rev(x[0])), reverse=True)
+    for test, status, count in total_counts:
+        if status in frozenset((TestResult.PASS, TestResult.SKIP)):
+            continue
+        code = TestResult(status)
+        print_func(test, code.name, count)
+
+
+def output_test_results_count_text(trstats: TestRunStats):
+    def print_text(*items, title: bool = False):
+        for i in items:
+            print(i, end=' ')
+        print()
+        if title:
+            print('------' * len(items))
+    output_test_results_count(trstats, print_text)
+
+
+def output_test_results_count_html(trstats: TestRunStats):
+    now = datetime.datetime.now(datetime.timezone.utc)
+    days = (now - trstats.since).days
+    print(textwrap.dedent("""
+        <!DOCTYPE html>
+        <html><head><title>Test failure counts</title>
+        <style type="text/css">
+        tr:nth-child(even) {
+          background-color: #D6EEEE;
+        }
+        </style>
+        """ + f"""
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        </head>
+        <body>
+        <h1>Test failure counts for test runs on {escape(trstats.repo)}</h1>
+        Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
+        covering runs over the past {days:.0f} days.
+        <p>
+        <table>
+        """))
+
+    def print_html(*items, title: bool = False):
+        print('<tr>')
+        tag = 'th' if title else 'td'
+        for i in items:
+            print(f'<{tag}>{escape(str(i))}</{tag}>', end='')
+        print('</tr>')
+
+    output_test_results_count(trstats, print_html)
+    print('</table></body></html>')
+
+
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Summarize test metadata')
@@ -303,8 +395,8 @@ def parse_args(args=None) -> argparse.Namespace:
         help='List all value instead of redacting unintersting ones')
     parser.add_argument(
         '--report',
-        choices=['metadata_values', 'test_run_stats'],
-        default='metadata_values',
+        choices=['metadata_values', 'test_run_stats', 'test_results_count'],
+        required=True,
         help='Which type of report should be generated')
     return parser.parse_args(args=args)
 
@@ -334,6 +426,13 @@ def main():
             output_test_run_stats_html(trstats)
         else:
             output_test_run_stats_text(trstats)
+
+    elif args.report == 'test_results_count':
+        trstats = TestRunStats(ds, config.expand('check_repo'), since)
+        if args.html:
+            output_test_results_count_html(trstats)
+        else:
+            output_test_results_count_text(trstats)
 
 
 if __name__ == '__main__':
