@@ -23,11 +23,14 @@ NAME_VALUES_SQL = r'SELECT name, value FROM testruns INNER JOIN testrunmeta ON t
 # Returns a count of the number of test runs since the given time
 TEST_RUNS_COUNT_SQL = r'SELECT count(1) FROM testruns WHERE time >= ? AND repo = ?;'
 
+# Subquery to select all recent test run IDs for a project
+RECENT_IDS_SQL = r'''SELECT id FROM testruns WHERE time >= ? AND repo = ?'''
+
 # Returns a count of each kind of test result since the given time
-TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time > ? AND repo = ? GROUP BY result;'
+TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY result;'
 
 # Returns the sum of a time spent on each test since the given time
-TEST_RUN_TIME_SQL = r'SELECT SUM(runtime) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time > ? AND repo = ?;'
+TEST_RUN_TIME_SQL = r'SELECT SUM(runtime) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ?;'
 
 # Returns all metadata values for a given name since the given time
 ONE_NAME_VALUES_SQL = r'SELECT DISTINCT value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
@@ -35,14 +38,26 @@ ONE_NAME_VALUES_SQL = r'SELECT DISTINCT value FROM testruns INNER JOIN testrunme
 # Returns all unique job names run since the given time
 JOB_NAMES_SQL = r"SELECT DISTINCT origin, account, value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND name = 'uniquejobname' AND repo = ?;"
 
-# Returns largest values for a given name since the given time
+# Returns largest & smallest values for a given name since the given time
 MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
 
 # Return count of matching name/value pairs since the given time
 COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? and value = ?;'
 
-# Job with highest number of tests run by test format, ignoring SKIP tests (result==3)
-MAX_TESTS_BY_TYPE_SQL = r'''SELECT testformat, MAX(numtests) FROM (SELECT testresults.id, value AS testformat, COUNT(1) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN (SELECT id FROM testruns WHERE time >= ? AND repo = ?) AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, value) GROUP BY testformat ORDER BY testformat;'''
+# Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
+# {function} must be defined by the user
+FUNCTION_TESTS_BY_TYPE_SQL = f'''SELECT testformat, {{function}}(numtests) FROM (
+    SELECT testresults.id, value AS testformat, COUNT(1) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN
+        ({RECENT_IDS_SQL})
+    AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, value
+    )
+GROUP BY testformat ORDER BY testformat;'''
+
+# Job with highest number of tests run by test format
+MAX_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='MAX')
+
+# Average number of tests run by test format
+AVG_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='AVG')
 
 IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'jobstarttime',
                            'runduration', 'runfinishtime', 'runid', 'runprocesstime',
@@ -118,6 +133,12 @@ class TestRunStats:
         assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
+        return nvalues.fetchall()
+
+    def get_avg_tests_by_type(self) -> List[Tuple[str, int]]:
+        assert self.ds.db  # satisfy pytype that this isn't None
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(AVG_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
 
@@ -253,9 +274,12 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     except TypeError:
         # No durations were found
         pass
-    print_func('Most number of tests attempted in one run by type:')
+    print_func('Most number of tests attempted in one run by test format:')
     for testtype, maxtests in trstats.get_max_tests_by_type():
         print_func(f'{testtype}: {maxtests}', indent=1)
+    print_func('Average number of tests attempted in one run by test format:')
+    for testtype, avgtests in trstats.get_avg_tests_by_type():
+        print_func(f'{testtype}: {avgtests:.1f}', indent=1)
     print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
     print_func('Number of unique CI systems:', len(trstats.get_values_for_name('origin')))
     print_func('Number of unique build systems:', len(trstats.get_values_for_name('buildsystem')))
