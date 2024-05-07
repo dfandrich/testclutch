@@ -393,8 +393,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
             # If this happens, then the parser above may need to be fixed so that each test
             # result is extracted a single time.
             # It might simply be that --repeat=N was used to run tests multiple times.
-            logging.error(f'Tests appear more than once ({test[0]} is the first); '
-                          'Was the test run multiple times? Is there a parser problem?')
+            logging.info(f'Tests appear more than once ({test[0]} is the first); '
+                         'Was the test run multiple times? Is there a parser problem?')
             break
         alltests.add(test[0])
 

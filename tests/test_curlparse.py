@@ -3348,6 +3348,42 @@ class TestCurlParse(unittest.TestCase):
             ('500', curlparse.TestResult.PASS, '', 1352000),
         ], testcases)
 
+    # Log created with: make test TEST_Q='-a -n 1117 1117 1117'
+    # with stdout1117 being perturbed manually during the second test
+    def test_multiple(self):
+        with self.open_data('curlparse_multiple.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'buildsystem': 'automake',
+            'curldeps': 'libcurl/8.8.0-DEV OpenSSL/3.2.1 zlib/1.3.1 brotli/1.1.0 zstd/1.5.5 '
+                        'libidn2/2.3.7 libpsl/0.21.2 nghttp2/1.59.0 librtmp/2.3 libgsasl/2.2.1 '
+                        'OpenLDAP/2.6.6',
+            'features': 'alt-svc AsynchDNS brotli gsasl HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Largefile libz NTLM PSL SSL threadsafe TLS-SRP UnixSockets zstd',
+            'host': 'armhost',
+            'os': 'linux',
+            'randomseed': '223806',
+            'runtestsopts': '-a -n 1117 1117 1117 ',
+            'runtestsduration': '71000000',
+            'systemhost': 'armhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.16',
+            'targetarch': 'aarch64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'aarch64-unknown-linux-gnu',
+            'targetvendor': 'unknown',
+            'testformat': 'curl',
+            'testingver': '8.8.0-DEV',
+            'testmode': 'normal',
+            'testresult': 'failure',
+            'withvalgrind': 'no'
+        }, meta)
+        self.assertEqual([
+            ('1117', curlparse.TestResult.PASS, '', 24527000),
+            ('1117', curlparse.TestResult.FAIL, 'stdout', 0),
+            ('1117', curlparse.TestResult.PASS, '', 23316000),
+        ], testcases)
+
 
 if __name__ == '__main__':
     unittest.main()
