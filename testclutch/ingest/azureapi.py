@@ -66,6 +66,10 @@ class AzureApi:
                   "propertyFilters": "Build"
                   }
         with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+            # Note: this can return 203 (Non-Authoritative Information) in case of bad account name,
+            # which is not one of the errors to be raised.
+            # TODO: perhaps treat that one similarly here, but consider that 203 is not intended as
+            # as an error code.
             resp.raise_for_status()
             return json.loads(resp.text)
 
@@ -88,6 +92,9 @@ class AzureApi:
         with self.http.get(url, stream=True) as resp:
             resp.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                # This sometimes raises an exception:
+                # requests.exceptions.ChunkedEncodingError: ("Connection broken: InvalidChunkLength(got length b'', 0 bytes read)", InvalidChunkLength(got length b'', 0 bytes read))
+                # TODO: Retry if this occurs.
                 for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
                     tmp.write(chunk)
             if 'Content-Type' in resp.headers:
