@@ -42,6 +42,7 @@ DAILY_BUILDS_WITH_COMMIT_SQL = (
 
 class CurlDailyAugmenter:
     def __init__(self, repo: str, ds: db.Datastore, dry_run: bool = False):
+        assert ds.cur  # satisfy pytype that this isn't None
         self.repo = repo
         self.ds = ds
         self.dry_run = dry_run
@@ -88,7 +89,6 @@ class CurlDailyAugmenter:
 
         # Find daily build test logs
         # TODO: restrict by recent builds only
-        assert self.ds.cur  # satisfy pytype that this isn't None
         res = self.ds.cur.execute(DAILY_BUILDS_MATCHING_DATE_SQL, (day_code, ))
         daily = res.fetchall()
         logging.info('%d jobs matching day %s', len(daily), day_code)

@@ -19,8 +19,7 @@ def main():
 
     ds = db.Datastore()
     ds.connect()
-    assert ds.db   # satisfy pytype that this isn't None
-    assert ds.cur  # satisfy pytype that this isn't None
+    assert ds.db and ds.cur  # satisfy pytype that this isn't None
 
     if sys.argv[1] == 'deleteid':
         if len(sys.argv) < 3:

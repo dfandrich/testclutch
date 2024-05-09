@@ -26,11 +26,11 @@ RUNS_BY_TEST_STATUS_SQL = r'SELECT testresults.id, testruns.time, resulttext FRO
 
 class FindFailedRuns:
     def __init__(self, ds: db.Datastore):
+        assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
 
     def find_status_run(self, repo: str, since: datetime.datetime, testname: str,
                         status: Collection) -> List[Tuple[int, int, str]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         jobruns = self.ds.db.cursor()
         statuses = list(status)
         assert len(statuses) == 2  # limitation for now

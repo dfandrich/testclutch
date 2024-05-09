@@ -100,12 +100,12 @@ def _try_integer_rev(val: str) -> Union[int, str]:
 
 class MetadataStats:
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
+        assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
         self.repo = repo
         self.since = since
 
     def get_name_values(self) -> List[Tuple[str, str]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvstats = self.ds.db.cursor()
         oldest = int(self.since.timestamp())
         nvstats.execute(NAME_VALUES_SQL, (oldest, self.repo))
@@ -114,67 +114,58 @@ class MetadataStats:
 
 class TestRunStats:
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
+        assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
         self.repo = repo
         self.since = since
         self.oldest = int(since.timestamp())
 
     def get_test_run_count(self) -> int:
-        assert self.ds.db  # satisfy pytype that this isn't None
         count = self.ds.db.cursor()
         count.execute(TEST_RUNS_COUNT_SQL, (self.oldest, self.repo))
         return count.fetchone()[0]
 
     def get_test_results_count(self) -> List[Tuple[int, int]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         count = self.ds.db.cursor()
         count.execute(TEST_RESULTS_COUNT_SQL, (self.oldest, self.repo))
         return count.fetchall()
 
     def get_test_run_time(self) -> int:
-        assert self.ds.db  # satisfy pytype that this isn't None
         count = self.ds.db.cursor()
         count.execute(TEST_RUN_TIME_SQL, (self.oldest, self.repo))
         return count.fetchone()[0]
 
     def get_job_names(self) -> List[str]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(JOB_NAMES_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
     def get_values_for_name(self, name: str) -> List[str]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(ONE_NAME_VALUES_SQL, (self.oldest, self.repo, name))
         return nvalues.fetchall()
 
     def get_max_min_for_name(self, name: str) -> Tuple[int, int]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_MIN_VALUE_SQL, (self.oldest, self.repo, name))
         return tuple(int(n) for n in nvalues.fetchone())
 
     def get_count_for_name_value(self, name: str, value: str) -> int:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(COUNT_NAME_VALUE_SQL, (self.oldest, self.repo, name, value))
         return nvalues.fetchone()[0]
 
     def get_max_tests_by_type(self) -> List[Tuple[str, int]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
     def get_avg_tests_by_type(self) -> List[Tuple[str, int]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(AVG_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
     def get_test_results_count_by_test(self) -> List[Tuple[str, int, int]]:
-        assert self.ds.db  # satisfy pytype that this isn't None
         nvalues = self.ds.db.cursor()
         nvalues.execute(TEST_RESULTS_COUNT_BY_TEST_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()

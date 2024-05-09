@@ -31,12 +31,12 @@ UPDATE_HASH_SQL = r"UPDATE testrunmeta SET value = ? WHERE id = ? AND name = 'co
 class GitHashAugmenter:
     def __init__(self, repo: str, ds: db.Datastore, dry_run: bool = False):
         self.repo = repo
+        assert ds and ds.cur and ds.db  # satisfy pytype that these aren't None
         self.ds = ds
         self.dry_run = dry_run
 
     def augment_short_hashes(self):
         # Find short hashes
-        assert self.ds and self.ds.cur and self.ds.db  # satisfy pytype that these aren't None
         # TODO: optionally limit check to last X hours
         res = self.ds.cur.execute(SHORT_HASHES_REPO_SQL, (self.repo, ))
         shorts = res.fetchall()

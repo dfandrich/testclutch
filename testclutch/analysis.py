@@ -64,6 +64,7 @@ class TestJobInfo:
 
 class ResultsOverTimeByUniqueJob:
     def __init__(self, ds: db.Datastore):
+        assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
         self.all_jobs_status = []  # type: List[TestJobInfo]
 
@@ -154,7 +155,6 @@ class ResultsOverTimeByUniqueJob:
 
     def load_unique_job(self, unique: str, from_time: int, to_time: int):
         """Load tests for the unique job name"""
-        assert self.ds.cur  # satisfy pytype that this isn't None
         self.ds.cur.execute(RUNS_BY_UNIQUE_JOB_SQL, (unique, from_time, to_time))
         testids = self.ds.cur.fetchall()
         self.all_jobs_status = []
@@ -310,7 +310,6 @@ class ResultsOverTimeByUniqueJob:
 
     def analyze_all_by_unique_job(self, repo: str):
         "Look for consistent failures for all unique job names"
-        assert self.ds.db  # satisfy pytype that this isn't None
         uniquejobs = self.ds.db.cursor()
         uniquejobs.execute(UNIQUE_JOBS_SQL, (repo,))
         while globalunique := uniquejobs.fetchone():
@@ -318,7 +317,6 @@ class ResultsOverTimeByUniqueJob:
 
     def show_job_failure_table(self, repo: str):
         "Create a table showing failures in jobs"
-        assert self.ds.db  # satisfy pytype that this isn't None
         uniquejobs = self.ds.db.cursor()
         uniquejobs.execute(UNIQUE_JOBS_SQL, (repo,))
         now = datetime.datetime.now(datetime.timezone.utc)
