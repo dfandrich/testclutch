@@ -391,6 +391,10 @@ def parse_args(args=None) -> argparse.Namespace:
         choices=['metadata_values', 'test_run_stats', 'test_results_count'],
         required=True,
         help='Which type of report should be generated')
+    parser.add_argument(
+        '--howrecent',
+        type=int,
+        help='Amount of history to analyze, in hours')
     return parser.parse_args(args=args)
 
 
@@ -398,7 +402,9 @@ def main():
     args = parse_args()
     log.setup(args)
 
-    hours = int(config.get('analysis_hours'))
+    hours = args.howrecent
+    if not hours:
+        hours = int(config.get('analysis_hours'))
     since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
 
     ds = db.Datastore()
