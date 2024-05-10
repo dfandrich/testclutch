@@ -93,7 +93,7 @@ later commits). These are important points to consider in choosing a value:
 
 ### runtriggertime
 
-When the test run was requested to start running (in seconds after 1970).
+When the test run was requested to start running (in seconds since 1970).
 If this is not available, then runstarttime can be supplied instead.
 If this is not available, then runfinishtime can be supplied instead.
 One of those three is mandatory.
@@ -104,19 +104,19 @@ These are some recommended metadata fields.
 
 ### runstarttime
 
-When the test run started running (in seconds after 1970).
+When the test run started running (in seconds since 1970).
 
 ### runfinishtime
 
-When the test run finished running (in seconds after 1970).
+When the test run finished running (in seconds since 1970).
 
 ### jobstarttime
 
-When the job started running (in seconds after 1970).
+When the job started running (in seconds since 1970).
 
 ### jobfinishtime
 
-When the job finished running (in seconds after 1970).
+When the job finished running (in seconds since 1970).
 
 ### sourcerepo
 
