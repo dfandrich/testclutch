@@ -16,8 +16,7 @@ from testclutch.testcasedef import TestResult
 FAILED = frozenset((TestResult.FAIL, TestResult.TIMEOUT))
 
 # Test status considered succeeded
-# PASS is duplicated due to simplifications in the matching query
-SUCCEEDED = [TestResult.PASS, TestResult.PASS]
+SUCCEEDED = frozenset((TestResult.PASS,))
 
 
 # Return data about test runs that contain a failed test
@@ -30,13 +29,15 @@ class FindFailedRuns:
         self.ds = ds
 
     def find_status_run(self, repo: str, since: datetime.datetime, testname: str,
-                        status: Collection) -> List[Tuple[int, int, str]]:
+                        statuses: Collection[int]) -> List[Tuple[int, int, str]]:
         jobruns = self.ds.db.cursor()
-        statuses = list(status)
-        assert len(statuses) == 2  # limitation for now
+        if len(statuses) < 2:
+            # Duplicate a single item
+            statuses = (iter(statuses).__next__(), ) * 2
+        assert len(statuses) == 2  # limitation for now due to simplification of the query
         oldest = int(since.timestamp())
         jobruns.execute(RUNS_BY_TEST_STATUS_SQL,
-                        (oldest, repo, testname, statuses[0], statuses[1]))
+                        (oldest, repo, testname, *statuses))
         return jobruns.fetchall()
 
     def show_matches(self, testmatches: List[Tuple[int, int, str]]):
@@ -76,6 +77,16 @@ def parse_args(args=None) -> argparse.Namespace:
         nargs='*',
         default=[],
         help='Select runs where these tests succeeded')
+    query.add_argument(
+        '--resultcode',
+        choices=list(code.name for code in TestResult),
+        help='Specify test result code to match')
+    # TODO: use this to catch arguments for --failed and --succeeded, too, except that means only
+    # one query can be done in an invocation, which is probably fine.
+    parser.add_argument(
+        'tests',
+        nargs='*',
+        help="Tests to match against --resultcode")
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),
@@ -102,8 +113,8 @@ def main():
         since = (datetime.datetime.now()
                  - datetime.timedelta(hours=int(config.get('analysis_hours'))))
 
-    if not args.succeeded and not args.failed:
-        print('Must specify --failed or --succeeded')
+    if not args.succeeded and not args.failed and not args.resultcode:
+        print('Must specify at least one of --failed, --succeeded or --resultcode')
         return
 
     ds = db.Datastore()
@@ -121,6 +132,13 @@ def main():
         print('------------------------------------')
         print(f'Looking for failed test {testname} runs')
         testmatches = ffr.find_status_run(args.checkrepo, since, testname, FAILED)
+        ffr.show_matches(testmatches)
+
+    for testname in args.tests:
+        print('------------------------------------')
+        print(f'Looking for runs of test {testname} matching {args.resultcode}')
+        testmatches = ffr.find_status_run(
+            args.checkrepo, since, testname, (TestResult[args.resultcode],))
         ffr.show_matches(testmatches)
 
     ds.close()
