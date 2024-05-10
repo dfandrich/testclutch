@@ -164,7 +164,7 @@ database.
 
 ### tcmetadatastats
 
-Create a report summarizing the metadata and statistics about recent test logs.
+Create reports summarizing the metadata and statistics about recent test logs.
 
 
 ## Debugging Programs
