@@ -8,7 +8,7 @@ import math
 import sys
 import textwrap
 from html import escape
-from typing import Callable, Iterable, List, Tuple, Union
+from typing import Callable, Iterable, List, Sequence, Tuple, Union
 
 import testclutch
 from testclutch import argparsing
@@ -64,6 +64,14 @@ MAX_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='MAX')
 
 # Average number of tests run by test format
 AVG_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='AVG')
+
+MOST_RECENT_TEST_STATUS_META_SQL = r'SELECT testrunmeta.value FROM testresults INNER JOIN testruns ON testruns.id = testresults.id INNER JOIN testrunmeta ON testrunmeta.id = testresults.id WHERE time >= ? AND repo = ? AND testid = ? AND result = ? AND testrunmeta.name = ? ORDER BY testruns.time DESC limit ?;'
+
+# Number of recent URLs to show
+NUM_RECENT_URLS = 5
+
+# Number of failed tests for which to bother showing URLs (since that is slow)
+MAX_COUNTS_URLS = 40
 
 IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'jobstarttime',
                            'runduration', 'runfinishtime', 'runid', 'runprocesstime',
@@ -169,6 +177,12 @@ class TestRunStats:
         nvalues = self.ds.db.cursor()
         nvalues.execute(TEST_RESULTS_COUNT_BY_TEST_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
+
+    def get_test_results_url(self, testname: str, status: int) -> List[Tuple[str]]:
+        values = self.ds.db.cursor()
+        values.execute(MOST_RECENT_TEST_STATUS_META_SQL,
+                       (self.oldest, self.repo, testname, status, 'url', NUM_RECENT_URLS))
+        return values.fetchall()
 
 
 def output_nv_summary_text(nv: Iterable, full_list: bool):
@@ -318,21 +332,30 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
 
 
-def output_test_results_count(trstats: TestRunStats, print_func: Callable):
-    print_func('Test', 'Result', 'Count', title=True)
+def output_test_results_count(trstats: TestRunStats,
+                              print_func: Callable):
+    print_func('Test', 'Result', 'Count', ['Examples'], title=True)
 
     total_counts = trstats.get_test_results_count_by_test()
     # Sort by count descending, then by increasing test number
     total_counts.sort(key=lambda x: (_try_integer(x[2]), _try_integer_rev(x[0])), reverse=True)
+    num_shown = 0
     for test, status, count in total_counts:
         if status in frozenset((TestResult.PASS, TestResult.SKIP)):
             continue
         code = TestResult(status)
-        print_func(test, code.name, count)
+        num_shown = num_shown + 1
+        if num_shown < MAX_COUNTS_URLS:
+            urls = trstats.get_test_results_url(test, status)
+        else:
+            # Getting the URLs is a slow operation, so only get them for the top few tests
+            urls = []
+        print_func(test, code.name, count, [x[0] for x in urls])
 
 
 def output_test_results_count_text(trstats: TestRunStats):
-    def print_text(*items, title: bool = False):
+    def print_text(test: str, code: str, count: int, urls: Sequence[str], title: bool = False):
+        items = (test, code, count, urls[0] if urls else [])  # only show 1 URL in text mode
         for i in items:
             print(i, end=' ')
         print()
@@ -344,7 +367,7 @@ def output_test_results_count_text(trstats: TestRunStats):
 def output_test_results_count_html(trstats: TestRunStats):
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - trstats.since).days
-    print(textwrap.dedent("""
+    print(textwrap.dedent("""\
         <!DOCTYPE html>
         <html><head><title>Test failure counts</title>
         <style type="text/css">
@@ -357,18 +380,30 @@ def output_test_results_count_html(trstats: TestRunStats):
         </head>
         <body>
         <h1>Test failure counts for test runs on {escape(trstats.repo)}</h1>
+        <p>
         Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
         covering runs over the past {days:.0f} days.
-        <p>
+        </p>
         <table>
         """))
 
-    def print_html(*items, title: bool = False):
+    def print_html(test: str, code: str, count: int, urls: Sequence[str], title: bool = False):
+        """Print a row of data
+
+        urls[0] contains the title, not a URL, when title=True
+        """
         print('<tr>')
         tag = 'th' if title else 'td'
+        items = [test, code, count]
+        if title:
+            items.append(urls[0])
         for i in items:
             print(f'<{tag}>{escape(str(i))}</{tag}>', end='')
-        print('</tr>')
+        print(f'<{tag}>')
+        if not title:
+            for i in urls:
+                print(f'<a href="{escape(str(i))}">Log</a>', end=' ')
+        print(f'</{tag}></tr>')
 
     output_test_results_count(trstats, print_html)
     print('</table></body></html>')
