@@ -22,10 +22,10 @@ from testclutch.testcasedef import TestResult
 NAME_VALUES_SQL = r'SELECT name, value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? GROUP BY name, value;'
 
 # Returns a count of the number of test runs since the given time
-TEST_RUNS_COUNT_SQL = r'SELECT count(1) FROM testruns WHERE time >= ? AND repo = ?;'
+TEST_RUNS_COUNT_SQL = r'SELECT COUNT(1) FROM testruns WHERE time >= ? AND repo = ?;'
 
-# Count of all rest results by test and format
-TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,count(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
+# Count of all test results by test and format
+TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
 
 # Subquery to select all recent test run IDs for a project
 RECENT_IDS_SQL = r'''SELECT id FROM testruns WHERE time >= ? AND repo = ?'''
@@ -48,14 +48,15 @@ JOB_NAMES_SQL = r"SELECT DISTINCT origin, account, value FROM testruns INNER JOI
 MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
 
 # Return count of matching name/value pairs since the given time
-COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? and value = ?;'
+COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?;'
 
 # Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
+# and only counting distinct test IDs.
 # {function} must be defined by the caller
 FUNCTION_TESTS_BY_TYPE_SQL = f'''SELECT testformat, {{function}}(numtests) FROM (
-    SELECT testresults.id, value AS testformat, COUNT(1) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN
+    SELECT testresults.id, value AS testformat, COUNT(DISTINCT testresults.testid) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN
         ({RECENT_IDS_SQL})
-    AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, value
+    AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, testformat
     )
 GROUP BY testformat ORDER BY testformat;'''
 
@@ -65,6 +66,7 @@ MAX_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='MAX')
 # Average number of tests run by test format
 AVG_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='AVG')
 
+# Retrieve a few metadata values for tests matching a testid and result
 MOST_RECENT_TEST_STATUS_META_SQL = r'SELECT testrunmeta.value FROM testresults INNER JOIN testruns ON testruns.id = testresults.id INNER JOIN testrunmeta ON testrunmeta.id = testresults.id WHERE time >= ? AND repo = ? AND testid = ? AND result = ? AND testrunmeta.name = ? ORDER BY testruns.time DESC limit ?;'
 
 # Number of recent URLs to show
@@ -317,7 +319,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     except TypeError:
         # No durations were found
         pass
-    print_func('Most number of tests attempted in one run by test format:')
+    print_func('Most number of unique tests attempted in one run by test format:')
     for testtype, maxtests in trstats.get_max_tests_by_type():
         print_func(f'{testtype}: {maxtests}', indent=1)
     print_func('Average number of tests attempted in one run by test format:')
