@@ -2,6 +2,7 @@
 """
 
 import argparse
+import logging
 import sys
 
 from testclutch import analysis
@@ -36,7 +37,7 @@ def main():
     log.setup(args)
 
     if args.uniquejob and args.html:
-        print('--uniquejob and --html are not compatible')
+        print('--uniquejob and --html are not compatible', file=sys.stderr)
         sys.exit(1)
 
     ds = db.Datastore()
@@ -44,10 +45,13 @@ def main():
     analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
 
     if args.uniquejob:
+        logging.info(f'Analyzing job {args.uniquejob[0]}')
         analyzer.analyze_by_unique_job(args.uniquejob[0])
     elif args.html:
+        logging.info('Analyzing all unique jobs and creating table')
         analyzer.show_job_failure_table(args.checkrepo)
     else:
+        logging.info('Analyzing all unique jobs')
         analyzer.analyze_all_by_unique_job(args.checkrepo)
     ds.close()
 

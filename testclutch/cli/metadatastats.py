@@ -4,6 +4,7 @@
 import argparse
 import datetime
 import itertools
+import logging
 import math
 import sys
 import textwrap
@@ -446,6 +447,7 @@ def main():
 
     ds = db.Datastore()
     ds.connect()
+    logging.info(f'Creating report "{args.report}" since {since}')
 
     if args.report == 'metadata_values':
         mdstats = MetadataStats(ds, config.expand('check_repo'), since)
@@ -469,6 +471,9 @@ def main():
             output_test_results_count_html(trstats)
         else:
             output_test_results_count_text(trstats)
+
+    else:
+        logging.error(f'Unknown report "{args.report}"')
 
 
 if __name__ == '__main__':
