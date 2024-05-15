@@ -280,8 +280,8 @@ def num_precision(n: float, p: int) -> int:
 
 def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     now = datetime.datetime.now(datetime.timezone.utc)
-    days = (now - trstats.since).days
-    print_func('Days of stats:', f'{days}')
+    days = (now - trstats.since).seconds / (24 * 3600)  # to handle fractional days
+    print_func('Days of stats:', f'{days: 0.0f}')
     total_count = trstats.get_test_run_count()
     print_func('Total test runs:', f'{total_count}')
     print_func('Runs per day:', f'{total_count / days: 0.1f}')
