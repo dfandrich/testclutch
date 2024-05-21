@@ -409,23 +409,23 @@ def main():
     ds = db.Datastore()
     ds.connect()
 
-    # TODO: change this to run all of them at once instead of only one
-    # But, keep in mind that each type will have different login credentials, so maybe
-    # we can only really do one at a time.
+    # Analyze only one origin at a time because each on might have different login credentials
     if args.origin == 'gha':
-        gha_analyze_pr(args, ds)
+        rc = gha_analyze_pr(args, ds)
     elif args.origin == 'appveyor':
-        appveyor_analyze_pr(args, ds)
+        rc = appveyor_analyze_pr(args, ds)
     elif args.origin == 'circle':
-        circle_analyze_pr(args, ds)
+        rc = circle_analyze_pr(args, ds)
     elif args.origin == 'azure':
-        azure_analyze_pr(args, ds)
+        rc = azure_analyze_pr(args, ds)
     elif args.origin == 'cirrus':
-        cirrus_analyze_pr(args, ds)
+        rc = cirrus_analyze_pr(args, ds)
     else:
         logging.error(f'Unsupported origin {args.origin}')
+        rc = 1
 
     ds.close()
+    return rc
 
 
 if __name__ == '__main__':
