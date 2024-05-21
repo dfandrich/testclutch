@@ -48,6 +48,10 @@ JOB_NAMES_SQL = r"SELECT DISTINCT origin, account, value FROM testruns INNER JOI
 # Returns largest & smallest values for a given name since the given time
 MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
 
+# Returns largest & smallest values for a given name since the given time for runs matching a
+# secondary metadata value
+MAX_MIN_VALUE_SECONDARY_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testrunmeta WHERE id IN (SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?) AND name = ?;'
+
 # Return count of matching name/value pairs since the given time
 COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?;'
 
@@ -159,6 +163,13 @@ class TestRunStats:
     def get_max_min_for_name(self, name: str) -> Tuple[int, int]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_MIN_VALUE_SQL, (self.oldest, self.repo, name))
+        return tuple(int(n) for n in nvalues.fetchone())
+
+    def get_max_min_for_name_secondary(self, name: str, secondary: str, value: str,
+                                       ) -> Tuple[int, int]:
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(MAX_MIN_VALUE_SECONDARY_SQL,
+                        (self.oldest, self.repo, secondary, value, name))
         return tuple(int(n) for n in nvalues.fetchone())
 
     def get_count_for_name_value(self, name: str, value: str) -> int:
@@ -313,10 +324,22 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
                    f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
         print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
     try:
-        # This name isn't mandatory and an exception will be raised if there is nothing there
-        largest, smallest = trstats.get_max_min_for_name('runtestsduration')
-        print_func('Longest test run:', f'{largest / 1000000: .0f} sec.')
-        print_func('Shortest test run:', f'{smallest / 1000000: .0f} sec.')
+        # "runtestsduration" isn't mandatory and an exception will be raised if missing
+        # Store these data first, then display them like the ones below, prefixed
+        # by test format, for consistency
+        rundurations = []
+        for formattup in trstats.get_values_for_name('testformat'):
+            testformat = formattup[0]
+            largest, smallest = trstats.get_max_min_for_name_secondary(
+                'runtestsduration', 'testformat', testformat)
+            rundurations.append((testformat, smallest, largest))
+        print('Longest test runs:')
+        for testformat, smallest, largest in rundurations:
+            print_func(f'{testformat}:', f'{largest / 1000000: .0f} sec.', indent=1)
+        print('Shortest test runs:')
+        for testformat, smallest, largest in rundurations:
+            print_func(f'{testformat}:', f'{smallest / 1000000: .0f} sec.', indent=1)
+
     except TypeError:
         # No durations were found
         pass
