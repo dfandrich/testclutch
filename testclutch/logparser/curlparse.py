@@ -384,7 +384,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
         logging.debug('The file does not appear to be a curl test log')
 
     if not testcases:
-        logging.info('No curl tests could be found in the file')
+        logging.debug('No curl tests could be found in the file')
 
     # Look for duplicate tests in the list
     alltests = set()

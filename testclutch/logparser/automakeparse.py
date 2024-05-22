@@ -85,7 +85,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
         if 'testresult' not in meta:
             meta['testresult'] = 'truncated'
     else:
-        logging.info('No automake test log could be found in the file')
+        logging.debug('No automake test log could be found in the file')
         # In case we found something that looks like a summary, but no actual test results
         meta = {}
     return meta, testcases

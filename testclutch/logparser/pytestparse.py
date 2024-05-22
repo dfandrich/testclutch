@@ -96,7 +96,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                                 logging.debug("Ignoring not SKIPPED type: %s", r.group(1))
 
     if not testcases:
-        logging.info('No pytest test summary could be found in the file')
+        logging.debug('No pytest test summary could be found in the file')
     return meta, testcases
 
 
