@@ -333,10 +333,10 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
             largest, smallest = trstats.get_max_min_for_name_secondary(
                 'runtestsduration', 'testformat', testformat)
             rundurations.append((testformat, smallest, largest))
-        print('Longest test runs:')
+        print_func('Longest test runs:')
         for testformat, smallest, largest in rundurations:
             print_func(f'{testformat}:', f'{largest / 1000000: .0f} sec.', indent=1)
-        print('Shortest test runs:')
+        print_func('Shortest test runs:')
         for testformat, smallest, largest in rundurations:
             print_func(f'{testformat}:', f'{smallest / 1000000: .0f} sec.', indent=1)
 
