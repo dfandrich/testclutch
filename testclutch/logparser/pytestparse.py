@@ -152,5 +152,5 @@ def parse_log_file(f: TextIO) -> ParsedLog:
                         logging.error("Unknown pytest result: %s", r.group(2))
 
     if not testcases:
-        logging.info('No pytest verbose logs could be found in the file')
+        logging.debug('No pytest verbose logs could be found in the file')
     return meta, testcases
