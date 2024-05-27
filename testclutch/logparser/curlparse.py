@@ -120,10 +120,14 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty
     """
-    meta = {}       # type: TestMeta
-    testcases = []  # type: TestCases
+    meta = {}         # type: TestMeta
+    testcases = []    # type: TestCases
     toignore = set()  # type: Set[str]
+    got_first = False
     while l := f.readline():
+        if not got_first:
+            logging.debug("First log line: %s", l)
+            got_first = True
         if RE_START.search(l):
             logging.debug("Found the start of a curl test log")
             meta['testformat'] = 'curl'

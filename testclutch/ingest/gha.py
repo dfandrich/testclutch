@@ -34,9 +34,13 @@ KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}$]*$')
 # This MUST match the way that GHA does it. Update KNOWN_LOG_FN_RE if this is changed.
 STRIP_LOG_FN_RE = re.compile(r'[/]')
 
-# Matches a time stamp the includes a time zone.
+# Matches a time stamp that includes a time zone.
 # Unfortunately, sometimes GHA includes one and sometimes it doesn't.
 TIME_WITH_ZONE_RE = re.compile(r'^.{19}.*[-+]')
+
+# Match a timestamp at the start of a log line.
+# Example: 2024-05-25T21:43:17.7471243Z
+LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
 
 
 def file_ext_from_type(content_type: str) -> str:
@@ -54,7 +58,13 @@ class MassagedLog(io.TextIOWrapper):
         assert (size == -1)
         l = super().readline()
         if l:
-            l = l[29:]
+            # Unfortunately, some log files have timestamps and some don't. It's probably something
+            # to do with embedded newlines in log messages, but I can't think of a more accurate way
+            # to remove them than with a regular expression. This will erroneously match "extended"
+            # log files that happen to include something that looks like a timestamp, but since
+            # these extended lines almost never happen in the first place (so far it seems only
+            # those using cross-platform-actions/action), this isn't a big concern.
+            l = LOG_TIMESTAMP_RE.sub('', l)
         return l
 
 
@@ -257,11 +267,13 @@ class GithubIngestor:
         for fileinfo in log.infolist():
             if fileinfo.is_dir():
                 # empty directory entry
+                logging.debug('Ignoring directory placeholder %s', fileinfo.filename)
                 continue
             if fileinfo.filename.find('/') < 0:
                 # GitHub stores the log entries in zip files twice--once as complete logs
                 # in the root, and once in separate steps in subdirectories. We don't need
                 # both, so ignore the root copies and just use the once in the subdirectories.
+                logging.debug('Skipping %s', fileinfo.filename)
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
             readylog = MassagedLog(log.open(fileinfo.filename), encoding=LOG_CHARMAP)
