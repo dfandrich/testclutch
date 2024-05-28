@@ -74,12 +74,6 @@ AVG_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='AVG')
 # Retrieve a few metadata values for tests matching a testid and result
 MOST_RECENT_TEST_STATUS_META_SQL = r'SELECT testrunmeta.value FROM testresults INNER JOIN testruns ON testruns.id = testresults.id INNER JOIN testrunmeta ON testrunmeta.id = testresults.id WHERE time >= ? AND repo = ? AND testid = ? AND result = ? AND testrunmeta.name = ? ORDER BY testruns.time DESC limit ?;'
 
-# Number of recent URLs to show
-NUM_RECENT_URLS = 5
-
-# Number of failed tests for which to bother showing URLs (since that is slow)
-MAX_COUNTS_URLS = 40
-
 IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'jobstarttime',
                            'runduration', 'runfinishtime', 'runid', 'runprocesstime',
                            'runstarttime', 'runtestsduration', 'runtriggertime', 'runurl',
@@ -195,7 +189,8 @@ class TestRunStats:
     def get_test_results_url(self, testname: str, status: int) -> List[Tuple[str]]:
         values = self.ds.db.cursor()
         values.execute(MOST_RECENT_TEST_STATUS_META_SQL,
-                       (self.oldest, self.repo, testname, status, 'url', NUM_RECENT_URLS))
+                       (self.oldest, self.repo, testname, status, 'url',
+                        int(config.get('test_results_count_num_recent_urls'))))
         return values.fetchall()
 
 
@@ -371,7 +366,7 @@ def output_test_results_count(trstats: TestRunStats,
             continue
         code = TestResult(status)
         num_shown = num_shown + 1
-        if num_shown < MAX_COUNTS_URLS:
+        if num_shown < int(config.get('test_results_count_max_urls')):
             urls = trstats.get_test_results_url(test, status)
         else:
             # Getting the URLs is a slow operation, so only get them for the top few tests

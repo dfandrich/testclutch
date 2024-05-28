@@ -67,5 +67,12 @@ git_comment_encoding = 'UTF-8'
 # will cause absolutely no disk space increase for such file on such filesystems.
 compress_threshold_bytes = 128
 
+# Report configuration: test_results_count
+# Number of failed tests for which to bother showing URLs (since that is slow)
+test_results_count_max_urls = 30
+
+# Number of recent URLs to show
+test_results_count_num_recent_urls = 5
+
 # TODO:
 # add per-CI service options, like azure_account
