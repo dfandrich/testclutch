@@ -202,8 +202,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 meta['arch'] = sysparts[6]
                             else:
                                 logging.warning('Unexpected system line: %s', l)
-                        elif meta['systemos'] == 'SunOS':  # Solaris
-                            if len(sysparts) == 10:
+                        elif meta['systemos'] == 'SunOS':
+                            if len(sysparts) in (10, 9):  # Solaris, OmniOS
                                 meta['arch'] = sysparts[7]
                             else:
                                 logging.warning('Unexpected system line: %s', l)
