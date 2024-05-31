@@ -29,7 +29,7 @@ classifiers = [
 ]
 requires-python = ">=3.8,<3.13"
 dependencies = [
-    "requests >= 2.25.1, <= 2.32.2",
+    "requests >= 2.25.1, <= 2.32.3",
     "zstd >= 1.4.5.1, <= 1.5.5.1",
 ]
 
@@ -37,7 +37,7 @@ dependencies = [
 # actually been tested
 [project.optional-dependencies]
 test = [
-    "pytest >= 6.1.5, <= 8.0.2"
+    "pytest >= 6.1.5, <= 8.2.1"
 ]
 dev = [
     "flake8 >= 5.0.4, <= 7.0.0",
