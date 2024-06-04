@@ -16,9 +16,8 @@ from testclutch.gitdef import CommitInfo
 from testclutch.logdef import TestMeta
 from testclutch.testcasedef import TestResult
 
-# TODO: python >= 3.9 allows collections.Counter instead of Dict
 # record_id, jobtime, {test: count}
-TestFailCount = Tuple[int, int, Dict[str, int]]
+TestFailCount = Tuple[int, int, collections.Counter[str]]
 
 # Select a set of all the unique test jobs. The uniqueness is a single string which
 # is the concatenation of: [account,]repo,origin,uniquejobname
@@ -400,7 +399,7 @@ class ResultsOverTimeByUniqueJob:
         else:
             # brand new job with no history
             # this will not actually ever be referenced so it doesn't need to make sense
-            recent_failures = (0, 0, {})
+            recent_failures = (0, 0, collections.Counter())
         return (flaky, recent_failures)
 
     def show_unique_job_failures_table(self, globaluniquejob: str):
@@ -528,7 +527,7 @@ class ResultsOverTimeByUniqueJob:
         print('</table>')
         # print('</div>')
 
-    def _count_consecutive_failures(self) -> List[Dict[str, int]]:
+    def _count_consecutive_failures(self) -> List[collections.Counter[str]]:
         """Count consecutive failures of all tests for all jobs
 
         Loops from the end of the list to the beginning so it counts as
