@@ -129,6 +129,8 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         print(textwrap.dedent(f"""\
             <h1>Test report for PR#{pr} as of
                 {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}</h1>
+
+            Test analysis covers the past {config.get('analysis_hours') / 24:.0f} days.
             Hover over cells for more information.
             <br><span class="success">successful test run</span>
             <br><span class="failure">*failed test run</span>
@@ -201,7 +203,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
 
         if flakytitle:
             print('<td class="flaky">'
-                  f'<a href="{escape(flakyfailurl)}" title="{flakytitle}">Flaky</a>')
+                  f'<a href="{escape(flakyfailurl)}" title="{flakytitle}">flaky</a>')
             if permafailtitle:
                 # TODO: get permafailurl
                 print(f'<span title="{escape(permafailtitle)}" class="flaky">Failures</span>')
