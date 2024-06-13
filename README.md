@@ -62,18 +62,18 @@ https://github.com/dfandrich/testclutch/
 The code is written entirely in Python.  Build and install the latest code
 from Github with:
 
-  python -m pip install https://github.com/dfandrich/testclutch/archive/refs/heads/master.tar.gz
+  `python -m pip install https://github.com/dfandrich/testclutch/archive/refs/heads/master.tar.gz`
 
 The regression test suite can be run with the command:
 
-  pytest
+  `pytest`
 
 or
 
-  python -m unittest
+  `python -m unittest`
 
 Test Clutch does not require git for its basic functions, but those directly
-involved in querying git (like tcgitcommitinfo) require the git command-line
+involved in querying git (like `tcgitcommitinfo`) require the git command-line
 tool be installed (version 1.8.3 and newer are known to work).
 
 ## Configuration
@@ -164,7 +164,8 @@ database.
 
 ### tcmetadatastats
 
-Create reports summarizing the metadata and statistics about recent test logs.
+Create reports summarizing the [metadata](metadata.md) and statistics about
+recent test logs.
 
 
 ## Debugging Programs
@@ -173,7 +174,8 @@ These are additional entry points that can be useful for debugging.
 
 ### tcquerytests
 
-Show information about a specific ingested job based on specific metadata.
+Show information about a specific ingested job based on specific
+[metadata](metadata.md).
 
 ### tcdbutil
 

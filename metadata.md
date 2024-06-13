@@ -28,11 +28,13 @@ Using these data types, where appropriate, will make analysis of data easier.
 - Don't include any information that you don't want made public. This is
   usually not a problem because the data will probably all be derived from
   public log files.
-- Try to keep data mostly unchanged from its originally form in the name of
-  data preservation. It can always be massaged later. In some cases, it may
-  make sense to store an altered version in a separate field for ease of use.
-  In other cases, altering the format of a field may make sense if it is
-  information-preserving and if the alternate is easier to work with.
+- Try to keep data mostly unchanged from its original form in the name of
+  data preservation. It can always be massaged later. Exceptions are made for
+  times and durations which should always be stored in the standard forms. In
+  some cases, it may make sense to store an altered version in a separate field
+  for ease of use.  In other cases, altering the format of a field may make
+  sense if it is information-preserving and if the alternate is easier to work
+  with (like times and durations).
 - Because of the previous rule, some fields may have different values but the
   same meaning. The interpretation of some fields may need to be gated by the
   contents of another field. e.g. the format of the "compiler" field might
