@@ -7,6 +7,7 @@ fine-grained repository permissions in order to read GitHub Actions logs.
 
 import datetime
 import json
+import logging
 import tempfile
 from typing import Any, Dict, Optional, Tuple
 
@@ -55,45 +56,64 @@ class GithubApi:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
-    def _standard_auth_headers(self) -> Dict:
+    def _standard_auth_headers(self) -> Dict[str, str]:
         headers = self._standard_headers()
         if not ALWAYS_AUTH:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
+    def _http_get_paged_json(self, url: str, headers: Dict[str, str],
+                             params: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+        """Perform a paged HTTP get, combining all paged results in array
+
+        The JSON response must have at least one array member, the last of which will be used as
+        the signal for completed paging when it is empty.
+        Raises an exception in case of error.
+
+        Returns the Python equivalent of the JSON data structure (which will be a dict).
+        """
+        useparams = params.copy() if params else {}
+        useparams["per_page"] = PAGINATION
+        useparams["page"] = 1
+        combined = {}
+
+        done = False
+        while not done and useparams["page"] <= MAX_RETRIEVED / PAGINATION:
+            resp = self.http.get(url, headers=headers, params=useparams)
+            resp.raise_for_status()
+
+            j = json.loads(resp.text)
+            done = True  # fail safe in case there is no array item
+            # Copy or combine all returned items
+            for k, v in j.items():
+                if isinstance(v, list):
+                    combined.setdefault(k, []).extend(v)
+                    done = not v  # signal for pagination complete
+                else:
+                    if k in combined and combined[k] != v:
+                        # If a item occurs in more than one page, it should have the same
+                        # value each time. But, just in case a newer value is returned by the
+                        # end, use that value in the response and continue.
+                        logging.warn(f'Inconsistent static value over pages for {k}')
+                    combined[k] = v
+
+            useparams["page"] += 1
+
+        return combined
+
     def get_runs(self, branch: Optional[str] = None, since: Optional[datetime.datetime] = None
                  ) -> Dict[str, Any]:
         """Returns info about all recent workflow runs on GitHub Actions"""
         url = BASE_URL.format(owner=self.owner, repo=self.repo, endpoint='runs')
-        params = {"status": "completed",
-                  "per_page": PAGINATION
-                  }
+        params = {"status": "completed"}
         if branch:
             params["branch"] = branch
             # Assume we don't want PRs if we supply a specific branch
             params["exclude_pull_requests"] = "true"
         if since:
             params["created"] = ">" + since.isoformat()
-        page = 1
-        combined_resp = {}
-        while ('workflow_runs' not in combined_resp
-               or len(combined_resp['workflow_runs']) < MAX_RETRIEVED):
-            params['page'] = page
-            resp = self.http.get(url, headers=self._standard_headers(), params=params)
-            resp.raise_for_status()
-            parsed = json.loads(resp.text)
-            if not parsed['workflow_runs']:
-                # end of list
-                break
-            if combined_resp:
-                # append to last page
-                combined_resp['workflow_runs'].extend(parsed['workflow_runs'])
-            else:
-                # use first page as output
-                combined_resp = parsed
-            page += 1
 
-        return combined_resp
+        return self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
 
     def get_run(self, run_id: int) -> Dict[str, Any]:
         """Returns info about a single workflow run on GitHub Actions"""
