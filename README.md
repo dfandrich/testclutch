@@ -100,7 +100,22 @@ Clutch supports these CI services:
 
 Some of these may require credentials to access the log files. These are
 configured on the command-line according to each service's needs using the
-`--account` and `--authfile` command-line options.
+`--account` and `--authfile` command-line options. Currently, only GitHub
+Actions needs an authentication token, stored in the file in the `--authfile`
+argument. Create one by going to https://github.com/settings/tokens and
+choosing *fine-grained tokens*. Create a new token with these characteristics:
+
+  - Public repository access
+
+No other special fine-grained access is currently needed.  Eventually, it may
+also need these permissions for Test Clutch to comment on PRs:
+
+  - "Pull requests" repository permissions (write)
+  - "Checks" repository permissions (read)
+
+Copy the token contents from the web browser and store it in a file in a
+protected location on your local machine and with permissions that do not allow
+other user to access it.
 
 Test Clutch has built-in support for these test log formats:
 
@@ -137,7 +152,8 @@ a report in text or HTML formats.
 ### tcanalyzepr
 
 Analyze logs from a GitHub PR for patterns of failure in the tests and generate
-a report in text or HTML formats.
+a report in text or HTML formats. Or, check if the CI jobs associated with a PR
+have run to completion.
 
 ### tcaugmentcurldaily
 

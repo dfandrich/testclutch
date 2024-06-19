@@ -22,6 +22,9 @@ RUN_URL = BASE_URL + "/{run_id}"
 LOGS_URL = RUN_URL + "/logs"
 JOBS_URL = RUN_URL + "/jobs"
 PULL_URL = "https://api.github.com/repos/{owner}/{repo}/pulls/{pull_number}"
+COMMITS_URL = "https://api.github.com/repos/{owner}/{repo}/commits/{commit_id}/status"
+CHECKRUNS_URL = "https://api.github.com/repos/{owner}/{repo}/commits/{commit_id}/check-runs"
+COMMENTS_URL = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
 API_VERSION = "2022-11-28"
 DATA_TYPE = "application/vnd.github+json"
 
@@ -35,7 +38,7 @@ ALWAYS_AUTH = True
 
 
 class GithubApi:
-    def __init__(self, owner, repo, token):
+    def __init__(self, owner: str, repo: str, token: Optional[str]):
         self.owner = owner
         self.repo = repo
         self.token = token
@@ -52,13 +55,13 @@ class GithubApi:
                    "X-GitHub-Api-Version": API_VERSION,
                    "User-Agent": netreq.USER_AGENT
                    }
-        if ALWAYS_AUTH:
+        if ALWAYS_AUTH and self.token:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
     def _standard_auth_headers(self) -> Dict[str, str]:
         headers = self._standard_headers()
-        if not ALWAYS_AUTH:
+        if not ALWAYS_AUTH and self.token:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
@@ -146,5 +149,32 @@ class GithubApi:
         """Returns info about a pull request on GitHub Actions"""
         url = PULL_URL.format(owner=self.owner, repo=self.repo, pull_number=pr)
         resp = self.http.get(url, headers=self._standard_headers())
+        resp.raise_for_status()
+        return json.loads(resp.text)
+
+    def get_commit_status(self, commit: str) -> Dict[str, Any]:
+        """Returns the status of checks on a commit"""
+        url = COMMITS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
+        return self._http_get_paged_json(url, headers=self._standard_headers())
+
+    def get_check_runs(self, commit: str) -> Dict[str, Any]:
+        """Returns the check runs on a commit
+
+        This requires one of the following fine-grained token permissions:
+            "Checks" repository permissions (read)
+        """
+        url = CHECKRUNS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
+        return self._http_get_paged_json(url, headers=self._standard_headers())
+
+    def create_comment(self, issue_id: int, comment: str) -> Dict[str, Any]:
+        """Creates a comment on a GitHub issue or pull request
+
+        This requires one of the following fine-grained token permissions:
+            "Issues" repository permissions (write)
+            "Pull requests" repository permissions (write)
+        """
+        url = COMMENTS_URL.format(owner=self.owner, repo=self.repo, issue_number=issue_id)
+        data = {'body': comment}
+        resp = self.http.post(url, headers=self._standard_headers(), data=json.dumps(data))
         resp.raise_for_status()
         return json.loads(resp.text)

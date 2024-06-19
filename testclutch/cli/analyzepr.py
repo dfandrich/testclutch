@@ -3,8 +3,8 @@
 
 import argparse
 import datetime
+import enum
 import logging
-import sys
 import textwrap
 import urllib
 from html import escape
@@ -17,6 +17,7 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 from testclutch import summarize
+from testclutch.ingest import ghaapi
 from testclutch.ingest import prappveyor
 from testclutch.ingest import prazure
 from testclutch.ingest import prcircleci
@@ -30,7 +31,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
-    argparsing.arguments_ci(parser)
+    argparsing.arguments_ci(parser, required=False)
     parser.add_argument(
         '--pr',
         required=True,
@@ -38,13 +39,17 @@ def parse_args(args=None) -> argparse.Namespace:
         nargs='+',
         help='pull request number on the --checkrepo to analyze')
     parser.add_argument(
+        '--ci-status',
+        action='store_true',
+        help="Check the status of CI runs associated with this PR")
+    parser.add_argument(
         '--html',
         action='store_true',
         help='Output results in HTML')
     parser.add_argument(
         '--html-fragment',
         action='store_true',
-        help='Whether to output HTML page header and footers')
+        help='Whether to skip HTML page header and footer')
     return parser.parse_args(args=args)
 
 
@@ -397,6 +402,71 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
     return 0
 
 
+class PRStatus(enum.IntEnum):
+    READY = 0    # PR jobs are complete
+    PENDING = 1  # CI jobs are still running for this PR
+    CLOSED = 2   # PR already closed
+    ERROR = 3    # invalid PR
+
+
+def check_gha_pr_ready(args: argparse.Namespace) -> PRStatus:
+    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
+    parts = path.split('/')
+    if netloc.casefold() != 'github.com' or len(parts) != 3:
+        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
+        return PRStatus.ERROR
+
+    owner, repo = parts[1], parts[2]
+    token = args.authfile.read().strip() if args.authfile else None
+    gh = ghaapi.GithubApi(owner, repo, token)
+
+    # The highest value for PRStatus wins as the result code for the batch
+    ret = PRStatus.READY
+    for pr in args.pr:
+        pull = gh.get_pull(pr)
+        if pull['state'] == 'closed':
+            logging.warn(f'PR is in state {pull["state"]}')
+            ret = max(PRStatus.CLOSED, ret)
+            continue
+        if pull['state'] != 'open':
+            logging.warn(f'PR is in state {pull["state"]}')
+            ret = max(PRStatus.ERROR, ret)
+            continue
+        if pull['locked']:
+            logging.warn('PR is locked; aborting')
+            ret = max(PRStatus.ERROR, ret)
+            continue
+        commit = pull['head']['sha']
+        logging.info(f'PR#{pr} commit {commit}')
+
+        status = gh.get_commit_status(commit)
+        logging.debug(f'{len(status["statuses"])} commit statuses')
+        logging.debug(f'Overall state: {status["state"]}')
+        pending = 0
+        jobcount = len(status['statuses'])
+        for stat in status['statuses']:
+            if stat['state'] != 'success':
+                logging.debug(f"status is in state {stat['state']}")
+            # success, pending
+            if stat['state'] == 'pending':
+                ret = max(PRStatus.PENDING, ret)
+                pending += 1
+
+        checkruns = gh.get_check_runs(commit)
+        logging.debug(f"{len(checkruns['check_runs'])} check runs")
+        jobcount += len(checkruns['check_runs'])
+        for run in checkruns['check_runs']:
+            # queued, in_progress, completed
+            if run['status'] != 'completed':
+                logging.debug(f"check run {run['id']} is in state {run['status']}")
+                ret = max(PRStatus.PENDING, ret)
+                pending += 1
+
+        logging.info(f'{pending} jobs of {jobcount} still pending for PR#{pr}')
+
+    return ret
+
+
 def main():
     args = parse_args()
     log.setup(args)
@@ -404,9 +474,22 @@ def main():
     if args.dry_run:
         logging.warning('--dry-run does nothing in thie program')
 
+    # Check CI job status for PR
+    if args.ci_status:
+        status = check_gha_pr_ready(args)
+        if status == PRStatus.ERROR:
+            logging.error("A PR is in an unacceptable state")
+        print(status.name)
+        return status
+
+    # Generate CI job results report for PR
+    if not args.origin:
+        logging.error('--origin is mandatory without --ci-status')
+        return 1
+
     if not args.authfile and args.origin == 'gha':
-        logging.error('--authfile is mandatory with --pr')
-        sys.exit(1)
+        logging.error('--authfile is mandatory with gha')
+        return 1
 
     ds = db.Datastore()
     ds.connect()

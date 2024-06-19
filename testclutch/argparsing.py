@@ -69,11 +69,11 @@ def arguments_logging(parser: argparse.ArgumentParser):
         help="Include syslog priority level in log message as <N> prefix")
 
 
-def arguments_ci(parser: argparse.ArgumentParser):
+def arguments_ci(parser: argparse.ArgumentParser, required: bool = True):
     "Add arguments needed for selecting and using a CI system"
     parser.add_argument(
         '--origin',
-        required=True,
+        required=required,
         choices=KNOWN_ORIGINS,
         help="Origin of the log file")
     parser.add_argument(
