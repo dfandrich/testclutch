@@ -10,7 +10,7 @@ import json
 import logging
 import re
 import tempfile
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from testclutch import netreq
 
@@ -89,19 +89,21 @@ class GithubApi:
         return headers
 
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
-                             params: Optional[dict[str, str]] = None) -> dict[str, Any]:
+                             params: Optional[dict[str, str]] = None
+                             ) -> Union[dict[str, Any], list[Any]]:
         """Perform a paged HTTP get, combining all paged results in array
 
-        The JSON response must have at least one array member, the last of which will be used as
-        the signal for completed paging when it is empty.
-        Raises an exception in case of error.
+        The JSON response must have at least one array member if a dict, the last of which will be
+        used as the signal for completed paging when it is empty. The JSON response may also be a
+        single array.
+        Raises an exception in case of network error.
 
         Returns the Python equivalent of the JSON data structure (which will be a dict).
         """
         useparams = params.copy() if params else {}
         useparams["per_page"] = PAGINATION
         useparams["page"] = 1
-        combined = {}
+        combined = None
 
         done = False
         while not done and useparams["page"] <= MAX_RETRIEVED / PAGINATION:
@@ -109,22 +111,37 @@ class GithubApi:
             resp.raise_for_status()
 
             j = json.loads(resp.text)
-            done = True  # fail safe in case there is no array item
-            # Copy or combine all returned items
-            for k, v in j.items():
-                if isinstance(v, list):
-                    combined.setdefault(k, []).extend(v)
-                    done = not v  # signal for pagination complete
-                else:
-                    if k in combined and combined[k] != v:
-                        # If a item occurs in more than one page, it should have the same
-                        # value each time. But, just in case a newer value is returned by the
-                        # end, use that value in the response and continue.
-                        logging.warn(f'Inconsistent static value over pages for {k}')
-                    combined[k] = v
+            if isinstance(j, dict):
+                # Returned value is dict containing at least one array item
+                done = True  # fail safe in case there is no array item
+                if not combined:
+                    combined = {}
+                # Copy or combine all returned items
+                for k, v in j.items():
+                    if isinstance(v, list):
+                        combined.setdefault(k, []).extend(v)
+                        done = not v  # signal for pagination complete
+                    else:
+                        if k in combined and combined[k] != v:
+                            # If a item occurs in more than one page, it should have the same
+                            # value each time. But, just in case a newer value is returned by the
+                            # end, use that value in the response and continue.
+                            logging.warn(f'Inconsistent static value over pages for {k}')
+                        combined[k] = v
+
+            elif isinstance(j, list):
+                # Returned value is array
+                if not combined:
+                    combined = []
+                done = not j  # signal for pagination complete
+                combined.extend(j)
+
+            else:
+                assert False, f"Unexpected return type {type(j)} from API "
 
             useparams["page"] += 1
 
+        assert combined is not None  # since it hasn't raised an exception this must be true
         return combined
 
     def get_runs(self, branch: Optional[str] = None, since: Optional[datetime.datetime] = None
@@ -139,7 +156,9 @@ class GithubApi:
         if since:
             params["created"] = ">" + since.isoformat()
 
-        return self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
+        result = self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
+        assert isinstance(result, dict)
+        return result
 
     def get_run(self, run_id: int) -> dict[str, Any]:
         """Returns info about a single workflow run on GitHub Actions"""
@@ -178,7 +197,9 @@ class GithubApi:
     def get_commit_status(self, commit: str) -> dict[str, Any]:
         """Returns the status of checks on a commit"""
         url = COMMITS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
-        return self._http_get_paged_json(url, headers=self._standard_headers())
+        result = self._http_get_paged_json(url, headers=self._standard_headers())
+        assert isinstance(result, dict)
+        return result
 
     def get_check_runs(self, commit: str) -> dict[str, Any]:
         """Returns the check runs on a commit
@@ -187,7 +208,9 @@ class GithubApi:
             "Checks" repository permissions (read)
         """
         url = CHECKRUNS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
-        return self._http_get_paged_json(url, headers=self._standard_headers())
+        result = self._http_get_paged_json(url, headers=self._standard_headers())
+        assert isinstance(result, dict)
+        return result
 
     def create_comment(self, issue_id: int, comment: str) -> dict[str, Any]:
         """Creates a comment on a GitHub issue or pull request
