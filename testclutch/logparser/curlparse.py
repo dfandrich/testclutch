@@ -90,6 +90,14 @@ TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
 
+def escs(s: str) -> str:
+    """Escape non-ascii characters in a string
+
+    This makes it safer to display by avoiding invalid UTF-8 and ANSI escape sequences.
+    """
+    return s.encode('utf-8').decode('us-ascii', 'backslashreplace')
+
+
 def strip0(n: str) -> str:
     """Strip leading zeros in a string integer"""
     return str(int(n))
@@ -126,7 +134,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     got_first = False
     while l := f.readline():
         if not got_first:
-            logging.debug("First log line: %s", l)
+            logging.debug("First log line: %s", escs(l))
             got_first = True
         if RE_START.search(l):
             logging.debug("Found the start of a curl test log")
@@ -179,44 +187,44 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 # which seems to be allowed in uname -p
                                 meta['arch'] = sysparts[13]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'] == 'Darwin':  # macOS
                             if len(sysparts) == 17:
                                 meta['arch'] = sysparts[16]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'] == 'FreeBSD':
                             if len(sysparts) == 10:
                                 meta['arch'] = sysparts[9]
                             elif len(sysparts) == 17:  # starting 14.0
                                 meta['arch'] = sysparts[16]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'] == 'NetBSD':
                             if len(sysparts) == 17:
                                 meta['arch'] = sysparts[16]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'] == 'OpenBSD':
                             if len(sysparts) == 7:
                                 meta['arch'] = sysparts[6]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'] == 'SunOS':
                             if len(sysparts) in (10, 9):  # Solaris, OmniOS
                                 meta['arch'] = sysparts[7]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'].startswith('MSYS_NT'):
                             if len(sysparts) == 10:
                                 meta['arch'] = sysparts[8]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
                         elif meta['systemos'].startswith('CYGWIN_NT'):
                             if len(sysparts) == 10:
                                 meta['arch'] = sysparts[8]
                             else:
-                                logging.warning('Unexpected system line: %s', l)
+                                logging.warning('Unexpected system line: %s', escs(l))
 
                     elif RE_STARTRESULTS.search(l):
                         # *****************************************
@@ -281,7 +289,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     testcases.append((testno, TestResult.SKIP, r.group(1), 0))
                                     meta['testmode'] = 'torture'
                                 else:
-                                    logging.warning('Expecting test status line, got: %s', l)
+                                    logging.warning('Expecting test status line, got: %s', escs(l))
                                     testno = strip0(r.group(1))
                                     testcases.append((testno, TestResult.UNKNOWN,
                                                      'no test status line', 0))
