@@ -32,24 +32,29 @@ def parse_args(args=None) -> argparse.Namespace:
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
     argparsing.arguments_ci(parser, required=False)
+    output_mode = parser.add_mutually_exclusive_group(required=True)
+    output_mode.add_argument(
+        '--ci-status',
+        action='store_true',
+        help="Check the status of CI runs associated with this PR")
+    output_mode.add_argument(
+        '--report',
+        action='store_true',
+        help='Output PR analysis report')
+    parser.add_argument(
+        '--html',
+        action='store_true',
+        help='Output PR analysis report in HTML form instead of text')
+    parser.add_argument(
+        '--html-fragment',
+        action='store_true',
+        help='Whether to skip HTML page header and footer')
     parser.add_argument(
         '--pr',
         required=True,
         type=int,
         nargs='+',
         help='pull request number on the --checkrepo to analyze')
-    parser.add_argument(
-        '--ci-status',
-        action='store_true',
-        help="Check the status of CI runs associated with this PR")
-    parser.add_argument(
-        '--html',
-        action='store_true',
-        help='Output results in HTML')
-    parser.add_argument(
-        '--html-fragment',
-        action='store_true',
-        help='Whether to skip HTML page header and footer')
     return parser.parse_args(args=args)
 
 
@@ -472,10 +477,12 @@ def main():
     log.setup(args)
 
     if args.dry_run:
-        logging.warning('--dry-run does nothing in thie program')
+        logging.warning('--dry-run does nothing in this program')
 
     # Check CI job status for PR
     if args.ci_status:
+        if args.html:
+            logging.warning('--html is ignored with --ci-status')
         status = check_gha_pr_ready(args)
         if status == PRStatus.ERROR:
             logging.error("A PR is in an unacceptable state")
@@ -484,7 +491,7 @@ def main():
 
     # Generate CI job results report for PR
     if not args.origin:
-        logging.error('--origin is mandatory without --ci-status')
+        logging.error('--origin is mandatory with --report')
         return 1
 
     if not args.authfile and args.origin == 'gha':
@@ -494,7 +501,7 @@ def main():
     ds = db.Datastore()
     ds.connect()
 
-    # Analyze only one origin at a time because each on might have different login credentials
+    # Analyze only one origin at a time because each one might have different login credentials
     if args.origin == 'gha':
         rc = gha_analyze_pr(args, ds)
     elif args.origin == 'appveyor':
