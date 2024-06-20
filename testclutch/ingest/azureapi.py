@@ -4,6 +4,7 @@
 import datetime
 import json
 import logging
+import os
 import tempfile
 from typing import Any, Dict, Optional, Tuple
 
@@ -95,10 +96,12 @@ class AzureApi:
                 # This sometimes raises an exception:
                 # requests.exceptions.ChunkedEncodingError: ("Connection broken: InvalidChunkLength(got length b'', 0 bytes read)", InvalidChunkLength(got length b'', 0 bytes read))
                 # TODO: Retry if this occurs.
-                for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                    tmp.write(chunk)
-            if 'Content-Type' in resp.headers:
-                content_type = resp.headers['Content-Type']
-            else:
-                content_type = None
+                try:
+                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                        tmp.write(chunk)
+                except:  # noqa: E722
+                    # Delete the temporary file on exception
+                    os.unlink(tmp.name)
+                    raise
+            content_type = resp.headers.get('Content-Type', None)
         return (tmp.name, content_type)

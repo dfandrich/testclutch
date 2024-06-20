@@ -8,6 +8,7 @@ fine-grained repository permissions in order to read GitHub Actions logs.
 import datetime
 import json
 import logging
+import os
 import re
 import tempfile
 from typing import Any, Optional, Union
@@ -179,12 +180,14 @@ class GithubApi:
         with self.http.get(url, headers=self._standard_auth_headers(), stream=True) as resp:
             resp.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                for chunk in resp.iter_content(chunk_size=0x10000):
-                    tmp.write(chunk)
-            if 'Content-Type' in resp.headers:
-                content_type = resp.headers['Content-Type']
-            else:
-                content_type = None
+                try:
+                    for chunk in resp.iter_content(chunk_size=0x10000):
+                        tmp.write(chunk)
+                except:  # noqa: E722
+                    # Delete the temporary file on exception
+                    os.unlink(tmp.name)
+                    raise
+            content_type = resp.headers.get('Content-Type', None)
         return (tmp.name, content_type)
 
     def get_pull(self, pr: int) -> dict[str, Any]:

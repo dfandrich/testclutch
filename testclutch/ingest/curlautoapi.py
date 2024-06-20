@@ -5,6 +5,7 @@ import enum
 import html
 import html.parser
 import logging
+import os
 import re
 import tempfile
 import urllib
@@ -95,6 +96,11 @@ class CurlAutoApi:
         with netreq.get(url, stream=True) as resp:
             resp.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                    tmp.write(chunk)
+                try:
+                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                        tmp.write(chunk)
+                except:  # noqa: E722
+                    # Delete the temporary file on exception
+                    os.unlink(tmp.name)
+                    raise
         return tmp.name

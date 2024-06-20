@@ -3,6 +3,7 @@
 
 import json
 import logging
+import os
 import tempfile
 import urllib
 from typing import Any, Dict, List, Optional, Tuple
@@ -79,10 +80,12 @@ class CircleApi:
         with self.http.get(log_url, stream=True) as resp:
             resp.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                    tmp.write(chunk)
-            if 'Content-Type' in resp.headers:
-                content_type = resp.headers['Content-Type']
-            else:
-                content_type = None
+                try:
+                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
+                        tmp.write(chunk)
+                except:  # noqa: E722
+                    # Delete the temporary file on exception
+                    os.unlink(tmp.name)
+                    raise
+            content_type = resp.headers.get('Content-Type', None)
         return (tmp.name, content_type)
