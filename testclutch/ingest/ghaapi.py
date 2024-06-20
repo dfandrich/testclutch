@@ -8,8 +8,9 @@ fine-grained repository permissions in order to read GitHub Actions logs.
 import datetime
 import json
 import logging
+import re
 import tempfile
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 from testclutch import netreq
 
@@ -36,6 +37,28 @@ PAGINATION = 100      # Number to retrieve at once
 # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#rate-limiting
 ALWAYS_AUTH = True
 
+# Matches a time stamp that includes a time zone.
+# Unfortunately, sometimes GHA includes one and sometimes it doesn't.
+TIME_WITH_ZONE_RE = re.compile(r'^.{19}.*[-+]')
+
+
+def convert_time(timestamp: str) -> datetime.datetime:
+    """Converts a GitHub time into a datetime object.
+
+    There seem to be three kinds of time formats used:
+        2023-07-24T15:16:01.000-07:00
+        2023-07-24T22:03:10Z
+        2023-08-15T13:03:32.000Z
+    """
+    if not TIME_WITH_ZONE_RE.search(timestamp):
+        if timestamp.find('.') > 0:
+            # need to add this so the datetime object will be time zone aware, with sub-seconds
+            return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%S.%fZ%z')
+        else:
+            # need to add this so the datetime object will be time zone aware
+            return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
+    return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
+
 
 class GithubApi:
     def __init__(self, owner: str, repo: str, token: Optional[str]):
@@ -50,7 +73,7 @@ class GithubApi:
         self.http = netreq.Session(total=5, backoff_factor=30,
                                    status_forcelist=[403, 429, 500, 502, 503, 504])
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         headers = {"Accept": DATA_TYPE,
                    "X-GitHub-Api-Version": API_VERSION,
                    "User-Agent": netreq.USER_AGENT
@@ -59,14 +82,14 @@ class GithubApi:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
-    def _standard_auth_headers(self) -> Dict[str, str]:
+    def _standard_auth_headers(self) -> dict[str, str]:
         headers = self._standard_headers()
         if not ALWAYS_AUTH and self.token:
             headers['Authorization'] = 'Bearer ' + self.token
         return headers
 
-    def _http_get_paged_json(self, url: str, headers: Dict[str, str],
-                             params: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    def _http_get_paged_json(self, url: str, headers: dict[str, str],
+                             params: Optional[dict[str, str]] = None) -> dict[str, Any]:
         """Perform a paged HTTP get, combining all paged results in array
 
         The JSON response must have at least one array member, the last of which will be used as
@@ -105,7 +128,7 @@ class GithubApi:
         return combined
 
     def get_runs(self, branch: Optional[str] = None, since: Optional[datetime.datetime] = None
-                 ) -> Dict[str, Any]:
+                 ) -> dict[str, Any]:
         """Returns info about all recent workflow runs on GitHub Actions"""
         url = BASE_URL.format(owner=self.owner, repo=self.repo, endpoint='runs')
         params = {"status": "completed"}
@@ -118,21 +141,21 @@ class GithubApi:
 
         return self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
 
-    def get_run(self, run_id: int) -> Dict[str, Any]:
+    def get_run(self, run_id: int) -> dict[str, Any]:
         """Returns info about a single workflow run on GitHub Actions"""
         url = RUN_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         resp = self.http.get(url, headers=self._standard_headers())
         resp.raise_for_status()
         return json.loads(resp.text)
 
-    def get_jobs(self, run_id: int) -> Dict[str, Any]:
+    def get_jobs(self, run_id: int) -> dict[str, Any]:
         """Returns info about the jobs in a workflow run on GitHub Actions"""
         url = JOBS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         resp = self.http.get(url, headers=self._standard_headers())
         resp.raise_for_status()
         return json.loads(resp.text)
 
-    def get_logs(self, run_id: int) -> Tuple[str, Optional[str]]:
+    def get_logs(self, run_id: int) -> tuple[str, Optional[str]]:
         url = LOGS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         with self.http.get(url, headers=self._standard_auth_headers(), stream=True) as resp:
             resp.raise_for_status()
@@ -145,19 +168,19 @@ class GithubApi:
                 content_type = None
         return (tmp.name, content_type)
 
-    def get_pull(self, pr: int) -> Dict[str, Any]:
+    def get_pull(self, pr: int) -> dict[str, Any]:
         """Returns info about a pull request on GitHub Actions"""
         url = PULL_URL.format(owner=self.owner, repo=self.repo, pull_number=pr)
         resp = self.http.get(url, headers=self._standard_headers())
         resp.raise_for_status()
         return json.loads(resp.text)
 
-    def get_commit_status(self, commit: str) -> Dict[str, Any]:
+    def get_commit_status(self, commit: str) -> dict[str, Any]:
         """Returns the status of checks on a commit"""
         url = COMMITS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
         return self._http_get_paged_json(url, headers=self._standard_headers())
 
-    def get_check_runs(self, commit: str) -> Dict[str, Any]:
+    def get_check_runs(self, commit: str) -> dict[str, Any]:
         """Returns the check runs on a commit
 
         This requires one of the following fine-grained token permissions:
@@ -166,7 +189,7 @@ class GithubApi:
         url = CHECKRUNS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
         return self._http_get_paged_json(url, headers=self._standard_headers())
 
-    def create_comment(self, issue_id: int, comment: str) -> Dict[str, Any]:
+    def create_comment(self, issue_id: int, comment: str) -> dict[str, Any]:
         """Creates a comment on a GitHub issue or pull request
 
         This requires one of the following fine-grained token permissions:

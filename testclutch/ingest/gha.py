@@ -34,10 +34,6 @@ KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}$]*$')
 # This MUST match the way that GHA does it. Update KNOWN_LOG_FN_RE if this is changed.
 STRIP_LOG_FN_RE = re.compile(r'[/]')
 
-# Matches a time stamp that includes a time zone.
-# Unfortunately, sometimes GHA includes one and sometimes it doesn't.
-TIME_WITH_ZONE_RE = re.compile(r'^.{19}.*[-+]')
-
 # Match a timestamp at the start of a log line.
 # Example: 2024-05-25T21:43:17.7471243Z
 LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
@@ -83,23 +79,6 @@ class GithubIngestor:
                      }
         logcache.create_dirs(LOGSUBDIR)
 
-    def _convert_time(self, timestamp: str) -> datetime.datetime:
-        """Converts a GitHub time into a datetime object.
-
-        There seem to be three kinds of time formats used:
-            2023-07-24T15:16:01.000-07:00
-            2023-07-24T22:03:10Z
-            2023-08-15T13:03:32.000Z
-        """
-        if not TIME_WITH_ZONE_RE.search(timestamp):
-            if timestamp.find('.') > 0:
-                # need to add this so the datetime object will be time zone aware, with sub-seconds
-                return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%S.%fZ%z')
-            else:
-                # need to add this so the datetime object will be time zone aware
-                return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
-        return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
-
     def ingest_a_run(self, run_id: int):
         self.process_a_run(run_id, self.store_test_run)
 
@@ -138,9 +117,9 @@ class GithubIngestor:
         # Note: there doesn't seem to be a way to get the pull request # from these data
         # or from tun runs data).  "trigger" at least lets you see that it was due to a PR.
         cimeta['trigger'] = run['event']
-        cimeta['runstarttime'] = int(self._convert_time(run['run_started_at']).timestamp())
-        cimeta['runtriggertime'] = int(self._convert_time(run['created_at']).timestamp())
-        cimeta['runfinishtime'] = int(self._convert_time(run['updated_at']).timestamp())
+        cimeta['runstarttime'] = int(ghaapi.convert_time(run['run_started_at']).timestamp())
+        cimeta['runtriggertime'] = int(ghaapi.convert_time(run['created_at']).timestamp())
+        cimeta['runfinishtime'] = int(ghaapi.convert_time(run['updated_at']).timestamp())
 
         if self.download_log(run_id):
             self.process_log_file(self._log_file_path(run_id), cimeta, log_processor)
@@ -303,8 +282,8 @@ class GithubIngestor:
                                         cimeta['runid'], job['status'])
                         return
                     meta['ciresult'] = job['conclusion']
-                    duration = (self._convert_time(job['completed_at'])
-                                - self._convert_time(job['started_at']))
+                    duration = (ghaapi.convert_time(job['completed_at'])
+                                - ghaapi.convert_time(job['started_at']))
                     meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
                     step = self.find_job_step(jobs, meta)
                     if step:
@@ -315,8 +294,8 @@ class GithubIngestor:
                             # This happens in a timeout scenario, for example.
                             meta['cistepresult'] = job['conclusion']
                         if step['completed_at'] and step['started_at']:
-                            duration = (self._convert_time(step['completed_at'])
-                                        - self._convert_time(step['started_at']))
+                            duration = (ghaapi.convert_time(step['completed_at'])
+                                        - ghaapi.convert_time(step['started_at']))
                             meta['steprunduration'] = (duration.seconds * 1000000
                                                        + duration.microseconds)
 
