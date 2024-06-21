@@ -371,7 +371,6 @@ class ResultsOverTimeByUniqueJob:
     def prepare_uniquejob_analysis(self, globaluniquejob: str
                                    ) -> Tuple[List[Tuple[str, float]], TestFailCount]:
         """Perform the bulk of the analysis work of a uniquejob"""
-        logging.info('Analyzing unique job %s', globaluniquejob)
         to_time = int(datetime.datetime.now().timestamp())
         from_time = int((datetime.datetime.now()
                          - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
