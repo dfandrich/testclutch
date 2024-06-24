@@ -39,7 +39,7 @@ test = [
     "pytest >= 6.1.5, <= 8.2.2"
 ]
 dev = [
-    "flake8 >= 5.0.4, <= 7.0.0",
+    "flake8 >= 5.0.4, <= 7.1.0",
     "flake8-builtins",
     "flake8-import-order",
     "flake8-pyproject",
