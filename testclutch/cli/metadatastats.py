@@ -2,6 +2,7 @@
 """
 
 import argparse
+import contextlib
 import datetime
 import itertools
 import logging
@@ -318,8 +319,8 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
                    f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
         print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
-    try:
-        # "runtestsduration" isn't mandatory and an exception will be raised if missing
+    with contextlib.suppress(TypeError):
+        # "runtestsduration" isn't mandatory and TypeError will be raised if missing
         # Store these data first, then display them like the ones below, prefixed
         # by test format, for consistency
         rundurations = []
@@ -335,9 +336,6 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         for testformat, smallest, largest in rundurations:
             print_func(f'{testformat}:', f'{smallest / 1000000: .0f} sec.', indent=1)
 
-    except TypeError:
-        # No durations were found
-        pass
     print_func('Most number of unique tests attempted in one run by test format:')
     for testtype, maxtests in trstats.get_max_tests_by_type():
         print_func(f'{testtype}: {maxtests}', indent=1)
