@@ -19,14 +19,16 @@ from testclutch import netreq
 HTTPError = netreq.HTTPError
 
 # See https://docs.github.com/en/rest?apiVersion=2022-11-28
-BASE_URL = "https://api.github.com/repos/{owner}/{repo}/actions/{endpoint}"
+API_URL = "https://api.github.com"
+BASE_URL = API_URL + "/repos/{owner}/{repo}/actions/{endpoint}"
 RUN_URL = BASE_URL + "/{run_id}"
 LOGS_URL = RUN_URL + "/logs"
 JOBS_URL = RUN_URL + "/jobs"
-PULL_URL = "https://api.github.com/repos/{owner}/{repo}/pulls/{pull_number}"
-COMMITS_URL = "https://api.github.com/repos/{owner}/{repo}/commits/{commit_id}/status"
-CHECKRUNS_URL = "https://api.github.com/repos/{owner}/{repo}/commits/{commit_id}/check-runs"
-COMMENTS_URL = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
+PULLS_URL = API_URL + "/repos/{owner}/{repo}/pulls"
+PULL_URL = PULLS_URL + "/{pull_number}"
+COMMITS_URL = API_URL + "/repos/{owner}/{repo}/commits/{commit_id}/status"
+CHECKRUNS_URL = API_URL + "/repos/{owner}/{repo}/commits/{commit_id}/check-runs"
+COMMENTS_URL = API_URL + "/repos/{owner}/{repo}/issues/{issue_number}/comments"
 API_VERSION = "2022-11-28"
 DATA_TYPE = "application/vnd.github+json"
 
@@ -85,8 +87,11 @@ class GithubApi:
 
     def _standard_auth_headers(self) -> dict[str, str]:
         headers = self._standard_headers()
-        if not ALWAYS_AUTH and self.token:
-            headers['Authorization'] = 'Bearer ' + self.token
+        if 'Authorization' not in headers:
+            if self.token:
+                headers['Authorization'] = 'Bearer ' + self.token
+            else:
+                logging.warning('Auth requested but no token available: %s', type(self.token))
         return headers
 
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
@@ -127,7 +132,8 @@ class GithubApi:
                             # If a item occurs in more than one page, it should have the same
                             # value each time. But, just in case a newer value is returned by the
                             # end, use that value in the response and continue.
-                            logging.warn(f'Inconsistent static value over pages for {k}')
+                            logging.warn(f'Inconsistent value over pages for {k} '
+                                         f'(was {combined[k]}, now {v})')
                         combined[k] = v
 
             elif isinstance(j, list):
@@ -189,6 +195,14 @@ class GithubApi:
                     raise
             content_type = resp.headers.get('Content-Type', None)
         return (tmp.name, content_type)
+
+    def get_pulls(self, state: str) -> list[Any]:
+        """Returns info about pull requests"""
+        url = PULLS_URL.format(owner=self.owner, repo=self.repo)
+        params = {"state": state}
+        result = self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
+        assert isinstance(result, list)
+        return result
 
     def get_pull(self, pr: int) -> dict[str, Any]:
         """Returns info about a pull request on GitHub Actions"""

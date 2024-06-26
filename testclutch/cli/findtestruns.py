@@ -3,6 +3,7 @@
 
 import argparse
 import datetime
+from contextlib import nullcontext
 from typing import Collection, List, Tuple
 
 from testclutch import argparsing
@@ -66,21 +67,22 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Find test runs matching specific tests')
     argparsing.arguments_logging(parser)
-    query = parser.add_argument_group('query arguments', 'Specifying test matches')
-    query.add_argument(
-        '--failed',
-        nargs='*',
-        default=[],
-        help='Select runs where these tests failed')
-    query.add_argument(
-        '--succeeded',
-        nargs='*',
-        default=[],
-        help='Select runs where these tests succeeded')
-    query.add_argument(
-        '--resultcode',
-        choices=list(code.name for code in TestResult),
-        help='Specify test result code to match')
+    with nullcontext(parser.add_argument_group(
+                     'query arguments', 'Specifying test matches')) as query:
+        query.add_argument(
+            '--failed',
+            nargs='*',
+            default=[],
+            help='Select runs where these tests failed')
+        query.add_argument(
+            '--succeeded',
+            nargs='*',
+            default=[],
+            help='Select runs where these tests succeeded')
+        query.add_argument(
+            '--resultcode',
+            choices=list(code.name for code in TestResult),
+            help='Specify test result code to match')
     # TODO: use this to catch arguments for --failed and --succeeded, too, except that means only
     # one query can be done in an invocation, which is probably fine.
     parser.add_argument(

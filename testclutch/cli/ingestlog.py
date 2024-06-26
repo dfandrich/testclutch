@@ -310,10 +310,11 @@ def main():
     args = parse_args()
     log.setup(args, subprogram=args.origin)
 
+    if not args.authfile and args.origin == 'gha':
+        logging.error('--authfile is required with gha')
+        sys.exit(1)
+
     if args.runid:
-        if not args.authfile and args.origin == 'gha':
-            logging.error('--authfile is mandatory with --runid')
-            sys.exit(1)
         if args.meta:
             logging.error('Metadata fields cannot be added with --runid')
             sys.exit(1)

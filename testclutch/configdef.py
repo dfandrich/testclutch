@@ -74,5 +74,8 @@ test_results_count_max_urls = 30
 # Number of recent URLs to show
 test_results_count_num_recent_urls = 5
 
+# Oldest created PR in hours to include in the PR check
+pr_ready_age_hours_max = 24 * 3  # 3 days
+
 # TODO:
 # add per-CI service options, like azure_account

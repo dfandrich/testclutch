@@ -7,6 +7,7 @@ import enum
 import logging
 import textwrap
 import urllib
+from contextlib import nullcontext
 from html import escape
 from typing import Optional, Sequence, Tuple
 
@@ -28,20 +29,20 @@ from testclutch.logdef import ParsedLog, TestCases, TestMeta
 from testclutch.testcasedef import TestResult
 
 
-def parse_args(args=None) -> argparse.Namespace:
+def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
     argparsing.arguments_ci(parser, required=False)
-    output_mode = parser.add_mutually_exclusive_group(required=True)
-    output_mode.add_argument(
-        '--ci-status',
-        action='store_true',
-        help="Check the status of CI runs associated with this PR")
-    output_mode.add_argument(
-        '--report',
-        action='store_true',
-        help='Output PR analysis report')
+    with nullcontext(parser.add_mutually_exclusive_group(required=True)) as output_mode:
+        output_mode.add_argument(
+            '--ci-status',
+            action='store_true',
+            help="Check the status of CI runs associated with this PR")
+        output_mode.add_argument(
+            '--report',
+            action='store_true',
+            help='Output PR analysis report')
     parser.add_argument(
         '--html',
         action='store_true',
@@ -50,12 +51,20 @@ def parse_args(args=None) -> argparse.Namespace:
         '--html-fragment',
         action='store_true',
         help='Whether to skip HTML page header and footer')
+    with nullcontext(parser.add_mutually_exclusive_group(required=True)) as pr_source:
+        pr_source.add_argument(
+            '--pr',
+            type=int,
+            nargs='+',
+            help='pull request number on the --checkrepo to analyze')
+        pr_source.add_argument(
+            '--ready-prs',
+            action='store_true',
+            help='Look at all recent PRs that are ready instead of specified ones')
     parser.add_argument(
-        '--pr',
-        required=True,
+        '--oldest',
         type=int,
-        nargs='+',
-        help='pull request number on the --checkrepo to analyze')
+        help='Oldest PR to consider ready for --ready-prs, in hours')
     return parser.parse_args(args=args)
 
 
@@ -262,7 +271,8 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         print_html_footer()
 
 
-def analyze_pr(test_results: Sequence[ParsedLog], ds: db.Datastore):
+def analyze_pr(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
+    print(f'Analyzing pull request {pr}')
     logging.info('Analyzing %d test results', len(test_results))
     for testmeta, testcases in test_results:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
@@ -293,9 +303,11 @@ def analyze_pr(test_results: Sequence[ParsedLog], ds: db.Datastore):
         globaluniquejob = analyzer.make_global_unique_job(testmeta)
         analyzer.analyze_by_unique_job(globaluniquejob)
         print()
+    print()
 
 
-def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
+                        prs: list[int]) -> int:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -310,18 +322,18 @@ def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore]) ->
 
     av = prappveyor.AppveyorAnalyzeJob(account, project, args.checkrepo, ds, None)
 
-    for pr in args.pr:
+    for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
         results = av.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(results, ds)
+            analyze_pr(pr, results, ds)
     return 0
 
 
-def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
+def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -336,18 +348,18 @@ def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
 
     azure = prazure.AzureAnalyzer(organization, project, args.checkrepo, ds)
 
-    for pr in args.pr:
+    for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
         results = azure.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(results, ds)
+            analyze_pr(pr, results, ds)
     return 0
 
 
-def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
+def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -356,18 +368,18 @@ def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
 
     ci = prcircleci.CircleAnalyzer(args.checkrepo, ds)
 
-    for pr in args.pr:
+    for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
         results = ci.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(results, ds)
+            analyze_pr(pr, results, ds)
     return 0
 
 
-def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
+def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -376,18 +388,18 @@ def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
 
     cirrus = prcirrus.CirrusAnalyzer(args.checkrepo, ds, None)
 
-    for pr in args.pr:
+    for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
         results = cirrus.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(results, ds)
+            analyze_pr(pr, results, ds)
     return 0
 
 
-def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
+def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -395,14 +407,14 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
         return 1
     ghi = prgha.GithubAnalyzeJob(parts[1], parts[2], gha.read_token(args.authfile), ds)
 
-    for pr in args.pr:
+    for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
         results = ghi.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(results, ds)
+            analyze_pr(pr, results, ds)
     return 0
 
 
@@ -413,7 +425,7 @@ class PRStatus(enum.IntEnum):
     ERROR = 3    # invalid PR
 
 
-def check_gha_pr_ready(args: argparse.Namespace) -> PRStatus:
+def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
     parts = path.split('/')
     if netloc.casefold() != 'github.com' or len(parts) != 3:
@@ -425,7 +437,7 @@ def check_gha_pr_ready(args: argparse.Namespace) -> PRStatus:
 
     # The highest value for PRStatus wins as the result code for the batch
     ret = PRStatus.READY
-    for pr in args.pr:
+    for pr in prs:
         pull = gh.get_pull(pr)
         if pull['state'] == 'closed':
             logging.warn(f'PR is in state {pull["state"]}')
@@ -470,6 +482,29 @@ def check_gha_pr_ready(args: argparse.Namespace) -> PRStatus:
     return ret
 
 
+def get_ready_prs(args: argparse.Namespace) -> list[int]:
+    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
+    parts = path.split('/')
+    if netloc.casefold() != 'github.com' or len(parts) != 3:
+        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
+        return []
+
+    owner, repo = parts[1], parts[2]
+    gh = ghaapi.GithubApi(owner, repo, gha.read_token(args.authfile))
+
+    pulls = gh.get_pulls('open')
+    pr_recency = args.oldest if args.oldest else config.get('pr_ready_age_hours_max')
+    recent = (datetime.datetime.now(tz=datetime.timezone.utc)
+              - datetime.timedelta(hours=pr_recency))
+    recent_prs = [pr['number'] for pr in pulls
+                  if ghaapi.convert_time(pr['created_at']) > recent]
+    logging.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
+                 f'{pr_recency} hours)')
+    for prnum in recent_prs:
+        logging.info(f'PR#{prnum} is eligible to be analyzed')
+    return recent_prs
+
+
 def main():
     args = parse_args()
     log.setup(args)
@@ -477,11 +512,16 @@ def main():
     if args.dry_run:
         logging.warning('--dry-run does nothing in this program')
 
+    if args.ready_prs:
+        prs = get_ready_prs(args)
+    else:
+        prs = args.pr
+
     # Check CI job status for PR
     if args.ci_status:
         if args.html:
             logging.warning('--html is ignored with --ci-status')
-        status = check_gha_pr_ready(args)
+        status = check_gha_pr_ready(args, prs)
         if status == PRStatus.ERROR:
             logging.error("A PR is in an unacceptable state")
         print(status.name)
@@ -501,15 +541,15 @@ def main():
 
     # Analyze only one origin at a time because each one might have different login credentials
     if args.origin == 'gha':
-        rc = gha_analyze_pr(args, ds)
+        rc = gha_analyze_pr(args, ds, prs)
     elif args.origin == 'appveyor':
-        rc = appveyor_analyze_pr(args, ds)
+        rc = appveyor_analyze_pr(args, ds, prs)
     elif args.origin == 'circle':
-        rc = circle_analyze_pr(args, ds)
+        rc = circle_analyze_pr(args, ds, prs)
     elif args.origin == 'azure':
-        rc = azure_analyze_pr(args, ds)
+        rc = azure_analyze_pr(args, ds, prs)
     elif args.origin == 'cirrus':
-        rc = cirrus_analyze_pr(args, ds)
+        rc = cirrus_analyze_pr(args, ds, prs)
     else:
         logging.error(f'Unsupported origin {args.origin}')
         rc = 1
