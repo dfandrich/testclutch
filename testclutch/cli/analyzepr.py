@@ -17,6 +17,7 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 from testclutch import summarize
+from testclutch.ingest import gha
 from testclutch.ingest import ghaapi
 from testclutch.ingest import prappveyor
 from testclutch.ingest import prazure
@@ -392,9 +393,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore) -> int:
     if netloc.casefold() != 'github.com' or len(parts) != 3:
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
-
-    token = args.authfile.read().strip()
-    ghi = prgha.GithubAnalyzeJob(parts[1], parts[2], token, ds)
+    ghi = prgha.GithubAnalyzeJob(parts[1], parts[2], gha.read_token(args.authfile), ds)
 
     for pr in args.pr:
         logging.info(f'Analyzing pull request {pr}')
@@ -422,8 +421,7 @@ def check_gha_pr_ready(args: argparse.Namespace) -> PRStatus:
         return PRStatus.ERROR
 
     owner, repo = parts[1], parts[2]
-    token = args.authfile.read().strip() if args.authfile else None
-    gh = ghaapi.GithubApi(owner, repo, token)
+    gh = ghaapi.GithubApi(owner, repo, gha.read_token(args.authfile))
 
     # The highest value for PRStatus wins as the result code for the batch
     ret = PRStatus.READY
@@ -491,11 +489,11 @@ def main():
 
     # Generate CI job results report for PR
     if not args.origin:
-        logging.error('--origin is mandatory with --report')
+        logging.error('--origin is required with --report')
         return 1
 
     if not args.authfile and args.origin == 'gha':
-        logging.error('--authfile is mandatory with gha')
+        logging.error('--authfile is required with gha')
         return 1
 
     ds = db.Datastore()

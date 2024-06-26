@@ -10,11 +10,32 @@ KNOWN_ORIGINS = ['appveyor', 'autobuilds', 'azure', 'circle', 'cirrus', 'curlaut
                  'local']
 
 
-class ExpandUserFileType(argparse.FileType):
-    """argparse.FileType that expands user directories"""
+class ExpandUserFileName:
+    """argparsing type that checks if a file has the desired permisssions.
 
-    def __call__(self, string):
-        return super().__call__(os.path.expanduser(string))
+    User directories with tildes (e.g. ~user/foo) are expanded first.
+    The file name is returned rather than an open file (unlike argparse.FileType) so that file
+    nametimes is not an issue. This way (vs. argparse.FileType) introduces a race condition because
+    the file permissions could change between the time we check them and the time the file is
+    later opened, but this way at least lets us close the file when we're done with it when the
+    file is used more than once.
+
+    Future improvements:
+    - check if the file is the correct type (e.g. directory vs file)
+    - if the file is writable but it doesn't exist, it should check the write status of the
+      containing directory to ensure that the file can be created
+    """
+    def __init__(self, mode: str = 'r'):
+        self.mode = mode
+
+    def __call__(self, filename: str):
+        fn = os.path.expanduser(filename)
+        modebits = ((os.R_OK if 'r' in self.mode or '+' in self.mode else 0)
+                    | (os.W_OK if 'w' in self.mode or 'x' in self.mode or 'a' in self.mode
+                       or '+' in self.mode else 0))
+        if not os.access(fn, modebits):
+            raise argparse.ArgumentTypeError("{0} does not exist or have permission".format(fn))
+        return fn
 
 
 class StoreMultipleConstAction(argparse.Action):
@@ -78,7 +99,7 @@ def arguments_ci(parser: argparse.ArgumentParser, required: bool = True):
         help="Origin of the log file")
     parser.add_argument(
         '--authfile',
-        type=ExpandUserFileType('r'),
+        type=ExpandUserFileName('r'),
         help="File holding authentication token if needed for this --origin")
     parser.add_argument(
         '--checkrepo',

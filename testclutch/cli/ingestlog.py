@@ -59,8 +59,7 @@ def gha_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    token = args.authfile.read().strip()
-    ghi = gha.GithubIngestor(parts[1], parts[2], token, ds, args.overwrite)
+    ghi = gha.GithubIngestor(parts[1], parts[2], gha.read_token(args.authfile), ds, args.overwrite)
 
     for run in args.runid:
         ghi.ingest_a_run(int(run))
@@ -154,12 +153,7 @@ def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore])
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    if args.authfile:
-        token = args.authfile.read().strip()
-    else:
-        logging.warning('Supply a token to avoid errors downloading GHA logs')
-        token = ''
-    ghi = gha.GithubIngestor(parts[1], parts[2], token, ds, args.overwrite)
+    ghi = gha.GithubIngestor(parts[1], parts[2], gha.read_token(args.authfile), ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} from GHA')
     ghi.ingest_all_logs(args.branch, args.howrecent)

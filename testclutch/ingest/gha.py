@@ -39,12 +39,22 @@ STRIP_LOG_FN_RE = re.compile(r'[/]')
 LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
 
 
+MIME_EXT = {
+    'application/zip': '.zip',
+    'application/x-tgz': '.tgz'
+}
+
+
 def file_ext_from_type(content_type: str) -> str:
-    if content_type == 'application/zip':
-        return '.zip'
-    if content_type == 'application/x-tgz':
-        return '.tgz'
-    return '.bin'
+    return MIME_EXT.get(content_type, '.bin')
+
+
+def read_token(authfile: Optional[str]) -> Optional[str]:
+    """Read the authorization token supplied in the file"""
+    if not authfile:
+        return None
+    with open(authfile) as tokfile:
+        return tokfile.read().strip()
 
 
 class MassagedLog(io.TextIOWrapper):
@@ -115,7 +125,7 @@ class GithubIngestor:
         cimeta['runrepo'] = f'https://github.com/{run["repository"]["full_name"]}'
         cimeta['url'] = run['html_url']
         # Note: there doesn't seem to be a way to get the pull request # from these data
-        # or from tun runs data).  "trigger" at least lets you see that it was due to a PR.
+        # or from the runs data).  "trigger" at least lets you see that it was due to a PR.
         cimeta['trigger'] = run['event']
         cimeta['runstarttime'] = int(ghaapi.convert_time(run['run_started_at']).timestamp())
         cimeta['runtriggertime'] = int(ghaapi.convert_time(run['created_at']).timestamp())
