@@ -30,6 +30,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install '.[dev]' '.[test]'
+      - name: Compile
+        run: |
+          python -m compileall -x '/\.git/' .
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
