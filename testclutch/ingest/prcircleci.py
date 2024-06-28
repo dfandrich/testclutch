@@ -2,7 +2,6 @@
 """
 
 import logging
-import re
 import urllib
 from typing import List, Tuple
 
@@ -16,7 +15,7 @@ from testclutch.logdef import TestCases, TestMeta
 class CircleAnalyzer:
     def __init__(self, repo: str, ds: db.Datastore):
         scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
-        safe_path = re.sub(r"[^-\w+!@#%^&()]", "-", path)
+        safe_path = circleci.sanitize_path(path)
         self.repo = f'{netloc}{safe_path}'
         self.circle = circleciapi.CircleApi(repo)
         self.circlei = circleci.CircleIngestor(repo, ds)

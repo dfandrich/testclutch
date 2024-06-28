@@ -17,13 +17,20 @@ from testclutch.logparser import logparse
 DEFAULT_EXT = ".log"
 LOGSUBDIR = 'cirrus'
 
+SANITIZE_PATH_RE = re.compile(r"[^-\w+!@#%^&()]")
+
+
+def sanitize_path(path: str) -> str:
+    "Convert the given URL path into one that is not too problematic to have on a filesystem"
+    return SANITIZE_PATH_RE.sub("-", path)
+
 
 class CirrusIngestor:
     def __init__(self, repo: str, ds: Optional[db.Datastore], token: Optional[str],
                  overwrite: bool = False):
         # TODO: probably need account/project to be passed in, like Appveyor
         scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
-        safe_path = re.sub(r"[^-\w+!@#%^&()]", "-", path)
+        safe_path = sanitize_path(path)
         self.repo = f'{netloc}{safe_path}'
         self.cirrus = cirrusapi.CirrusApi(repo, token)
         self.ds = ds

@@ -23,7 +23,7 @@ from testclutch.logparser import logparse
 DEFAULT_EXT = '.json'
 LOGSUBDIR = 'circleci'
 
-AV_TIME_RE = re.compile(r'^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(\.\d{1,7})([-+]\d\d):(\d\d)$')
+SANITIZE_PATH_RE = re.compile(r"[^-\w+!@#%^&()]")
 
 # Tasks created by CircleCI, whose logs we don't care about
 SYSTEM_TASKS = frozenset(('Spin up environment', 'Preparing environment variables',
@@ -57,6 +57,11 @@ RESOURCE_ARCH = {'arm-medium': 'aarch64',
                  }
 
 
+def sanitize_path(path: str) -> str:
+    "Convert the given URL path into one that is not too problematic to have on a filesystem"
+    return SANITIZE_PATH_RE.sub("-", path)
+
+
 class MassagedLog(io.StringIO):
     """Extract the log from the JSON input"""
     def __init__(self, f: TextIO):
@@ -79,7 +84,7 @@ class MassagedLog(io.StringIO):
 class CircleIngestor:
     def __init__(self, repo: str, ds: Optional[db.Datastore], overwrite: bool = False):
         scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
-        safe_path = re.sub(r"[^-\w+!@#%^&()]", "-", path)
+        safe_path = sanitize_path(path)
         self.repo = f'{netloc}{safe_path}'
         self.circle = circleciapi.CircleApi(repo)
         self.ds = ds
