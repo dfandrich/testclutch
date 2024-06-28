@@ -5,10 +5,10 @@ import json
 import logging
 import os
 import tempfile
-import urllib.parse
 from typing import Any, Dict, Optional, Tuple
 
 from testclutch import netreq
+from testclutch import urls
 
 
 HTTPError = netreq.HTTPError
@@ -296,14 +296,11 @@ fragment TaskNameChip_task on Task {
 
 
 class CirrusApi:
-    def __init__(self, checkurl: str, token):
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkurl)
-        parts = path.split('/')
-        if len(parts) != 3:
-            raise RuntimeError('Invalid checkurl ' + checkurl)
-        self.owner = parts[1]
-        self.repo = parts[2]
-        if netloc != 'github.com':
+    def __init__(self, checkurl: str, token: str):
+        account, project = urls.get_project_name(checkurl)
+        self.owner = account
+        self.repo = project
+        if urls.url_host(checkurl) != 'github.com':
             raise RuntimeError('Unsupported checkurl ' + checkurl)
         self.platform = 'github'
         self.token = token

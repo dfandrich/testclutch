@@ -6,7 +6,6 @@ import logging
 import os
 import stat
 import sys
-import urllib.parse
 from typing import Dict, Optional
 
 from testclutch import argparsing
@@ -14,6 +13,7 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 from testclutch import summarize
+from testclutch import urls
 from testclutch.ingest import appveyor
 from testclutch.ingest import azure
 from testclutch.ingest import circleci
@@ -53,13 +53,13 @@ def parse_args(args=None) -> argparse.Namespace:
 
 
 def gha_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
+    if urls.url_host(args.checkrepo) != 'github.com':
+        # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    ghi = gha.GithubIngestor(parts[1], parts[2], gha.read_token(args.authfile), ds, args.overwrite)
+    owner, project = urls.get_project_name(args)
+    ghi = gha.GithubIngestor(owner, project, gha.read_token(args.authfile), ds, args.overwrite)
 
     for run in args.runid:
         ghi.ingest_a_run(int(run))
@@ -67,12 +67,6 @@ def gha_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int
 
 
 def circle_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     ci = circleci.CircleIngestor(args.checkrepo, ds, args.overwrite)
 
     for run in args.runid:
@@ -81,12 +75,6 @@ def circle_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> 
 
 
 def cirrus_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     ci = cirrus.CirrusIngestor(args.checkrepo, ds, None, args.overwrite)
 
     for run in args.runid:
@@ -95,18 +83,7 @@ def cirrus_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> 
 
 
 def appveyor_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    account = args.account
-    if not account:
-        account = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
+    account, project = urls.get_project_name(args)
     av = appveyor.AppveyorIngestor(account, project, args.checkrepo, ds, None, args.overwrite)
 
     for run in args.runid:
@@ -115,19 +92,8 @@ def appveyor_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -
 
 
 def azure_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    organization = args.account
-    if not organization:
-        organization = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
-    azurei = azure.AzureIngestor(organization, project, args.checkrepo, ds, args.overwrite)
+    account, project = urls.get_project_name(args)
+    azurei = azure.AzureIngestor(account, project, args.checkrepo, ds, args.overwrite)
 
     for run in args.runid:
         azurei.ingest_a_run(int(run))
@@ -147,13 +113,13 @@ def curlauto_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -
 
 
 def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
+    if urls.url_host(args.checkrepo) != 'github.com':
+        # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return 1
 
-    ghi = gha.GithubIngestor(parts[1], parts[2], gha.read_token(args.authfile), ds, args.overwrite)
+    owner, project = urls.get_project_name(args)
+    ghi = gha.GithubIngestor(owner, project, gha.read_token(args.authfile), ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} from GHA')
     ghi.ingest_all_logs(args.branch, args.howrecent)
@@ -161,12 +127,6 @@ def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore])
 
 
 def cirrus_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     ci = cirrus.CirrusIngestor(args.checkrepo, ds, None, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} from Cirrus')
@@ -175,12 +135,6 @@ def cirrus_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastor
 
 
 def circle_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     circle = circleci.CircleIngestor(args.checkrepo, ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} '
@@ -190,18 +144,7 @@ def circle_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastor
 
 
 def appveyor_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    account = args.account
-    if not account:
-        account = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
+    account, project = urls.get_project_name(args)
     av = appveyor.AppveyorIngestor(account, project, args.checkrepo, ds, None, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs '
@@ -211,19 +154,8 @@ def appveyor_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datast
 
 
 def azure_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    organization = args.account
-    if not organization:
-        organization = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
-    azurei = azure.AzureIngestor(organization, project, args.checkrepo, ds, args.overwrite)
+    account, project = urls.get_project_name(args)
+    azurei = azure.AzureIngestor(account, project, args.checkrepo, ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs '
                  f'for branch {args.branch} from Azure')

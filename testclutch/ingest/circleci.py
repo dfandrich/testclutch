@@ -8,7 +8,6 @@ import datetime
 import io
 import json
 import logging
-import posixpath
 import re
 import urllib
 from typing import Any, Callable, Dict, Iterable, Optional, TextIO
@@ -16,6 +15,7 @@ from typing import Any, Callable, Dict, Iterable, Optional, TextIO
 from testclutch import db
 from testclutch import logcache
 from testclutch import summarize
+from testclutch import urls
 from testclutch.ingest import circleciapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
@@ -102,15 +102,6 @@ class CircleIngestor:
         build = self.circle.get_run(build_num)
         self.process_run(build, log_processor)
 
-    def pr_from_url(self, url: str) -> int:
-        "Extracts the PR number from a GitHub URL"
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
-        if netloc != 'github.com':
-            logging.error('Cannot extract PR from URL %s', url)
-            return 0
-        paths = posixpath.split(path)
-        return int(paths[1])
-
     # TODO: delete me
     def ingest_run(self, build: Dict[str, Any]):
         self.process_run(build, self.store_test_run)
@@ -146,7 +137,7 @@ class CircleIngestor:
         cimeta['ciresult'] = build['outcome']
         if build['pull_requests']:
             url = build['pull_requests'][0]['url']
-            cimeta['pullrequest'] = self.pr_from_url(url)
+            cimeta['pullrequest'] = urls.url_pr(url)
 
         # Skip if no logs to get or uninteresting system task
         steps = [step for step in build['steps']
