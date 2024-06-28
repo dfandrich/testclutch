@@ -49,7 +49,11 @@ RESOURCE_ARCH = {'arm-medium': 'aarch64',
                  'xlarge': 'x86_64',
                  '2xlarge': 'x86_64',
                  '2xlarge+': 'x86_64',
-                 'macos.x86.medium.gen2': 'x86_64',
+                 'macos-x86-medium-gen2': 'x86_64',
+                 'windows-medium': 'x86_64',
+                 'windows-large': 'x86_64',
+                 'windows-xlarge': 'x86_64',
+                 'windows-2xlarge': 'x86_64',
                  }
 
 
