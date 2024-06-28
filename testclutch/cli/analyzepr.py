@@ -6,7 +6,6 @@ import datetime
 import enum
 import logging
 import textwrap
-import urllib
 from contextlib import nullcontext
 from html import escape
 from typing import Optional, Sequence, Tuple
@@ -18,6 +17,7 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 from testclutch import summarize
+from testclutch import urls
 from testclutch.ingest import gha
 from testclutch.ingest import ghaapi
 from testclutch.ingest import prappveyor
@@ -308,18 +308,7 @@ def analyze_pr(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
 
 def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
                         prs: list[int]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    account = args.account
-    if not account:
-        account = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
+    account, project = urls.get_project_name(args)
     av = prappveyor.AppveyorAnalyzeJob(account, project, args.checkrepo, ds, None)
 
     for pr in prs:
@@ -334,19 +323,8 @@ def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
 
 
 def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    organization = args.account
-    if not organization:
-        organization = path.split('/')[1]
-    project = args.project
-    if not project:
-        project = path.split('/')[2]
-
-    azure = prazure.AzureAnalyzer(organization, project, args.checkrepo, ds)
+    owner, project = urls.get_project_name(args)
+    azure = prazure.AzureAnalyzer(owner, project, args.checkrepo, ds)
 
     for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
@@ -360,12 +338,6 @@ def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int])
 
 
 def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     ci = prcircleci.CircleAnalyzer(args.checkrepo, ds)
 
     for pr in prs:
@@ -380,12 +352,6 @@ def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
 
 
 def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-
     cirrus = prcirrus.CirrusAnalyzer(args.checkrepo, ds, None)
 
     for pr in prs:
@@ -400,12 +366,8 @@ def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
 
 
 def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return 1
-    ghi = prgha.GithubAnalyzeJob(parts[1], parts[2], gha.read_token(args.authfile), ds)
+    owner, project = urls.get_project_name(args)
+    ghi = prgha.GithubAnalyzeJob(owner, project, gha.read_token(args.authfile), ds)
 
     for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
@@ -426,14 +388,18 @@ class PRStatus(enum.IntEnum):
 
 
 def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
+    try:
+        owner, project = urls.get_project_name(args)
+    except RuntimeError:
+        return PRStatus.ERROR
+
+    if urls.url_host(args.checkrepo) != 'github.com':
+        # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return PRStatus.ERROR
 
-    owner, repo = parts[1], parts[2]
-    gh = ghaapi.GithubApi(owner, repo, gha.read_token(args.authfile))
+    owner, project = urls.get_project_name(args)
+    gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
     # The highest value for PRStatus wins as the result code for the batch
     ret = PRStatus.READY
@@ -483,14 +449,17 @@ def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
 
 
 def get_ready_prs(args: argparse.Namespace) -> list[int]:
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(args.checkrepo)
-    parts = path.split('/')
-    if netloc.casefold() != 'github.com' or len(parts) != 3:
+    try:
+        owner, project = urls.get_project_name(args)
+    except RuntimeError:
+        return []
+
+    if urls.url_host(args.checkrepo) != 'github.com':
+        # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
         return []
 
-    owner, repo = parts[1], parts[2]
-    gh = ghaapi.GithubApi(owner, repo, gha.read_token(args.authfile))
+    gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
     pulls = gh.get_pulls('open')
     pr_recency = args.oldest if args.oldest else config.get('pr_ready_age_hours_max')

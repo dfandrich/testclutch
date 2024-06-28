@@ -5,10 +5,10 @@ import json
 import logging
 import os
 import tempfile
-import urllib
 from typing import Any, Dict, List, Optional, Tuple
 
 from testclutch import netreq
+from testclutch import urls
 
 HTTPError = netreq.HTTPError
 
@@ -27,13 +27,10 @@ CHUNK_SIZE = 0x10000
 
 class CircleApi:
     def __init__(self, checkurl: str):
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkurl)
-        parts = path.split('/')
-        if len(parts) != 3:
-            raise RuntimeError('Invalid checkurl ' + checkurl)
-        self.owner = parts[1]
-        self.repo = parts[2]
-        if netloc != 'github.com':
+        account, project = urls.get_project_name(checkurl)
+        self.owner = account
+        self.repo = project
+        if urls.url_host(checkurl) != 'github.com':
             raise RuntimeError('Unsupported checkurl ' + checkurl)
         self.vcs = 'github'
         self.http = netreq.Session()

@@ -7,6 +7,7 @@ import urllib
 from typing import List, Tuple
 
 from testclutch import db
+from testclutch import urls
 from testclutch.ingest import circleci
 from testclutch.ingest import circleciapi
 from testclutch.logdef import TestCases, TestMeta
@@ -35,10 +36,9 @@ class CircleAnalyzer:
             if (run['lifecycle'] == 'finished'
                     and run['pull_requests']):
                 url = run['pull_requests'][0]['url']
-                build_pr = self.circlei.pr_from_url(url)
+                build_pr = urls.url_pr(url)
                 if pr == build_pr:
-                    logging.debug('Found build %s on branch %s',
-                                  run['build_num'], run['branch'])
+                    logging.debug('Found build %s on branch %s', run['build_num'], run['branch'])
                     builds.append(run['build_num'])
 
         logging.info('Found %d runs for PR#%d', len(builds), pr)
