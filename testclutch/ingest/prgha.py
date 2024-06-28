@@ -3,13 +3,13 @@
 
 import datetime
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from testclutch import config
 from testclutch import db
 from testclutch.ingest import gha
 from testclutch.ingest import ghaapi
-from testclutch.logdef import TestCases, TestMeta
+from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 # We're only interested in pull requests here
@@ -23,8 +23,8 @@ class GithubAnalyzeJob:
         self.ds = ds
         self.gh = ghaapi.GithubApi(owner, repo, token)
         self.ghi = gha.GithubIngestor(owner, repo, token, ds)
-        self.test_results = []  # type: List[Tuple[TestMeta, TestCases]]
-        self.prmeta = {}  # type: TestMeta
+        self.test_results = []  # type: List[ParsedLog]
+        self.prmeta = {}        # type: TestMeta
 
     def _is_matching_run(self, run: TestMeta, commit: str) -> bool:
         return (run['event'] == PR_EVENT
@@ -70,8 +70,8 @@ class GithubAnalyzeJob:
 
         self.test_results.append((meta, testcases))
 
-    def gather_pr(self, pr: int) -> List[Tuple[TestMeta, TestCases]]:
-        # Clear any earlier results and start again
+    def gather_pr(self, pr: int) -> List[ParsedLog]:
+        """Clear any earlier results and start gathering job results for this PR"""
         self.test_results = []
         self.prmeta = {}
         runs = self.find_for_pr(pr)

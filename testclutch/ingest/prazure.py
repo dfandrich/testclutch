@@ -2,11 +2,11 @@
 """
 
 import logging
-from typing import List, Tuple
+from typing import List
 
 from testclutch import config
 from testclutch.ingest import azure
-from testclutch.logdef import TestCases, TestMeta
+from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class AzureAnalyzer(azure.AzureIngestor):
@@ -24,7 +24,7 @@ class AzureAnalyzer(azure.AzureIngestor):
         self.test_results.append((meta, testcases))
 
     def clear_test_results(self):
-        self.test_results = []  # type: List[Tuple[TestMeta, TestCases]]
+        self.test_results = []  # type: List[ParsedLog]
 
     def _find_matching_runs(self, pr: int, hours: int) -> List[int]:
         matches = []
@@ -40,7 +40,7 @@ class AzureAnalyzer(azure.AzureIngestor):
                 matches.append(build['id'])
         return matches
 
-    def gather_pr(self, pr: int) -> List[Tuple[TestMeta, TestCases]]:
+    def gather_pr(self, pr: int) -> List[ParsedLog]:
         self.clear_test_results()
         found = self._find_matching_runs(pr, config.get('pr_age_hours_default'))
         if not found:

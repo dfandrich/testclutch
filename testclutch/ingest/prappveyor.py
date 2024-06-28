@@ -2,13 +2,13 @@
 """
 
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from testclutch import config
 from testclutch import db
 from testclutch.ingest import appveyor
 from testclutch.ingest import appveyorapi
-from testclutch.logdef import TestCases, TestMeta
+from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class AppveyorAnalyzeJob:
@@ -20,7 +20,7 @@ class AppveyorAnalyzeJob:
         self.av = appveyorapi.AppveyorApi(account, project, token)
         self.avi = appveyor.AppveyorIngestor(account, project, repo, ds, token)
         self.ds = ds
-        self.test_results = []  # type: List[Tuple[TestMeta, TestCases]]
+        self.test_results = []  # type: List[ParsedLog]
 
     def gather_log(self, logmeta: TestMeta, testcases: TestCases):
         self.test_results.append((logmeta, testcases))
@@ -38,7 +38,7 @@ class AppveyorAnalyzeJob:
                 results.append(job['version'])
         return results
 
-    def gather_pr(self, pr: int) -> List[Tuple[TestMeta, TestCases]]:
+    def gather_pr(self, pr: int) -> List[ParsedLog]:
         # Clear any earlier results and start again
         self.test_results = []
         buildvers = self.find_for_pr(pr)

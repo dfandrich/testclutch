@@ -3,13 +3,13 @@
 
 import logging
 import urllib
-from typing import List, Tuple
+from typing import List
 
 from testclutch import db
 from testclutch import urls
 from testclutch.ingest import circleci
 from testclutch.ingest import circleciapi
-from testclutch.logdef import TestCases, TestMeta
+from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class CircleAnalyzer:
@@ -20,7 +20,7 @@ class CircleAnalyzer:
         self.circle = circleciapi.CircleApi(repo)
         self.circlei = circleci.CircleIngestor(repo, ds)
         self.ds = ds
-        self.test_results = []  # type: List[Tuple[TestMeta, TestCases]]
+        self.test_results = []  # type: List[ParsedLog]
 
     def gather_log(self, logmeta: TestMeta, testcases: TestCases):
         self.test_results.append((logmeta, testcases))
@@ -43,7 +43,7 @@ class CircleAnalyzer:
         logging.info('Found %d runs for PR#%d', len(builds), pr)
         return builds
 
-    def gather_pr(self, pr: int) -> List[Tuple[TestMeta, TestCases]]:
+    def gather_pr(self, pr: int) -> List[ParsedLog]:
         # Clear any earlier results and start again
         self.test_results = []
         builds = self.find_for_pr(pr)
