@@ -6,8 +6,7 @@ import os
 
 from testclutch import config
 
-KNOWN_ORIGINS = ['appveyor', 'autobuilds', 'azure', 'circle', 'cirrus', 'curlauto', 'gha',
-                 'local']
+KNOWN_ORIGINS = ['appveyor', 'azure', 'circle', 'cirrus', 'curlauto', 'gha', 'local']
 
 
 class ExpandUserFileName:
