@@ -34,6 +34,7 @@ report_consecutive_failures = 3
 flaky_builds_min = 10
 
 # Maximum number of builds to look at when performing flaky analysis
+# This limit is on top of the regular one that limits builds by time
 flaky_builds_max = 999999999
 
 # Minimum number of different failures that need to occur before it's considered flaky

@@ -142,7 +142,6 @@ def print_html_footer():
 
 def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore, fragment: bool):
     logging.info('Analyzing %d test results', len(test_results))
-    analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
     if not fragment:
         print_html_header(pr)
         now = datetime.datetime.now(datetime.timezone.utc)
@@ -168,6 +167,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
           '<!--Unique Job Name--></th></tr>')
     print('<tbody>')
 
+    analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
     for meta, testcases in test_results:
         print('<tr>')
 
@@ -176,7 +176,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         assert isinstance(origin, str)  # satisfy pytype that this isn't int
         ciname = meta.get('ciname', '')
         if origin.casefold() == ciname.casefold():
-            # reduce duplication of information
+            # reduce duplication of information displayed
             origin = ''
         else:
             origin = f"[{origin}] "
@@ -214,8 +214,8 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
                 if permafails:
                     if job_status.test_result == 'success':
                         permafailtitle = ("Some tests are failing but the test was marked as "
-                                          "successful, so "
-                                          "these test results were likely marked to be ignored.")
+                                          "successful, "
+                                          "so these test results were likely marked to be ignored.")
                     permafailtitle = permafailtitle + "These tests are now consistently failing: "
                     permafails.sort(key=analyzer._try_integer)
                     permafailtitle = permafailtitle + (
@@ -250,10 +250,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
             jobtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S %z')
         summary = summarize.summarize_totals(testcases)
         is_aborted = analyzer.check_aborted(meta)
-        if is_aborted:
-            test_result = 'aborted'
-        else:
-            test_result = meta.get('testresult', 'unknown')
+        test_result = 'aborted' if is_aborted else meta.get('testresult', 'unknown')
         title = (title + '\n' + escape(', '.join([s.strip() for s in summary]))
                  + '\nResult: ' + escape(test_result))
 

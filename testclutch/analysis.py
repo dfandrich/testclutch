@@ -2,6 +2,7 @@
 """
 
 import collections
+import contextlib
 import datetime
 import logging
 import textwrap
@@ -16,6 +17,7 @@ from testclutch.gitdef import CommitInfo
 from testclutch.logdef import TestMeta
 from testclutch.testcasedef import TestResult
 
+# Info on a single failed job result
 # record_id, jobtime, {test: count}
 TestFailCount = Tuple[int, int, collections.Counter[str]]
 
@@ -74,30 +76,30 @@ class ResultsOverTimeByUniqueJob:
         Use a a sort key function to sort numeric test names by numeric value and string
         test names alphabetically.  A more general alternative would be natsort.natsorted()
         """
-        try:
+        with contextlib.suppress(ValueError):
             return int(val)
-        except ValueError:
-            return val
+        return val
 
-    def make_global_unique_job(self, meta: TestMeta) -> str:
-        """The concatenation of: [account,]repo,origin,uniquejobname
+    @staticmethod
+    def make_global_unique_job(meta: TestMeta) -> str:
+        """Create a unique job name from the available metadata
 
-        This is used as a key to get info on a unique job name.
+        This is the concatenation of: [account,]repo,origin,uniquejobname
+        It is used as a key to get info on a unique job name.
         """
         maybe_account = meta['account'] + ',' if 'account' in meta else ''
         return f"{maybe_account}{meta['checkrepo']},{meta['origin']},{meta['uniquejobname']}"
 
     def check_aborted(self, meta: TestMeta) -> bool:
-        "Check if the tests's metadata indicates an aborted test run"
-        if meta['origin'] == 'circle' and meta.get('cistepresult', '') == 'timedout':
-            return True
+        "Check if the CI metadata indicates an aborted test run"
         if meta['origin'] == 'azure' and meta.get('cistepresult', '') == 'canceled':
+            return True
+        if meta['origin'] == 'circle' and meta.get('cistepresult', '') == 'timedout':
             return True
         if meta['origin'] == 'cirrus' and meta['ciresult'] == 'aborted':
             return True
         # This was only added 2023-08-03
-        if (meta['origin'] == 'gha'
-                and 'cistepresult' in meta and meta['cistepresult'] == 'cancelled'):
+        if meta['origin'] == 'gha' and meta.get('cistepresult', '') == 'cancelled':
             return True
         # There seems to be no way to unambiguously determine this on Appveyor (checking if
         # the test run time >1h is too brittle).
@@ -370,10 +372,19 @@ class ResultsOverTimeByUniqueJob:
 
     def prepare_uniquejob_analysis(self, globaluniquejob: str
                                    ) -> Tuple[List[Tuple[str, float]], TestFailCount]:
-        """Perform the bulk of the analysis work of a uniquejob"""
+        """Perform the bulk of the analysis work of a uniquejob
+
+        Args:
+            globaluniquejob: globally-unique job ID to analyze
+
+        Returns:
+            Tuple of ...
+        """
         to_time = int(datetime.datetime.now().timestamp())
         from_time = int((datetime.datetime.now()
                          - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        logging.info(f'Starting new analysis over last {config.get("analysis_hours")}h '
+                     f'of unique job {globaluniquejob}')
         self.load_unique_job(globaluniquejob, from_time, to_time)
 
         # print('Failures over time:')
@@ -402,7 +413,6 @@ class ResultsOverTimeByUniqueJob:
         return (flaky, recent_failures)
 
     def show_unique_job_failures_table(self, globaluniquejob: str):
-        logging.info('Analyzing unique job %s', globaluniquejob)
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         if not self.all_jobs_status:
             logging.info('Nothing to analyze for %s', globaluniquejob)

@@ -89,10 +89,9 @@ def _try_integer(val: str) -> Union[int, str]:
     test names by numeric value and string test names alphabetically.  A more
     general alternative would be natsort.natsorted()
     """
-    try:
+    with contextlib.suppress(ValueError):
         return '%09d' % int(val)
-    except ValueError:
-        return val
+    return val
 
 
 def _try_integer_rev(val: str) -> Union[int, str]:
@@ -102,10 +101,9 @@ def _try_integer_rev(val: str) -> Union[int, str]:
     test names by numeric value and string test names alphabetically.  A more
     general alternative would be natsort.natsorted()
     """
-    try:
+    with contextlib.suppress(ValueError):
         return '%09d' % (2**sys.int_info.bits_per_digit - int(val))
-    except ValueError:
-        return val
+    return val
 
 
 class MetadataStats:
