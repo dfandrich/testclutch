@@ -178,15 +178,15 @@ class ResultsOverTimeByUniqueJob:
             success_tests = []
             skipped_statuses = frozenset((TestResult.UNKNOWN, TestResult.SKIP))
             for tc in testcases:
-                if tc[1] == TestResult.PASS:
+                if tc.result == TestResult.PASS:
                     # All tests that succeeded
-                    success_tests.append(tc[0])
-                elif tc[1] == TestResult.FAIL:
+                    success_tests.append(tc.name)
+                elif tc.result == TestResult.FAIL:
                     # All tests that failed
-                    failed_tests.append(tc[0])
-                if tc[1] not in skipped_statuses:
+                    failed_tests.append(tc.name)
+                if tc.result not in skipped_statuses:
                     # All tests that were attempted to be run
-                    attempted_tests.append(tc[0])
+                    attempted_tests.append(tc.name)
 
             # Sort the lists
             failed_tests.sort(key=self._try_integer)

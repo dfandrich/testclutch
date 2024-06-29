@@ -11,7 +11,7 @@ import logging
 import re
 from typing import TextIO
 
-from testclutch.logdef import ParsedLog, TestCases, TestMeta  # noqa: F401
+from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
 
@@ -75,14 +75,18 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                             break
                         elif r := RESULT_RE.search(l):
                             if r.group(1) == 'PASSED':
-                                testcases.append((r.group(2), TestResult.PASS, r.group(4), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.PASS, r.group(4), 0))
                             elif r.group(1) == 'FAILED':
-                                testcases.append((r.group(2), TestResult.FAIL, r.group(4), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.FAIL, r.group(4), 0))
                             elif r.group(1) == 'XPASS':
                                 # Treat this as a normal pass (it was expected to fail)
-                                testcases.append((r.group(2), TestResult.PASS, r.group(4), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.PASS, r.group(4), 0))
                             elif r.group(1) == 'XFAIL':
-                                testcases.append((r.group(2), TestResult.FAILIGNORE, r.group(4), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.FAILIGNORE, r.group(4), 0))
                             else:
                                 logging.error("Unknown pytest result: %s", r.group(1))
                         elif r := SKIPPED_RE.search(l):
@@ -91,7 +95,8 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                                 # name used here is an approximation that is good enough to
                                 # identify the test but won't match the actual test name if it
                                 # were not skipped.
-                                testcases.append((r.group(2), TestResult.SKIP, r.group(3), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.SKIP, r.group(3), 0))
                             else:
                                 logging.debug("Ignoring not SKIPPED type: %s", r.group(1))
 
@@ -133,21 +138,22 @@ def parse_log_file(f: TextIO) -> ParsedLog:
                     meta['testdeps'] = r.group(3)
                 elif NONVERBOSE_SENTINAL_RE .search(l):
                     # If this is found, this is not a verbose log so clear data and give up
-                    logging.debug("Acutally, it's not a verbose log at all; give up")
+                    logging.debug("Actually, it's not a verbose log at all; give up")
                     meta = {}
                     break
                 elif r := RESULTV_RE.search(l):
                     if r.group(2) == 'PASSED':
-                        testcases.append((r.group(1), TestResult.PASS, '', 0))
+                        testcases.append(SingleTestFinding(r.group(1), TestResult.PASS, '', 0))
                     elif r.group(2) == 'FAILED':
-                        testcases.append((r.group(1), TestResult.FAIL, '', 0))
+                        testcases.append(SingleTestFinding(r.group(1), TestResult.FAIL, '', 0))
                     elif r.group(2) == 'SKIPPED':
-                        testcases.append((r.group(1), TestResult.SKIP, '', 0))
+                        testcases.append(SingleTestFinding(r.group(1), TestResult.SKIP, '', 0))
                     elif r.group(2) == 'XPASS':
                         # Treat this as a normal pass (it was expected to fail)
-                        testcases.append((r.group(1), TestResult.PASS, '', 0))
+                        testcases.append(SingleTestFinding(r.group(1), TestResult.PASS, '', 0))
                     elif r.group(2) == 'XFAIL':
-                        testcases.append((r.group(1), TestResult.FAILIGNORE, '', 0))
+                        testcases.append(SingleTestFinding(
+                            r.group(1), TestResult.FAILIGNORE, '', 0))
                     else:
                         logging.error("Unknown pytest result: %s", r.group(2))
 

@@ -73,26 +73,26 @@ def success_fail_count(meta: TestMeta, testcases: TestCases, is_aborted: bool) -
     prefix_char = ''
     if test_result == 'success':
         cssclass = 'success'
-        num = len([1 for x in testcases if x[1] == TestResult.PASS])
+        num = len([1 for x in testcases if x.result == TestResult.PASS])
     elif test_result == 'truncated' or is_aborted:
         cssclass = 'aborted'
-        num_failed = len([1 for x in testcases if x[1] == TestResult.FAIL])
+        num_failed = len([1 for x in testcases if x.result == TestResult.FAIL])
         if num_failed == 0:
-            num = len([1 for x in testcases if x[1] == TestResult.PASS])
+            num = len([1 for x in testcases if x.result == TestResult.PASS])
         else:
             num = num_failed
             prefix_char = '*'
     elif test_result == 'failure':
         cssclass = 'failure'
-        num = len([1 for x in testcases if x[1] == TestResult.FAIL])
+        num = len([1 for x in testcases if x.result == TestResult.FAIL])
         prefix_char = '*'
     elif test_result == 'unknown':
         # Shouldn't normally be encountered for tests ingested after Aug 1/23.
         # just look at the # failures in this case
-        num_failed = len([1 for x in testcases if x[1] == TestResult.FAIL])
+        num_failed = len([1 for x in testcases if x.result == TestResult.FAIL])
         if num_failed == 0:
             cssclass = 'success'
-            num = len([1 for x in testcases if x[1] == TestResult.PASS])
+            num = len([1 for x in testcases if x.result == TestResult.PASS])
         else:
             cssclass = 'unknown'
             num = num_failed
@@ -101,7 +101,7 @@ def success_fail_count(meta: TestMeta, testcases: TestCases, is_aborted: bool) -
         # Not sure what this is
         logging.error('Internal error determining job status for %s', meta['cijob'])
         cssclass = 'failure'
-        num = len([1 for x in testcases if x[1] == TestResult.FAIL])
+        num = len([1 for x in testcases if x.result == TestResult.FAIL])
         prefix_char = '*'
 
     return (f'{prefix_char}{num}', cssclass)
@@ -277,7 +277,7 @@ def analyze_pr(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
     for testmeta, testcases in test_results:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
         print(f"Test [{testmeta['origin']}] {testmeta['ciname']} / {testmeta['cijob']} ({testmeta['testformat']})")
-        failed = [x for x in testcases if x[1] == TestResult.FAIL]
+        failed = [x for x in testcases if x.result == TestResult.FAIL]
         if not failed:
             logging.debug('All tests succeeded; no failures to analyze')
             if analyzer.check_aborted(testmeta):
@@ -297,7 +297,7 @@ def analyze_pr(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
         if failed:
             print('Some test(s) failed:')
             for test in failed:
-                print(f'{test[0]} (failed in {test[2]})')
+                print(f'{test.name} (failed in {test.reason})')
         print('Here is an analysis of this test in this environment recently in the repo')
 
         globaluniquejob = analyzer.make_global_unique_job(testmeta)

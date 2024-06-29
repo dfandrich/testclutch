@@ -9,7 +9,7 @@ import logging
 import re
 from typing import TextIO
 
-from testclutch.logdef import ParsedLog, TestCases, TestMeta  # noqa: F401
+from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
 
@@ -52,9 +52,9 @@ def parse_log_file(f: TextIO) -> ParsedLog:
             else:
                 info = ''
             if code := result_code(r.group(1)):
-                testcases.append((r.group(2), code, info, 0))
+                testcases.append(SingleTestFinding(r.group(2), code, info, 0))
             else:
-                testcases.append((r.group(2), TestResult.UNKNOWN, info, 0))
+                testcases.append(SingleTestFinding(r.group(2), TestResult.UNKNOWN, info, 0))
             if meta.get('testresult') == 'success':
                 # This is the second (or more) test suite result in the log file, so delete
                 # a previous success result so this one's result will prevail.

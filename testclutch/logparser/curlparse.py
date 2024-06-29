@@ -8,7 +8,7 @@ import re
 import zlib
 from typing import Set, TextIO  # noqa: F401
 
-from testclutch.logdef import ParsedLog, TestCases, TestMeta  # noqa: F401
+from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
 
@@ -117,7 +117,7 @@ def check_found_result(testcases: TestCases):
     """
     if len(testcases) < 2:
         return
-    if testcases[-1][0] == testcases[-2][0] and testcases[-2][1] == TestResult.UNKNOWN:
+    if testcases[-1].name == testcases[-2].name and testcases[-2].result == TestResult.UNKNOWN:
         del testcases[-2]
     return
 
@@ -231,8 +231,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                         while l := f.readline():
                             l = l.rstrip()
                             if r := RE_SKIPPED.search(l):
-                                testcases.append((strip0(r.group(1)), TestResult.SKIP, r.group(2),
-                                                 0))
+                                testcases.append(SingleTestFinding(strip0(r.group(1)), TestResult.SKIP,
+                                                                   r.group(2), 0))
                             elif r := RE_TESTSTART.search(l):
                                 # In case verbose mode is on, skip the verbose lines
                                 # (this doesn't always work properly)
@@ -251,29 +251,35 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     if duration < 0:
                                         duration = 0  # bug in the test harness
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.PASS, "", duration))
+                                    testcases.append(SingleTestFinding(
+                                        testno, TestResult.PASS, "", duration))
                                 elif rr := RE_TORTUREOK.search(l):
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.PASS, "", 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, TestResult.PASS, "", 0))
                                     meta['testmode'] = 'torture'
                                 elif rr := RE_FAILED.search(l):
                                     if rr.group(1) in toignore:
                                         result = TestResult.FAILIGNORE
                                     else:
                                         result = TestResult.FAIL
-                                    testcases.append((rr.group(1), result, rr.group(2), 0))
+                                    testcases.append(SingleTestFinding(
+                                        rr.group(1), result, rr.group(2), 0))
                                 elif rr := RE_IGNORED.search(l):
-                                    testcases.append((rr.group(1), TestResult.SKIP, rr.group(2), 0))
+                                    testcases.append(SingleTestFinding(
+                                        rr.group(1), TestResult.SKIP, rr.group(2), 0))
                                 elif rr := RE_EXITFAILED.search(l):
                                     testno = strip0(r.group(1))
                                     if testno in toignore:
                                         result = TestResult.FAILIGNORE
                                     else:
                                         result = TestResult.FAIL
-                                    testcases.append((testno, result, rr.group(1), 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, result, rr.group(1), 0))
                                 elif rr := RE_ABORTED.search(l):
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.ABORT, rr.group(0), 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, TestResult.ABORT, rr.group(0), 0))
                                 elif rr := RE_TORTUREFAILED.search(l):
                                     # The real error line is coming up...just ignore this and wait
                                     meta['testmode'] = 'torture'
@@ -283,16 +289,18 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                         result = TestResult.FAILIGNORE
                                     else:
                                         result = TestResult.FAIL
-                                    testcases.append((testno, result, rr.group(1), 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, result, rr.group(1), 0))
                                 elif rr := RE_TORTURESKIPPED.search(l):
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.SKIP, r.group(1), 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, TestResult.SKIP, r.group(1), 0))
                                     meta['testmode'] = 'torture'
                                 else:
                                     logging.warning('Expecting test status line, got: %s', escs(l))
                                     testno = strip0(r.group(1))
-                                    testcases.append((testno, TestResult.UNKNOWN,
-                                                     'no test status line', 0))
+                                    testcases.append(SingleTestFinding(
+                                        testno, TestResult.UNKNOWN, 'no test status line', 0))
                             elif r := RE_TESTSTARTSHORT.search(l):
                                 # The next line will be a RE_FAILED, so just drop through and
                                 # it will be handled on the next pass below
@@ -302,9 +310,11 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     result = TestResult.FAILIGNORE
                                 else:
                                     result = TestResult.FAIL
-                                testcases.append((r.group(1), result, r.group(2), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(1), result, r.group(2), 0))
                             elif r := RE_IGNORED.search(l):
-                                testcases.append((r.group(1), TestResult.SKIP, r.group(2), 0))
+                                testcases.append(SingleTestFinding(
+                                    r.group(1), TestResult.SKIP, r.group(2), 0))
                             elif r := RE_ABORTED.search(l):
                                 # We have no RE_TESTSTART here to attach this to a specific test
                                 # number, so we can't do anything but ignore it
@@ -315,13 +325,14 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 if duration < 0:
                                     duration = 0  # bug in the test harness
                                 testno = str(int(r.group(1)))
-                                testcases.append((testno, TestResult.PASS, "", duration))
+                                testcases.append(SingleTestFinding(
+                                    testno, TestResult.PASS, "", duration))
                             elif r := RE_TESTFAILEDSHORT.search(l):
                                 if r.group(1) in toignore:
                                     result = TestResult.FAILIGNORE
                                 else:
                                     result = TestResult.FAIL
-                                testcases.append((r.group(1), result, "", 0))
+                                testcases.append(SingleTestFinding(r.group(1), result, "", 0))
                             elif r := RE_TOTALTIME.search(l):
                                 meta['runtestsduration'] = str(int(r.group(1)) * 1000000)
                             elif r := RE_OKSUMMARY.search(l):
@@ -401,13 +412,13 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     # Look for duplicate tests in the list
     alltests = set()
     for test in testcases:
-        if test[0] in alltests:
+        if test.name in alltests:
             # If this happens, then the parser above may need to be fixed so that each test
             # result is extracted a single time.
             # It might simply be that --repeat=N was used to run tests multiple times.
-            logging.info(f'Tests appear more than once ({test[0]} is the first); '
+            logging.info(f'Tests appear more than once ({test.name} is the first); '
                          'Was the test run multiple times? Is there a parser problem?')
             break
-        alltests.add(test[0])
+        alltests.add(test.name)
 
     return meta, testcases

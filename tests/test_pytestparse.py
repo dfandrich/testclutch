@@ -5,6 +5,7 @@ from typing import TextIO
 from .context import testclutch  # noqa: F401
 
 from testclutch.logparser import pytestparse  # noqa: I100
+from testclutch.logdef import SingleTestFinding  # noqa: I100
 
 DATADIR = 'data'
 
@@ -27,22 +28,14 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'success'
         }, meta)
         self.assertEqual([
-            ('tests/test_curlparse.py::TestCurlParse::test_aborted',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_event',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_short',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_torture',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_truncated',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_valgrind',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_pytestparse.py::TestCurlParse::test_truncated',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_pytestparse.py::TestCurlParse::test_verbose',
-             pytestparse.TestResult.PASS, '', 0)
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_aborted', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_event', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_short', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_torture', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_truncated', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_valgrind', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_pytestparse.py::TestCurlParse::test_truncated', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_pytestparse.py::TestCurlParse::test_verbose', pytestparse.TestResult.PASS, '', 0)
         ], testcases)
 
     def test_verbose(self):
@@ -56,9 +49,9 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure'
         }, meta)
         self.assertEqual([
-            ('bar_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.PASS, '', 0),
-            ('foo_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.FAIL, '', 0),
-            ('skip_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.SKIP, '', 0)
+            SingleTestFinding('bar_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('foo_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('skip_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.SKIP, '', 0)
         ], testcases)
 
     def test_truncated(self):
@@ -72,7 +65,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'truncated'
         }, meta)
         self.assertEqual([
-            ('bar_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('bar_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.PASS, '', 0),
         ], testcases)
 
     def test_faillogs(self):
@@ -87,34 +80,20 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure'
         }, meta)
         self.assertEqual([
-            ('tests/test_curldailyinfo.py::TestCurlDailyInfo::test_dailyinfo',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_aborted',
-             pytestparse.TestResult.FAILIGNORE, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_daily',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_event',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_faillogs',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_short',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_testcurlgit',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_torture',
-             pytestparse.TestResult.FAIL, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_truncated',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_curlparse.py::TestCurlParse::test_valgrind',
-             pytestparse.TestResult.SKIP, '', 0),
-            ('tests/test_gitcommitinfo.py::TestGitCommitInfo::test_gitcommitinfo',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_pytestparse.py::TestCurlParse::test_success',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_pytestparse.py::TestCurlParse::test_truncated',
-             pytestparse.TestResult.PASS, '', 0),
-            ('tests/test_pytestparse.py::TestCurlParse::test_verbose',
-             pytestparse.TestResult.PASS, '', 0)
+            SingleTestFinding('tests/test_curldailyinfo.py::TestCurlDailyInfo::test_dailyinfo', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_aborted', pytestparse.TestResult.FAILIGNORE, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_daily', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_event', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_faillogs', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_short', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_testcurlgit', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_torture', pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_truncated', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_valgrind', pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('tests/test_gitcommitinfo.py::TestGitCommitInfo::test_gitcommitinfo', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_pytestparse.py::TestCurlParse::test_success', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_pytestparse.py::TestCurlParse::test_truncated', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/test_pytestparse.py::TestCurlParse::test_verbose', pytestparse.TestResult.PASS, '', 0)
         ], testcases)
 
     def test_nonverbose(self):
@@ -129,8 +108,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure'
         }, meta)
         self.assertEqual([
-            ('tests/test_curlparse.py::TestCurlParse::test_torture',
-             pytestparse.TestResult.FAIL, 'AssertionError:...', 0),
+            SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_torture', pytestparse.TestResult.FAIL, 'AssertionError:...', 0),
         ], testcases)
 
     def test_longtime(self):
@@ -145,15 +123,15 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure'
         }, meta)
         self.assertEqual([
-            ('adddate_test.py::TestAdddateCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
-            ('adddate_test.py::TestAdddateCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
-            ('compuservecvt_test.py::TestCompuserveCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
-            ('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
-            ('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
-            ('maillogcvt_test.py::TestMaillogCvt::test_message_2', pytestparse.TestResult.FAILIGNORE, '', 0),
-            ('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
-            ('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
-            ('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_2', pytestparse.TestResult.FAILIGNORE, '', 0),
+            SingleTestFinding('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
         ], testcases)
 
     def test_verbose_as_summary(self):

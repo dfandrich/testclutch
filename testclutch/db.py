@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from testclutch import config
 from testclutch.gitdef import CommitInfo
-from testclutch.logdef import TestCases, TestMeta
+from testclutch.logdef import SingleTestFinding, TestCases, TestMeta
 
 
 # Timeout for database writes. Needed to turn a concurrent write error into a retry.
@@ -102,12 +102,12 @@ class Datastore:
         # TODO: create table to perform email->name mappings UNIQUE (repo, email)
         self.db.commit()
 
-    def store_test_meta(self, recid: int, meta: Dict[str, str]):
+    def store_test_meta(self, recid: int, meta: TestMeta):
         for k, v in meta.items():
             self.cur.execute("INSERT INTO testrunmeta VALUES (?, ?, ?)", (recid, k, v))
         self.db.commit()
 
-    def store_test_run(self, meta: Dict[str, str], testresults: TestCases):
+    def store_test_run(self, meta: TestMeta, testresults: TestCases):
         index_time = (meta['runtriggertime'] if 'runtriggertime' in meta else
                       meta['runstarttime'] if 'runstarttime' in meta else meta['runfinishtime'])
         repo = meta['checkrepo']
@@ -125,7 +125,8 @@ class Datastore:
             "SELECT id FROM testruns WHERE rowid = ?", (self.cur.lastrowid, )).fetchone()[0]
         self.store_test_meta(recid, meta)
         for row in testresults:
-            self.cur.execute("INSERT INTO testresults VALUES (?, ?, ?, ?, ?)", (recid, *row))
+            self.cur.execute("INSERT INTO testresults VALUES (?, ?, ?, ?, ?)", (
+                recid, row.name, row.result, row.reason, row.duration))
         self.db.commit()
 
     def collect_meta(self, testid: int) -> TestMeta:
@@ -177,14 +178,14 @@ class Datastore:
                                 (repo, oldest, name, value))
         return self._collect_row(runs)
 
-    def select_test_results(self, testid: int) -> List[Tuple[str, int, str, int]]:
+    def select_test_results(self, testid: int) -> TestCases:
         "Returns the test results for a given test run"
         res = self.cur.execute("SELECT testid, result, resulttext, runtime FROM testresults "
                                "WHERE id = ?", (testid,))
         results = []
         # Collect test case results
         while rows := res.fetchmany():
-            results.extend(rows)
+            results.extend([SingleTestFinding(a, b, c, d) for a, b, c, d in rows])
         return results
 
 #    def check_test_existence_UNUSED(self, meta: TestMeta) -> bool:
