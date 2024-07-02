@@ -160,6 +160,9 @@ class GithubApi:
             params["branch"] = branch
             # Assume we don't want PRs if we supply a specific branch
             params["exclude_pull_requests"] = "true"
+        else:
+            # Assume we only want PRs if we DON'T supply a specific branch
+            params["event"] = "pull_request"
         if since:
             params["created"] = ">" + since.isoformat()
 
