@@ -12,5 +12,5 @@ class TestResult(IntEnum):
     TIMEOUT = 4     # test timed out
     FAILIGNORE = 5  # test failed, but the result was ignored
     ABORT = 6       # test was stopped prematurely by the framework
-    ERROR = 7       # an framework error occurred while running the test
+    ERROR = 7       # a framework error occurred while running the test
     LAST = ERROR

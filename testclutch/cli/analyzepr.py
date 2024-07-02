@@ -2,11 +2,13 @@
 """
 
 import argparse
+import collections
 import datetime
 import enum
 import logging
 import textwrap
 from contextlib import nullcontext
+from email import utils
 from html import escape
 from typing import Optional, Sequence, Tuple
 
@@ -16,6 +18,7 @@ from testclutch import argparsing
 from testclutch import config
 from testclutch import db
 from testclutch import log
+from testclutch import prdef
 from testclutch import summarize
 from testclutch import urls
 from testclutch.ingest import gha
@@ -28,21 +31,27 @@ from testclutch.ingest import prgha
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 from testclutch.testcasedef import TestResult
 
+# Test states that are considered to be failed tests
+# TestResult.UNKNOWN is left out because parsing errors can cause it (due to e.g. Python errors in
+# test servers)
+FAIL_TEST_RESULTS = frozenset((TestResult.FAIL, TestResult.TIMEOUT))
+
+# Number of test failures to mention in the comment, per origin
+MAX_NOTIFIED_PER_ORIGIN = 7
+
+
+class PRStatus(enum.IntEnum):
+    READY = 0    # PR jobs are complete (or success)
+    PENDING = 1  # CI jobs are still running for this PR
+    CLOSED = 2   # PR already closed
+    ERROR = 3    # invalid PR
+
 
 def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
     argparsing.arguments_ci(parser, required=False)
-    with nullcontext(parser.add_mutually_exclusive_group(required=True)) as output_mode:
-        output_mode.add_argument(
-            '--ci-status',
-            action='store_true',
-            help="Check the status of CI runs associated with this PR")
-        output_mode.add_argument(
-            '--report',
-            action='store_true',
-            help='Output PR analysis report')
     parser.add_argument(
         '--html',
         action='store_true',
@@ -65,6 +74,28 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
         '--oldest',
         type=int,
         help='Oldest PR to consider ready for --ready-prs, in hours')
+    parser.add_argument(
+        '--rerun',
+        action='store_true',
+        help='Rerun step even if run before')
+    # Put these at end so they're easier for the user to see
+    with nullcontext(parser.add_mutually_exclusive_group(required=True)) as output_mode:
+        output_mode.add_argument(
+            '--ci-status',
+            action='store_true',
+            help="Check the status of CI runs associated with this PR")
+        output_mode.add_argument(
+            '--report',
+            action='store_true',
+            help='Output PR analysis report')
+        output_mode.add_argument(
+            '--gather-analysis',
+            action='store_true',
+            help='Gather information needed to comment on a PR')
+        output_mode.add_argument(
+            '--comment',
+            action='store_true',
+            help='Comment on a PR')
     return parser.parse_args(args=args)
 
 
@@ -207,7 +238,9 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
                               'so these test results were likely marked to be ignored. ')
         current_failure_counts = first_failure[2]
         permafails = analyzer.get_permafails(current_failure_counts)
-        if permafails:
+        # A test might be on the permafail list even if the job is successful if the test result
+        # was marked to be ignored. Don't consider that a failure worth reporting.
+        if permafails and job_status.test_result != 'success':
             permafailtitle = permafailtitle + "These tests are now consistently failing: "
             permafails.sort(key=analyzer._try_integer)
             permafailtitle = permafailtitle + (
@@ -308,7 +341,7 @@ def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
             analyze_pr(pr, results, ds)
-    return 0
+    return PRStatus.READY
 
 
 def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
@@ -323,7 +356,7 @@ def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int])
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
             analyze_pr(pr, results, ds)
-    return 0
+    return PRStatus.READY
 
 
 def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
@@ -337,7 +370,7 @@ def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
             analyze_pr(pr, results, ds)
-    return 0
+    return PRStatus.READY
 
 
 def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
@@ -351,7 +384,7 @@ def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
             analyze_pr(pr, results, ds)
-    return 0
+    return PRStatus.READY
 
 
 def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
@@ -366,14 +399,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -
             analyze_pr_html(pr, results, ds, args.html_fragment)
         else:
             analyze_pr(pr, results, ds)
-    return 0
-
-
-class PRStatus(enum.IntEnum):
-    READY = 0    # PR jobs are complete
-    PENDING = 1  # CI jobs are still running for this PR
-    CLOSED = 2   # PR already closed
-    ERROR = 3    # invalid PR
+    return PRStatus.READY
 
 
 def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
@@ -463,12 +489,305 @@ def get_ready_prs(args: argparse.Namespace) -> list[int]:
     return recent_prs
 
 
+class GatherPRAnalysis:
+    "Class for gathering data to analyze and comment on a PR"
+
+    def __init__(self, ds: db.Datastore, args: argparse.Namespace):
+        self.ds = ds
+        self.args = args
+        self.analysisstate = prdef.PRAnalysisState()
+
+    def read_analyses(self, lock: bool) -> dict[int, prdef.PRAnalysis]:
+        """Return the analyses so far for this repo
+
+        Args:
+            lock: True if the analysis data may be written later; this adds an exclusive lock
+            on the file
+        """
+        self.allpranalyses = self.analysisstate.read_state(lock)
+        if self.args.checkrepo not in self.allpranalyses:
+            # Create new dict for this checkrepo
+            self.allpranalyses[self.args.checkrepo] = {}
+        return self.allpranalyses[self.args.checkrepo]
+
+    def write_analyses(self):
+        assert self.allpranalyses  # read_analyses() MUST have been called first
+        self.analysisstate.write_state(self.allpranalyses)
+        del self.allpranalyses  # force user to read again in case file was updated outside
+
+    def gather_failed(self, origin: str, pr: int
+                      ) -> Optional[list[prdef.FailedTest]]:
+        logging.info(f'Gathering {origin} analysis for pull request {pr}')
+        if origin == 'appveyor':
+            return self.appveyor_gather_pr_failures(pr)
+
+        elif origin == 'azure':
+            return self.azure_gather_pr_failures(pr)
+
+        elif origin == 'circle':
+            return self.circle_gather_pr_failures(pr)
+
+        elif origin == 'cirrus':
+            return self.cirrus_gather_pr_failures(pr)
+
+        elif origin == 'gha':
+            return self.gha_gather_pr_failures(pr)
+
+        logging.error(f'Unsupported origin {origin}')
+        return None
+
+    def gather_analysis(self, prs: list[int]) -> int:
+        """Gather information needed to analyze one or more PRs"""
+        pranalyses = self.read_analyses(True)  # lock for writing
+        origin = self.args.origin
+
+        # Prune out old entries
+        oldest = (datetime.datetime.now()
+                  - datetime.timedelta(hours=config.get('pr_gather_age_hours_max'))).timestamp()
+        for pr in list(pranalyses.keys()):
+            if pranalyses[pr].start < oldest:
+                logging.debug(f'Aging out PR#{pr} from cache (time {pranalyses[pr].start})')
+                del pranalyses[pr]
+
+        rc = PRStatus.READY
+        for pr in prs:
+            if pr not in pranalyses or self.args.rerun:
+                logging.info(f'Starting new analysis of PR #{pr}')
+                thispr = prdef.PRAnalysis(pr, self.args.checkrepo,
+                                          int(datetime.datetime.now().timestamp()), {}, {}, {}, 0)
+                pranalyses[pr] = thispr
+            else:
+                thispr = pranalyses[pr]
+
+            # For any new PRs we haven't seen before, look up which tests failed
+            if origin not in thispr.failed:
+                failed = self.gather_failed(origin, pr)
+                if failed is not None:
+                    thispr.failed[origin] = failed
+            else:
+                logging.debug(f'Already have failed list for PR#{pr} from {origin}')
+
+            # Now, analyze flakiness & permafails for this origin ONLY if there is at least one
+            # failed test. No need to check both flaky AND permafails as they are set at once.
+            if origin not in thispr.flaky and origin in thispr.failed and thispr.failed[origin]:
+                analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds)
+
+                uniquejobs = set(fail.uniquejob for fail in thispr.failed[origin])
+                flaky = []
+                permafail = []
+                for job in uniquejobs:
+                    # load and general analysis
+                    jobflaky, first_failure = analyzer.prepare_uniquejob_analysis(job)
+
+                    # flakiness
+                    flaky.extend([prdef.FailingTest(job, test[0], test[1]) for test in jobflaky])
+
+                    # permafails
+                    current_failure_counts = first_failure[2]
+                    permafails = analyzer.get_permafails(current_failure_counts)
+                    # A test might be on the permafail list even if the job is successful if the
+                    # test result was marked to be ignored. Don't consider that a failure worth
+                    # reporting.
+                    if (permafails and analyzer.all_jobs_status
+                            and analyzer.all_jobs_status[0].test_result == 'success'):
+                        permafails = []
+                    permafail.extend([prdef.FailingTest(job, test, 1.0) for test in permafails])
+
+                thispr.flaky[origin] = flaky
+                thispr.permafail[origin] = permafail
+
+            else:
+                logging.debug(f"Don't need to get flaky list for PR#{pr} from {origin}")
+
+        self.write_analyses()
+
+        return rc
+
+    def appveyor_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+        account, project = urls.get_project_name(self.args)
+        av = prappveyor.AppveyorAnalyzeJob(account, project, self.args.checkrepo, self.ds, None)
+        results = av.gather_pr(pr)
+        return self.select_failures(results)
+
+    def azure_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+        owner, project = urls.get_project_name(self.args)
+        azure = prazure.AzureAnalyzer(owner, project, self.args.checkrepo, self.ds)
+        results = azure.gather_pr(pr)
+        return self.select_failures(results)
+
+    def circle_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+        ci = prcircleci.CircleAnalyzer(self.args.checkrepo, self.ds)
+        results = ci.gather_pr(pr)
+        return self.select_failures(results)
+
+    def cirrus_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+        cirrus = prcirrus.CirrusAnalyzer(self.args.checkrepo, self.ds, None)
+        results = cirrus.gather_pr(pr)
+        return self.select_failures(results)
+
+    def gha_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+        owner, project = urls.get_project_name(self.args)
+        ghi = prgha.GithubAnalyzeJob(owner, project, gha.read_token(self.args.authfile), self.ds)
+        results = ghi.gather_pr(pr)
+        return self.select_failures(results)
+
+    def select_failures(self, results: list[ParsedLog]) -> list[prdef.FailedTest]:
+        results.sort(key=lambda x: x[0]['uniquejobname'])
+
+        analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds)
+        failed_tests = []
+        for meta, testcases in results:
+            logging.debug(f'Checking run {meta["runid"]} for failed tests')
+            failed = [tc for tc in testcases if tc.result in FAIL_TEST_RESULTS]
+            if failed:
+                globaluniquejob = analyzer.make_global_unique_job(meta)
+                logging.info(f'Found {len(failed)} failed tests in job {globaluniquejob}')
+                failed_tests.extend((prdef.FailedTest(
+                    globaluniquejob, fail.name, meta.get('url', '')) for fail in failed))
+
+        return failed_tests
+
+    def all_origins(self) -> list[str]:
+        """Returns a list of all origins to check before commenting"""
+        origins = config.get('pr_comment_origins')
+        if not origins:
+            origins = argparsing.KNOWN_ORIGINS
+        return origins
+
+    def comment(self, prs: list[int]) -> int:
+        """Comment on a PR"""
+        if not self.args.dry_run:
+            owner, project = urls.get_project_name(self.args)
+            gh = ghaapi.GithubApi(owner, project, gha.read_token(self.args.authfile))
+
+        # This may be temporarily upgraded to locked if needed later
+        pranalyses = self.read_analyses(False)
+        for pr in prs:
+            # Check that we're ready to comment
+            if pr not in pranalyses:
+                logging.warning(f'PR #{pr} has not started analysis yet; skipping')
+                continue
+            analysis = pranalyses[pr]
+
+            logging.info(f'Data for PR#{pr}: '
+                         f'{len(analysis.failed)} origins checked, '
+                         f'{sum(len(t) for t in analysis.failed.values())} failed tests, '
+                         f'{sum(len(t) for t in analysis.flaky.values())} flaky tests, '
+                         f'{sum(len(t) for t in analysis.permafail.values())} permafailing tests')
+
+            # These are the origins that must have already been checked before commenting
+            origins = self.all_origins()
+            remaining = [ci for ci in origins if ci not in analysis.failed]
+            if remaining:
+                logging.warning(f'PR #{pr} has not completed failure checking yet '
+                                f'(missing {", ".join(remaining)}); skipping')
+                continue
+
+            if not any(origin for origin in origins if analysis.failed[origin]):
+                logging.warning(f'PR #{pr} has no failed tests so no need to comment; skipping')
+                continue
+
+            remaining = [ci for ci in origins if ci in analysis.failed and analysis.failed[ci]
+                         and ci not in analysis.flaky]
+            if remaining:
+                logging.warning(f'PR #{pr} has not completed flaky analysis yet '
+                                f'(missing {", ".join(remaining)}); skipping')
+                continue
+
+            if analysis.commented:
+                date = utils.format_datetime(
+                    datetime.datetime.fromtimestamp(analysis.commented))
+                logging.warning(f"Already commented on this PR on {date}; won't comment again")
+            else:
+                message = self.compose_text(analysis)
+                logging.info(f'PR message: {message}')
+                if self.args.dry_run:
+                    logging.info('Skipping actual commenting in dry-run mode')
+                else:
+                    logging.info(f'Adding to comment on PR#{pr}')
+
+                    # Write the comment to the PR thread
+                    gh.create_comment(pr, message)
+
+                    # Read the data again, but lock it this time so we can update it afterward.
+                    # There is a race condition here if another process completely rewrites the
+                    # data for this PR (e.g. with a --rerun) in the time we were commenting
+                    # (which is an exceptional and rare situation). That would cause the partial
+                    # new data to be marked as already having been commented, although the comment
+                    # would have been on the old, original data. The alternative is to obtain a
+                    # write lock for all the processing, but that blocks all other users of the data
+                    # in the meantime.
+                    pranalyses = self.read_analyses(True)
+                    try:
+                        analysis = pranalyses[pr]
+                    except KeyError:
+                        logging.error('PR disappeared as we were commenting!')
+                    else:
+                        analysis.commented = int(datetime.datetime.now().timestamp())
+                        # Update with the commented time
+                        self.write_analyses()
+
+        return PRStatus.READY
+
+    def compose_text(self, analysis: prdef.PRAnalysis) -> str:
+        """Compose text for a comment about a PR
+
+        Text is in MarkDown format.
+        """
+        text = f'Analysis of PR #{analysis.num}:\n\n'
+        # Count of all tests that failed for this PR, by testname
+        count_failed = collections.Counter(
+            fail.testname for oneorigin in analysis.failed.values() for fail in oneorigin)
+        mentioned = set()
+        for origin in self.all_origins():
+            nummentioned = 0
+            for fail in analysis.failed[origin]:
+                if fail.testname not in mentioned:
+                    logging.debug(f'test {fail.testname} on uniquejob {fail.uniquejob}')
+                    # TODO: display "cijob" or similar; maybe create function from
+                    # "First, show job name" code and use that; can you make it a tooltip in
+                    # markdown instead?
+                    text += f'[Test {fail.testname} failed]({escape(fail.url)}),\n'
+                    flakyfail = [flake for flake in analysis.flaky[origin]
+                                 if flake.testname == fail.testname
+                                 and flake.uniquejob == fail.uniquejob]
+                    assert len(flakyfail) <= 1
+                    if flakyfail:
+                        text += f" but it has been {flakyfail[0].rate * 100:.1f}% flaky lately, "
+                        text += "so it's probably *NOT* a fault of the PR.\n"
+                    else:
+                        # check for permafail
+                        if any(perma for perma in analysis.permafail[origin]
+                               if (perma.uniquejob == fail.uniquejob
+                                   and perma.testname == fail.testname)):
+                            text += 'but it has been permanently failing lately, '
+                            text += "so it's probably *NOT* a fault of the PR.\n"
+                        else:
+                            text += 'which has NOT been flaky recently, '
+                            text += 'so **there could be a real issue in the PR**.\n'
+                    if count_failed[fail.testname] > 1:
+                        text += f'Note that this test has failed in {count_failed[fail.testname]}'
+                        text += ' different CI jobs (the link just goes to one of them).\n'
+                    text += '\n'  # blank separator
+                    nummentioned += 1
+
+                    mentioned.add(fail.testname)
+                    if nummentioned >= MAX_NOTIFIED_PER_ORIGIN:
+                        text += "There are more failures, but that's enough "
+                        text += f"from {origin.title()}\n\n"
+                        break
+
+        text += f'###### Generated by [Testclutch]({config.get("pr_comment_url")})\n'
+        return text
+
+
 def main():
     args = parse_args()
     log.setup(args)
 
-    if args.dry_run:
-        logging.warning('--dry-run does nothing in this program')
+    if not args.authfile and args.comment and not args.dry_run:
+        logging.error('--authfile is required with gha')
+        return 1
 
     if args.ready_prs:
         prs = get_ready_prs(args)
@@ -486,31 +805,40 @@ def main():
         return status
 
     # Generate CI job results report for PR
-    if not args.origin:
+    if args.report and not args.origin:
         logging.error('--origin is required with --report')
-        return 1
+        return PRStatus.ERROR
 
-    if not args.authfile and args.origin == 'gha':
+    if args.origin == 'gha' and not args.authfile:
         logging.error('--authfile is required with gha')
-        return 1
+        return PRStatus.ERROR
 
     ds = db.Datastore()
     ds.connect()
 
-    # Analyze only one origin at a time because each one might have different login credentials
-    if args.origin == 'gha':
-        rc = gha_analyze_pr(args, ds, prs)
-    elif args.origin == 'appveyor':
-        rc = appveyor_analyze_pr(args, ds, prs)
-    elif args.origin == 'circle':
-        rc = circle_analyze_pr(args, ds, prs)
-    elif args.origin == 'azure':
-        rc = azure_analyze_pr(args, ds, prs)
-    elif args.origin == 'cirrus':
-        rc = cirrus_analyze_pr(args, ds, prs)
-    else:
-        logging.error(f'Unsupported origin {args.origin}')
-        rc = 1
+    if args.gather_analysis:
+        ga = GatherPRAnalysis(ds, args)
+        rc = ga.gather_analysis(prs)
+
+    elif args.comment:
+        ga = GatherPRAnalysis(ds, args)
+        rc = ga.comment(prs)
+
+    else:  # must be --report
+        # Analyze only one origin at a time because each one might have different login credentials
+        if args.origin == 'appveyor':
+            rc = appveyor_analyze_pr(args, ds, prs)
+        elif args.origin == 'azure':
+            rc = azure_analyze_pr(args, ds, prs)
+        elif args.origin == 'circle':
+            rc = circle_analyze_pr(args, ds, prs)
+        elif args.origin == 'cirrus':
+            rc = cirrus_analyze_pr(args, ds, prs)
+        elif args.origin == 'gha':
+            rc = gha_analyze_pr(args, ds, prs)
+        else:
+            logging.error(f'Unsupported origin {args.origin}')
+            rc = PRStatus.ERROR
 
     ds.close()
     return rc

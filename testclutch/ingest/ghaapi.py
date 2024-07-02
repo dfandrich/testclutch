@@ -241,6 +241,6 @@ class GithubApi:
         """
         url = COMMENTS_URL.format(owner=self.owner, repo=self.repo, issue_number=issue_id)
         data = {'body': comment}
-        resp = self.http.post(url, headers=self._standard_headers(), data=json.dumps(data))
+        resp = self.http.post(url, headers=self._standard_auth_headers(), data=json.dumps(data))
         resp.raise_for_status()
         return json.loads(resp.text)

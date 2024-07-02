@@ -243,7 +243,7 @@ def main():
     log.setup(args, subprogram=args.origin)
 
     if not args.authfile and args.origin == 'gha':
-        logging.error('--authfile is required with gha')
+        logging.error('--authfile is required with --comment')
         sys.exit(1)
 
     if args.runid:

@@ -78,5 +78,18 @@ test_results_count_num_recent_urls = 5
 # Oldest created PR in hours to include in the PR check
 pr_ready_age_hours_max = 24 * 3  # 3 days
 
+# Path to gather storage
+pr_gather_path = '{XDG_CACHE_HOME}/testclutchpr.dat'
+
+# How long to keep analysis data on a PR around before it needs to be retrieved again
+pr_gather_age_hours_max = 24 * 7  # 7 days
+
+# Set of origins on which to perform analysis (default is all supported origins)
+pr_comment_origins = None
+
+# URL to use for Test Clutch in PR comments
+pr_comment_url = 'https://github.com/dfandrich/testclutch'
+
+# Path to root of log cache directory
 # TODO:
 # add per-CI service options, like azure_account

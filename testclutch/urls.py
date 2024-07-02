@@ -6,7 +6,6 @@ This contains functions relating to source repositories but not CI services.
 import argparse
 import contextlib
 import logging
-import posixpath
 import urllib.parse
 from typing import Tuple, Union
 
@@ -63,11 +62,11 @@ def url_pr(url: str) -> int:
     if netloc != 'github.com':
         logging.error('Cannot extract PR from URL %s', url)
         return 0
-    paths = posixpath.split(path)
-    if paths[1] != 'pulls':
+    paths = path.split('/')
+    if len(paths) < 5 or paths[3] != 'pull':
         logging.error('Cannot extract PR from URL %s', url)
         return 0
     pr = 0
     with contextlib.suppress(ValueError):
-        pr = int(paths[1])
+        pr = int(paths[3])
     return pr
