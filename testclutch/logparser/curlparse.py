@@ -241,9 +241,10 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 # and don't bother doing it this way. This way is less likely
                                 # to correlate the wrong result with a test, though.
                                 while l := f.readline():
-                                    if not RE_SKIPAFTERSTART.search(l):
+                                    if not RE_SKIPAFTERSTART.search(l.rstrip()):
                                         break
                                 if not l:
+                                    # EOF
                                     break
                                 l = l.rstrip()
                                 if rr := RE_TESTRESULTOK.search(l):
