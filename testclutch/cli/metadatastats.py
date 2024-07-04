@@ -7,6 +7,7 @@ import datetime
 import itertools
 import logging
 import math
+import re
 import sys
 import textwrap
 from html import escape
@@ -81,6 +82,9 @@ IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'job
                            'stepfinishtime', 'steprunduration', 'stepstarttime', 'systemhost',
                            'url', 'workflowid'))
 
+# Characters that are allowed in an HTML ID, except for " which is handled specially
+ID_TOKEN_RE = re.compile(r'[^-A-Za-z0-9_:."]')
+
 
 def _try_integer(val: str) -> Union[int, str]:
     """Try to convert the value to a low-value 0-prefixed integer in string form
@@ -118,6 +122,17 @@ class MetadataStats:
         oldest = int(self.since.timestamp())
         nvstats.execute(NAME_VALUES_SQL, (oldest, self.repo))
         return nvstats.fetchall()
+
+
+def idify(s: str) -> str:
+    """Make the given string valid as a double-quoted HTML id token
+
+    Invalid characters are replaced with underscores, double quotes are replaced with an HTML entity
+    and the whole string is prefixed with "test" to guarantee the first character is a letter.
+    """
+    filtered = ID_TOKEN_RE.sub('_', s)
+    filtered = re.sub('"', '&quot;', filtered)
+    return 'test' + filtered
 
 
 class TestRunStats:
@@ -403,19 +418,35 @@ def output_test_results_count_html(trstats: TestRunStats):
         </p>
         <table>
         """))
+    anchors = set()  # keep track to avoid duplicates
 
     def print_html(test: str, code: str, count: int, urls: Sequence[str], title: bool = False):
         """Print a row of data
 
         urls[0] contains the title, not a URL, when title=True
         """
-        print('<tr>')
         tag = 'th' if title else 'td'
+        anchorshorttext = ''
+        anchor2text = ''
+        if not title:
+            # Create a short anchor direct to this test
+            anchor = idify(test)
+            # Avoid making a duplicate short anchor; just rely on the unambiguous one if so
+            anchorshorttext = f' id="{anchor}"' if anchor not in anchors else ''
+            anchors.add(anchor)
+            # Create a second, unambiguous anchor, that incorporates the return code. Actually, it
+            # might not be unambiguous if two different test names are the same except for one
+            # or more invalid characters (that are replaced in both cases).
+            # Unfortunately in HTML id, unlike class, can only have a single id so this must be
+            # applied to a different tag.
+            anchor2text = f' id="{idify(f"{test}_{code}")}"'
         items = [test, code, count]
         if title:
             items.append(urls[0])
+        print(f'<tr{anchor2text}>')
         for i in items:
-            print(f'<{tag}>{escape(str(i))}</{tag}>', end='')
+            print(f'<{tag}{anchorshorttext}>{escape(str(i))}</{tag}>', end='')
+            anchorshorttext = ''  # only the first tag should get this
         print(f'<{tag}>')
         if not title:
             for i in urls:
