@@ -275,34 +275,29 @@ class ResultsOverTimeByUniqueJob:
                 print(f'{testname} fails {ratio * 100:.1f}%{urltext}')
 
         if self.all_jobs_status:
-            # Look at the most recent run to determine what is still failing
             job_status = self.all_jobs_status[0]
-            if job_status.failed_tests:
-                # Latest job has failed. See how long it has been failing.
-                # TODO: can I get the info from first_failure somewhere else instead?
-                _, _, current_failure_counts = first_failure
-                permafails = [failure for failure in job_status.failed_tests
-                              if (current_failure_counts[failure]
-                                  > config.get('permafail_failures_min'))]
-                if permafails:
-                    if job_status.test_result == 'success':
-                        print("Some tests are failing but the test was marked as successful. "
-                              "These tests were likely marked to be ignored.")
-                    print("These tests are now consistently failing:")
-                    permafails.sort(key=self._try_integer)
-                    for testname in permafails:
-                        print(testname)
+            # Look at the most recent run to determine what is still failing
+            current_failure_counts = first_failure[2]
+            permafails = self.get_permafails(current_failure_counts)
+            if permafails:
+                if job_status.test_result == 'success':
+                    print("Some tests are failing but the test was marked as successful. "
+                          "These tests were likely marked to be ignored in this job.")
+                print("These tests are now consistently failing:")
+                permafails.sort(key=self._try_integer)
+                for testname in permafails:
+                    print(testname)
 
-                    # Now, find the commit (or range of commits) that introduced this error.
-                    # TODO: Get job number by getting the count from unique_failures and
-                    # looking in all_jobs_status to get the testid
-                    # - return a range of commits, if there were no builds between two
-                    # candidates
-                    for testname in permafails:
-                        num_fails = current_failure_counts[testname]
-                        print(self.report_permafail(testname, num_fails))
+                # Now, find the commit (or range of commits) that introduced this error.
+                # TODO: Get job number by getting the count from unique_failures and
+                # looking in all_jobs_status to get the testid
+                # - return a range of commits, if there were no builds between two
+                # candidates
+                for testname in permafails:
+                    num_fails = current_failure_counts[testname]
+                    print(self.report_permafail(testname, num_fails))
 
-                    print('Latest failure:', job_status.url)
+                print('Latest failure:', job_status.url)
 
             elif job_status.is_aborted:
                 print("No tests are currently failing on this job but the last test run aborted, "
@@ -378,7 +373,7 @@ class ResultsOverTimeByUniqueJob:
             globaluniquejob: globally-unique job ID to analyze
 
         Returns:
-            Tuple of ...
+            list of (flaky_test_name, flaky_ratio) and TestFailCount
         """
         to_time = int(datetime.datetime.now().timestamp())
         from_time = int((datetime.datetime.now()
@@ -412,6 +407,20 @@ class ResultsOverTimeByUniqueJob:
             recent_failures = (0, 0, collections.Counter())
         return (flaky, recent_failures)
 
+    def get_permafails(self, current_failure_counts: dict[str, int]) -> list[str]:
+        """Return list of permafailing tests for this job
+
+        The list includes failed tests even if the overall CI job was marked as "success", so the
+        if the caller is not interested in them it must check the CI job status.
+        """
+        permafails = []
+        if self.all_jobs_status and self.all_jobs_status[0].failed_tests:
+            last_job_status = self.all_jobs_status[0]
+            min_fails = config.get('permafail_failures_min')
+            permafails = [failure for failure in last_job_status.failed_tests
+                          if (current_failure_counts[failure] > min_fails)]
+        return permafails
+
     def show_unique_job_failures_table(self, globaluniquejob: str):
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         if not self.all_jobs_status:
@@ -424,26 +433,15 @@ class ResultsOverTimeByUniqueJob:
               '<!--Unique Job Name--></th></tr>')
         print('<tbody>')
 
-        # Look for permafailing jobs
-        permafails = []
-        if self.all_jobs_status[0].failed_tests:
-            last_job_status = self.all_jobs_status[0]
-            # A test might be on the failure list even if the job is successful if the test result
-            # was marked to be ignored. Don't consider that a failure.
-            if last_job_status.test_result != 'success':
-                _, _, current_failure_counts = first_failure
-                min_fails = config.get('permafail_failures_min')
-                permafails = [failure for failure in last_job_status.failed_tests
-                              if (current_failure_counts[failure] > min_fails)]
-
         oldjobtimestamp = (datetime.datetime.now()
                            - datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
 
         disabledjobtimestamp = (datetime.datetime.now() - datetime.timedelta(
             hours=config.get('disabled_job_hours'))).timestamp()
+        last_job_status = self.all_jobs_status[0]
 
         # All testids will be the same, so just grab the first one
-        testid = self.all_jobs_status[0].testid
+        testid = last_job_status.testid
         meta = self.ds.collect_meta(testid)
         origin = meta['origin']
         assert isinstance(origin, str)  # satisfy pytype that this isn't int
@@ -456,12 +454,17 @@ class ResultsOverTimeByUniqueJob:
         cijob = meta.get('cijob', '')
         testformat = f" ({meta['testformat']})" if 'testformat' in meta else ''
         name = f'{origin}{ciname} / {cijob}{testformat}'
-        maybedisabled = (' disabled' if self.all_jobs_status[0].jobtime < disabledjobtimestamp
+        maybedisabled = (' disabled' if last_job_status.jobtime < disabledjobtimestamp
                          else '')
         print(f'<tr><td class="jobname{maybedisabled}">{escape(name)}</td>')
 
         badtitle = []  # in raw HTML
-        if permafails:
+        # Look for permafailing jobs
+        current_failure_counts = first_failure[2]
+        permafails = self.get_permafails(current_failure_counts)
+        # A test might be on the permafail list even if the job is successful if the test result
+        # was marked to be ignored. Don't consider that a failure worth reporting.
+        if permafails and last_job_status.test_result != 'success':
             permafails.sort(key=self._try_integer)
             badtitle = (['These tests are now consistently failing:']
                         + [testname for testname in permafails])

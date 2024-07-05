@@ -201,25 +201,17 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
 
         # Now, look at permafails in main tests
         permafailtitle = ''
-        if analyzer.all_jobs_status:
-            # Look at the most recent run to determine what is still failing
-            job_status = analyzer.all_jobs_status[0]
-            if job_status.failed_tests:
-                # Latest job has failed. See how long it has been failing.
-                # TODO: can I get the info from first_failure somewhere else instead?
-                _, _, current_failure_counts = first_failure
-                permafails = [failure for failure in job_status.failed_tests
-                              if (current_failure_counts[failure]
-                                  > config.get('permafail_failures_min'))]
-                if permafails:
-                    if job_status.test_result == 'success':
-                        permafailtitle = ("Some tests are failing but the test was marked as "
-                                          "successful, "
-                                          "so these test results were likely marked to be ignored.")
-                    permafailtitle = permafailtitle + "These tests are now consistently failing: "
-                    permafails.sort(key=analyzer._try_integer)
-                    permafailtitle = permafailtitle + (
-                        ', '.join([escape(testname) for testname in permafails]))
+        job_status = analyzer.all_jobs_status[0]
+        if job_status.test_result == 'success' and job_status.failed_tests:
+            permafailtitle = ('Some tests are failing but the test was marked as successful, '
+                              'so these test results were likely marked to be ignored. ')
+        current_failure_counts = first_failure[2]
+        permafails = analyzer.get_permafails(current_failure_counts)
+        if permafails:
+            permafailtitle = permafailtitle + "These tests are now consistently failing: "
+            permafails.sort(key=analyzer._try_integer)
+            permafailtitle = permafailtitle + (
+                ', '.join([escape(testname) for testname in permafails]))
 
         if flakytitle:
             print('<td class="flaky">'
