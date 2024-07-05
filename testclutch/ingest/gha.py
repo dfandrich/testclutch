@@ -60,9 +60,7 @@ def read_token(authfile: Optional[str]) -> Optional[str]:
 class MassagedLog(io.TextIOWrapper):
     """TextIOWrapper that removes the timestamp at the head of every log line"""
     def readline(self, size: int = -1):
-        # Earlier Python versions don't support size, so assume the default is never changed
-        assert (size == -1)
-        l = super().readline()
+        l = super().readline(size)
         if l:
             # Unfortunately, some log files have timestamps and some don't. It's probably something
             # to do with embedded newlines in log messages, but I can't think of a more accurate way
