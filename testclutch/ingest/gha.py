@@ -15,6 +15,7 @@ from testclutch import db
 from testclutch import logcache
 from testclutch import summarize
 from testclutch.ingest import ghaapi
+from testclutch.ingest import logprefix
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
@@ -55,21 +56,6 @@ def read_token(authfile: Optional[str]) -> Optional[str]:
         return None
     with open(authfile) as tokfile:
         return tokfile.read().strip()
-
-
-class MassagedLog(io.TextIOWrapper):
-    """TextIOWrapper that removes the timestamp at the head of every log line"""
-    def readline(self, size: int = -1):
-        l = super().readline(size)
-        if l:
-            # Unfortunately, some log files have timestamps and some don't. It's probably something
-            # to do with embedded newlines in log messages, but I can't think of a more accurate way
-            # to remove them than with a regular expression. This will erroneously match "extended"
-            # log files that happen to include something that looks like a timestamp, but since
-            # these extended lines almost never happen in the first place (so far it seems only
-            # those using cross-platform-actions/action), this isn't a big concern.
-            l = LOG_TIMESTAMP_RE.sub('', l)
-        return l
 
 
 class GithubIngestor:
@@ -263,7 +249,9 @@ class GithubIngestor:
                 logging.debug('Skipping %s', fileinfo.filename)
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
-            readylog = MassagedLog(log.open(fileinfo.filename), encoding=LOG_CHARMAP)
+            readylog = logprefix.RegexPrefixedLog(
+                io.TextIOWrapper(log.open(fileinfo.filename), encoding=LOG_CHARMAP),
+                regex=LOG_TIMESTAMP_RE)
             meta, testcases = logparse.parse_log_file(readylog)
             if meta:
                 # combine ci metadata with metadata from log file

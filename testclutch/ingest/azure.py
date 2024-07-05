@@ -3,12 +3,13 @@
 import datetime
 import logging
 import re
-from typing import Any, Dict, Iterable, Optional, TextIO
+from typing import Any, Dict, Iterable, Optional
 
 from testclutch import db
 from testclutch import logcache
 from testclutch import summarize
 from testclutch.ingest import azureapi
+from testclutch.ingest import logprefix
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
@@ -23,21 +24,6 @@ AV_TIME_RE = re.compile(r'^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(\.\d{1,7})?Z$')
 # Tasks created by Azure, whose logs we don't care about
 SYSTEM_TASKS_RE = re.compile(r'^Initialize job$|^Initialize containers$|^Stop Containers$|'
                              r'^Finalize Job$|^Checkout |^Post-job: ')
-
-
-class MassagedLog(TextIO):
-    """Remove the timestamp at the head of every log line"""
-    def __init__(self, f):
-        self.file_obj = f
-
-    def __getattr__(self, attr):
-        return getattr(self.file_obj, attr)
-
-    def readline(self):
-        l = self.file_obj.readline()
-        if l:
-            l = l[29:]
-        return l
 
 
 class AzureIngestor:
@@ -252,7 +238,7 @@ class AzureIngestor:
     def ingest_log_file(self, fn: str, cimeta: TestMeta):
         logging.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
-        readylog = MassagedLog(logcache.open_cache_file(fn))
+        readylog = logprefix.FixedPrefixedLog(logcache.open_cache_file(fn), prefixlen=29)
         meta, testcases = logparse.parse_log_file(readylog)
         if meta:
             # combine ci metadata with metadata from log file
