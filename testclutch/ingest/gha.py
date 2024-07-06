@@ -16,6 +16,7 @@ from testclutch import logcache
 from testclutch import summarize
 from testclutch.ingest import ghaapi
 from testclutch.ingest import logprefix
+from testclutch.ingest import msbuild
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
@@ -249,9 +250,9 @@ class GithubIngestor:
                 logging.debug('Skipping %s', fileinfo.filename)
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
-            readylog = logprefix.RegexPrefixedLog(
+            readylog = msbuild.MsBuildLog(logprefix.RegexPrefixedLog(
                 io.TextIOWrapper(log.open(fileinfo.filename), encoding=LOG_CHARMAP),
-                regex=LOG_TIMESTAMP_RE)
+                regex=LOG_TIMESTAMP_RE))
             meta, testcases = logparse.parse_log_file(readylog)
             if meta:
                 # combine ci metadata with metadata from log file
