@@ -3,8 +3,12 @@
 
 from typing import TextIO
 
+from testclutch.ingest.logprefix import FakeDerivedTextIOWithArgs  # noqa: F401
 
-class MsBuildLog(TextIO):
+
+# pytype: disable=annotation-type-mismatch
+class MsBuildLog:  # type: FakeDerivedTextIOWithArgs
+    # pytype: enable=annotation-type-mismatch
     """Remove the indentation that msbuild adds to child output
 
     This issue mentions the indentation that is done and implies that there is no way to
@@ -14,15 +18,23 @@ class MsBuildLog(TextIO):
     This has been tested with msbuild ver. 4.8.3761.0, 15.9.21+g9802d43bc3 for .NET,
     17.7.2+d6990bcfa for .NET
     """
-    def __init__(self, f):
+    def __init__(self, f: TextIO):
         self.file_obj = f
         self.in_msbuild = False
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str):
+        "Send everything else to the embedded file"
         return getattr(self.file_obj, attr)
 
-    def readline(self):
-        l = self.file_obj.readline()
+    def seek(self, offset: int, whence: int = 0):
+        "Capture to seek to reset the state"
+        if offset == 0 and whence < 16:
+            # Stream is starting again from (near) the beginning
+            self.in_msbuild = False
+        return self.file_obj.seek(offset, whence)
+
+    def readline(self, size: int = -1):
+        l = self.file_obj.readline(size)
         if l.startswith('Microsoft (R) Build Engine') or l.startswith('MSBuild version '):
             # Start of indented section
             self.in_msbuild = True
