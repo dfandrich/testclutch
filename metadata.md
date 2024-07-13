@@ -41,6 +41,14 @@ Using these data types, where appropriate, will make analysis of data easier.
   depend on the "buildsystem" field, or the values in the "ciarch" field might
   depend on the "origin" field.
 
+## Tests
+
+- Each test name for a project must refer to a single test, e.g. there may not
+  be two completely different tests named "1". This does not mean that the same
+  test may not be run under different conditions that test different things, in
+  which case there should be a way to differentiate the two conditions in the
+  metadata.
+
 ## Mandatory
 
 These are the mandatory metadata fields.
@@ -62,7 +70,8 @@ supported values:
 
 Like `sourcerepo`, but for the repository for which the test run was made. In
 the case of a GitHub pull request, this is the repo to which the pull request
-is being made.
+is being made. This must be the canonical URL for the repo, especially with
+regard to a trailing slash.
 
 ### account
 
@@ -124,7 +133,8 @@ When the job finished running (in seconds since 1970).
 
 An identifier of where the source being tested came from. This might be e.g. a URL
 to a GitHub repo.  In the case of a GitHub pull request, this is the forked
-repo.
+repo. This must be the canonical URL for the repo, especially with regard to a
+trailing slash.
 
 ### commit
 
