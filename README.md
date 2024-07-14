@@ -113,9 +113,9 @@ also need these permissions for Test Clutch to comment on PRs:
   - "Pull requests" repository permissions (write)
   - "Checks" repository permissions (read)
 
-Copy the token contents from the web browser and store it in a file in a
-protected location on your local machine and with permissions that do not allow
-other user to access it.
+Alternately, a classic token works as well.  Copy the token contents from the
+web browser and store it in a file in a protected location on your local
+machine and with permissions that do not allow other user to access it.
 
 Test Clutch has built-in support for these test log formats:
 
