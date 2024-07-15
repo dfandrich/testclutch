@@ -333,7 +333,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                     result = TestResult.FAILIGNORE
                                 else:
                                     result = TestResult.FAIL
-                                testcases.append(SingleTestFinding(r.group(1), result, "", 0))
+                                testno = str(int(r.group(1)))
+                                testcases.append(SingleTestFinding(testno, result, "", 0))
                             elif r := RE_TOTALTIME.search(l):
                                 meta['runtestsduration'] = str(int(r.group(1)) * 1000000)
                             elif r := RE_OKSUMMARY.search(l):

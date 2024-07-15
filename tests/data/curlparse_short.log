@@ -1,4 +1,4 @@
-srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -s 3020 3021 3030 
+srcdir=/home/user/curl/tests /usr/bin/perl -I/home/user/curl/tests /home/user/curl/tests/runtests.pl -a -n -s 11 972 3020 3021 3030 
 sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
 ********* System characteristics ******** 
 * curl 8.3.0-DEV (x86_64-pc-linux-gnu) 
@@ -15,11 +15,13 @@ sh: line 1: nghttpx -v 2>/dev/null: No such file or directory
 * Seed: 256637
 * Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
 ***************************************** 
-test 3020...OK (1   out of 3  , remaining: 00:02, took 1.091s, duration: 00:01)
+test 0011...OK (1  out of 5, remaining: 00:02, took 1.503s, duration: 00:01)
+test 0972...FAILED
+test 3020...OK (3   out of 5  , remaining: 00:02, took 1.091s, duration: 00:01)
 test 3021...FAILED
-test 3030...OK (3   out of 3  , remaining: 00:00, took -3.049s, duration: 00:02)
-TESTDONE: 3 tests were considered during 2 seconds.
-TESTDONE: 2 tests out of 3 reported OK: 66%
+test 3030...OK (5   out of 5  , remaining: 00:00, took -3.049s, duration: 00:02)
+TESTDONE: 5 tests were considered during 2 seconds.
+TESTDONE: 3 tests out of 5 reported OK: 66%
 
-TESTFAIL: These test cases failed: 3021 
+TESTFAIL: These test cases failed: 0972 3021 
 

@@ -279,7 +279,7 @@ class TestCurlParse(unittest.TestCase):
             'host': 'localhost',
             'os': 'linux',
             'randomseed': '256637',
-            'runtestsopts': '-a -n -s 3020 3021 3030 ',
+            'runtestsopts': '-a -n -s 11 972 3020 3021 3030 ',
             'runtestsduration': '2000000',
             'systemhost': 'localhost',
             'systemos': 'Linux',
@@ -295,6 +295,8 @@ class TestCurlParse(unittest.TestCase):
             'withvalgrind': 'no'
         }, meta)
         self.assertEqual([
+            SingleTestFinding('11', curlparse.TestResult.PASS, '', 1503000),
+            SingleTestFinding('972', curlparse.TestResult.FAIL, '', 0),
             SingleTestFinding('3020', curlparse.TestResult.PASS, '', 1091000),
             SingleTestFinding('3021', curlparse.TestResult.FAIL, '', 0),
             SingleTestFinding('3030', curlparse.TestResult.PASS, '', 0),
