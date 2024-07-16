@@ -395,15 +395,15 @@ def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
     for pr in prs:
         pull = gh.get_pull(pr)
         if pull['state'] == 'closed':
-            logging.warn(f'PR is in state {pull["state"]}')
+            logging.warning(f'PR is in state {pull["state"]}')
             ret = max(PRStatus.CLOSED, ret)
             continue
         if pull['state'] != 'open':
-            logging.warn(f'PR is in state {pull["state"]}')
+            logging.warning(f'PR is in state {pull["state"]}')
             ret = max(PRStatus.ERROR, ret)
             continue
         if pull['locked']:
-            logging.warn('PR is locked; aborting')
+            logging.warning('PR is locked; aborting')
             ret = max(PRStatus.ERROR, ret)
             continue
         commit = pull['head']['sha']

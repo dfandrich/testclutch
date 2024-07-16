@@ -132,8 +132,8 @@ class GithubApi:
                             # If a item occurs in more than one page, it should have the same
                             # value each time. But, just in case a newer value is returned by the
                             # end, use that value in the response and continue.
-                            logging.warn(f'Inconsistent value over pages for {k} '
-                                         f'(was {combined[k]}, now {v})')
+                            logging.warning(f'Inconsistent value over pages for {k} '
+                                            f'(was {combined[k]}, now {v})')
                         combined[k] = v
 
             elif isinstance(j, list):
