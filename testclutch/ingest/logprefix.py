@@ -35,7 +35,7 @@ class FixedPrefixedLog:  # type: FakeDerivedTextIOWithArgs
     def __getattr__(self, attr: str):
         return getattr(self.file_obj, attr)
 
-    def readline(self, size: int = -1):
+    def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
         if l:
             l = l[self.prefixlen:]
@@ -56,7 +56,7 @@ class RegexPrefixedLog:  # type: FakeDerivedTextIOWithArgs
     def __getattr__(self, attr: str):
         return getattr(self.file_obj, attr)
 
-    def readline(self, size: int = -1):
+    def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
         if l:
             # Unfortunately, some log files have timestamps and some don't. It's probably something

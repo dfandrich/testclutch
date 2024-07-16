@@ -15,7 +15,7 @@ HTTPError = requests.exceptions.HTTPError
 USER_AGENT = f'testclutch/{testclutch.__version__}'
 
 
-def get(url: str, headers: Optional[Dict[str, str]] = None, **args):
+def get(url: str, headers: Optional[Dict[str, str]] = None, **args) -> requests.Response:
     "Perform an HTTP request with standard request headers if none are supplied"
     if not headers:
         headers = {'User-Agent': USER_AGENT}

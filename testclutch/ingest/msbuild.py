@@ -33,7 +33,7 @@ class MsBuildLog:  # type: FakeDerivedTextIOWithArgs
             self.in_msbuild = False
         return self.file_obj.seek(offset, whence)
 
-    def readline(self, size: int = -1):
+    def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
         if l.startswith('Microsoft (R) Build Engine') or l.startswith('MSBuild version '):
             # Start of indented section

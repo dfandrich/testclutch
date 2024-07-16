@@ -20,7 +20,7 @@ config_module = None
 CONFIG_FILE = 'testclutchrc'
 
 
-def config_dir():
+def config_dir() -> str:
     """Get the directory in which to store the configuration files"""
     if 'XDG_CONFIG_HOME' in os.environ:
         return os.environ['XDG_CONFIG_HOME']
@@ -29,7 +29,7 @@ def config_dir():
     return '.'
 
 
-def persistent_dir():
+def persistent_dir() -> str:
     """Get the directory in which to store persistent data files"""
     if 'XDG_DATA_HOME' in os.environ:
         return os.environ['XDG_DATA_HOME']
@@ -38,7 +38,7 @@ def persistent_dir():
     return '.'
 
 
-def cache_dir():
+def cache_dir() -> str:
     """Get the directory in which to store cache files"""
     if 'XDG_CACHE_HOME' in os.environ:
         return os.environ['XDG_CACHE_HOME']

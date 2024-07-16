@@ -44,7 +44,7 @@ class MassagedLog(TextIO):
     def __getattr__(self, attr):
         return getattr(self.file_obj, attr)
 
-    def readline(self):
+    def readline(self) -> str:
         l = self.file_obj.readline()
         if (RE_FAILED.search(l) or RE_IGNORED.search(l) or RE_SKIPAFTERSTART_PART.search(l)
             or RE_EXITFAILED.search(l) or RE_TORTURESKIPPED.search(l)
@@ -103,7 +103,7 @@ class CurlAutoIngestor:
             self.ingest_run(log_name)
         logging.debug(f'{count} matching runs found, {skipped} skipped')
 
-    def download_log(self, log_name: str):
+    def download_log(self, log_name: str) -> str:
         newfn = self._log_file_path(log_name)
         if logcache.in_cache(newfn):
             logging.debug('Log file is already in %s', newfn)
