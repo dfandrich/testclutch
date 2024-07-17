@@ -80,6 +80,10 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
         type=int,
         help='Oldest PR to consider ready for --ready-prs, in hours')
     parser.add_argument(
+        '--only-failed-prs',
+        action='store_true',
+        help='Only include PRs showing a failure status in the --ready-prs set')
+    parser.add_argument(
         '--rerun',
         action='store_true',
         help='Rerun step even if run before')
@@ -414,8 +418,24 @@ class GHAPRReady:
         if urls.url_host(args.checkrepo) != 'github.com':
             # This function only makes sense when source is hosted on GitHub
             raise RuntimeError(f'Invalid GitHub repository URL {args.checkrepo}')
+        self.args = args
         owner, project = urls.get_project_name(args)
         self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
+
+    def get_ready_prs(self) -> list[int]:
+        "Return recent PRs that have not been closed"
+        pulls = self.gh.get_pulls('open')
+        pr_recency = self.args.oldest if self.args.oldest else config.get('pr_ready_age_hours_max')
+        recent = (datetime.datetime.now(tz=datetime.timezone.utc)
+                  - datetime.timedelta(hours=pr_recency))
+        recent_prs = [pr['number'] for pr in pulls
+                      if ghaapi.convert_time(pr['created_at']) > recent]
+        logging.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
+                     f'{pr_recency} hours)')
+
+        for prnum in recent_prs:
+            logging.info(f'PR#{prnum} is eligible to be analyzed')
+        return recent_prs
 
     def check_gha_pr_state(self, pr: int) -> PRStatus:
         pull = self.gh.get_pull(pr)
@@ -465,42 +485,11 @@ class GHAPRReady:
                      f'with {pending} jobs out of {jobcount} still pending')
         return ret
 
-    def check_gha_pr_ready(self, prs: list[int]) -> PRStatus:
-        # The highest value for PRStatus wins as the result code for the batch
-        ret = PRStatus.READY
+    def check_gha_pr_states(self, prs: list[int]) -> list[tuple[int, PRStatus]]:
+        states = []
         for pr in prs:
-            state = self.check_gha_pr_state(pr)
-            ret = max(state, ret)
-            if state in frozenset((PRStatus.CLOSED, PRStatus.ERROR)):
-                continue
-
-        return ret
-
-
-def get_ready_prs(args: argparse.Namespace) -> list[int]:
-    try:
-        owner, project = urls.get_project_name(args)
-    except RuntimeError:
-        return []
-
-    if urls.url_host(args.checkrepo) != 'github.com':
-        # This function only makes sense when source is hosted on GitHub
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return []
-
-    gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
-
-    pulls = gh.get_pulls('open')
-    pr_recency = args.oldest if args.oldest else config.get('pr_ready_age_hours_max')
-    recent = (datetime.datetime.now(tz=datetime.timezone.utc)
-              - datetime.timedelta(hours=pr_recency))
-    recent_prs = [pr['number'] for pr in pulls
-                  if ghaapi.convert_time(pr['created_at']) > recent]
-    logging.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
-                 f'{pr_recency} hours)')
-    for prnum in recent_prs:
-        logging.info(f'PR#{prnum} is eligible to be analyzed')
-    return recent_prs
+            states.append((pr, self.check_gha_pr_state(pr)))
+        return states
 
 
 class GatherPRAnalysis:
@@ -803,20 +792,31 @@ def main():
         logging.error('--authfile is required with gha')
         return 1
 
-    if args.ready_prs:
-        prs = get_ready_prs(args)
-    else:
-        prs = args.pr
+    prready = GHAPRReady(args)
+    prs = prready.get_ready_prs() if args.ready_prs else args.pr
+    prstates = None
+    if args.only_failed_prs:
+        prstates = prready.check_gha_pr_states(prs)
+        # Only include PRs that GHA shows have failed CI jobs
+        # This takes three network requests to determine (each), but it can save downloading and
+        # processing hundreds of log files when a PR's CI jobs were all successful.
+        prstates = [(pr, state) for pr, state in prstates if state == PRStatus.FAILURE]
+        prs = [pr for pr, state in prstates]
 
     # Check CI job status for PR
     if args.ci_status:
         if args.html:
             logging.warning('--html is ignored with --ci-status')
-        prready = GHAPRReady(args)
-        status = prready.check_gha_pr_ready(prs)
+        print(' '.join(str(pr) for pr in prs))
+
+        if prstates is None:
+            prstates = prready.check_gha_pr_states(prs)
+
+        # The highest value for PRStatus wins as the result code for the batch
+        status = max(prstates, key=lambda x: x[1])[1] if prstates else PRStatus.READY
         if status == PRStatus.ERROR:
             logging.error("A PR is in an unacceptable state")
-        print(status.name)
+        logging.warning(f'Overall status return code is {status.name}')
         return status
 
     # Generate CI job results report for PR

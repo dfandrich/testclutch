@@ -153,7 +153,8 @@ a report in text or HTML formats.
 
 Analyze logs from a GitHub PR for patterns of failure in the tests and generate
 a report in text or HTML formats. Or, check if the CI jobs associated with a PR
-have run to completion.
+have run to completion. Note that --only-failed-prs may not be reliable if use
+with commands other than --ci-status.
 
 ### tcaugmentcurldaily
 
