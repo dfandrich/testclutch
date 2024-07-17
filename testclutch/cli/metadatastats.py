@@ -8,7 +8,6 @@ import itertools
 import logging
 import math
 import re
-import sys
 import textwrap
 from html import escape
 from typing import Callable, Iterable, List, Sequence, Tuple, Union
@@ -95,18 +94,6 @@ def _try_integer(val: str) -> Union[int, str]:
     """
     with contextlib.suppress(ValueError):
         return '%09d' % int(val)
-    return val
-
-
-def _try_integer_rev(val: str) -> Union[int, str]:
-    """Try to convert the value to an inverse low-value 0-prefixed integer in string form
-
-    Returns plain string if it cannot. Use a sort key function to sort numeric
-    test names by numeric value and string test names alphabetically.  A more
-    general alternative would be natsort.natsorted()
-    """
-    with contextlib.suppress(ValueError):
-        return '%09d' % (2**sys.int_info.bits_per_digit - int(val))
     return val
 
 
@@ -370,7 +357,7 @@ def output_test_results_count(trstats: TestRunStats,
 
     total_counts = trstats.get_test_results_count_by_test()
     # Sort by count descending, then by increasing test number
-    total_counts.sort(key=lambda x: (_try_integer(x[2]), _try_integer_rev(x[0])), reverse=True)
+    total_counts.sort(key=lambda x: (-x[2], _try_integer(x[0])))
     num_shown = 0
     for test, status, count in total_counts:
         if status in frozenset((TestResult.PASS, TestResult.SKIP)):
