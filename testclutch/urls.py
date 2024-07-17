@@ -3,14 +3,28 @@
 This contains functions relating to source repositories but not CI services.
 """
 
-import argparse
 import contextlib
 import logging
 import urllib.parse
-from typing import Tuple, Union
+from typing import NamedTuple, Tuple, Union
 
 
-def get_project_name(args: Union[str, argparse.Namespace]) -> Tuple[str, str]:
+def get_generic_project_name(checkrepo: str) -> Tuple[str, str]:
+    """Returns the source code owner and project to use for a CI system
+
+    This extracts them only from the source repository URL.  This currently supports GitHub URLs and
+    others with a similar format (like GitLab).
+    """
+    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkrepo)
+    parts = path.split('/')
+    # Sanity check URL
+    if len(parts) != 3:
+        logging.error('Unsupported repository URL: %s', checkrepo)
+        raise RuntimeError(f'Unsupported repository URL {checkrepo}')
+    return tuple(path.split('/')[1:3])
+
+
+def get_project_name(args: Union[str, NamedTuple]) -> Tuple[str, str]:
     """Returns the source code owner and project to use for a CI system
 
     This extracts them from the source repository URL, unless they are overridden by command-line
@@ -24,7 +38,7 @@ def get_project_name(args: Union[str, argparse.Namespace]) -> Tuple[str, str]:
         tuple of account, project
     """
     if hasattr(args, 'checkrepo'):
-        # We got a argparse.Namespace
+        # We got an object with attributes
         checkrepo = args.checkrepo
         account = args.account
         project = args.project
@@ -33,16 +47,11 @@ def get_project_name(args: Union[str, argparse.Namespace]) -> Tuple[str, str]:
         checkrepo = args
         account = ''
         project = ''
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkrepo)
-    parts = path.split('/')
-    # Sanity check URL
-    if len(parts) != 3:
-        logging.error('Unsupported repository URL: %s', checkrepo)
-        raise RuntimeError(f'Unsupported repository URL {checkrepo}')
+    gaccount, gproject = get_generic_project_name(checkrepo)
     if not account:
-        account = path.split('/')[1]
+        account = gaccount
     if not project:
-        project = path.split('/')[2]
+        project = gproject
     return (account, project)
 
 
@@ -68,5 +77,5 @@ def url_pr(url: str) -> int:
         return 0
     pr = 0
     with contextlib.suppress(ValueError):
-        pr = int(paths[3])
+        pr = int(paths[4])
     return pr
