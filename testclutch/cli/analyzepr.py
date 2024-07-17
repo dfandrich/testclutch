@@ -41,10 +41,15 @@ MAX_NOTIFIED_PER_ORIGIN = 7
 
 
 class PRStatus(enum.IntEnum):
-    READY = 0    # PR jobs are complete (or success)
-    PENDING = 1  # CI jobs are still running for this PR
-    CLOSED = 2   # PR already closed
-    ERROR = 3    # invalid PR
+    """Status of CI jobs for a PR
+
+    These are in numerical order where higher-numbered statuses override lower-numbered one.
+    """
+    READY = 0    # CI jobs are complete (and successful)
+    FAILURE = 1  # CI jobs are complete (and at least one failed)
+    PENDING = 2  # CI jobs are still running for this PR
+    CLOSED = 3   # PR already closed
+    ERROR = 4    # invalid PR
 
 
 def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
@@ -402,65 +407,74 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -
     return PRStatus.READY
 
 
-def check_gha_pr_ready(args: argparse.Namespace, prs: list[int]) -> PRStatus:
-    try:
+class GHAPRReady:
+    "Class to determine if CI jobs for PRs have completed"
+
+    def __init__(self, args: argparse.Namespace):
+        if urls.url_host(args.checkrepo) != 'github.com':
+            # This function only makes sense when source is hosted on GitHub
+            raise RuntimeError(f'Invalid GitHub repository URL {args.checkrepo}')
         owner, project = urls.get_project_name(args)
-    except RuntimeError:
-        return PRStatus.ERROR
+        self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
-    if urls.url_host(args.checkrepo) != 'github.com':
-        # This function only makes sense when source is hosted on GitHub
-        logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
-        return PRStatus.ERROR
-
-    owner, project = urls.get_project_name(args)
-    gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
-
-    # The highest value for PRStatus wins as the result code for the batch
-    ret = PRStatus.READY
-    for pr in prs:
-        pull = gh.get_pull(pr)
+    def check_gha_pr_state(self, pr: int) -> PRStatus:
+        pull = self.gh.get_pull(pr)
         if pull['state'] == 'closed':
             logging.warning(f'PR is in state {pull["state"]}')
-            ret = max(PRStatus.CLOSED, ret)
-            continue
+            return PRStatus.CLOSED
         if pull['state'] != 'open':
-            logging.warning(f'PR is in state {pull["state"]}')
-            ret = max(PRStatus.ERROR, ret)
-            continue
+            logging.warning(f'PR is in unknown state {pull["state"]}')
+            return PRStatus.ERROR
         if pull['locked']:
             logging.warning('PR is locked; aborting')
-            ret = max(PRStatus.ERROR, ret)
-            continue
+            return PRStatus.ERROR
         commit = pull['head']['sha']
         logging.info(f'PR#{pr} commit {commit}')
 
-        status = gh.get_commit_status(commit)
+        # CI status are spread over commit statuses and check-runs, so check them both
+        status = self.gh.get_commit_status(commit)
         logging.debug(f'{len(status["statuses"])} commit statuses')
-        logging.debug(f'Overall state: {status["state"]}')
-        pending = 0
+        logging.debug(f'Overall commit status state: {status["state"]}')
         jobcount = len(status['statuses'])
+        pending = 0
+        ret = PRStatus.READY
         for stat in status['statuses']:
-            if stat['state'] != 'success':
-                logging.debug(f"status is in state {stat['state']}")
-            # success, pending
+            # (success, failure, pending)
             if stat['state'] == 'pending':
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
+            elif stat['state'] != 'success':
+                logging.debug(f"failed with state {stat['state']}")
+                ret = max(PRStatus.FAILURE, ret)
 
-        checkruns = gh.get_check_runs(commit)
+        checkruns = self.gh.get_check_runs(commit)
         logging.debug(f"{len(checkruns['check_runs'])} check runs")
         jobcount += len(checkruns['check_runs'])
         for run in checkruns['check_runs']:
-            # queued, in_progress, completed
+            # (queued, in_progress, completed)
             if run['status'] != 'completed':
                 logging.debug(f"check run {run['id']} is in state {run['status']}")
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
+            # (success, neutral, failure)
+            elif run['conclusion'] == 'failure':
+                logging.debug(f"check run {run['id']} concluded with {run['conclusion']}")
+                ret = max(PRStatus.FAILURE, ret)
 
-        logging.info(f'{pending} jobs of {jobcount} still pending for PR#{pr}')
+        logging.info(f'PR#{pr} has ready state {ret.name} '
+                     f'with {pending} jobs out of {jobcount} still pending')
+        return ret
 
-    return ret
+    def check_gha_pr_ready(self, prs: list[int]) -> PRStatus:
+        # The highest value for PRStatus wins as the result code for the batch
+        ret = PRStatus.READY
+        for pr in prs:
+            state = self.check_gha_pr_state(pr)
+            ret = max(state, ret)
+            if state in frozenset((PRStatus.CLOSED, PRStatus.ERROR)):
+                continue
+
+        return ret
 
 
 def get_ready_prs(args: argparse.Namespace) -> list[int]:
@@ -798,7 +812,8 @@ def main():
     if args.ci_status:
         if args.html:
             logging.warning('--html is ignored with --ci-status')
-        status = check_gha_pr_ready(args, prs)
+        prready = GHAPRReady(args)
+        status = prready.check_gha_pr_ready(prs)
         if status == PRStatus.ERROR:
             logging.error("A PR is in an unacceptable state")
         print(status.name)
