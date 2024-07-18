@@ -419,7 +419,7 @@ class GHAPRReady:
             # This function only makes sense when source is hosted on GitHub
             raise RuntimeError(f'Invalid GitHub repository URL {args.checkrepo}')
         self.args = args
-        owner, project = urls.get_project_name(args)
+        owner, project = urls.get_generic_project_name(args.checkrepo)
         self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
     def get_ready_prs(self) -> list[int]:
@@ -660,7 +660,7 @@ class GatherPRAnalysis:
     def comment(self, prs: list[int]) -> int:
         """Comment on a PR"""
         if not self.args.dry_run:
-            owner, project = urls.get_project_name(self.args)
+            owner, project = urls.get_generic_project_name(self.args.checkrepo)
             gh = ghaapi.GithubApi(owner, project, gha.read_token(self.args.authfile))
 
         # This may be temporarily upgraded to locked if needed later
