@@ -1,0 +1,33 @@
+#!/bin/sh
+# This is a sample script to analyze outstanding PRs for test issues and add
+# a comment when something is found.  It should be run periodically (e.g.
+# hourly) to comment on new PRs soon after their CI jobs have completed.
+#
+# It is assumed that ~/.config/testclutchrc exists and sets at least check_repo
+# so that it doesn't need to appear in every command invocation below.
+
+###########
+# Get list of PRs to check on this run
+# i.e. recent ones whose CI jobs have completed and which have indicated a
+# failure status
+
+PRS="$(tcanalyzepr --authfile ~/.myghatokeninfile --ci-status --ready-prs --only-failed-prs)"
+if [ -z "$PRS" ]; then
+    echo 'Error: no PRs are ready to check; terminating run'
+    exit
+fi
+echo Checking these PRs: "$PRS"
+
+###########
+# Read test logs for all configured CI services
+
+tcanalyzepr --gather-analysis --origin=appveyor --account myappveyoruser --pr $PRS
+tcanalyzepr --gather-analysis --origin=azure --account myazureuser --pr $PRS
+tcanalyzepr --gather-analysis --origin=circle --pr $PRS
+tcanalyzepr --gather-analysis --origin=cirrus --pr $PRS
+tcanalyzepr --gather-analysis --origin=gha --authfile ~/.myghatokeninfile --pr $PRS
+
+###########
+# Comment on any PRs that deserve a comment
+
+tcanalyzepr --authfile ~/.myghatokeninfile --comment --pr $PRS
