@@ -10,4 +10,5 @@ check_repo = 'https://github.com/example/test'
 log_parsers = [
     'testclutch.logparser.pytestparse.parse_log_file',
     'testclutch.logparser.pytestparse.parse_log_file_summary',
+    'testclutch.logparser.automakeparse.parse_log_file',
 ]
