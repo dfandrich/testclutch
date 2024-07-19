@@ -663,8 +663,7 @@ class GatherPRAnalysis:
             owner, project = urls.get_generic_project_name(self.args.checkrepo)
             gh = ghaapi.GithubApi(owner, project, gha.read_token(self.args.authfile))
 
-        # This may be temporarily upgraded to locked if needed later
-        pranalyses = self.read_analyses(False)
+        pranalyses = self.read_analyses(True)
         for pr in prs:
             # Check that we're ready to comment
             if pr not in pranalyses:
@@ -712,23 +711,10 @@ class GatherPRAnalysis:
                     # Write the comment to the PR thread
                     gh.create_comment(pr, message)
 
-                    # Read the data again, but lock it this time so we can update it afterward.
-                    # There is a race condition here if another process completely rewrites the
-                    # data for this PR (e.g. with a --rerun) in the time we were commenting
-                    # (which is an exceptional and rare situation). That would cause the partial
-                    # new data to be marked as already having been commented, although the comment
-                    # would have been on the old, original data. The alternative is to obtain a
-                    # write lock for all the processing, but that blocks all other users of the data
-                    # in the meantime.
-                    pranalyses = self.read_analyses(True)
-                    try:
-                        analysis = pranalyses[pr]
-                    except KeyError:
-                        logging.error('PR disappeared as we were commenting!')
-                    else:
-                        analysis.commented = int(datetime.datetime.now().timestamp())
-                        # Update with the commented time
-                        self.write_analyses()
+                    analysis.commented = int(datetime.datetime.now().timestamp())
+
+        # Update with the commented times
+        self.write_analyses()
 
         return PRStatus.READY
 
