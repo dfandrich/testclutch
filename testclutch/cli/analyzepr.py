@@ -788,9 +788,13 @@ def main():
     args = parse_args()
     log.setup(args)
 
-    if not args.authfile and args.comment and not args.dry_run:
-        logging.error('--authfile is required with gha')
+    if args.comment and not args.authfile and not args.dry_run:
+        logging.error('--authfile is required with --comment')
         return 1
+
+    if args.only_failed_prs and (not args.authfile or (args.origin and args.origin != 'gha')):
+        logging.warning(
+            '--only-failed-prs without GHA --authfile may fail due to insufficient quota')
 
     prready = GHAPRReady(args)
     prs = prready.get_ready_prs() if args.ready_prs else args.pr
