@@ -2,17 +2,17 @@
 """
 
 import collections
-import contextlib
 import datetime
 import logging
 import textwrap
 from dataclasses import dataclass
 from html import escape
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple
 
 import testclutch
 from testclutch import config
 from testclutch import db
+from testclutch import summarize
 from testclutch.gitdef import CommitInfo
 from testclutch.logdef import TestMeta
 from testclutch.testcasedef import TestResult
@@ -68,17 +68,6 @@ class ResultsOverTimeByUniqueJob:
         assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
         self.all_jobs_status = []  # type: List[TestJobInfo]
-
-    @staticmethod
-    def _try_integer(val: str) -> Union[int, str]:
-        """Try to convert the value to an integer, but return string if it cannot
-
-        Use a a sort key function to sort numeric test names by numeric value and string
-        test names alphabetically.  A more general alternative would be natsort.natsorted()
-        """
-        with contextlib.suppress(ValueError):
-            return int(val)
-        return val
 
     @staticmethod
     def make_global_unique_job(meta: TestMeta) -> str:
@@ -191,9 +180,9 @@ class ResultsOverTimeByUniqueJob:
                     attempted_tests.append(tc.name)
 
             # Sort the lists
-            failed_tests.sort(key=self._try_integer)
-            attempted_tests.sort(key=self._try_integer)
-            success_tests.sort(key=self._try_integer)
+            failed_tests.sort(key=summarize.try_integer)
+            attempted_tests.sort(key=summarize.try_integer)
+            success_tests.sort(key=summarize.try_integer)
 
             self.all_jobs_status.append(TestJobInfo(testid, jobtime,
                                         failed_tests, attempted_tests, success_tests, url,
@@ -268,7 +257,7 @@ class ResultsOverTimeByUniqueJob:
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         if flaky:
             print("These tests were found to be flaky:")
-            flaky.sort(key=lambda x: self._try_integer(x[0]))
+            flaky.sort(key=lambda x: summarize.try_integer(x[0]))
             for testname, ratio in flaky:
                 urltext = (f" (latest failure: {url})"
                            if (url := self.recent_failed_link(testname)) else "")
@@ -284,7 +273,7 @@ class ResultsOverTimeByUniqueJob:
                     print("Some tests are failing but the test was marked as successful. "
                           "These tests were likely marked to be ignored in this job.")
                 print("These tests are now consistently failing:")
-                permafails.sort(key=self._try_integer)
+                permafails.sort(key=summarize.try_integer)
                 for testname in permafails:
                     print(testname)
 
@@ -465,12 +454,12 @@ class ResultsOverTimeByUniqueJob:
         # A test might be on the permafail list even if the job is successful if the test result
         # was marked to be ignored. Don't consider that a failure worth reporting.
         if permafails and last_job_status.test_result != 'success':
-            permafails.sort(key=self._try_integer)
+            permafails.sort(key=summarize.try_integer)
             badtitle = (['These tests are now consistently failing:']
                         + [testname for testname in permafails])
             badtext = 'permafail'
         elif flaky:
-            flaky.sort(key=lambda x: self._try_integer(x[0]))
+            flaky.sort(key=lambda x: summarize.try_integer(x[0]))
             num_builds = min(len(self.all_jobs_status), config.get('flaky_builds_max'))
             badtitle.append(f"Over the past {num_builds} builds:")
             for testname, ratio in flaky:
@@ -639,7 +628,7 @@ class ResultsOverTimeByUniqueJob:
                        and fail_changes[test] >= config.get('flaky_failures_min')]
         test_attempt_counts = self.find_uniquejob_attempts()
         test_fail_counts = self.find_uniquejob_failures()
-        flaky_tests.sort(key=self._try_integer)
+        flaky_tests.sort(key=summarize.try_integer)
         flaky_rates = []
         for flake in flaky_tests:
             # Calculate the ratio of failures to attempts

@@ -231,7 +231,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         flakytitle = ''
         if flaky:
             # Some tests were found to be flaky
-            flaky.sort(key=lambda x: analyzer._try_integer(x[0]))
+            flaky.sort(key=lambda x: summarize.try_integer(x[0]))
             flakytitle = 'This test is flaky already, even without this PR; link goes to example'
             flakyfailurl = ''
             for testname, ratio in flaky:
@@ -251,7 +251,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         # was marked to be ignored. Don't consider that a failure worth reporting.
         if permafails and job_status.test_result != 'success':
             permafailtitle = permafailtitle + "These tests are now consistently failing: "
-            permafails.sort(key=analyzer._try_integer)
+            permafails.sort(key=summarize.try_integer)
             permafailtitle = permafailtitle + (
                 ', '.join([escape(testname) for testname in permafails]))
 

@@ -88,9 +88,9 @@ ID_TOKEN_RE = re.compile(r'[^-A-Za-z0-9_:."]')
 def _try_integer(val: str) -> Union[int, str]:
     """Try to convert the value to a low-value 0-prefixed integer in string form
 
-    Returns plain string if it cannot. Use a sort key function to sort numeric
-    test names by numeric value and string test names alphabetically.  A more
-    general alternative would be natsort.natsorted()
+    Returns raw string if it cannot. Use as a sort key function to sort numeric test names by
+    numeric value and string test names alphabetically, allowing sorting mixed integers and strings.
+    A more general alternative would be natsort.natsorted()
     """
     with contextlib.suppress(ValueError):
         return '%09d' % int(val)

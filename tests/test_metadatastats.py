@@ -30,3 +30,8 @@ class TestMetaDataStats(unittest.TestCase):
         self.assertEqual(
             sorted(mixed, key=metadatastats._try_integer),
             ['43', '56', '77', '1234567890', 'notanint', 'test50', 'x'])
+
+        mixed0 = ['0050', '043', '77', 'notanint', '1234567890', '000056', 'x', '00012']
+        self.assertEqual(
+            sorted(mixed0, key=metadatastats._try_integer),
+            ['00012', '043', '0050', '000056', '77', '1234567890', 'notanint', 'x'])

@@ -39,12 +39,12 @@ def summarize_totals(testcases: TestCases, details: bool = False) -> List[str]:
     return f.readlines()
 
 
-# TODO: eliminate duplicates of this
 def try_integer(val: str) -> Union[int, str]:
     """Try to convert the value to an integer, but return string if it cannot
 
-    Use a a sort key function to sort numeric test names by numeric value and string
-    test names alphabetically.  A more general alternative would be natsort.natsorted()
+    Use as a sort key function to sort numeric test names by numeric value and string
+    test names alphabetically.  When sorting, members of the list must be either all ints or all
+    strings (not mixed). A more general alternative would be natsort.natsorted()
     """
     with contextlib.suppress(ValueError):
         return int(val)
