@@ -38,7 +38,7 @@ class SyslogFormatter(logging.Formatter):
         super().__init__()
         self.base_format = fmt
 
-    def format(self, record) -> str:  # noqa: A003
+    def format(self, record: logging.LogRecord) -> str:  # noqa: A003
         self._style._fmt = f'<{logging_level_to_syslog(record.levelno)}>' + self.base_format
         return super().format(record)
 

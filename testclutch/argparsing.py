@@ -45,11 +45,11 @@ class StoreMultipleConstAction(argparse.Action):
     """
     def __init__(self,
                  option_strings,
-                 dest,
-                 const=True,
-                 attrs='',
+                 dest: str,
+                 const: bool = True,
+                 attrs: list[str] = [],
                  default=None,
-                 required=False,
+                 required: bool = False,
                  help=None,     # noqa: A002
                  metavar=None):
         super().__init__(

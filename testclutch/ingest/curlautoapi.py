@@ -47,7 +47,7 @@ class HTMLDirParser(html.parser.HTMLParser):
     def error(self, message: str):
         logging.warning("%s", message)
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: list[tuple]):
         if tag == 'th':
             self.table_state = self.TableState.TH
 
