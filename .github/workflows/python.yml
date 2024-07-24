@@ -46,6 +46,9 @@ jobs:
         name: Type check with pytype
         run: |
           pytype -j auto $(find testclutch tests -name '*.py')
+      - name: Lint with shellcheck
+        run: |
+          find examples -type f -perm /111 -exec shellcheck -e SC2086 {} +
       - name: Test with pytest
         run: |
           pytest -v
