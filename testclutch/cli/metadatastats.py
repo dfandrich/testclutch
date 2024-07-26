@@ -84,6 +84,9 @@ IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'job
 # Characters that are allowed in an HTML ID, except for " which is handled specially
 ID_TOKEN_RE = re.compile(r'[^-A-Za-z0-9_:."]')
 
+# strftime() format string including time zone
+TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
+
 
 def _try_integer(val: str) -> Union[int, str]:
     """Try to convert the value to a low-value 0-prefixed integer in string form
@@ -214,7 +217,7 @@ def output_nv_summary_html(nv: Iterable, repo: str, hours: int, full_list: bool)
         </head>
         <body>
         <h1>Metadata for test runs on {escape(repo)}</h1>
-        Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
+        Report generated {escape(now.strftime(TIMEZ_FMT))}
         covering runs over the past {hours / 24:.0f} days.
         <p>
         Expand each name to see all its values among recent test runs.
@@ -250,7 +253,7 @@ def output_test_run_stats_html(trstats: TestRunStats):
         </head>
         <body>
         <h1>Test run statistics for test runs on {escape(trstats.repo)}</h1>
-        Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
+        Report generated {escape(now.strftime(TIMEZ_FMT))}
         covering runs over the past {days:.0f} days.
         <p>
         """))
@@ -289,6 +292,31 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - trstats.since).total_seconds() / (24 * 3600)  # to handle fractional days
     print_func('Days of stats:', f'{days: 0.0f}')
+
+    # Find the earliest and latest logs in the DB. Since no single one of these metadata values is
+    # mandatory, check them all and take the extremes. This also means that we'll likely be showing
+    # the start time in the oldest case but the finish time of the newest case.
+    # TypeError is raised if there is no value in the database for that name
+    newest, oldest = 0, 32503679999  # initialize to something in case the DB is empty
+    with contextlib.suppress(TypeError):
+        newer, older = trstats.get_max_min_for_name('runtriggertime')
+        newest = max(newest, newer)
+        oldest = min(oldest, older)
+    with contextlib.suppress(TypeError):
+        newer, older = trstats.get_max_min_for_name('runstarttime')
+        newest = max(newest, newer)
+        oldest = min(oldest, older)
+    with contextlib.suppress(TypeError):
+        newer, older = trstats.get_max_min_for_name('runfinishtime')
+        newest = max(newest, newer)
+        oldest = min(oldest, older)
+    print_func(
+        'Most recent run: '
+        f'{datetime.datetime.fromtimestamp(newest, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)}')
+    print_func(
+        'Oldest run used: '
+        f'{datetime.datetime.fromtimestamp(oldest, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)}')
+
     total_count = trstats.get_test_run_count()
     print_func('Total test runs:', f'{total_count}')
     print_func('Runs per day:', f'{total_count / days: 0.1f}')
@@ -400,7 +428,7 @@ def output_test_results_count_html(trstats: TestRunStats):
         <body>
         <h1>Test failure counts for test runs on {escape(trstats.repo)}</h1>
         <p>
-        Report generated {escape(now.strftime('%a, %d %b %Y %H:%M:%S %z'))}
+        Report generated {escape(now.strftime(TIMEZ_FMT))}
         covering runs over the past {days:.0f} days.
         </p>
         <table>
