@@ -46,9 +46,8 @@ class Datastore:
         self.cur.execute("PRAGMA cache_size = -10000")
         # Store temporary tables onto disk to reduce RAM requirements
         self.cur.execute("PRAGMA temp_store = FILE")
-        # Recommended settings
+        # Avoid wasting disk space
         self.cur.execute("PRAGMA journal_size_limit = 27103364")
-        self.cur.execute("PRAGMA mmap_size = 134217728")
         # Use WAL mode to allow multiple concurrent readers/writers
         self.cur.execute("PRAGMA journal_mode=WAL")
         if self.cur.fetchone()[0] != 'wal':
