@@ -105,17 +105,13 @@ Actions needs an authentication token, stored in the file in the `--authfile`
 argument. Create one by going to https://github.com/settings/tokens and
 choosing *fine-grained tokens*. Create a new token with these characteristics:
 
-  - Public repository access
-
-No other special fine-grained access is currently needed.  Eventually, it may
-also need these permissions for Test Clutch to comment on PRs:
-
-  - "Pull requests" repository permissions (write)
-  - "Checks" repository permissions (read)
+  - Only select repositories (selecting the source repository or repositories)
+  - "Metadata" repository permissions (read)
+  - "Pull requests" repository permissions (read and write)
 
 Alternately, a classic token works as well.  Copy the token contents from the
 web browser and store it in a file in a protected location on your local
-machine and with permissions that do not allow other user to access it.
+machine and with permissions that do not allow other users to access it.
 
 Test Clutch has built-in support for these test log formats:
 
@@ -123,7 +119,8 @@ Test Clutch has built-in support for these test log formats:
 * Gnu automake
 * curl runtests (specific to the curl project)
 
-If your test runner uses a different format for reporting on test results, you
+The logs parsed are those that are displayed as the tests are being run.  If
+your test runner uses a different format for reporting on test results, you
 will need to create a parser to ingest them.
 
 ### Reports Jobs
