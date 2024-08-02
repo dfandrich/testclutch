@@ -170,7 +170,7 @@ class GithubIngestor:
                 return None
 
             logging.debug(f'fn {fn} type {ft}')
-            assert file_ext_from_type(ft) == DEFAULT_EXT
+            assert file_ext_from_type(ft) == DEFAULT_EXT, "assumption about log format is wrong"
 
             logging.debug('Moving file to %s', newfn)
             logcache.move_into_cache(fn, newfn)

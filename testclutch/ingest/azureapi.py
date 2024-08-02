@@ -4,8 +4,6 @@
 import datetime
 import json
 import logging
-import os
-import tempfile
 from typing import Any, Dict, Optional, Tuple
 
 from testclutch import netreq
@@ -86,22 +84,9 @@ class AzureApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_logs(self, build_id: int, log_id: int) -> Tuple[str, Optional[str]]:
+    def get_logs(self, build_id: int, log_id: int) -> Tuple[str, str]:
         url = LOGS_URL.format(organization=self.organization, project=self.project,
                               build_id=build_id, log_id=log_id)
         logging.info('Retrieving log from %s', url)
         with self.http.get(url, stream=True) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                # This sometimes raises an exception:
-                # requests.exceptions.ChunkedEncodingError: ("Connection broken: InvalidChunkLength(got length b'', 0 bytes read)", InvalidChunkLength(got length b'', 0 bytes read))
-                # TODO: Retry if this occurs.
-                try:
-                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-            content_type = resp.headers.get('Content-Type', None)
-        return (tmp.name, content_type)
+            return netreq.download_file(resp, url)

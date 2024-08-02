@@ -5,9 +5,7 @@ import enum
 import html
 import html.parser
 import logging
-import os
 import re
-import tempfile
 import urllib
 from typing import Dict, List
 
@@ -90,17 +88,8 @@ class CurlAutoApi:
         # Filter out all but log files
         return [link for link in htmlp.links if LOG_FILE_RE.search(link)]
 
-    def get_logs(self, log_name: str) -> str:
+    def get_logs(self, log_name: str) -> tuple[str, str]:
         url = BASE_URL + log_name
         logging.debug('Retrieving log from %s', url)
         with netreq.get(url, stream=True) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                try:
-                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-        return tmp.name
+            return netreq.download_file(resp, url)

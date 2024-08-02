@@ -3,9 +3,7 @@
 
 import json
 import logging
-import os
-import tempfile
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from testclutch import netreq
 from testclutch import urls
@@ -72,17 +70,7 @@ class CircleApi:
             last_resp = json.loads(resp.text)
         return last_resp
 
-    def get_logs(self, log_url: str) -> Tuple[str, Optional[str]]:
+    def get_logs(self, log_url: str) -> Tuple[str, str]:
         logging.info('Retrieving log from %s', log_url)
         with self.http.get(log_url, stream=True) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                try:
-                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-            content_type = resp.headers.get('Content-Type', None)
-        return (tmp.name, content_type)
+            return netreq.download_file(resp, log_url)

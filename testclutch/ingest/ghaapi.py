@@ -8,9 +8,7 @@ fine-grained repository permissions in order to read GitHub Actions logs.
 import datetime
 import json
 import logging
-import os
 import re
-import tempfile
 from typing import Any, Optional, Union
 
 from testclutch import netreq
@@ -184,20 +182,10 @@ class GithubApi:
         resp.raise_for_status()
         return json.loads(resp.text)
 
-    def get_logs(self, run_id: int) -> tuple[str, Optional[str]]:
+    def get_logs(self, run_id: int) -> tuple[str, str]:
         url = LOGS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         with self.http.get(url, headers=self._standard_auth_headers(), stream=True) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                try:
-                    for chunk in resp.iter_content(chunk_size=0x10000):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-            content_type = resp.headers.get('Content-Type', None)
-        return (tmp.name, content_type)
+            return netreq.download_file(resp, url)
 
     def get_pulls(self, state: str) -> list[Any]:
         """Returns info about pull requests"""

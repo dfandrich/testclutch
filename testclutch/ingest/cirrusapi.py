@@ -3,9 +3,7 @@
 
 import json
 import logging
-import os
-import tempfile
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 from testclutch import netreq
 from testclutch import urls
@@ -19,8 +17,6 @@ LOGS_URL = "https://api.cirrus-ci.com/v1/task/{task_id}/logs/{command_name}.log"
 DATA_TYPE = "application/json"
 
 MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
-
-CHUNK_SIZE = 0x10000
 
 # GraphQL schema is at https://github.com/cirruslabs/cirrus-ci-web/blob/master/schema.gql
 # Retrieve a list of test runs
@@ -339,18 +335,8 @@ class CirrusApi:
                }
         return self.query_graphql(RUN_GRAPHQL, var)
 
-    def get_logs(self, task_id: int, command_name: str) -> Tuple[str, Optional[str]]:
+    def get_logs(self, task_id: int, command_name: str) -> Tuple[str, str]:
         url = LOGS_URL.format(task_id=task_id, command_name=command_name)
         logging.info('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), stream=True) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                try:
-                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-            content_type = resp.headers.get('Content-Type', None)
-        return (tmp.name, content_type)
+            return netreq.download_file(resp, url)

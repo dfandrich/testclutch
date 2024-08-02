@@ -3,8 +3,6 @@
 
 import json
 import logging
-import os
-import tempfile
 from typing import Any, Dict, Optional, Tuple
 
 from testclutch import netreq
@@ -95,7 +93,7 @@ class AppveyorApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_logs(self, job_id: str) -> Tuple[str, Optional[str]]:
+    def get_logs(self, job_id: str) -> Tuple[str, str]:
         """Retrieve log file for a job"""
         url = LOG_URL.format(job_id=job_id)
         params = {"fullLog": "true"
@@ -103,14 +101,4 @@ class AppveyorApi:
         logging.debug('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), params=params, stream=True
                            ) as resp:
-            resp.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                try:
-                    for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
-                        tmp.write(chunk)
-                except:  # noqa: E722
-                    # Delete the temporary file on exception
-                    os.unlink(tmp.name)
-                    raise
-            content_type = resp.headers.get('Content-Type', None)
-        return (tmp.name, content_type)
+            return netreq.download_file(resp, url)

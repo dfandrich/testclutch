@@ -108,7 +108,8 @@ class CurlAutoIngestor:
         if logcache.in_cache(newfn):
             logging.debug('Log file is already in %s', newfn)
         else:
-            fn = self.curlauto.get_logs(log_name)
+            fn, ft = self.curlauto.get_logs(log_name)
+            logging.debug(f'fn {fn} type {ft}')
             logging.debug('Moving file to %s', newfn)
             logcache.move_into_cache_compressed(fn, newfn)
         return newfn
