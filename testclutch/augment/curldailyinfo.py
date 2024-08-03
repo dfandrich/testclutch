@@ -93,7 +93,21 @@ def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
             logging.fatal('Abort: Text could not be decoded with any of %d encodings',
                           len(CHANGES_CHARMAPS))
             raise RuntimeError('%s could not be decoded' % CHANGES_FILE)
+        except KeyError:
+            logging.error(f'{CHANGES_FILE} was not found in the tarball')
+            # The commit message will be blank
+            break
         except DecodeSuccess:
             break
 
     return (day_code, generated_time, commit_msg)
+
+
+if __name__ == '__main__':
+    import sys
+    fn = sys.argv[1]
+    print(f'File: {fn}')
+    day_code, daily_time, daily_title = get_daily_info(fn)
+    print(f'Date code: {day_code}')
+    print(f'Daily time: {daily_time}')
+    print(f'Daily title: {daily_title}')

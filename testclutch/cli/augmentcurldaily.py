@@ -68,7 +68,7 @@ class CurlDailyAugmenter:
         for candidate in candidates:
             commithash, committime, title, committeremail, authoremail = candidate
             logging.debug(f'Found {commithash:.9} "{title}"')
-            if daily_title == title:
+            if title and daily_title == title:
                 break
             if first:
                 # This is an indication that there was more than one commit around this time and
@@ -86,6 +86,10 @@ class CurlDailyAugmenter:
         # Get info from daily build tarball
         day_code, commithash, title = self.get_all_daily_info(fn)
         logging.info('File %s matches date %s hash %s title %s', fn, day_code, commithash, title)
+
+        if not commithash:
+            logging.error('Could not find a matching commit hash; skipping augmentation')
+            return
 
         # Find daily build test logs
         # TODO: restrict by recent builds only
