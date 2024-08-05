@@ -48,39 +48,34 @@ class CurlDailyAugmenter:
         self.dry_run = dry_run
 
     def get_all_daily_info(self, fn: str) -> Tuple[str, str, str]:
-        day_code, daily_time, daily_title = curldailyinfo.get_daily_info(fn)
-
+        day_code, daily_time, commithash = curldailyinfo.get_daily_info(fn)
+        logging.debug(f'Daily snapshot from {day_code} at {daily_time.ctime()} '
+                      f'with hash {commithash}')
         if day_code != daily_time.astimezone(datetime.timezone.utc).strftime('%Y%m%d'):
             logging.error('Date mismatch: %s vs %s',
                           day_code, daily_time.astimezone(datetime.timezone.utc))
-            return ('', '', '')
+            return '', '', ''
 
-        # TODO: it may be better to walk the linked list of commits (prev_commit) to find the ones
-        # behind the last one rather than looking purely by time. This is TBD.
+        if not commithash:
+            logging.warning('No hash found in daily snapshot')
+            return day_code, '', ''
+
         branch = config.expand('branch')
-        candidates = self.ds.select_commit_before_time(
-            self.repo, branch, int(daily_time.timestamp()), NUM_COMMIT_CANDIDATES)
+        # We only need one commit here, not all subsequent ones, but the list should be very short
+        # and this function is already available.
+        candidates = self.ds.select_all_commit_after_commit(self.repo, branch, commithash)
 
         if not candidates:
-            logging.error('No commits found since %s', daily_time)
+            logging.error(f'Commit {commithash} for {daily_time} snapshot not found in commit DB')
+            return day_code, commithash, ''
 
-        first = True
-        for candidate in candidates:
-            commithash, committime, title, committeremail, authoremail = candidate
-            logging.debug(f'Found {commithash:.9} "{title}"')
-            if title and daily_title == title:
-                break
-            if first:
-                # This is an indication that there was more than one commit around this time and
-                # the likelihood of choosing the wrong one increases
-                logging.info('git commit from daily tarball was not the first guess: %s', title)
-                first = False
-        else:
-            logging.error('Not able to find a matching commit in the previous %d: %s',
-                          NUM_COMMIT_CANDIDATES, daily_title)
-            return ('', '', '')
+        candidate = candidates[-1]
+        logging.debug(f'Found commit {candidate.commit_hash:.9} "{candidate.title}"')
+        if commithash != candidate.commit_hash:
+            logging.error(f'Expecting hash {commithash}, got {candidate.commit_hash}')
+            return day_code, commithash, ''
 
-        return day_code, commithash, title
+        return day_code, commithash, candidate.title
 
     def augment_daily(self, fn: str):
         # Get info from daily build tarball
@@ -88,7 +83,7 @@ class CurlDailyAugmenter:
         logging.info('File %s matches date %s hash %s title %s', fn, day_code, commithash, title)
 
         if not commithash:
-            logging.error('Could not find a matching commit hash; skipping augmentation')
+            logging.error('Could not find the commit hash; skipping augmentation')
             return
 
         # Find daily build test logs

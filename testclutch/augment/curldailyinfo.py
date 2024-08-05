@@ -20,12 +20,11 @@ CHANGES_TITLE_RE = re.compile(r'^- (.*)$')
 # at which the git pull was performed
 SENTINEL_FILE = 'm4/libtool.m4'
 
-# This file provides the git commit messages
-CHANGES_FILE = 'CHANGES'
+# This file provides the git commit after 2024-08-04
+COMMIT_FILE = 'docs/tarball-commit.txt'
 
-# Character maps used in the CHANGES file. They are tried in order until the text
-# decodes without an error.
-CHANGES_CHARMAPS = ['UTF-8', 'CP1252', 'CP437']
+# Character maps used in the COMMIT_FILE
+COMMIT_CHARMAP = 'UTF-8'
 
 # The number of seconds to assume between the git pull and generation of the first file.
 # Better to underestimate this than overestimate it to avoid missing a last-momment commit.
@@ -36,11 +35,7 @@ BUILDER_TZ = '+0200'
 
 
 def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
-    """Get the exact time & commit message when the daily tarball was generated
-
-    While the exact time is pretty close, there is still a chance that a git commit
-    right at this time didn't make it into the tar ball. The git commit title is also
-    returned to help disambiguate it.
+    """Get the exact time & commit when the daily tarball was generated
 
     Also, the daily date is not (necessarily) the date of availability at GitHub, which can be
     much longer if the user takes his time to upload it. It is only an upper bound on the commit
@@ -51,7 +46,7 @@ def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
 
     # Get the directory name
     first = tar_files[0].name.split('/')[0]
-    logging.debug('Reading %s: %s/%s', fn, first, CHANGES_FILE)
+    logging.debug('Reading %s: %s/%s', fn, first, COMMIT_FILE)
     # Extract the date from the directory name
     r = DIR_NAME_RE.search(first)
     if not r:
@@ -69,45 +64,23 @@ def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
         logging.error('curl daily build date mismatch; %s is not %s', generated_date, build_day)
         raise RuntimeError('curl daily build date mismatch')
 
-    class DecodeSuccess(Exception):
-        pass
+    # Read the commit hash
+    try:
+        with io.TextIOWrapper(tar.extractfile(posixpath.join(first, COMMIT_FILE)),
+                              line_buffering=True, encoding=COMMIT_CHARMAP) as commitf:
+            commit = commitf.readline().strip()
+    except KeyError:
+        # COMMIT_FILE is not in archive
+        commit = ''
 
-    commit_msg = ''
-    encodings = iter(CHANGES_CHARMAPS)
-    encoding = ''
-    while True:
-        try:
-            encoding = next(encodings)
-            logging.debug('Trying encoding %s', encoding)
-            changes = io.TextIOWrapper(tar.extractfile(posixpath.join(first, CHANGES_FILE)),
-                                       line_buffering=True, encoding=encoding)
-            while l := changes.readline():
-                if r := CHANGES_TITLE_RE.search(l):
-                    commit_msg = r.group(1)
-                    raise DecodeSuccess
-        except UnicodeDecodeError:
-            logging.warning('Decoding as %s failed. Trying next encoding.', encoding)
-        except StopIteration:
-            # IF this ever happens, make sure there's an encoding in CHANGES_CHARMAPS that can
-            # map every 8 bit byte into a character.
-            logging.fatal('Abort: Text could not be decoded with any of %d encodings',
-                          len(CHANGES_CHARMAPS))
-            raise RuntimeError('%s could not be decoded' % CHANGES_FILE)
-        except KeyError:
-            logging.error(f'{CHANGES_FILE} was not found in the tarball')
-            # The commit message will be blank
-            break
-        except DecodeSuccess:
-            break
-
-    return (day_code, generated_time, commit_msg)
+    return (day_code, generated_time, commit)
 
 
 if __name__ == '__main__':
     import sys
     fn = sys.argv[1]
     print(f'File: {fn}')
-    day_code, daily_time, daily_title = get_daily_info(fn)
+    day_code, daily_time, commit = get_daily_info(fn)
     print(f'Date code: {day_code}')
     print(f'Daily time: {daily_time}')
-    print(f'Daily title: {daily_title}')
+    print(f'Daily commit: {commit}')

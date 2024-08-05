@@ -17,12 +17,21 @@ class TestCurlDailyInfo(unittest.TestCase):
         return os.path.join(os.path.dirname(__file__), DATADIR, fn)
 
     def test_dailyinfo(self):
-        day_code, daily_time, daily_title = curldailyinfo.get_daily_info(
+        day_code, daily_time, commit = curldailyinfo.get_daily_info(
+            self.data_file('curldailyinfo_commit.tar.xz'))
+        self.assertEqual('20240805', day_code)
+        self.assertEqual(datetime.datetime(2024, 8, 5, 0, 31, 1, tzinfo=datetime.timezone.utc),
+                         daily_time)
+        self.assertEqual('7b1444979094a365c82c665cce0e2ebc6b69467b', commit)
+
+    def test_dailyinfo_nocommit(self):
+        # tar ball missing commit file
+        day_code, daily_time, commit = curldailyinfo.get_daily_info(
             self.data_file('curldailyinfo_basic.tar.xz'))
         self.assertEqual('20230801', day_code)
         self.assertEqual(datetime.datetime(2023, 8, 1, 0, 30, 18, tzinfo=datetime.timezone.utc),
                          daily_time)
-        self.assertEqual('curl: make %output{} in -w specify a file to write to', daily_title)
+        self.assertEqual('', commit)
 
 
 if __name__ == '__main__':
