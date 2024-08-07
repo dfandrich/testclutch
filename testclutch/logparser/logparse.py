@@ -35,7 +35,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
         f.seek(0)
 
     if not testcases:
-        logging.info('No tests could be found in the log file')
+        logging.debug('No tests could be found in the log file')
 
     return meta, testcases
 
