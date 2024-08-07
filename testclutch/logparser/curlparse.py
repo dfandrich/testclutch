@@ -77,7 +77,7 @@ RE_TESTFAILEDSHORT = re.compile(r'^test (\d{4,5})\.\.\.FAILED$')
 # testcurl headers
 RE_TESTCURLCOMMITSTART = re.compile(r'^testcurl: The most recent curl git commits:')
 RE_TESTCURLCOMMIT = re.compile(r'^testcurl:( ){1,3}([0-9a-f]{7,11}) ')
-RE_TESTCURLDAILY = re.compile(r'^testcurl: curl-([\d.]+)-(\d{8}) is verified to be '
+RE_TESTCURLDAILY = re.compile(r'^testcurl: curl-([\d.]+)-(\d{8})/? is verified to be '
                               r'a fine daily source dir')
 RE_TESTCURLDATE = re.compile(r'^testcurl: date = (.*)$')
 RE_TESTCURLNAME = re.compile(r'testcurl: NAME = (.*)$')
@@ -182,6 +182,9 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                         if meta['systemos'] == 'Linux':
                             if len(sysparts) in frozenset((17, 15)):
                                 meta['arch'] = sysparts[13]
+                            elif len(sysparts) == 16:
+                                # This happens on kernel 6.6.X
+                                meta['arch'] = sysparts[14]
                             elif len(sysparts) > 17 and re.match(r'^[12]\d{3}$', sysparts[12]):
                                 # A Gentoo box had sysparts[14:21] as the long form CPU name
                                 # which seems to be allowed in uname -p

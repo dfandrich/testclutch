@@ -1675,6 +1675,49 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('3201', curlparse.TestResult.PASS, '', 53000)
         ], testcases)
 
+    def test_daily2(self):
+        # built using testcurl.pl from a daily build (newer curl, newer kernel)
+        with self.open_data('curlparse_daily2.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'buildcode': 668843567,
+            'buildsystem': 'automake',
+            'cijob': 'Linux 6.6.37 x86_64 GnuTLS',
+            'ciname': 'Friendly Builder',
+            'compiler': 'gcc',
+            'compilerversion': '12',
+            'compilerversioncode': '1200',
+            'curldeps': 'libcurl/8.10.0-20240806 GnuTLS/3.8.4 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 librtmp/2.3 OpenLDAP/2.5.14',
+            'dailybuild': '20240806',
+            'executor': 'testcurl',
+            'features': 'alt-svc AsynchDNS brotli HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz '
+                        'NTLM PSL SSL threadsafe TLS-SRP UnixSockets zstd',
+            'host': 'buildnode',
+            'os': 'linux',
+            'randomseed': '224726',
+            'runstarttime': 1723012246,
+            'runtestsopts': '-a -p -n 1 2 3 ',
+            'runtestsduration': '1000000',
+            'systemhost': 'buildnode',
+            'systemos': 'Linux',
+            'systemosver': '6.6.37-desktop',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.10.0-20240806',
+            'testmode': 'normal',
+            'testresult': 'success',
+            'withvalgrind': 'no'
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1127000),
+            SingleTestFinding('2', curlparse.TestResult.PASS, '', 112000),
+            SingleTestFinding('3', curlparse.TestResult.PASS, '', 67000)
+        ], testcases)
+
     def test_testcurlgit(self):
         # built using testcurl.pl using git
         with self.open_data('curlparse_testcurlgit.log') as f:
@@ -3344,6 +3387,7 @@ class TestCurlParse(unittest.TestCase):
         with self.open_data('curlparse_multiple.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
+            'arch': 'aarch64',
             'buildsystem': 'automake',
             'curldeps': 'libcurl/8.8.0-DEV OpenSSL/3.2.1 zlib/1.3.1 brotli/1.1.0 zstd/1.5.5 '
                         'libidn2/2.3.7 libpsl/0.21.2 nghttp2/1.59.0 librtmp/2.3 libgsasl/2.2.1 '
