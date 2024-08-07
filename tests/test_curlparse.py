@@ -1685,6 +1685,7 @@ class TestCurlParse(unittest.TestCase):
             'buildsystem': 'automake',
             'cijob': 'Linux 6.6.37 x86_64 GnuTLS',
             'ciname': 'Friendly Builder',
+            'commit': 'e64e62cc7db53936ea6f7452ad09941770d2b104',
             'compiler': 'gcc',
             'compilerversion': '12',
             'compilerversioncode': '1200',

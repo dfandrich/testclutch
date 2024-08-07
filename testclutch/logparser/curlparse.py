@@ -76,7 +76,8 @@ RE_TESTFAILEDSHORT = re.compile(r'^test (\d{4,5})\.\.\.FAILED$')
 
 # testcurl headers
 RE_TESTCURLCOMMITSTART = re.compile(r'^testcurl: The most recent curl git commits:')
-RE_TESTCURLCOMMIT = re.compile(r'^testcurl:( ){1,3}([0-9a-f]{7,11}) ')
+RE_TESTCURLCOMMIT = re.compile(r'^testcurl:( ){1,3}'
+                               r'(((?P<shash>[0-9a-f]{7,11})(?: ))|(?P<lhash>[0-9a-f]{40}$))')
 RE_TESTCURLDAILY = re.compile(r'^testcurl: curl-([\d.]+)-(\d{8})/? is verified to be '
                               r'a fine daily source dir')
 RE_TESTCURLDATE = re.compile(r'^testcurl: date = (.*)$')
@@ -362,7 +363,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
             # Not sure what causes this, unless it's a weird way that the daily build has
             # been set up.
             if r := RE_TESTCURLCOMMIT.search(l):
-                meta['commit'] = r.group(2)
+                meta['commit'] = r.group('shash') if r.group('shash') else r.group('lhash')
         elif r := RE_TESTCURLDAILY .search(l):
             meta['executor'] = 'testcurl'
             meta['dailybuild'] = r.group(2)
