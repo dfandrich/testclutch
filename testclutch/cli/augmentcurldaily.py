@@ -92,22 +92,23 @@ class CurlDailyAugmenter:
         daily = res.fetchall()
         logging.info('%d jobs matching day %s', len(daily), day_code)
 
-        # Find daily build test logs that already have commits
-        res = self.ds.cur.execute(DAILY_BUILDS_WITH_COMMIT_SQL, (day_code, ))
-        with_commit = frozenset(x[0] for x in res.fetchall())
-        if with_commit:
-            logging.info('...but %d jobs already have a commit', len(with_commit))
+        if daily:
+            # Find daily build test logs that already have commits
+            res = self.ds.cur.execute(DAILY_BUILDS_WITH_COMMIT_SQL, (day_code, ))
+            with_commit = frozenset(x[0] for x in res.fetchall())
+            if with_commit:
+                logging.info('...but %d jobs already have a commit', len(with_commit))
 
-        # Drop records from list that already have a commit
-        recs_to_add_commits = [job[0] for job in daily if job[0] not in with_commit]
-        logging.info('...leaving %d jobs to modify', len(recs_to_add_commits))
+            # Drop records from list that already have a commit
+            recs_to_add_commits = [job[0] for job in daily if job[0] not in with_commit]
+            logging.info('...leaving %d jobs to modify', len(recs_to_add_commits))
 
-        # Add commit to daily build records that don't already have one
-        if not self.dry_run:
-            meta = {'commit': commithash,
-                    'summary': title}
-            for recid in recs_to_add_commits:
-                self.ds.store_test_meta(recid, meta)
+            # Add commit to daily build records that don't already have one
+            if not self.dry_run:
+                meta = {'commit': commithash,
+                        'summary': title}
+                for recid in recs_to_add_commits:
+                    self.ds.store_test_meta(recid, meta)
 
 
 def augment_curl_daily(args):
