@@ -21,26 +21,15 @@ from testclutch.testcasedef import TestResult
 # record_id, jobtime, {test: count}
 TestFailCount = Tuple[int, int, collections.Counter[str]]
 
-# Select a set of all the unique test jobs. The uniqueness is a single string which
-# is the concatenation of: [account,]repo,origin,uniquejobname
-# NOTE: THIS ISN'T FILTERED BY repo
-# UNIQUE_JOBS = r"SELECT DISTINCT GROUP_CONCAT(value) uniquejob FROM testrunmeta WHERE name IN ('uniquejobname', 'origin', 'account', 'checkrepo') GROUP BY id ORDER BY uniquejob"
-
-# Returns testids for all tests matching a repo
-REPO_ID_SQL = r"SELECT id FROM testruns WHERE repo=?"
 
 # Select a set of all the unique test jobs on a repo. The uniqueness is a single string which
-# is the concatenation of: [account,]repo,origin,uniquejobname
-UNIQUE_JOBS_SQL = f"SELECT DISTINCT GROUP_CONCAT(value) uniquejob FROM testrunmeta INNER JOIN ({REPO_ID_SQL}) AS repoid ON repoid.id = testrunmeta.id WHERE name IN ('uniquejobname', 'origin', 'account', 'checkrepo') GROUP BY testrunmeta.id ORDER BY uniquejob"
-
-# Select the id and unique job name for each test run
-# This includes runs from pull requests, which must be removed later if undesired
-RUNS_WITH_UNIQUE_JOB_SQL = r"SELECT id, GROUP_CONCAT(value) uniquejob FROM testrunmeta WHERE name IN ('uniquejobname', 'origin', 'account', 'checkrepo') GROUP BY id ORDER BY name"
+# is the concatenation of: account,repo,origin,uniquejobname
+UNIQUE_JOBS_SQL = r"SELECT DISTINCT (account || ',' || repo || ',' || origin || ',' || uniquejobname) uniquejob FROM testruns WHERE repo=? AND time >= ? ORDER BY repo, origin, uniquejobname, account"
 
 # Select the set of IDs of jobs that match a particular unique job name, sorted down by time
 # The unique job identifier comes from the RUNS_WITH_UNIQUE_JOB_SQL query.
 # This includes runs from pull requests, which must be removed later if undesired
-RUNS_BY_UNIQUE_JOB_SQL = f"SELECT testruns.id, testruns.time from ({RUNS_WITH_UNIQUE_JOB_SQL}) AS runs INNER JOIN testruns ON testruns.id=runs.id WHERE uniquejob=? AND testruns.time >= ? AND testruns.time < ? ORDER BY testruns.time DESC"
+RUNS_BY_UNIQUE_JOB_SQL = r"SELECT id, time FROM testruns WHERE (account || ',' || repo || ',' || origin || ',' || uniquejobname)=? AND time >= ? AND time < ? ORDER BY time DESC"
 
 # Internal configuration consistency checks
 assert config.get('flaky_builds_min') >= config.get('flaky_failures_min') * 2
@@ -64,6 +53,11 @@ class TestJobInfo:
 
 
 class ResultsOverTimeByUniqueJob:
+    """Analyze test job runs.
+
+    Most methods assume load_unique_job() is called to prepare a job's data sets for analysis.
+    """
+
     def __init__(self, ds: db.Datastore):
         assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
@@ -73,11 +67,10 @@ class ResultsOverTimeByUniqueJob:
     def make_global_unique_job(meta: TestMeta) -> str:
         """Create a unique job name from the available metadata
 
-        This is the concatenation of: [account,]repo,origin,uniquejobname
+        This is the concatenation of: account,repo,origin,uniquejobname
         It is used as a key to get info on a unique job name.
         """
-        maybe_account = meta['account'] + ',' if 'account' in meta else ''
-        return f"{maybe_account}{meta['checkrepo']},{meta['origin']},{meta['uniquejobname']}"
+        return ','.join((meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname']))
 
     def check_aborted(self, meta: TestMeta) -> bool:
         "Check if the CI metadata indicates an aborted test run"
@@ -251,10 +244,11 @@ class ResultsOverTimeByUniqueJob:
         """Analyze a unique job series
 
         globaluniquejob is the concatenation of metadata fields:
-          [account,]repo,origin,uniquejobname
+          account,repo,origin,uniquejobname
         """
         print(f'Analyzing unique job {globaluniquejob}')
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
+        logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
         if flaky:
             print("These tests were found to be flaky:")
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
@@ -296,15 +290,18 @@ class ResultsOverTimeByUniqueJob:
     def analyze_all_by_unique_job(self, repo: str):
         "Look for consistent failures for all unique job names"
         uniquejobs = self.ds.db.cursor()
-        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo,))
+        now = datetime.datetime.now(datetime.timezone.utc)
+        from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
         while globalunique := uniquejobs.fetchone():
             self.analyze_by_unique_job(globalunique[0])
 
     def show_job_failure_table(self, repo: str):
         "Create a table showing failures in jobs"
         uniquejobs = self.ds.db.cursor()
-        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo,))
         now = datetime.datetime.now(datetime.timezone.utc)
+        from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
         print(textwrap.dedent("""\
             <!DOCTYPE html>
             <html><head><title>Test Job Failures</title>
@@ -415,6 +412,7 @@ class ResultsOverTimeByUniqueJob:
         if not self.all_jobs_status:
             logging.info('Nothing to analyze for %s', globaluniquejob)
             return
+        logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
 
         # This puts a scroll bar on the individual table
         # print('<div style="width: 100%; overflow: auto;">')
