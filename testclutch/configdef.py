@@ -70,10 +70,10 @@ compress_threshold_bytes = 128
 
 # Report configuration: test_results_count
 # Number of failed tests for which to bother showing URLs (since that is slow)
-test_results_count_max_urls = 30
+test_results_count_max_urls = 32
 
-# Number of recent URLs to show
-test_results_count_num_recent_urls = 5
+# Number of recent URLs to show for each test in the test failure counts report
+test_results_count_num_recent_urls = 4
 
 # Oldest created PR in hours to include in the PR check
 pr_ready_age_hours_max = 24 * 3  # 3 days
