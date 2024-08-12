@@ -6,9 +6,13 @@ log_cache_path = '/var/lib/testclutch/testlogcache'
 # Code repository to work on
 check_repo = 'https://github.com/example/test'
 
-# log parsing functions to try, in order
+# Log parsing functions to try, in order
 log_parsers = [
     'testclutch.logparser.pytestparse.parse_log_file',
     'testclutch.logparser.pytestparse.parse_log_file_summary',
     'testclutch.logparser.automakeparse.parse_log_file',
 ]
+
+# Metadata fields over which to create the features matrix
+# These two particular ones are set by the pytest log parser
+matrix_meta_fields = ['os', 'testdeps']

@@ -19,7 +19,7 @@ check_repo = ''
 # git branch to use
 branch = 'master'
 
-# log parsing functions to try, in order
+# Log parsing functions to try, in order
 log_parsers = [
     'testclutch.logparser.pytestparse.parse_log_file',
     'testclutch.logparser.pytestparse.parse_log_file_summary',
@@ -89,6 +89,9 @@ pr_comment_origins = None
 
 # URL to use for Test Clutch in PR comments
 pr_comment_url = 'https://github.com/dfandrich/testclutch'
+
+# Metadata fields over which to create the features matrix
+matrix_meta_fields = []
 
 # Path to root of log cache directory
 # TODO:

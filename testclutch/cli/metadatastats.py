@@ -13,10 +13,12 @@ from html import escape
 from typing import Callable, Iterable, List, Sequence, Tuple, Union
 
 import testclutch
+from testclutch import analysis
 from testclutch import argparsing
 from testclutch import config
 from testclutch import db
 from testclutch import log
+from testclutch.logdef import TestMeta
 from testclutch.testcasedef import TestResult
 
 
@@ -87,6 +89,10 @@ ID_TOKEN_RE = re.compile(r'[^-A-Za-z0-9_:."]')
 # strftime() format string including time zone
 TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
 
+# Characters to use for 'enabled' and 'disabled' in the features matrix
+YES = '✓'
+NO = '⨯'
+
 
 def _try_integer(val: str) -> Union[int, str]:
     """Try to convert the value to a low-value 0-prefixed integer in string form
@@ -114,6 +120,63 @@ class MetadataStats:
         return nvstats.fetchall()
 
 
+class FeatureMatrix:
+    def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
+        assert ds.db  # satisfy pytype that this isn't None
+        self.ds = ds
+        self.repo = repo
+        self.since = since
+        self.from_time = int(since.timestamp())
+        self.analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
+        self.all_meta = []  # type: list[TestMeta]
+
+    def all_unique_jobs(self) -> list[str]:
+        return self.analyzer.all_unique_jobs(self.repo, self.from_time)
+
+    def get_uniquejob_meta(self, globaluniquejob: str) -> TestMeta:
+        to_time = int(datetime.datetime.now().timestamp())
+        # Using disabled_job_hours instead of analysis_hours because we want only the most current
+        # job run, and anything older than that is irrelevant
+        logging.info(f'Getting runs over last {self.since.ctime()} '
+                     f'of unique job {globaluniquejob}')
+        self.analyzer.load_unique_job(globaluniquejob, self.from_time, to_time)
+        if not self.analyzer.all_jobs_status:
+            logging.info('Nothing to analyze for %s', globaluniquejob)
+            return {}
+        last_job_status = self.analyzer.all_jobs_status[0]
+        testid = last_job_status.testid
+        return self.ds.collect_meta(testid)
+
+    def make_job_title(self, job: TestMeta) -> str:
+        return self.analyzer.make_job_title(job)
+
+    def load_all_meta(self):
+        "Read metadata for all jobs"
+        self.all_meta = []
+        for job in self.all_unique_jobs():
+            meta = self.get_uniquejob_meta(job)
+            assert meta, "Each job must have metadata; edge condition on expiry?"
+            self.all_meta.append(meta)
+        logging.info(f'Loaded {len(self.all_meta)} unique jobs')
+
+    def build_features(self, metas: Iterable[str]) -> list[tuple[str, str, Union[str, int]]]:
+        """Build a convolved list of features available in the tests
+
+        load_all_meta() must have been called first.
+
+        Returns:
+            list of tuples containing (title, name value) of each feature
+        """
+        features = {}
+        for metaname in metas:
+            for meta in self.all_meta:
+                if metaname in meta:
+                    feature = features.setdefault(metaname, set())
+                    feature.add(meta[metaname])
+        return [(f'{name}: {value}', name, value) for name in sorted(features.keys())
+                for value in sorted(features[name])]
+
+
 def idify(s: str) -> str:
     """Make the given string valid as a double-quoted HTML id token
 
@@ -121,8 +184,7 @@ def idify(s: str) -> str:
     and the whole string is prefixed with "test" to guarantee the first character is a letter.
     """
     filtered = ID_TOKEN_RE.sub('_', s)
-    filtered = re.sub('"', '&quot;', filtered)
-    return 'test' + filtered
+    return 'test' + re.sub('"', '&quot;', filtered)
 
 
 class TestRunStats:
@@ -472,6 +534,54 @@ def output_test_results_count_html(trstats: TestRunStats):
     print('</table></body></html>')
 
 
+def output_feature_matrix_html(fm: FeatureMatrix):
+    now = datetime.datetime.now(datetime.timezone.utc)
+    days = (now - fm.since).days
+    print(textwrap.dedent("""\
+        <!DOCTYPE html>
+        <html><head><title>Test Job Feature Matrix</title>
+        <style type="text/css">
+        td {
+          outline: 1px solid;
+        }
+        td.no {
+          background-color: #FFAAAA;
+          text-align: center;
+        }
+        td.yes {
+          background-color: #AAFFAA;
+          text-align: center;
+        }
+        </style>
+        """ + f"""
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        </head>
+        <body>
+        <h1>Configured test job features on {escape(fm.repo)}</h1>
+        <p>
+        Report generated {escape(now.strftime(TIMEZ_FMT))}
+        covering jobs over the past {days:.0f} days.
+        </p>
+        <table>
+        """))
+
+    fm.load_all_meta()
+    features = fm.build_features(config.get('matrix_meta_fields'))
+    print('<tr><th>Job</th>')
+    for title, _, _ in features:
+        print(f'<th>{escape(title)}</th>')
+    print('</tr>')
+
+    for meta in fm.all_meta:
+        print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
+        for _, name, value in features:
+            match = meta.get(name, '') == value
+            print(f'<td class="{"yes" if match else "no"}">{YES if match else NO}</td>')
+        print('</tr>')
+
+    print('</table></body></html>')
+
+
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Summarize test metadata')
@@ -486,7 +596,7 @@ def parse_args(args=None) -> argparse.Namespace:
         help='List all value instead of redacting unintersting ones')
     parser.add_argument(
         '--report',
-        choices=['metadata_values', 'test_run_stats', 'test_results_count'],
+        choices=['feature_matrix', 'metadata_values', 'test_run_stats', 'test_results_count'],
         required=True,
         help='Which type of report should be generated')
     parser.add_argument(
@@ -502,7 +612,7 @@ def main():
 
     hours = args.howrecent
     if not hours:
-        hours = int(config.get('analysis_hours'))
+        hours = config.get('analysis_hours')
     since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
 
     ds = db.Datastore()
@@ -531,6 +641,18 @@ def main():
             output_test_results_count_html(trstats)
         else:
             output_test_results_count_text(trstats)
+
+    elif args.report == 'feature_matrix':
+        # The default hours is different for this job, so set it again from scratch here
+        hours = args.howrecent
+        if not hours:
+            hours = config.get('disabled_job_hours')
+        since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
+        featurematrix = FeatureMatrix(ds, config.expand('check_repo'), since)
+        if args.html:
+            output_feature_matrix_html(featurematrix)
+        else:
+            logging.error(f'--html must be used with {args.report}')
 
     else:
         logging.error(f'Unknown report "{args.report}"')
