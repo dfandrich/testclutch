@@ -287,21 +287,25 @@ class ResultsOverTimeByUniqueJob:
                       "probably due to a timeout")
         print()
 
+    def all_unique_jobs(self, repo: str, from_time: int) -> list[str]:
+        """Return all recent unique job IDs
+
+        These are the concatenation of: account,repo,origin,uniquejobname
+        """
+        uniquejobs = self.ds.db.cursor()
+        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
+        return list(row[0] for row in uniquejobs.fetchall())
+
     def analyze_all_by_unique_job(self, repo: str):
         "Look for consistent failures for all unique job names"
-        uniquejobs = self.ds.db.cursor()
         now = datetime.datetime.now(datetime.timezone.utc)
         from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
-        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
-        while globalunique := uniquejobs.fetchone():
-            self.analyze_by_unique_job(globalunique[0])
+        for globalunique in self.all_unique_jobs(repo, from_time):
+            self.analyze_by_unique_job(globalunique)
 
     def show_job_failure_table(self, repo: str):
         "Create a table showing failures in jobs"
-        uniquejobs = self.ds.db.cursor()
         now = datetime.datetime.now(datetime.timezone.utc)
-        from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
-        uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
         print(textwrap.dedent("""\
             <!DOCTYPE html>
             <html><head><title>Test Job Failures</title>
@@ -346,8 +350,9 @@ class ResultsOverTimeByUniqueJob:
             Older runs <span class="arrow">&rarr;</span></th></tr></table>
             """))
 
-        while globalunique := uniquejobs.fetchone():
-            self.show_unique_job_failures_table(globalunique[0])
+        from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        for globalunique in self.all_unique_jobs(repo, from_time):
+            self.show_unique_job_failures_table(globalunique)
 
         print('</body></html>')
 
@@ -407,6 +412,19 @@ class ResultsOverTimeByUniqueJob:
                           if (current_failure_counts[failure] > min_fails)]
         return permafails
 
+    def make_job_title(self, meta: TestMeta) -> str:
+        origin = meta['origin']
+        assert isinstance(origin, str)  # satisfy pytype that this isn't int
+        ciname = meta.get('ciname', '')
+        if origin.casefold() == ciname.casefold():
+            # reduce duplication of information
+            origin = ''
+        else:
+            origin = f"[{origin}] "
+        cijob = meta.get('cijob', '')
+        testformat = f" ({meta['testformat']})" if 'testformat' in meta else ''
+        return f'{origin}{ciname} / {cijob}{testformat}'
+
     def show_unique_job_failures_table(self, globaluniquejob: str):
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         if not self.all_jobs_status:
@@ -430,20 +448,10 @@ class ResultsOverTimeByUniqueJob:
         # All testids will be the same, so just grab the first one
         testid = last_job_status.testid
         meta = self.ds.collect_meta(testid)
-        origin = meta['origin']
-        assert isinstance(origin, str)  # satisfy pytype that this isn't int
-        ciname = meta.get('ciname', '')
-        if origin.casefold() == ciname.casefold():
-            # reduce duplication of information
-            origin = ''
-        else:
-            origin = f"[{origin}] "
-        cijob = meta.get('cijob', '')
-        testformat = f" ({meta['testformat']})" if 'testformat' in meta else ''
-        name = f'{origin}{ciname} / {cijob}{testformat}'
+        job_title = self.make_job_title(meta)
         maybedisabled = (' disabled' if last_job_status.jobtime < disabledjobtimestamp
                          else '')
-        print(f'<tr><td class="jobname{maybedisabled}">{escape(name)}</td>')
+        print(f'<tr><td class="jobname{maybedisabled}">{escape(job_title)}</td>')
 
         badtitle = []  # in raw HTML
         # Look for permafailing jobs
