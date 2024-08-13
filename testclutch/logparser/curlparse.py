@@ -220,16 +220,16 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 meta['arch'] = sysparts[7]
                             else:
                                 logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'].startswith('MSYS_NT'):
+                        elif (meta['systemos'].startswith('MSYS_NT')
+                              or meta['systemos'].startswith('MINGW32_NT')
+                              or meta['systemos'].startswith('MINGW64_NT')
+                              or meta['systemos'].startswith('CYGWIN_NT')):
                             if len(sysparts) == 10:
                                 meta['arch'] = sysparts[8]
                             else:
                                 logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'].startswith('CYGWIN_NT'):
-                            if len(sysparts) == 10:
-                                meta['arch'] = sysparts[8]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
+                        else:
+                            logging.warning('Unexpected system line: %s', escs(l))
 
                     elif RE_STARTRESULTS.search(l):
                         # *****************************************
