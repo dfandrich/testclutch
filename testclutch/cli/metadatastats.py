@@ -555,13 +555,13 @@ def output_feature_matrix_html(fm: FeatureMatrix):
           outline: 1px solid;
           text-align: center;
         }
-        td.no {
+        .no {
           background-color: #FFAAAA;
         }
-        td.yes {
+        .yes {
           background-color: #AAFFAA;
         }
-        td.maybe {
+        .maybe {
           background-color: #FFCC00;
         }
         </style>
@@ -569,10 +569,17 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <meta name="generator" content="Test Clutch {testclutch.__version__}">
         </head>
         <body>
-        <h1>Configured test job features on {escape(fm.repo)}</h1>
+        <h1>Configured Test Job Features on {escape(fm.repo)}</h1>
         <p>
         Report generated {escape(now.strftime(TIMEZ_FMT))}
         covering jobs over the past {days:.0f} days.
+        </p>
+        <p>
+        <span class="yes">{YES}</span> job has this feature
+        <br>
+        <span class="no">{NO}</span> job does not have this feature
+        <br>
+        <span class="maybe">{MAYBE}</span> unable to tell if job has this feature
         </p>
         <table>
         """))
