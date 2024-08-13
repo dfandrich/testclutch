@@ -159,7 +159,8 @@ class FeatureMatrix:
             self.all_meta.append(meta)
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
-    def build_features(self, metas: Iterable[str]) -> list[tuple[str, str, Union[str, int]]]:
+    def build_features(self, metas: Iterable[str], transforms: dict[str, tuple[str, str]]
+                       ) -> list[tuple[str, str, Union[str, int]]]:
         """Build a convolved list of features available in the tests
 
         load_all_meta() must have been called first.
@@ -172,7 +173,14 @@ class FeatureMatrix:
             for meta in self.all_meta:
                 if metaname in meta:
                     feature = features.setdefault(metaname, set())
-                    feature.add(meta[metaname])
+                    value = meta[metaname]
+                    if metaname in transforms:
+                        # Tweak the value
+                        for pattern, repl in transforms[metaname]:
+                            value = re.sub(pattern, repl, value)
+                    if value:
+                        # Only add a value if it hasn't been transformed away
+                        feature.add(value)
         return [(f'{name}: {value}', name, value) for name in sorted(features.keys())
                 for value in sorted(features[name])]
 
@@ -566,7 +574,8 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         """))
 
     fm.load_all_meta()
-    features = fm.build_features(config.get('matrix_meta_fields'))
+    features = fm.build_features(config.get('matrix_meta_fields'),
+                                 config.get('matrix_meta_transforms'))
     print('<tr><th>Job</th>')
     for title, _, _ in features:
         print(f'<th>{escape(title)}</th>')

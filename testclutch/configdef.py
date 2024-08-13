@@ -93,6 +93,12 @@ pr_comment_url = 'https://github.com/dfandrich/testclutch'
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = []
 
+# Transformations to perform on the metadata fields in matrix_meta_fields
+# The format is {'fieldname': [('pattern1', 'replacement2'), ('pattern2', 'replacement2'), ...]
+# where the pattern and replacement strings are as specified for re.sub(). They are executed in
+# the order given for each fieldname.
+matrix_meta_transforms = {}
+
 # Path to root of log cache directory
 # TODO:
 # add per-CI service options, like azure_account
