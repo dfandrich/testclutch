@@ -138,7 +138,7 @@ class FeatureMatrix:
         to_time = int(datetime.datetime.now().timestamp())
         # Using disabled_job_hours instead of analysis_hours because we want only the most current
         # job run, and anything older than that is irrelevant
-        logging.info(f'Getting runs over last {self.since.ctime()} '
+        logging.info(f'Getting runs since {self.since.ctime()} '
                      f'of unique job {globaluniquejob}')
         self.analyzer.load_unique_job(globaluniquejob, self.from_time, to_time)
         if not self.analyzer.all_jobs_status:
