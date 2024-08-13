@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from testclutch import config
 from testclutch.gitdef import CommitInfo
-from testclutch.logdef import SingleTestFinding, TestCases, TestMeta
+from testclutch.logdef import SingleTestFinding, TestCases, TestMeta, TestMetaStr
 
 
 # Timeout for database writes. Needed to turn a concurrent write error into a retry.
@@ -131,7 +131,7 @@ class Datastore:
                 recid, row.name, row.result, row.reason, row.duration))
         self.db.commit()
 
-    def collect_meta(self, testid: int) -> TestMeta:
+    def collect_meta(self, testid: int) -> TestMetaStr:
         metacur = self.db.cursor()
         meta = metacur.execute("SELECT name, value FROM testrunmeta WHERE id = ?", (testid, ))
         metadict = {}

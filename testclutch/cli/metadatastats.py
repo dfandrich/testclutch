@@ -18,7 +18,7 @@ from testclutch import argparsing
 from testclutch import config
 from testclutch import db
 from testclutch import log
-from testclutch.logdef import TestMeta
+from testclutch.logdef import TestMetaStr
 from testclutch.testcasedef import TestResult
 
 
@@ -92,6 +92,7 @@ TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
 # Characters to use for 'enabled' and 'disabled' in the features matrix
 YES = '✓'
 NO = '⨯'
+MAYBE = '?'
 
 
 def _try_integer(val: str) -> Union[int, str]:
@@ -128,12 +129,12 @@ class FeatureMatrix:
         self.since = since
         self.from_time = int(since.timestamp())
         self.analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
-        self.all_meta = []  # type: list[TestMeta]
+        self.all_meta = []  # type: list[TestMetaStr]
 
     def all_unique_jobs(self) -> list[str]:
         return self.analyzer.all_unique_jobs(self.repo, self.from_time)
 
-    def get_uniquejob_meta(self, globaluniquejob: str) -> TestMeta:
+    def get_uniquejob_meta(self, globaluniquejob: str) -> TestMetaStr:
         to_time = int(datetime.datetime.now().timestamp())
         # Using disabled_job_hours instead of analysis_hours because we want only the most current
         # job run, and anything older than that is irrelevant
@@ -147,7 +148,7 @@ class FeatureMatrix:
         testid = last_job_status.testid
         return self.ds.collect_meta(testid)
 
-    def make_job_title(self, job: TestMeta) -> str:
+    def make_job_title(self, job: TestMetaStr) -> str:
         return self.analyzer.make_job_title(job)
 
     def load_all_meta(self):
@@ -161,12 +162,13 @@ class FeatureMatrix:
 
     def build_features(self, metas: Iterable[str], transforms: dict[str, tuple[str, str]]
                        ) -> list[tuple[str, str, Union[str, int]]]:
-        """Build a convolved list of features available in the tests
+        """Build a list of convolved features available in the tests
 
         load_all_meta() must have been called first.
 
         Returns:
-            list of tuples containing (title, name value) of each feature
+            dict with key of the metadata name and value being a set of each value that this
+            metadata contains over all jobs
         """
         features = {}
         for metaname in metas:
@@ -551,14 +553,16 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <style type="text/css">
         td {
           outline: 1px solid;
+          text-align: center;
         }
         td.no {
           background-color: #FFAAAA;
-          text-align: center;
         }
         td.yes {
           background-color: #AAFFAA;
-          text-align: center;
+        }
+        td.maybe {
+          background-color: #FFCC00;
         }
         </style>
         """ + f"""
@@ -585,7 +589,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
         for _, name, value in features:
             match = meta.get(name, '') == value
-            print(f'<td class="{"yes" if match else "no"}">{YES if match else NO}</td>')
+            maybe = name not in meta
+            print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}">'
+                  f'{MAYBE if maybe else YES if match else NO}</td>')
         print('</tr>')
 
     print('</table></body></html>')

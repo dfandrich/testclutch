@@ -16,5 +16,6 @@ class SingleTestFinding:
 
 
 TestCases = List[SingleTestFinding]
-TestMeta = Dict[str, Union[str, int]]
+TestMetaStr = Dict[str, str]  # raw data from DB
+TestMeta = Dict[str, Union[str, int]]  # data to be stored into DB
 ParsedLog = Tuple[TestMeta, TestCases]
