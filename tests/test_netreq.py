@@ -12,8 +12,8 @@ class RaiseFirst:
         self.count = 0
 
     def __call__(self):
-        if not self.count:
-            self.count += 1
+        self.count += 1
+        if self.count == 1:
             raise RuntimeError("First call")
         return self.count
 
@@ -37,5 +37,5 @@ class TestNetreq(unittest.TestCase):
         # raise a single exception, then succeed
         start = time.time()
         result = netreq.retry_on_exception(RaiseFirst(), RuntimeError, retries=100, delay=0.1)
-        assert result == 1
+        assert result == 2
         assert time.time() - start < 9, "too many retries"
