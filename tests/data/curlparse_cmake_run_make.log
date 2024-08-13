@@ -1,0 +1,373 @@
+##[group]Run export TFLAGS=''
+[36;1mexport TFLAGS=''[0m
+[36;1mif [[ 'zlib1g-dev heimdal-dev valgrind' = *'heimdal-dev'* ]]; then[0m
+[36;1m  TFLAGS+=' ~2077 ~2078'  # valgrind errors[0m
+[36;1mfi[0m
+[36;1mmake V=1 VERBOSE=1 test-ci[0m
+shell: /usr/bin/bash -e {0}
+env:
+  MAKEFLAGS: -j 5
+  bearssl-version: 0.6
+  libressl-version: 3.9.2
+  mbedtls-version: 3.6.0
+  mod_h2-version: 2.0.29
+  msh3-version: 0.6.0
+  openssl3-version: openssl-3.1.3
+  quictls-version: 3.1.4+quic
+  rustls-version: 0.13.0
+##[endgroup]
+/usr/local/bin/cmake -S/home/runner/work/curl/curl -B/home/runner/work/curl/curl --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/local/bin/cmake -S/home/runner/work/curl/curl -B/home/runner/work/curl/curl --check-build-system CMakeFiles/Makefile.cmake 0
+make  -f CMakeFiles/Makefile2 test-ci
+make[1]: Entering directory '/home/runner/work/curl/curl'
+/usr/local/bin/cmake -S/home/runner/work/curl/curl -B/home/runner/work/curl/curl --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/local/bin/cmake -E cmake_progress_start /home/runner/work/curl/curl/CMakeFiles 87
+make  -f CMakeFiles/Makefile2 tests/CMakeFiles/test-ci.dir/all
+make[2]: Entering directory '/home/runner/work/curl/curl'
+make  -f docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/build.make docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/depend
+make  -f lib/CMakeFiles/curlu.dir/build.make lib/CMakeFiles/curlu.dir/depend
+make  -f lib/CMakeFiles/libcurl_shared.dir/build.make lib/CMakeFiles/libcurl_shared.dir/depend
+make  -f tests/server/CMakeFiles/getpart.dir/build.make tests/server/CMakeFiles/getpart.dir/depend
+make[3]: Entering directory '/home/runner/work/curl/curl'
+make  -f tests/server/CMakeFiles/resolve.dir/build.make tests/server/CMakeFiles/resolve.dir/depend
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/docs/cmdline-opts /home/runner/work/curl/curl /home/runner/work/curl/curl/docs/cmdline-opts /home/runner/work/curl/curl/docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/DependInfo.cmake "--color="
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/lib /home/runner/work/curl/curl /home/runner/work/curl/curl/lib /home/runner/work/curl/curl/lib/CMakeFiles/curlu.dir/DependInfo.cmake "--color="
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/tests/server /home/runner/work/curl/curl /home/runner/work/curl/curl/tests/server /home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/DependInfo.cmake "--color="
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/lib /home/runner/work/curl/curl /home/runner/work/curl/curl/lib /home/runner/work/curl/curl/lib/CMakeFiles/libcurl_shared.dir/DependInfo.cmake "--color="
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/tests/server /home/runner/work/curl/curl /home/runner/work/curl/curl/tests/server /home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/DependInfo.cmake "--color="
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/base64.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/curl_multibyte.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/dynbuf.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/memdebug.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/mprintf.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/base64.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/nonblock.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/curl_multibyte.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/strcase.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/dynbuf.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/strdup.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/memdebug.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/strtoofft.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/timediff.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/__/__/lib/warnless.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+Dependencies file "tests/server/CMakeFiles/getpart.dir/getpart.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+make  -f lib/CMakeFiles/libcurl_shared.dir/build.make lib/CMakeFiles/libcurl_shared.dir/build
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/mprintf.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/getpart.dir/testpart.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/getpart.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/nonblock.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/strcase.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/strdup.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/strtoofft.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/timediff.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/__/__/lib/warnless.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/getpart.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/resolve.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "tests/server/CMakeFiles/resolve.dir/util.c.o.d" is newer than depends file "/home/runner/work/curl/curl/tests/server/CMakeFiles/resolve.dir/compiler_depend.internal".
+Dependencies file "lib/CMakeFiles/curlu.dir/Unity/unity_0_c.c.o.d" is newer than depends file "/home/runner/work/curl/curl/lib/CMakeFiles/curlu.dir/compiler_depend.internal".
+Dependencies file "lib/CMakeFiles/curlu.dir/curl_multibyte.c.o.d" is newer than depends file "/home/runner/work/curl/curl/lib/CMakeFiles/curlu.dir/compiler_depend.internal".
+Dependencies file "lib/CMakeFiles/curlu.dir/memdebug.c.o.d" is newer than depends file "/home/runner/work/curl/curl/lib/CMakeFiles/curlu.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target getpart
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make  -f tests/server/CMakeFiles/getpart.dir/build.make tests/server/CMakeFiles/getpart.dir/build
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+Consolidate compiler generated dependencies of target resolve
+make  -f docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/build.make docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/build
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make  -f tests/server/CMakeFiles/resolve.dir/build.make tests/server/CMakeFiles/resolve.dir/build
+make[3]: Entering directory '/home/runner/work/curl/curl'
+make[3]: Entering directory '/home/runner/work/curl/curl'
+make[3]: Nothing to be done for 'lib/CMakeFiles/libcurl_shared.dir/build'.
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make[3]: Nothing to be done for 'docs/cmdline-opts/CMakeFiles/generate-curl.1.dir/build'.
+make[3]: Entering directory '/home/runner/work/curl/curl'
+make[3]: Nothing to be done for 'tests/server/CMakeFiles/getpart.dir/build'.
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+Consolidate compiler generated dependencies of target curlu
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make  -f lib/CMakeFiles/curlu.dir/build.make lib/CMakeFiles/curlu.dir/build
+[  0%] Built target libcurl_shared
+make  -f tests/server/CMakeFiles/rtspd.dir/build.make tests/server/CMakeFiles/rtspd.dir/depend
+[  1%] Built target getpart
+make  -f tests/CMakeFiles/testdeps.dir/build.make tests/CMakeFiles/testdeps.dir/depend
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/tests /home/runner/work/curl/curl /home/runner/work/curl/curl/tests /home/runner/work/curl/curl/tests/CMakeFiles/testdeps.dir/DependInfo.cmake "--color="
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make  -f tests/CMakeFiles/testdeps.dir/build.make tests/CMakeFiles/testdeps.dir/build
+make[3]: Entering directory '/home/runner/work/curl/curl'
+make[3]: Nothing to be done for 'tests/CMakeFiles/testdeps.dir/build'.
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+[100%] Built target testdeps
+make  -f tests/CMakeFiles/test-ci.dir/build.make tests/CMakeFiles/test-ci.dir/depend
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl && /usr/local/bin/cmake -E cmake_depends "Unix Makefiles" /home/runner/work/curl/curl /home/runner/work/curl/curl/tests /home/runner/work/curl/curl /home/runner/work/curl/curl/tests /home/runner/work/curl/curl/tests/CMakeFiles/test-ci.dir/DependInfo.cmake "--color="
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+make  -f tests/CMakeFiles/test-ci.dir/build.make tests/CMakeFiles/test-ci.dir/build
+make[3]: Entering directory '/home/runner/work/curl/curl'
+cd /home/runner/work/curl/curl/tests && /usr/bin/perl /home/runner/work/curl/curl/tests/runtests.pl -a -p "~flaky" "~timing-dependent" -r -rm -j2 "\$TFLAGS"
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.10.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.10.0-DEV LibreSSL/3.9.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libpsl/0.21.0 nghttp2/1.43.0 OpenLDAP/2.5.18
+* Features: alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TrackMemory UnixSockets zstd
+* Disabled: 
+* Host: fv-az740-112
+* System: Linux fv-az740-112 6.5.0-1025-azure #26~22.04.1-Ubuntu SMP Thu Jul 11 22:33:04 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+* OS: linux
+* Jobs: 2
+*
+*** DISABLES memory tracking when using threaded resolver
+*
+* Env: Valgrind 
+* Seed: 249900
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0096 SKIPPED: curl lacks TrackMemory support
+test 0632 SKIPPED: curl lacks sftp support
+test 2057 SKIPPED: curl lacks ld_preload support
+test 2070 SKIPPED: curl lacks Schannel support
+Warning: test2077 result is ignored
+Warning: test2078 result is ignored
+test 0001...[HTTP GET]
+--pd---e-v- OK (1   out of 5, remaining: 67:13, took 2.232s, duration: 00:02)
+test 0002...[HTTP GET with user and password]
+--pd---e-v- OK (2   out of 5, remaining: 33:43, took 2.243s, duration: 00:02)
+test 2077...[curl --fail --negotiate to unauthenticated service fails]
+ valgrind ERROR ==31910== 32 bytes in 1 blocks are possibly lost in loss record 43 of 100
+==31910==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31910==    by 0x581ECB1: heim_dict_set_value (in /usr/lib/x86_64-linux-gnu/libheimbase.so.1.0.0)
+==31910==    by 0x545CBF5: ??? (in /usr/lib/x86_64-linux-gnu/libkrb5.so.26.0.0)
+==31910==    by 0x4A3DEE7: __pthread_once_slow (pthread_once.c:116)
+==31910==    by 0x581F4C9: heim_base_once_f (in /usr/lib/x86_64-linux-gnu/libheimbase.so.1.0.0)
+==31910==    by 0x54210D4: krb5_init_context (in /usr/lib/x86_64-linux-gnu/libkrb5.so.26.0.0)
+==31910==    by 0x4FC93A7: ??? (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31910==    by 0x4FC8824: ??? (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31910==    by 0x4FD2FF2: gss_import_name (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31910==    by 0x493416B: Curl_auth_decode_spnego_message (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48D3B00: Curl_input_negotiate (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48D3D0A: Curl_output_negotiate (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48BACE1: output_auth_headers (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48BB1D1: Curl_http_output_auth (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48BF02A: Curl_http (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910==    by 0x48E8567: multi_do (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31910== 
+== Contents of files in the log/1/ dir after test 2077
+=== Start of file notes.txt
+This test log has been manually edited to reduce length. Things might not be completely
+internally consistent.
+=== End of file notes.txt
+test 2078...[curl --negotiate should not send empty POST request only]
+ valgrind ERROR ==31912== 32 bytes in 1 blocks are possibly lost in loss record 43 of 100
+==31912==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==31912==    by 0x581ECB1: heim_dict_set_value (in /usr/lib/x86_64-linux-gnu/libheimbase.so.1.0.0)
+==31912==    by 0x545CBF5: ??? (in /usr/lib/x86_64-linux-gnu/libkrb5.so.26.0.0)
+==31912==    by 0x4A3DEE7: __pthread_once_slow (pthread_once.c:116)
+==31912==    by 0x581F4C9: heim_base_once_f (in /usr/lib/x86_64-linux-gnu/libheimbase.so.1.0.0)
+==31912==    by 0x54210D4: krb5_init_context (in /usr/lib/x86_64-linux-gnu/libkrb5.so.26.0.0)
+==31912==    by 0x4FC93A7: ??? (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31912==    by 0x4FC8824: ??? (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31912==    by 0x4FD2FF2: gss_import_name (in /usr/lib/x86_64-linux-gnu/libgssapi.so.3.0.0)
+==31912==    by 0x493416B: Curl_auth_decode_spnego_message (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48D3B00: Curl_input_negotiate (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48D3D0A: Curl_output_negotiate (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48BACE1: output_auth_headers (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48BB1D1: Curl_http_output_auth (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48BF02A: Curl_http (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912==    by 0x48E8567: multi_do (in /home/runner/work/curl/curl/lib/libcurl.so.4.8.0)
+==31912== 
+==31912== 69 bytes in 1 blocks are possibly lost in loss record 54 of 100
+== Contents of files in the log/2/ dir after test 2078
+test 3102...[verify certificate chain order with simple HTTPS GET]
+--p----e-v- OK (5 out of 5, remaining: 00:00, took 8.670s, duration: 20:20)
+##[group]Run Time Stats
+
+Test suite total running time breakdown per task...
+
+Spent 0148.792 seconds starting and verifying test harness servers.
+Spent 0014.180 seconds reading definitions and doing test preparations.
+Spent 2153.878 seconds actually running test tools.
+Spent 0063.800 seconds awaiting server logs lock removal.
+Spent 0058.846 seconds verifying test results.
+Spent 2439.496 seconds doing all of the above.
+
+Test server starting and verification time per test (top 25)...
+
+-time-  test
+------  ----
+07.026  0310
+07.026  0678
+07.026  2035
+07.026  3001
+07.026  3102
+07.025  0311
+07.025  0325
+07.025  2034
+07.025  3000
+07.024  0313
+07.024  0364
+05.002  0358
+05.002  0359
+02.012  0312
+01.100  0647
+01.099  0800
+01.062  1200
+01.062  1201
+01.062  1203
+01.059  0100
+01.059  0252
+01.059  1120
+01.058  0211
+01.058  0253
+01.057  1103
+
+Test definition reading and preparation time per test (top 10)...
+
+-time-  test
+------  ----
+00.147  1309
+00.092  1061
+00.091  1060
+00.049  0537
+00.037  0666
+00.036  0652
+00.033  1705
+00.033  2031
+00.032  2028
+00.031  1706
+
+Test tool execution time per test (top 25)...
+
+-time-  test
+------  ----
+27.522  0498
+23.169  1117
+17.071  1112
+11.544  0251
+11.398  0250
+09.088  1208
+09.086  0593
+09.042  0303
+09.032  0190
+08.043  1086
+07.956  1061
+06.915  1565
+06.149  0673
+06.147  0672
+06.142  0671
+05.642  0670
+05.546  3026
+05.515  1060
+05.348  0677
+05.095  1501
+04.293  0853
+04.276  1632
+04.269  0532
+04.264  0526
+04.264  0527
+
+Test server logs lock removal time per test (top 15)...
+
+-time-  test
+------  ----
+05.018  0029
+05.018  0190
+05.018  1238
+05.017  0303
+05.016  1112
+05.014  1086
+04.918  0286
+04.918  1243
+04.916  0285
+02.007  1523
+01.000  0513
+01.000  0514
+01.000  0587
+00.954  1117
+00.502  0275
+
+Test results verification time per test (top 10)...
+
+-time-  test
+------  ----
+05.017  1112
+05.016  1086
+05.016  1238
+05.016  1272
+05.016  1561
+05.015  0303
+05.015  1273
+05.015  1475
+05.015  1501
+05.015  1523
+
+Total time per test (top 50)...
+
+-time-  test
+------  ----
+28.119  1112
+27.561  0498
+24.136  1117
+19.086  0303
+19.070  0190
+18.087  1086
+13.180  1238
+11.556  0251
+11.408  0250
+11.077  1523
+10.117  1501
+09.104  1208
+09.097  0593
+08.901  3000
+08.901  3001
+08.900  2034
+08.887  0310
+08.837  0325
+08.837  0364
+08.794  2035
+08.756  0313
+08.755  0678
+08.723  0311
+08.670  3102
+08.069  1061
+08.058  0029
+07.934  1565
+07.905  1561
+07.760  1272
+06.237  1273
+06.235  1475
+06.162  0673
+06.158  0672
+06.155  0671
+06.083  0285
+06.083  0286
+06.079  1243
+05.653  0670
+05.625  1060
+05.554  3026
+05.355  0677
+05.002  0358
+05.002  0359
+04.749  1632
+04.699  1631
+04.301  0853
+04.279  0526
+04.279  0532
+04.274  0527
+04.103  0528
+
+##[endgroup]
+TESTDONE: 5 tests were considered during 1221 seconds.
+FAIL-IGNORED 2077: 'curl --fail --negotiate to unauthenticated service fails' HTTP, HTTP GET, GSS-API
+FAIL-IGNORED 2078: 'curl --negotiate should not send empty POST request only' HTTP, HTTP GET, GSS-API
+IGNORED: failed tests: 2077 2078
+TESTDONE: 3 tests out of 5 reported OK: 99%
+make[3]: Leaving directory '/home/runner/work/curl/curl'
+[100%] Built target test-ci
+make[2]: Leaving directory '/home/runner/work/curl/curl'
+/usr/local/bin/cmake -E cmake_progress_start /home/runner/work/curl/curl/CMakeFiles 0
+make[1]: Leaving directory '/home/runner/work/curl/curl'

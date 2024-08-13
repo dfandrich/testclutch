@@ -3350,6 +3350,45 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('3', curlparse.TestResult.PASS, '', 32000),
         ], testcases)
 
+    def test_cmake_run_make(self):
+        with self.open_data('curlparse_cmake_run_make.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'buildsystem': 'cmake/make',
+            'curldeps': 'libcurl/8.10.0-DEV LibreSSL/3.9.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libpsl/0.21.0 nghttp2/1.43.0 OpenLDAP/2.5.18',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TrackMemory UnixSockets zstd',
+            'host': 'fv-az740-112',
+            'os': 'linux',
+            'paralleljobs': '2',
+            'randomseed': '249900',
+            'runtestsduration': '1221000000',
+            'runtestsopts': r'-a -p "~flaky" "~timing-dependent" -r -rm -j2 "\$TFLAGS"',
+            'systemhost': 'fv-az740-112',
+            'systemos': 'Linux',
+            'systemosver': '6.5.0-1025-azure',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.10.0-DEV',
+            'testmode': 'normal',
+            'testresult': 'success',
+            'withvalgrind': 'yes'
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('96', curlparse.TestResult.SKIP, 'curl lacks TrackMemory support', 0),
+            SingleTestFinding('632', curlparse.TestResult.SKIP, 'curl lacks sftp support', 0),
+            SingleTestFinding('2057', curlparse.TestResult.SKIP, 'curl lacks ld_preload support', 0),
+            SingleTestFinding('2070', curlparse.TestResult.SKIP, 'curl lacks Schannel support', 0),
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 2232000),
+            SingleTestFinding('2', curlparse.TestResult.PASS, '', 2243000),
+            SingleTestFinding('2077', curlparse.TestResult.FAILIGNORE, 'valgrind', 0),
+            SingleTestFinding('2078', curlparse.TestResult.FAILIGNORE, 'valgrind', 0),
+            SingleTestFinding('3102', curlparse.TestResult.PASS, '', 8670000),
+        ], testcases)
+
     # Log created with: touch /tmp/curl/tests/libtest/sethostname.c && make test V=1 TFLAGS='500'
     def test_automake_compiler(self):
         with self.open_data('curlparse_automake_compiler.log') as f:

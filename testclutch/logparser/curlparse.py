@@ -32,6 +32,7 @@ RE_USINGCMAKE = re.compile(r'^-- Using CMake version')
 RE_USINGCMAKEMSBUILD = re.compile(r'^(\d+>)?Checking Build System')
 RE_USINGCMAKEMAKE = re.compile(r'^\[ *\d+%] Building C object')
 RE_USINGCMAKENINJA = re.compile(r'^\[\d+/\d+\] Building C object')
+RE_USINGCMAKERUNMAKE = re.compile(r'make  *-f CMakeFiles')  # used if we missed the configure stage
 
 # Test log header
 RE_START = re.compile(r'^\*{9} System characteristics \*')
@@ -400,6 +401,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
         elif r := RE_USINGCMAKEMSBUILD.search(l):
             meta['buildsystem'] = 'cmake/msbuild'
         elif r := RE_USINGCMAKEMAKE.search(l):
+            meta['buildsystem'] = 'cmake/make'
+        elif r := RE_USINGCMAKERUNMAKE.search(l):
             meta['buildsystem'] = 'cmake/make'
         elif r := RE_USINGCMAKENINJA.search(l):
             meta['buildsystem'] = 'cmake/ninja'
