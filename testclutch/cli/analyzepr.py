@@ -584,7 +584,7 @@ class GatherPRAnalysis:
             if origin not in thispr.flaky and origin in thispr.failed and thispr.failed[origin]:
                 analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds)
 
-                uniquejobs = set(fail.uniquejob for fail in thispr.failed[origin])
+                uniquejobs = {fail.uniquejob for fail in thispr.failed[origin]}
                 flaky = []
                 permafail = []
                 for job in uniquejobs:

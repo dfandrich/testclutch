@@ -294,7 +294,7 @@ class ResultsOverTimeByUniqueJob:
         """
         uniquejobs = self.ds.db.cursor()
         uniquejobs.execute(UNIQUE_JOBS_SQL, (repo, from_time))
-        return list(row[0] for row in uniquejobs.fetchall())
+        return [row[0] for row in uniquejobs.fetchall()]
 
     def analyze_all_by_unique_job(self, repo: str):
         "Look for consistent failures for all unique job names"
@@ -462,7 +462,7 @@ class ResultsOverTimeByUniqueJob:
         if permafails and last_job_status.test_result != 'success':
             permafails.sort(key=summarize.try_integer)
             badtitle = (['These tests are now consistently failing:']
-                        + [testname for testname in permafails])
+                        + [testname for testname in permafails])  # noqa: C416
             badtext = 'permafail'
         elif flaky:
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
@@ -609,9 +609,9 @@ class ResultsOverTimeByUniqueJob:
             return []
 
         # Set of all test names that had at least one failure in this unique job
-        any_failed = set(testname
-                         for recid, jobtime, failure_counts in unique_failures
-                         for testname in failure_counts.keys())
+        any_failed = {testname
+                      for recid, jobtime, failure_counts in unique_failures
+                      for testname in failure_counts.keys()}
 
         # Track the number of times each test started to fail
         fail_changes = {}

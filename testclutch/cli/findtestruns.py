@@ -81,7 +81,7 @@ def parse_args(args=None) -> argparse.Namespace:
             help='Select runs where these tests succeeded')
         query.add_argument(
             '--resultcode',
-            choices=list(code.name for code in TestResult),
+            choices=[code.name for code in TestResult],
             help='Specify test result code to match')
     # TODO: use this to catch arguments for --failed and --succeeded, too, except that means only
     # one query can be done in an invocation, which is probably fine.

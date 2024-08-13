@@ -41,7 +41,10 @@ test = [
 dev = [
     "flake8 >= 5.0.4, <= 7.1.1",
     "flake8-builtins",
+    "flake8-comprehensions",
+    "flake8-deprecated",
     "flake8-import-order",
+    "flake8-mutable",
     "flake8-pyproject",
     "pytype >= 2023.9.19, <= 2024.4.11"
 ]
