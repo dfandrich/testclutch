@@ -581,6 +581,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <br>
         <span class="maybe">{MAYBE}</span> unable to tell if job has this feature
         </p>
+        <p>
+        The job links to the results of the latest run.
+        </p>
         <table>
         """))
 
@@ -593,7 +596,11 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     print('</tr>')
 
     for meta in fm.all_meta:
-        print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
+        if 'url' in meta:
+            print(f'<tr><td><a href="{escape(meta["url"])}">{escape(fm.make_job_title(meta))}'
+                  '</a></td>')
+        else:
+            print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
         for _, name, value in features:
             match = meta.get(name, '') == value
             maybe = name not in meta
