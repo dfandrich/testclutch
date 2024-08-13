@@ -461,8 +461,7 @@ class ResultsOverTimeByUniqueJob:
         # was marked to be ignored. Don't consider that a failure worth reporting.
         if permafails and last_job_status.test_result != 'success':
             permafails.sort(key=summarize.try_integer)
-            badtitle = (['These tests are now consistently failing:']
-                        + [testname for testname in permafails])  # noqa: C416
+            badtitle = ['These tests are now consistently failing:'] + permafails
             badtext = 'permafail'
         elif flaky:
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
