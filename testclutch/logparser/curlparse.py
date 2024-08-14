@@ -30,8 +30,8 @@ RE_COMPILERAC = re.compile(r'''compiler version\.\.\. (\S+) '([^']*)' \(raw: '([
 RE_COMPILERCMAKE = re.compile(r'^-- The C compiler identification is (\S+) (\S+)')
 RE_USINGCMAKE = re.compile(r'^-- Using CMake version')
 RE_USINGCMAKEMSBUILD = re.compile(r'^(\d+>)?Checking Build System')
-RE_USINGCMAKEMAKE = re.compile(r'^\[ *\d+%] Building C object')
-RE_USINGCMAKENINJA = re.compile(r'^\[\d+/\d+\] Building C object')
+RE_USINGCMAKEMAKE = re.compile(r'^\[ *\d+%] (Building C object|Built target)')
+RE_USINGCMAKENINJA = re.compile(r'^\[\d+/\d+\] (Building C object|Built target)')
 RE_USINGCMAKERUNMAKE = re.compile(r'make  *-f CMakeFiles')  # used if we missed the configure stage
 
 # Test log header
