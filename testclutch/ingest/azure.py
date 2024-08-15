@@ -212,7 +212,7 @@ class AzureIngestor:
             log_id = task['log']['id']
             newfn = self._log_file_path(build_id, log_id)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is already downloaded in %s', newfn)
+                logging.debug('Log file is in cache as %s', newfn)
             else:
                 fn, ft = self.azure.get_logs(build_id, log_id)
                 logging.debug(f'fn {fn} type {ft}')

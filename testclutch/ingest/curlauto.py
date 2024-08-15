@@ -106,7 +106,7 @@ class CurlAutoIngestor:
     def download_log(self, log_name: str) -> str:
         newfn = self._log_file_path(log_name)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is already in %s', newfn)
+            logging.debug('Log file is in cache as %s', newfn)
         else:
             fn, ft = self.curlauto.get_logs(log_name)
             logging.debug(f'fn {fn} type {ft}')

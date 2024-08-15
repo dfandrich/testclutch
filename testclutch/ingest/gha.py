@@ -155,7 +155,7 @@ class GithubIngestor:
         """
         newfn = self._log_file_path(run_id)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is already in %s', newfn)
+            logging.debug('Log file is in cache as %s', newfn)
         else:
             try:
                 fn, ft = self.gh.get_logs(run_id)

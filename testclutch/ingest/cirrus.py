@@ -141,7 +141,7 @@ class CirrusIngestor:
         for command_name in task_commands:
             newfn = self._log_file_path(run_id, task_id, command_name)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is already in %s', newfn)
+                logging.debug('Log file is in cache as %s', newfn)
             else:
                 try:
                     fn, ft = self.cirrus.get_logs(task_id, command_name)

@@ -173,7 +173,7 @@ class CircleIngestor:
             step_id = action['step']
             newfn = self._log_file_path(build_run, step_id)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is already in %s', newfn)
+                logging.debug('Log file is in cache as %s', newfn)
             else:
                 if GET_FULL_LOG:
                     # Full log using private API (raw log)

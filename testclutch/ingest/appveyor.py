@@ -133,7 +133,7 @@ class AppveyorIngestor:
     def download_log(self, build_id: int, job_id: str) -> str:
         newfn = self._log_file_path(build_id, job_id)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is already in %s', newfn)
+            logging.debug('Log file is in cache as %s', newfn)
         else:
             fn, ft = self.av.get_logs(job_id)
             logging.debug(f'fn {fn} type {ft}')
