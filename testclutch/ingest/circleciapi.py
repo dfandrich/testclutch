@@ -14,6 +14,9 @@ HTTPError = netreq.HTTPError
 BASE_URL = "https://circleci.com/api/v1.1"
 RECENT_URL = BASE_URL + "/project/{vcs}/{user}/{project}"
 RUN_URL = RECENT_URL + "/{build}"
+# Undocumented, but used in Circle's web UI
+PRIVATE_BASE_URL = "https://circleci.com/api/private"
+OUTPUT_URL = PRIVATE_BASE_URL + "/output/raw/{vcs}/{user}/{project}/{build}/output/0/{step}"
 
 DATA_TYPE = "application/json"
 
@@ -74,3 +77,13 @@ class CircleApi:
         logging.info('Retrieving log from %s', log_url)
         with self.http.get(log_url, stream=True) as resp:
             return netreq.download_file(resp, log_url)
+
+    def make_log_url(self, build_id: int, step_id: str) -> str:
+        """Return the URL to obtain the log output
+
+        This is an undocumented URL, but it is untruncated, unlike the 'output_url' value returned
+        in the 'output_url' field of the 'steps' data set which truncates logs to the last
+        400000 bytes.
+        """
+        return OUTPUT_URL.format(
+            vcs=self.vcs, user=self.owner, project=self.repo, build=build_id, step=step_id)

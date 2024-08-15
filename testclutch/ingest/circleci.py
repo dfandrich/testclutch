@@ -20,7 +20,10 @@ from testclutch.ingest import circleciapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
-DEFAULT_EXT = '.json'
+# Choose whether to use the private API to get the full log or the documented API that truncates it
+GET_FULL_LOG = True
+
+DEFAULT_EXT = '.log' if GET_FULL_LOG else '.json'
 LOGSUBDIR = 'circleci'
 
 SANITIZE_PATH_RE = re.compile(r"[^-\w+!@#%^&()]")
@@ -63,7 +66,10 @@ def sanitize_path(path: str) -> str:
 
 
 class MassagedLog(io.StringIO):
-    """Extract the log from the JSON input"""
+    """Extract the log from the JSON input coming from the official log output URL
+
+    This URL truncates long logs, so it is not ideal.
+    """
     def __init__(self, f: TextIO):
         log_content = json.load(f)
         # Go through array and make one string of all the sections.
@@ -158,11 +164,8 @@ class CircleIngestor:
     def download_log(self, build_run: int, job_steps: Iterable[Dict[str, Any]]) -> str:
         """Downloads the given log file.
 
-        Format is JSON with a message member containing the text.
-
-        TODO: Circle truncates logs if they're more than 400000 bytes. An alternate (undocumented?)
-        URL to get the non-truncated version is: https://circleci.com/api/v1.1/project/github/
-        curl/curl/{build_run}/output/{step_id}/0?file=true
+        Format is either JSON with a message member containing the text or the raw log, depending on
+        the API used to get it.
         """
         newfn = ''
         for step in job_steps:
@@ -172,7 +175,13 @@ class CircleIngestor:
             if logcache.in_cache(newfn):
                 logging.debug('Log file is already in %s', newfn)
             else:
-                fn, ft = self.circle.get_logs(action['output_url'])
+                if GET_FULL_LOG:
+                    # Full log using private API (raw log)
+                    log_url = self.circle.make_log_url(build_run, step_id)
+                else:
+                    # Truncated log using public API (log wrapped in JSON)
+                    log_url = action['output_url']
+                fn, ft = self.circle.get_logs(log_url)
                 logging.debug(f'fn {fn} type {ft}')
                 logging.debug('Moving file to %s', newfn)
                 logcache.move_into_cache_compressed(fn, newfn)
@@ -236,8 +245,11 @@ class CircleIngestor:
     def process_log_file(self, fn: str, cimeta: TestMeta,
                          log_processor: Callable[[TestMeta, TestCases], None]):
         logging.debug('Ingesting file %s', fn)
-        # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
-        readylog = MassagedLog(logcache.open_cache_file(fn))
+        if GET_FULL_LOG:
+            readylog = logcache.open_cache_file(fn)
+        else:
+            # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
+            readylog = MassagedLog(logcache.open_cache_file(fn))
         meta, testcases = logparse.parse_log_file(readylog)
         if meta:
             # combine ci metadata with metadata from log file
