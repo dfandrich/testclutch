@@ -1,7 +1,7 @@
 """Augment build metadata with daily curl snapshot commit info
 
 The git commit at which daily builds are snapshotted is not available from the build logs.
-This extracts what information is available from a daily snapshot file and augmenst existing
+This extracts what information is available from a daily snapshot file and augments existing
 ingested tests with the information about the last commit.
 """
 
@@ -17,22 +17,14 @@ from testclutch import log
 from testclutch.augment import curldailyinfo
 
 
-# Number of git commits to look at to find the right one
-NUM_COMMIT_CANDIDATES = 30
-
 # Select records for curlauto builds
-CURLAUTO_BUILDS_SQL = r"SELECT testrunmeta.id FROM testrunmeta WHERE name = 'origin' AND value = 'curlauto'"
+CURLAUTO_BUILDS_SQL = r"SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = 'origin' AND value = 'curlauto'"
 
-# Select records from curlauto daily builds
-DAILY_BUILDS_SQL = (
-    f"SELECT testrunmeta.id, testrunmeta.value FROM ({CURLAUTO_BUILDS_SQL}) AS originmatch "
-    r"INNER JOIN testrunmeta ON originmatch.id = testrunmeta.id WHERE name = 'dailybuild'")
-
-# Select records from curlauto daily builds for a particular day
-# Input is daily build value
+# Select records for curlauto daily builds for a particular day
 DAILY_BUILDS_MATCHING_DATE_SQL = (
-    f"SELECT testrunmeta.id FROM ({DAILY_BUILDS_SQL}) AS dailymatch "
-    r"INNER JOIN testrunmeta ON dailymatch.id = testrunmeta.id WHERE testrunmeta.value = ?")
+    f"SELECT testrunmeta.id, testrunmeta.value FROM ({CURLAUTO_BUILDS_SQL}) AS originmatch "
+    r"INNER JOIN testrunmeta ON originmatch.id = testrunmeta.id "
+    r"WHERE name = 'dailybuild' AND value = ?")
 
 # Select records from curlauto daily builds that also have commit metadata
 DAILY_BUILDS_WITH_COMMIT_SQL = (
@@ -77,7 +69,7 @@ class CurlDailyAugmenter:
 
         return day_code, commithash, candidate.title
 
-    def augment_daily(self, fn: str):
+    def augment_daily(self, fn: str, howrecent: int):
         # Get info from daily build tarball
         day_code, commithash, title = self.get_all_daily_info(fn)
         logging.info('File %s matches date %s hash %s title %s', fn, day_code, commithash, title)
@@ -87,14 +79,15 @@ class CurlDailyAugmenter:
             return
 
         # Find daily build test logs
-        # TODO: restrict by recent builds only
-        res = self.ds.cur.execute(DAILY_BUILDS_MATCHING_DATE_SQL, (day_code, ))
+        res = self.ds.cur.execute(DAILY_BUILDS_MATCHING_DATE_SQL,
+                                  (howrecent, self.repo, day_code, ))
         daily = res.fetchall()
         logging.info('%d jobs matching day %s', len(daily), day_code)
 
         if daily:
             # Find daily build test logs that already have commits
-            res = self.ds.cur.execute(DAILY_BUILDS_WITH_COMMIT_SQL, (day_code, ))
+            res = self.ds.cur.execute(DAILY_BUILDS_WITH_COMMIT_SQL,
+                                      (howrecent, self.repo, day_code, ))
             with_commit = frozenset(x[0] for x in res.fetchall())
             if with_commit:
                 logging.info('...but %d jobs already have a commit', len(with_commit))
@@ -116,8 +109,14 @@ def augment_curl_daily(args):
     ds.connect()
 
     cda = CurlDailyAugmenter(args.checkrepo, ds, args.dry_run)
+    if args.howrecent:
+        since = int(datetime.datetime.now().timestamp()) - args.howrecent * 3600
+    else:
+        logging.warning("Use --howrecent to speed up augmentation")
+        since = 0
+
     for fn in args.filenames:
-        cda.augment_daily(fn)
+        cda.augment_daily(fn, since)
 
     ds.close()
 
@@ -135,7 +134,10 @@ def parse_args(args=None) -> argparse.Namespace:
         'filenames',
         nargs='+',
         help="Path to one or more daily build tarball")
-
+    parser.add_argument(
+        '--howrecent',
+        type=int,
+        help='Maximum age of logs to augment, in hours')
     return parser.parse_args(args=args)
 
 
