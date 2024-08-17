@@ -456,6 +456,7 @@ def output_test_results_count(trstats: TestRunStats,
     print_func('Test', 'Result', 'Count', ['Examples'], title=True)
 
     total_counts = trstats.get_test_results_count_by_test()
+    logging.info('Found %d different tests+results', len(total_counts))
     # Sort by count descending, then by increasing test number
     total_counts.sort(key=lambda x: (-x[2], _try_integer(x[0])))
     num_shown = 0

@@ -93,7 +93,7 @@ class Datastore:
                          "FOREIGN KEY (id) REFERENCES testruns (id) "
                          "ON UPDATE RESTRICT "
                          "ON DELETE RESTRICT)")
-        self.cur.execute("CREATE INDEX testresults_index ON testresults (id)")
+        self.cur.execute("CREATE INDEX testresults_index ON testresults (id, testid)")
 
         self.cur.execute("CREATE TABLE commitinfo (commithash TEXT NOT NULL PRIMARY KEY, "
                          "prevhash TEXT, "
