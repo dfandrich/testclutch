@@ -160,17 +160,16 @@ class FeatureMatrix:
             self.all_meta.append(meta)
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
-    def build_features(self, metas: Iterable[str], transforms: dict[str, tuple[str, str]]
+    def build_features(self, metas: Sequence[str], transforms: dict[str, tuple[str, str]]
                        ) -> list[tuple[str, str, Union[str, int]]]:
         """Build a list of convolved features available in the tests
 
         load_all_meta() must have been called first.
 
         Returns:
-            dict with key of the metadata name and value being a set of each value that this
-            metadata contains over all jobs
+            list of tuples with feature title, metadata name and metadata value
         """
-        features = {}
+        features = {}  # type: dict[str, set[str]]
         for metaname in metas:
             for meta in self.all_meta:
                 if metaname in meta:
@@ -183,7 +182,10 @@ class FeatureMatrix:
                     if value:
                         # Only add a value if it hasn't been transformed away
                         feature.add(value)
-        return [(f'{name}: {value}', name, value) for name in sorted(features.keys())
+
+        # Remove any metadata fields that were requested but not actually found
+        foundmetas = [name for name in metas if name in features]
+        return [(f'{name}: {value}', name, value) for name in foundmetas
                 for value in sorted(features[name])]
 
 
