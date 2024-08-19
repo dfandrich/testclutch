@@ -160,6 +160,14 @@ class FeatureMatrix:
             self.all_meta.append(meta)
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
+    def transform_meta(self, metaname: str, value: str,
+                       transforms: dict[str, tuple[str, str]]) -> str:
+        if metaname in transforms:
+            # Tweak the value
+            for pattern, repl in transforms[metaname]:
+                value = re.sub(pattern, repl, value)
+        return value
+
     def build_features(self, metas: Sequence[str], transforms: dict[str, tuple[str, str]]
                        ) -> list[tuple[str, str, Union[str, int]]]:
         """Build a list of convolved features available in the tests
@@ -173,12 +181,8 @@ class FeatureMatrix:
         for metaname in metas:
             for meta in self.all_meta:
                 if metaname in meta:
+                    value = self.transform_meta(metaname, meta[metaname], transforms)
                     feature = features.setdefault(metaname, set())
-                    value = meta[metaname]
-                    if metaname in transforms:
-                        # Tweak the value
-                        for pattern, repl in transforms[metaname]:
-                            value = re.sub(pattern, repl, value)
                     if value:
                         # Only add a value if it hasn't been transformed away
                         feature.add(value)
@@ -605,7 +609,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
         for _, name, value in features:
-            match = meta.get(name, '') == value
+            jobvalue = fm.transform_meta(name, meta.get(name, ''),
+                                         config.get('matrix_meta_transforms'))
+            match = jobvalue == value
             maybe = name not in meta
             print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}">'
                   f'{MAYBE if maybe else YES if match else NO}</td>')
