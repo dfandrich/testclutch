@@ -121,6 +121,48 @@ class MetadataStats:
         return nvstats.fetchall()
 
 
+class MetadataAdjuster:
+    "Adjust metadata values by splitting them and/or transforming them with regular expressions"
+    def __init__(self, splits: dict[str, str], transforms: dict[str, list[tuple[str, str]]]):
+        # Compile regular expressions so they're ready for use
+        self.splits = {k: re.compile(v) for k, v in splits.items()}
+        self.transforms = {k: [(re.compile(pat), repl) for pat, repl in l]
+                           for k, l in transforms.items()}
+
+    def split(self, metaname: str, value: str) -> list[str]:
+        """Transform a metadata value into multiple by splitting it on a regular expression
+
+        Any blank values are removed.
+        """
+        if metaname in self.splits:
+            splitvalues = self.splits[metaname].split(value)
+        else:
+            splitvalues = [value]
+        return [value for value in splitvalues if value]
+
+    def transform(self, metaname: str, value: str) -> str:
+        """Transform a metadata value by passing it through one or more regular expressions
+
+        The value may end up empty, depending on the transformation.
+        """
+        if metaname in self.transforms:
+            # Tweak the value
+            for pattern, repl in self.transforms[metaname]:
+                value = pattern.sub(repl, value)
+        return value
+
+    def adjust(self, metaname: str, value: str) -> list[str]:
+        """Adjust metadata value by performing any splitting and transforming that was requested
+
+        Any blank entries are removed.
+
+        Returns:
+            list of values, which may contain zero or more entries depending on the transformations
+        """
+        values = (self.transform(metaname, v) for v in self.split(metaname, value))
+        return [v for v in values if v]
+
+
 class FeatureMatrix:
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
         assert ds.db  # satisfy pytype that this isn't None
@@ -160,15 +202,7 @@ class FeatureMatrix:
             self.all_meta.append(meta)
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
-    def transform_meta(self, metaname: str, value: str,
-                       transforms: dict[str, tuple[str, str]]) -> str:
-        if metaname in transforms:
-            # Tweak the value
-            for pattern, repl in transforms[metaname]:
-                value = re.sub(pattern, repl, value)
-        return value
-
-    def build_features(self, metas: Sequence[str], transforms: dict[str, tuple[str, str]]
+    def build_features(self, metas: Sequence[str], adjuster: MetadataAdjuster
                        ) -> list[tuple[str, str, Union[str, int]]]:
         """Build a list of convolved features available in the tests
 
@@ -181,11 +215,9 @@ class FeatureMatrix:
         for metaname in metas:
             for meta in self.all_meta:
                 if metaname in meta:
-                    value = self.transform_meta(metaname, meta[metaname], transforms)
+                    values = adjuster.adjust(metaname, meta[metaname])
                     feature = features.setdefault(metaname, set())
-                    if value:
-                        # Only add a value if it hasn't been transformed away
-                        feature.add(value)
+                    feature.update(values)
 
         # Remove any metadata fields that were requested but not actually found
         foundmetas = [name for name in metas if name in features]
@@ -595,8 +627,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         """))
 
     fm.load_all_meta()
-    features = fm.build_features(config.get('matrix_meta_fields'),
-                                 config.get('matrix_meta_transforms'))
+    adjuster = MetadataAdjuster(config.get('matrix_meta_splits'),
+                                config.get('matrix_meta_transforms'))
+    features = fm.build_features(config.get('matrix_meta_fields'), adjuster)
     print('<tr><th>Job</th>')
     for title, _, _ in features:
         print(f'<th>{escape(title)}</th>')
@@ -609,9 +642,8 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
         for _, name, value in features:
-            jobvalue = fm.transform_meta(name, meta.get(name, ''),
-                                         config.get('matrix_meta_transforms'))
-            match = jobvalue == value
+            jobvalue = adjuster.adjust(name, meta.get(name, ''))
+            match = value in set(jobvalue)
             maybe = name not in meta
             print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}">'
                   f'{MAYBE if maybe else YES if match else NO}</td>')

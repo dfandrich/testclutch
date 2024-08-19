@@ -97,10 +97,18 @@ pr_comment_url = 'https://github.com/dfandrich/testclutch'
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = []
 
+# Metadata fields to split into subfields using a regular expression
+# The format is {'fieldname': r'<regex>', ...}  where <regex> is passed to re.split to split a text
+# string into multiple values, each of which is treated like a separate feature value.
+# e.g. to split field 'features' on spaces and commas, use {'features': r'[ ,]'}
+matrix_meta_splits = {}
+
 # Transformations to perform on the metadata fields in matrix_meta_fields
 # The format is {'fieldname': [('pattern1', 'replacement2'), ('pattern2', 'replacement2'), ...]
 # where the pattern and replacement strings are as specified for re.sub(). They are executed in
-# the order given for each fieldname.
+# the order given for each fieldname and on each value resulting from matrix_meta_splits.
+# e.g. to replace WINX (where X is any number) with 'WinX' in field 'winarch' use
+# {'winarch': [(r'WIN([0-9]+)', r'Win\1')]}
 matrix_meta_transforms = {}
 
 # Path to root of log cache directory
