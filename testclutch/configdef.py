@@ -43,10 +43,10 @@ flaky_failures_min = 2
 # Minimum number of recent failures before considering it a permafail
 permafail_failures_min = 2
 
-# Time in hours that maks a job "old"
+# Time in hours that makes a job "old"
 old_job_hours = 24 * 3  # 3 days
 
-# Time in hours that maks a job "disabled"
+# Time in hours that makes a job "disabled"
 disabled_job_hours = 24 * 14  # 14 days
 
 # Number of hours of runs to include in the analysis
@@ -65,7 +65,7 @@ git_comment_encoding = 'UTF-8'
 
 # Don't compress a file if it's shorter than this length.
 # 128 is the normal maximum length allowed for data inline in ext4 inodes, so using this
-# will cause absolutely no disk space increase for such file on such filesystems.
+# will cause absolutely no disk space increase for such files on such filesystems.
 compress_threshold_bytes = 128
 
 # Report configuration: test_results_count
@@ -78,14 +78,18 @@ test_results_count_num_recent_urls = 4
 # Oldest created PR in hours to include in the PR check
 pr_ready_age_hours_max = 24 * 3  # 3 days
 
+# Set of authors to which "ready" PRs will be limited, when set
+pr_ready_logins = frozenset()
+
 # Path to gather storage
 pr_gather_path = '{XDG_CACHE_HOME}/testclutchpr.dat'
 
 # How long to keep analysis data on a PR around before it needs to be retrieved again
+# This should be no less than pr_ready_age_hours_max to avoid duplicate comments.
 pr_gather_age_hours_max = 24 * 7  # 7 days
 
 # Set of origins on which to perform analysis (default is all supported origins)
-pr_comment_origins = None
+pr_comment_origins = frozenset()
 
 # URL to use for Test Clutch in PR comments
 pr_comment_url = 'https://github.com/dfandrich/testclutch'

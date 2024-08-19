@@ -7,6 +7,7 @@ import datetime
 import enum
 import logging
 import textwrap
+from collections.abc import Collection, Container
 from contextlib import nullcontext
 from email import utils
 from html import escape
@@ -422,16 +423,17 @@ class GHAPRReady:
         owner, project = urls.get_generic_project_name(args.checkrepo)
         self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
-    def get_ready_prs(self) -> list[int]:
+    def get_ready_prs(self, authors: Container[str]) -> list[int]:
         "Return recent PRs that have not been closed"
         pulls = self.gh.get_pulls('open')
         pr_recency = self.args.oldest if self.args.oldest else config.get('pr_ready_age_hours_max')
         recent = (datetime.datetime.now(tz=datetime.timezone.utc)
                   - datetime.timedelta(hours=pr_recency))
         recent_prs = [pr['number'] for pr in pulls
-                      if ghaapi.convert_time(pr['created_at']) > recent]
+                      if (ghaapi.convert_time(pr['created_at']) > recent
+                          and (not authors or pr['user']['login'] in authors))]
         logging.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
-                     f'{pr_recency} hours)')
+                     f'{pr_recency} hours)%s', ' and matching allowed authors' if authors else '')
 
         for prnum in recent_prs:
             logging.info(f'PR#{prnum} is eligible to be analyzed')
@@ -659,7 +661,7 @@ class GatherPRAnalysis:
 
         return failed_tests
 
-    def all_origins(self) -> list[str]:
+    def all_origins(self) -> Collection[str]:
         """Returns a list of all origins to check before commenting"""
         origins = config.get('pr_comment_origins')
         if not origins:
@@ -808,7 +810,7 @@ def main():
             '--only-failed-prs without GHA --authfile may fail due to insufficient quota')
 
     prready = GHAPRReady(args)
-    prs = prready.get_ready_prs() if args.ready_prs else args.pr
+    prs = prready.get_ready_prs(config.get('pr_ready_logins')) if args.ready_prs else args.pr
     prstates = None
     if args.only_failed_prs:
         prstates = prready.check_gha_pr_states(prs)
