@@ -13,7 +13,7 @@
 
 PRS="$(tcanalyzepr --authfile ~/.myghatokeninfile --ci-status --ready-prs --only-failed-prs)"
 if [ -z "$PRS" ]; then
-    echo 'Error: no PRs are ready to check; terminating run'
+    echo 'No PRs are ready to check; terminating run'
     exit
 fi
 echo Checking these PRs: "$PRS"
