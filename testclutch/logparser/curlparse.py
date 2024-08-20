@@ -146,77 +146,47 @@ def parse_uname(uname: str) -> TestMetaStr:
     meta['systemosver'] = syspartsblanks[2]
 
     # We can get more info on some OSes
-    if meta['systemos'] == 'Linux':
-        if len(syspartsblanks) >= 12:
-            for i in range(9, len(syspartsblanks) - 2):
-                if LINUX_YEAR_RE.match(syspartsblanks[i]):
-                    # arch is found immediately after the kernel build year
-                    meta['arch'] = syspartsblanks[i + 1]
-                    break
-
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'Darwin':  # macOS
-        if len(sysparts) == 15:
-            meta['arch'] = sysparts[14]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'FreeBSD':
-        if len(syspartsblanks) == 8:
-            meta['arch'] = syspartsblanks[7]
-        elif len(syspartsblanks) == 15:  # starting 14.0
-            meta['arch'] = syspartsblanks[14]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'NetBSD':
-        if len(sysparts) == 15:
-            meta['arch'] = sysparts[14]
-        elif 'systemhost' not in meta and len(sysparts) == 14:
-            # If the host field is blank, it shifts all the other parts down
-            # one. The other systems use syspartsblank to avoid this problem,
-            # but NetBSD embeds a date in its uname -a which can likely
-            # contain an extra space which would cause THAT workaround to
-            # fail.
-            meta['arch'] = sysparts[13]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'OpenBSD':
-        if len(syspartsblanks) == 5:
-            meta['arch'] = syspartsblanks[4]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'SunOS':
-        if len(syspartsblanks) in (8, 7):  # Solaris, OmniOS
-            meta['arch'] = syspartsblanks[5]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
+    if meta['systemos'] == 'Linux' and len(syspartsblanks) >= 12:
+        for i in range(9, len(syspartsblanks) - 2):
+            if LINUX_YEAR_RE.match(syspartsblanks[i]):
+                # arch is found immediately after the kernel build year
+                meta['arch'] = syspartsblanks[i + 1]
+                break
+    elif meta['systemos'] == 'Darwin' and len(sysparts) == 15:
+        # macOS
+        meta['arch'] = sysparts[14]
+    elif meta['systemos'] == 'FreeBSD' and len(syspartsblanks) == 8:
+        meta['arch'] = syspartsblanks[7]
+    elif meta['systemos'] == 'FreeBSD' and len(syspartsblanks) == 15:  # starting 14.0
+        meta['arch'] = syspartsblanks[14]
+    elif meta['systemos'] == 'NetBSD' and len(sysparts) == 15:
+        meta['arch'] = sysparts[14]
+    elif meta['systemos'] == 'NetBSD' and len(sysparts) == 14 and 'systemhost' not in meta:
+        # If the host field is blank, it shifts all the other parts down
+        # one. The other systems use syspartsblank to avoid this problem,
+        # but NetBSD embeds a date in its uname -a which can likely
+        # contain an extra space which would cause THAT workaround to
+        # fail.
+        meta['arch'] = sysparts[13]
+    elif meta['systemos'] == 'OpenBSD' and len(syspartsblanks) == 5:
+        meta['arch'] = syspartsblanks[4]
+    elif meta['systemos'] == 'SunOS' and len(syspartsblanks) in (8, 7):  # Solaris, OmniOS
+        meta['arch'] = syspartsblanks[5]
     elif (meta['systemos'].startswith('MSYS_NT')
           or meta['systemos'].startswith('MINGW32_NT')
           or meta['systemos'].startswith('MINGW64_NT')
-          or meta['systemos'].startswith('CYGWIN_NT')):
-        if len(sysparts) == 8:
-            meta['arch'] = sysparts[6]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'AIX':
-        if len(sysparts) == 5:
-            # systemosver as set above is just the minor release number
-            meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'Haiku':
-        if len(syspartsblanks) == 11:
-            meta['arch'] = syspartsblanks[9]
-            # TODO: OS revision is in syspartsblanks[3], which perhaps should be appended to
-            # syspartsblanks[2] and go into meta['systemosver']. Take a look at how it presents
-            # itself once it comes out of beta.
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
-    elif meta['systemos'] == 'Minix':
-        if len(syspartsblanks) == 7:
-            meta['arch'] = syspartsblanks[6]
-        else:
-            logging.warning('Unexpected uname line: %s', escs(uname))
+          or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 8:
+        meta['arch'] = sysparts[6]
+    elif meta['systemos'] == 'AIX' and len(sysparts) == 5:
+        # systemosver as set above is just the minor release number
+        meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
+    elif meta['systemos'] == 'Haiku' and len(syspartsblanks) == 11:
+        meta['arch'] = syspartsblanks[9]
+        # TODO: OS revision is in syspartsblanks[3], which perhaps should be appended to
+        # syspartsblanks[2] and go into meta['systemosver']. Take a look at how it presents
+        # itself once it comes out of beta.
+    elif meta['systemos'] == 'Minix' and len(syspartsblanks) == 7:
+        meta['arch'] = syspartsblanks[6]
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 
