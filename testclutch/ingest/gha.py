@@ -108,6 +108,8 @@ class GithubIngestor:
         cimeta['sourcerepo'] = f'https://github.com/{run["head_repository"]["full_name"]}'
         # This is the repo for which the job is running (should be the same as 'checkrepo')
         cimeta['runrepo'] = f'https://github.com/{run["repository"]["full_name"]}'
+        # This URL contains the official link to the run, but it's just the top-level link.
+        # This will usually be replaced later with a more specific URL.
         cimeta['url'] = run['html_url']
         # Note: there doesn't seem to be a way to get the pull request # from these data
         # or from the runs data).  "trigger" at least lets you see that it was due to a PR.
@@ -279,6 +281,7 @@ class GithubIngestor:
                                         cimeta['runid'], job['status'])
                         return
                     meta['ciresult'] = job['conclusion']
+                    meta['url'] = job['html_url']  # replace the generic job link
                     duration = (ghaapi.convert_time(job['completed_at'])
                                 - ghaapi.convert_time(job['started_at']))
                     meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
@@ -295,6 +298,10 @@ class GithubIngestor:
                                         - ghaapi.convert_time(step['started_at']))
                             meta['steprunduration'] = (duration.seconds * 1000000
                                                        + duration.microseconds)
+                        # Make the URL directly open this step using an anchor.
+                        # This doesn't always work when first clicked on, but at the very least
+                        # it's a clue as to where the log is on the page.
+                        meta['url'] = f'{meta["url"]}#check-step-{step["number"]}'
 
                 for n, v in meta.items():
                     logging.debug(f'{n}={v}')
