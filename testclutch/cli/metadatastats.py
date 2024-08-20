@@ -9,6 +9,7 @@ import logging
 import math
 import re
 import textwrap
+from dataclasses import dataclass
 from html import escape
 from typing import Callable, Iterable, List, Sequence, Tuple, Union
 
@@ -638,6 +639,12 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     adjuster = MetadataAdjuster(config.get('matrix_meta_splits'),
                                 config.get('matrix_meta_transforms'))
     features = fm.build_features(config.get('matrix_meta_fields'), adjuster)
+
+    @dataclass
+    class IntCounter:
+        count: int = 0
+
+    featurecounts = [IntCounter() for _ in features]
     print('<thead><tr><th>Job</th>')
     for title, _, _ in features:
         print(f'<th>{escape(title)}</th>')
@@ -649,15 +656,22 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                   '</a></td>')
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
-        for _, name, value in features:
+        for (_, name, value), counter in zip(features, featurecounts):
             jobvalue = adjuster.adjust(name, meta.get(name, ''))
             match = value in set(jobvalue)
             maybe = name not in meta
             print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}">'
                   f'{MAYBE if maybe else YES if match else NO}</td>')
+            if match:
+                counter.count += 1
         print('</tr>')
 
-    print('</tbody></table></body></html>')
+    # Print totals of each feature
+    print(f'<tr><td>TOTALS: {len(fm.all_meta)}</td>')
+    for counter in featurecounts:
+        print(f'<td>{counter.count}</td>')
+
+    print('</tr></tbody></table></body></html>')
 
 
 def parse_args(args=None) -> argparse.Namespace:
