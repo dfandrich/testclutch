@@ -203,6 +203,19 @@ def parse_uname(uname: str) -> TestMetaStr:
             meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
         else:
             logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'Haiku':
+        if len(syspartsblanks) == 11:
+            meta['arch'] = syspartsblanks[9]
+            # TODO: OS revision is in syspartsblanks[3], which perhaps should be appended to
+            # syspartsblanks[2] and go into meta['systemosver']. Take a look at how it presents
+            # itself once it comes out of beta.
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'Minix':
+        if len(syspartsblanks) == 7:
+            meta['arch'] = syspartsblanks[6]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 

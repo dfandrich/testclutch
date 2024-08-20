@@ -166,6 +166,20 @@ class TestParseUname(unittest.TestCase):
              'systemhost': 'power-aix',
              'systemosver': '7.1',
              })
+        self.assertDictEqual(curlparse.parse_uname(
+            'Haiku shredder 1 hrev56578+59 Dec 17 2022 07:02: x86_64 x86_64 Haiku'),
+            {'systemos': 'Haiku',
+             'systemhost': 'shredder',
+             'systemosver': '1',
+             'arch': 'x86_64'
+             })
+        self.assertDictEqual(curlparse.parse_uname(
+            'Minix minix 3.3.0 Minix 3.3.0 (GENERIC) i386'),
+            {'systemos': 'Minix',
+             'systemhost': 'minix',
+             'systemosver': '3.3.0',
+             'arch': 'i386'
+             })
 
 
 class TestCurlParse(unittest.TestCase):
