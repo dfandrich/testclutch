@@ -590,6 +590,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <!DOCTYPE html>
         <html><head><title>Test Job Feature Matrix</title>
         <style type="text/css">
+        body {
+          background-color: white;
+        }
         td {
           outline: 1px solid;
           text-align: center;
@@ -602,6 +605,11 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         }
         .maybe {
           background-color: #FFCC00;
+        }
+        thead {
+          position: sticky;
+          top: 0px;
+          background-color: white;
         }
         </style>
         """ + f"""
@@ -630,10 +638,10 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     adjuster = MetadataAdjuster(config.get('matrix_meta_splits'),
                                 config.get('matrix_meta_transforms'))
     features = fm.build_features(config.get('matrix_meta_fields'), adjuster)
-    print('<tr><th>Job</th>')
+    print('<thead><tr><th>Job</th>')
     for title, _, _ in features:
         print(f'<th>{escape(title)}</th>')
-    print('</tr>')
+    print('</tr></thead><tbody>')
 
     for meta in fm.all_meta:
         if 'url' in meta:
@@ -649,7 +657,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                   f'{MAYBE if maybe else YES if match else NO}</td>')
         print('</tr>')
 
-    print('</table></body></html>')
+    print('</tbody></table></body></html>')
 
 
 def parse_args(args=None) -> argparse.Namespace:
