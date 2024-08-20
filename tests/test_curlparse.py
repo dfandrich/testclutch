@@ -200,6 +200,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure',
             'testmode': 'normal',
             'withvalgrind': 'yes',
+            'withevent': 'no',
             'testingver': '8.2.1-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetarch': 'x86_64',
@@ -302,6 +303,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'failure',
             'testmode': 'torture',
             'withvalgrind': 'no',
+            'withevent': 'no',
             'testingver': '8.2.0-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetarch': 'x86_64',
@@ -344,6 +346,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'success',
             'testmode': 'normal',
             'withvalgrind': 'yes',
+            'withevent': 'no',
             'testingver': '8.3.0-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetarch': 'x86_64',
@@ -396,6 +399,7 @@ class TestCurlParse(unittest.TestCase):
             'testresult': 'truncated',
             'testmode': 'normal',
             'withvalgrind': 'yes',
+            'withevent': 'no',
             'testingver': '8.3.0-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetarch': 'x86_64',
@@ -464,7 +468,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.3.0-DEV',
             'testmode': 'normal',
             'testresult': 'failure',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('11', curlparse.TestResult.PASS, '', 1503000),
@@ -502,7 +507,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.3.0-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'yes',
         }, meta)
         self.assertEqual([
             SingleTestFinding('96', curlparse.TestResult.SKIP, 'curl lacks TrackMemory support', 0),
@@ -542,7 +548,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.3.0-20230729',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('64', curlparse.TestResult.SKIP, 'curl lacks crypto support', 0),
@@ -1883,7 +1890,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.10.0-20240806',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1127000),
@@ -1924,7 +1932,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.3.0-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1085000)
@@ -1961,7 +1970,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.2.0-DEV',
             'testmode': 'normal',
             'testresult': 'failure',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1018', curlparse.TestResult.SKIP, 'no test', 0),
@@ -2017,7 +2027,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.6.0-DEV',
             'testmode': 'normal',
             'testresult': 'failure',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('67', curlparse.TestResult.SKIP, 'curl lacks SSL support', 0),
@@ -3481,7 +3492,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.6.0-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1040000),
@@ -3514,7 +3526,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.6.0-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1038999),
@@ -3547,7 +3560,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.10.0-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'yes'
+            'withvalgrind': 'yes',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('96', curlparse.TestResult.SKIP, 'curl lacks TrackMemory support', 0),
@@ -3587,7 +3601,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.6.1-DEV',
             'testmode': 'normal',
             'testresult': 'success',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('500', curlparse.TestResult.PASS, '', 1352000),
@@ -3622,7 +3637,8 @@ class TestCurlParse(unittest.TestCase):
             'testingver': '8.8.0-DEV',
             'testmode': 'normal',
             'testresult': 'failure',
-            'withvalgrind': 'no'
+            'withvalgrind': 'no',
+            'withevent': 'no',
         }, meta)
         self.assertEqual([
             SingleTestFinding('1117', curlparse.TestResult.PASS, '', 24527000),

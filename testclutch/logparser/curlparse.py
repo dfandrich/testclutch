@@ -40,7 +40,8 @@ RE_CURLVER = re.compile(r'^\* curl (\S+) \(([^)]+)\)')
 RE_DEPS = re.compile(r'^\* (.+)$')
 RE_HOST = re.compile(r'^\* Host: (\S+)')
 RE_FEATURES = re.compile(r'^\* Features: (.+)$')
-RE_VALGRIND = re.compile(r'^\* Env:.*Valgrind')
+RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
+RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
 RE_OS = re.compile(r'^\* OS: (\S+)')
 RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
@@ -242,6 +243,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
             meta['testresult'] = 'truncated'  # will be overwritten if the real end is found
             meta['testmode'] = 'normal'       # will be overwritten if another mode is used
             meta['withvalgrind'] = 'no'       # will be overwritten if Valgrind is enabled
+            meta['withevent'] = 'no'          # will be overwritten if event-based is enabled
             # ********* System characteristics ********
             if not (l := f.readline()):
                 break
@@ -268,6 +270,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                         meta['os'] = r.group(1)
                     elif r := RE_VALGRIND.search(l):
                         meta['withvalgrind'] = 'yes'
+                    elif r := RE_EVENT.search(l):
+                        meta['withevent'] = 'yes'
                     elif r := RE_JOBS.search(l):
                         meta['paralleljobs'] = r.group(1)
                     elif r := RE_SEED.search(l):
