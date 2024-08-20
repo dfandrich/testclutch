@@ -89,7 +89,7 @@ RE_TESTCURLBUILDCODE = re.compile(r'testcurl: (\w+) = ')
 TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 # TODO: lots more testcurl headers that could be added here
 
-# autoconf target triplet
+# autoconf target triplet (sometimes quadruplet)
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
 # Match a valid year since Linux was created, also 1970 in case of time issue
@@ -224,7 +224,14 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                 if rr := RE_TARGETTRIPLET.search(r.group(2)):
                     meta['targetarch'] = rr.group(1)
                     meta['targetvendor'] = rr.group(2)
+                    # targetos will contain the "kernel" field when it exists (in a target
+                    # quadruplet) AND the "os" field. This ends up being more consistent than trying
+                    # to separate them into two fields when they exist, as "kernel" and "os" aren't
+                    # always unique descriptors.
                     meta['targetos'] = rr.group(3)
+                elif r.group(2):
+                    # Probably created by CMake, which doesn't use a triplet but just the OS
+                    meta['targetos'] = r.group(2)
             if not (l := f.readline()):
                 break
             l = l.rstrip()
