@@ -8,7 +8,7 @@ import re
 import zlib
 from typing import Set, TextIO  # noqa: F401
 
-from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
+from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
 
 
@@ -43,7 +43,7 @@ RE_FEATURES = re.compile(r'^\* Features: (.+)$')
 RE_VALGRIND = re.compile(r'^\* Env:.*Valgrind')
 RE_OS = re.compile(r'^\* OS: (\S+)')
 RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
-RE_SYSTEM = re.compile(r'^\* System: (\S+) (\S*) (\S+)')
+RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
 
 # Test log results
@@ -124,6 +124,93 @@ def check_found_result(testcases: TestCases):
     return
 
 
+def parse_uname(uname: str) -> TestMetaStr:
+    "Parse the output of 'uname -a' from many OSes for relevant data"
+    meta = {}
+
+    # This one treats multiple spaces as one separator (needed on Linux, NetBSD
+    # and Darwin because they can have an extra space before a date)
+    sysparts = uname.split()
+    # This one treats multiple spaces as separators of empty items (needed on
+    # FreeBSD because its hostname can be empty)
+    syspartsblanks = uname.split(sep=' ')
+
+    meta['systemos'] = syspartsblanks[0]
+    # hostname can be blank
+    if syspartsblanks[1]:
+        meta['systemhost'] = syspartsblanks[1]
+    meta['systemosver'] = syspartsblanks[2]
+
+    # We can get more info on some OSes
+    if meta['systemos'] == 'Linux':
+        # TODO: If the hostname allowed to be blank, then a similar workaround
+        # to NetBSD's may need to be implemented since the indexes will all be
+        # shifted down one place.
+        if len(sysparts) in frozenset((15, 13)):
+            meta['arch'] = sysparts[11]
+        elif len(sysparts) == 14:
+            # This happens on kernel 6.6.X
+            meta['arch'] = sysparts[12]
+        elif len(sysparts) > 15 and re.match(r'^[12]\d{3}$', sysparts[10]):
+            # A Gentoo box had sysparts[14:21] as the long form CPU name
+            # which seems to be allowed in uname -p
+            meta['arch'] = sysparts[11]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'Darwin':  # macOS
+        if len(sysparts) == 15:
+            meta['arch'] = sysparts[14]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'FreeBSD':
+        if len(syspartsblanks) == 8:
+            meta['arch'] = syspartsblanks[7]
+        elif len(syspartsblanks) == 15:  # starting 14.0
+            meta['arch'] = syspartsblanks[14]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'NetBSD':
+        if len(sysparts) == 15:
+            meta['arch'] = sysparts[14]
+        elif 'systemhost' not in meta and len(sysparts) == 14:
+            # If the host field is blank, it shifts all the other parts down
+            # one. The other systems use syspartsblank to avoid this problem,
+            # but NetBSD embeds a date in its uname -a which can likely
+            # contain an extra space which would cause THAT workaround to
+            # fail.
+            meta['arch'] = sysparts[13]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'OpenBSD':
+        if len(syspartsblanks) == 5:
+            meta['arch'] = syspartsblanks[4]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'SunOS':
+        if len(syspartsblanks) in (8, 7):  # Solaris, OmniOS
+            meta['arch'] = syspartsblanks[5]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif (meta['systemos'].startswith('MSYS_NT')
+          or meta['systemos'].startswith('MINGW32_NT')
+          or meta['systemos'].startswith('MINGW64_NT')
+          or meta['systemos'].startswith('CYGWIN_NT')):
+        if len(sysparts) == 8:
+            meta['arch'] = sysparts[6]
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    elif meta['systemos'] == 'AIX':
+        if len(sysparts) == 5:
+            # systemosver as set above is just the minor release number
+            meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
+        else:
+            logging.warning('Unexpected uname line: %s', escs(uname))
+    else:
+        logging.warning('Unexpected uname line: %s', escs(uname))
+
+    return meta
+
+
 def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     """Parses curl's runtests.pl test log output.
 
@@ -175,84 +262,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                     elif r := RE_SEED.search(l):
                         meta['randomseed'] = r.group(1)
                     elif r := RE_SYSTEM.search(l):
-                        meta['systemos'] = r.group(1)
-                        # hostname can be blank
-                        if r.group(2):
-                            meta['systemhost'] = r.group(2)
-                        meta['systemosver'] = r.group(3)
-                        assert isinstance(meta['systemos'], str)  # satisfy pytype that this is str
-                        # This one treats multiple spaces as one separator (needed on Linux, NetBSD
-                        # and Darwin because they can have an extra space before a date)
-                        sysparts = l.split()
-                        # This one treats multiple spaces as separators of empty items (needed on
-                        # FreeBSD because its hostname can be empty)
-                        syspartsblanks = l.split(sep=' ')
-                        # We can get more info in some OSes
-                        if meta['systemos'] == 'Linux':
-                            # TODO: If the hostname allowed to be blank, then a similar workaround
-                            # to NetBSD's may need to be implemented since the indexes will all be
-                            # shifted down one place.
-                            if len(sysparts) in frozenset((17, 15)):
-                                meta['arch'] = sysparts[13]
-                            elif len(sysparts) == 16:
-                                # This happens on kernel 6.6.X
-                                meta['arch'] = sysparts[14]
-                            elif len(sysparts) > 17 and re.match(r'^[12]\d{3}$', sysparts[12]):
-                                # A Gentoo box had sysparts[14:21] as the long form CPU name
-                                # which seems to be allowed in uname -p
-                                meta['arch'] = sysparts[13]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'Darwin':  # macOS
-                            if len(sysparts) == 17:
-                                meta['arch'] = sysparts[16]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'FreeBSD':
-                            if len(syspartsblanks) == 10:
-                                meta['arch'] = syspartsblanks[9]
-                            elif len(syspartsblanks) == 17:  # starting 14.0
-                                meta['arch'] = syspartsblanks[16]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'NetBSD':
-                            if len(sysparts) == 17:
-                                meta['arch'] = sysparts[16]
-                            elif 'systemhost' not in meta and len(sysparts) == 16:
-                                # If the host field is blank, it shifts all the other parts down
-                                # one. The other systems use syspartsblank to avoid this problem,
-                                # but NetBSD embeds a date in its uname -a which can likely
-                                # contain an extra space which would cause THAT workaround to
-                                # fail.
-                                meta['arch'] = sysparts[15]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'OpenBSD':
-                            if len(syspartsblanks) == 7:
-                                meta['arch'] = syspartsblanks[6]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'SunOS':
-                            if len(syspartsblanks) in (10, 9):  # Solaris, OmniOS
-                                meta['arch'] = syspartsblanks[7]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif (meta['systemos'].startswith('MSYS_NT')
-                              or meta['systemos'].startswith('MINGW32_NT')
-                              or meta['systemos'].startswith('MINGW64_NT')
-                              or meta['systemos'].startswith('CYGWIN_NT')):
-                            if len(sysparts) == 10:
-                                meta['arch'] = sysparts[8]
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        elif meta['systemos'] == 'AIX':
-                            if len(sysparts) == 7:
-                                # systemosver as set above is just the minor release number
-                                meta['systemosver'] = f'{sysparts[5]}.{sysparts[4]}'
-                            else:
-                                logging.warning('Unexpected system line: %s', escs(l))
-                        else:
-                            logging.warning('Unexpected system line: %s', escs(l))
+                        unamemeta = parse_uname(r.group(1))
+                        meta = {**meta, **unamemeta}
 
                     elif RE_STARTRESULTS.search(l):
                         # *****************************************
