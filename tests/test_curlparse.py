@@ -51,12 +51,28 @@ class TestParseUname(unittest.TestCase):
              'systemosver': '6.6.43-desktop-1.mga9',
              'arch': 'x86_64'
              })
-        # TODO: this should be fixed to get arch as well
+        self.assertDictEqual(curlparse.parse_uname(
+            'Linux scan 4.1.15-gentoo-r1 #2 SMP Thu Feb 18 14:16:46 UTC 2016 x86_64 '
+            'Intel(R) Xeon(R) CPU X5675 @ 3.07GHz GenuineIntel GNU/Linux'),
+            {'systemos': 'Linux',
+             'systemhost': 'scan',
+             'systemosver': '4.1.15-gentoo-r1',
+             'arch': 'x86_64'
+             })
+        self.assertDictEqual(curlparse.parse_uname(
+            'Linux buildnode 6.6.37-desktop #1 SMP PREEMPT_DYNAMIC Sat Jul  6 01:42:12 UTC 2024 '
+            'x86_64 GNU/Linux'),
+            {'systemos': 'Linux',
+             'systemhost': 'buildnode',
+             'systemosver': '6.6.37-desktop',
+             'arch': 'x86_64'
+             })
         self.assertDictEqual(curlparse.parse_uname(
             'Linux xyzzy 4.4.302-st28 #21521 Mon Feb 13 04:58:26 +06 2023 mips DD-WRT'),
             {'systemos': 'Linux',
              'systemhost': 'xyzzy',
              'systemosver': '4.4.302-st28',
+             'arch': 'mips'
              })
         self.assertDictEqual(curlparse.parse_uname(
             'CYGWIN_NT-10.0-20348 fv-az1105-214 3.5.3-1.x86_64 2024-04-03 17:25 UTC x86_64 Cygwin'),

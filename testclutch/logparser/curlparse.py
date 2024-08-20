@@ -91,6 +91,9 @@ TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 # autoconf target triplet
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
+# Match a valid year since Linux was created, also 1970 in case of time issue
+LINUX_YEAR_RE = re.compile(r'^(20\d\d)|(199\d)|(1970)$')
+
 
 def escs(s: str) -> str:
     """Escape non-ascii characters in a string
@@ -143,18 +146,13 @@ def parse_uname(uname: str) -> TestMetaStr:
 
     # We can get more info on some OSes
     if meta['systemos'] == 'Linux':
-        # TODO: If the hostname allowed to be blank, then a similar workaround
-        # to NetBSD's may need to be implemented since the indexes will all be
-        # shifted down one place.
-        if len(sysparts) in frozenset((15, 13)):
-            meta['arch'] = sysparts[11]
-        elif len(sysparts) == 14:
-            # This happens on kernel 6.6.X
-            meta['arch'] = sysparts[12]
-        elif len(sysparts) > 15 and re.match(r'^[12]\d{3}$', sysparts[10]):
-            # A Gentoo box had sysparts[14:21] as the long form CPU name
-            # which seems to be allowed in uname -p
-            meta['arch'] = sysparts[11]
+        if len(syspartsblanks) >= 12:
+            for i in range(9, len(syspartsblanks) - 2):
+                if LINUX_YEAR_RE.match(syspartsblanks[i]):
+                    # arch is found immediately after the kernel build year
+                    meta['arch'] = syspartsblanks[i + 1]
+                    break
+
         else:
             logging.warning('Unexpected uname line: %s', escs(uname))
     elif meta['systemos'] == 'Darwin':  # macOS
