@@ -6,10 +6,10 @@ This contains functions relating to source repositories but not CI services.
 import contextlib
 import logging
 import urllib.parse
-from typing import NamedTuple, Tuple, Union
+from typing import NamedTuple, Union
 
 
-def get_generic_project_name(checkrepo: str) -> Tuple[str, str]:
+def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
     """Returns the source code owner and project to use for a CI system
 
     This extracts them only from the source repository URL.  This currently supports GitHub URLs and
@@ -24,7 +24,7 @@ def get_generic_project_name(checkrepo: str) -> Tuple[str, str]:
     return tuple(path.split('/')[1:3])
 
 
-def get_project_name(args: Union[str, NamedTuple]) -> Tuple[str, str]:
+def get_project_name(args: Union[str, NamedTuple]) -> tuple[str, str]:
     """Returns the source code owner and project to use for a CI system
 
     This extracts them from the source repository URL, unless they are overridden by command-line

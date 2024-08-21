@@ -9,7 +9,7 @@ import logging
 import posixpath
 import re
 import zipfile
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -83,10 +83,10 @@ class GithubIngestor:
         run = self.gh.get_run(run_id)
         self.process_run(run, log_processor)
 
-    def ingest_run(self, run: Dict[str, Any]):
+    def ingest_run(self, run: dict[str, Any]):
         self.process_run(run, self.store_test_run)
 
-    def process_run(self, run: Dict[str, Any],
+    def process_run(self, run: dict[str, Any],
                     log_processor: Callable[[TestMeta, TestCases], None]):
         run_id = run['id']
 
@@ -211,7 +211,7 @@ class GithubIngestor:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
-    def find_job_step(self, jobs: Dict[str, Any], meta: TestMeta) -> Dict[str, Any]:
+    def find_job_step(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
         assert jobs
         job = self.find_job(jobs, meta)
         ci_step_fn = meta['cistep']
@@ -221,7 +221,7 @@ class GithubIngestor:
                 return step
         return {}
 
-    def find_job(self, jobs: Dict[str, Any], meta: TestMeta) -> Dict[str, Any]:
+    def find_job(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
         "Find the right job step in the GHA job info for this job"
         workflow_name = meta['ciname']
         job_name = meta['cijob']

@@ -10,7 +10,7 @@ import json
 import logging
 import re
 import urllib
-from typing import Any, Callable, Dict, Iterable, Optional, TextIO
+from typing import Any, Callable, Iterable, Optional, TextIO
 
 from testclutch import db
 from testclutch import logcache
@@ -118,10 +118,10 @@ class CircleIngestor:
         self.process_run(build, log_processor)
 
     # TODO: delete me
-    def ingest_run(self, build: Dict[str, Any]):
+    def ingest_run(self, build: dict[str, Any]):
         self.process_run(build, self.store_test_run)
 
-    def process_run(self, build: Dict[str, Any],
+    def process_run(self, build: dict[str, Any],
                     log_processor: Callable[[TestMeta, TestCases], None]):
         """Ingests not one log, but logs for one job"""
         build_num = build['build_num']
@@ -161,7 +161,7 @@ class CircleIngestor:
         self.download_log(build_num, steps)
         self.process_log(build_num, steps, cimeta, log_processor)
 
-    def download_log(self, build_run: int, job_steps: Iterable[Dict[str, Any]]) -> str:
+    def download_log(self, build_run: int, job_steps: Iterable[dict[str, Any]]) -> str:
         """Downloads the given log file.
 
         Format is either JSON with a message member containing the text or the raw log, depending on
@@ -270,7 +270,7 @@ class CircleIngestor:
             logging.debug('')
             log_processor(meta, testcases)
 
-    def process_log(self, build_run: int, steps: Iterable[Dict[str, Any]], cimeta: TestMeta,
+    def process_log(self, build_run: int, steps: Iterable[dict[str, Any]], cimeta: TestMeta,
                     log_processor: Callable[[TestMeta, TestCases], None]):
         for step in steps:
             assert len(step['actions']) == 1

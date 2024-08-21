@@ -11,7 +11,7 @@ import re
 import textwrap
 from dataclasses import dataclass
 from html import escape
-from typing import Callable, Iterable, List, Sequence, Tuple, Union
+from typing import Callable, Iterable, Sequence, Union
 
 import testclutch
 from testclutch import analysis
@@ -115,7 +115,7 @@ class MetadataStats:
         self.repo = repo
         self.since = since
 
-    def get_name_values(self) -> List[Tuple[str, str]]:
+    def get_name_values(self) -> list[tuple[str, str]]:
         nvstats = self.ds.db.cursor()
         oldest = int(self.since.timestamp())
         nvstats.execute(NAME_VALUES_SQL, (oldest, self.repo))
@@ -249,7 +249,7 @@ class TestRunStats:
         count.execute(TEST_RUNS_COUNT_SQL, (self.oldest, self.repo))
         return count.fetchone()[0]
 
-    def get_test_results_count(self) -> List[Tuple[int, int]]:
+    def get_test_results_count(self) -> list[tuple[int, int]]:
         count = self.ds.db.cursor()
         count.execute(TEST_RESULTS_COUNT_SQL, (self.oldest, self.repo))
         return count.fetchall()
@@ -259,23 +259,23 @@ class TestRunStats:
         count.execute(TEST_RUN_TIME_SQL, (self.oldest, self.repo))
         return count.fetchone()[0]
 
-    def get_job_names(self) -> List[str]:
+    def get_job_names(self) -> list[str]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(JOB_NAMES_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
-    def get_values_for_name(self, name: str) -> List[str]:
+    def get_values_for_name(self, name: str) -> list[str]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(ONE_NAME_VALUES_SQL, (self.oldest, self.repo, name))
         return nvalues.fetchall()
 
-    def get_max_min_for_name(self, name: str) -> Tuple[int, int]:
+    def get_max_min_for_name(self, name: str) -> tuple[int, int]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_MIN_VALUE_SQL, (self.oldest, self.repo, name))
         return tuple(int(n) for n in nvalues.fetchone())
 
     def get_max_min_for_name_secondary(self, name: str, secondary: str, value: str,
-                                       ) -> Tuple[int, int]:
+                                       ) -> tuple[int, int]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_MIN_VALUE_SECONDARY_SQL,
                         (self.oldest, self.repo, secondary, value, name))
@@ -286,22 +286,22 @@ class TestRunStats:
         nvalues.execute(COUNT_NAME_VALUE_SQL, (self.oldest, self.repo, name, value))
         return nvalues.fetchone()[0]
 
-    def get_max_tests_by_type(self) -> List[Tuple[str, int]]:
+    def get_max_tests_by_type(self) -> list[tuple[str, int]]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(MAX_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
-    def get_avg_tests_by_type(self) -> List[Tuple[str, int]]:
+    def get_avg_tests_by_type(self) -> list[tuple[str, int]]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(AVG_TESTS_BY_TYPE_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
-    def get_test_results_count_by_test(self) -> List[Tuple[str, int, int]]:
+    def get_test_results_count_by_test(self) -> list[tuple[str, int, int]]:
         nvalues = self.ds.db.cursor()
         nvalues.execute(TEST_RESULTS_COUNT_BY_TEST_SQL, (self.oldest, self.repo))
         return nvalues.fetchall()
 
-    def get_test_results_url(self, testname: str, status: int) -> List[Tuple[str]]:
+    def get_test_results_url(self, testname: str, status: int) -> list[tuple[str]]:
         values = self.ds.db.cursor()
         values.execute(MOST_RECENT_TEST_STATUS_META_SQL,
                        (self.oldest, self.repo, testname, status, 'url',

@@ -4,7 +4,7 @@
 import datetime
 import json
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 from testclutch import netreq
 
@@ -31,13 +31,13 @@ class AzureApi:
         self.project = project
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         return {"Accept": DATA_TYPE,
                 "Content-Type": DATA_TYPE,
                 "User-Agent": netreq.USER_AGENT
                 }
 
-    def get_builds(self, branch: Optional[str], hours: int) -> Dict[str, Any]:
+    def get_builds(self, branch: Optional[str], hours: int) -> dict[str, Any]:
         """Returns info about all recent builds"""
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
         url = LIST_BUILDS_URL.format(organization=self.organization, project=self.project)
@@ -56,7 +56,7 @@ class AzureApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_build(self, build_id: int) -> Dict[str, Any]:
+    def get_build(self, build_id: int) -> dict[str, Any]:
         """Returns info about a build"""
         url = GET_BUILD_URL.format(organization=self.organization, project=self.project,
                                    build_id=build_id)
@@ -72,7 +72,7 @@ class AzureApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_build_timelines(self, build_id: int) -> Dict[str, Any]:
+    def get_build_timelines(self, build_id: int) -> dict[str, Any]:
         """Returns timeline for a build"""
         url = GET_BUILD_TIMELINES_URL.format(organization=self.organization, project=self.project,
                                              build_id=build_id)
@@ -84,7 +84,7 @@ class AzureApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_logs(self, build_id: int, log_id: int) -> Tuple[str, str]:
+    def get_logs(self, build_id: int, log_id: int) -> tuple[str, str]:
         url = LOGS_URL.format(organization=self.organization, project=self.project,
                               build_id=build_id, log_id=log_id)
         logging.info('Retrieving log from %s', url)

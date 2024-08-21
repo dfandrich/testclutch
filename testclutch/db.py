@@ -5,7 +5,7 @@
 import datetime
 import logging
 import sqlite3
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Optional, Sequence
 
 from testclutch import config
 from testclutch.gitdef import CommitInfo
@@ -19,7 +19,7 @@ DB_TIMEOUT = 600
 IntegrityError = sqlite3.IntegrityError
 
 # testid, rowtime, metadict
-TestRunRow = Sequence[Tuple[int, datetime.datetime, TestMeta]]
+TestRunRow = Sequence[tuple[int, datetime.datetime, TestMeta]]
 
 
 # TODO: make this a context manager
@@ -209,7 +209,7 @@ class Datastore:
 #        # TODO: COMPLETE THIS IF IT MAKES SENSE. Right now, writes are unconditional
 #        # and duplicate writes just raise IntegrityError which is ignored
 
-    def select_rec_id(self, meta: Dict[str, str]) -> Optional[int]:
+    def select_rec_id(self, meta: dict[str, str]) -> Optional[int]:
         "Return the record ID matching a given test run"
         repo = meta['checkrepo']
         origin = meta['origin']
@@ -240,7 +240,7 @@ class Datastore:
                           info.committer_email, info.author_email, info.title))
         self.db.commit()
 
-    def select_commit_before_time(self, repo: str, branch: str, since: int, num: int) -> List:
+    def select_commit_before_time(self, repo: str, branch: str, since: int, num: int) -> list:
         "Find the commits just before a given moment in time"
         res = self.cur.execute("SELECT commithash, committime, title, committeremail, authoremail "
                                "FROM commitinfo WHERE repo = ? AND branch = ? AND committime <= ? "
@@ -249,7 +249,7 @@ class Datastore:
         return res.fetchall()
 
     def select_all_commit_after_commit(self, repo: str, branch: str, commit: str
-                                       ) -> List[CommitInfo]:
+                                       ) -> list[CommitInfo]:
         "Return the list of all commits starting with a given one"
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a
@@ -292,7 +292,7 @@ class Datastore:
         return results
 
     def select_all_commit_before_commit(self, repo: str, branch: str, commit: str
-                                        ) -> List[CommitInfo]:
+                                        ) -> list[CommitInfo]:
         "Return the list of all commits starting with a given one"
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a

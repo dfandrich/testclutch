@@ -7,7 +7,7 @@ import logging
 import textwrap
 from dataclasses import dataclass
 from html import escape
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Optional
 
 import testclutch
 from testclutch import config
@@ -19,7 +19,7 @@ from testclutch.testcasedef import TestResult
 
 # Info on a single failed job result
 # record_id, jobtime, {test: count}
-TestFailCount = Tuple[int, int, collections.Counter[str]]
+TestFailCount = tuple[int, int, collections.Counter[str]]
 
 
 # Select a set of all the unique test jobs on a repo. The uniqueness is a single string which
@@ -42,9 +42,9 @@ class TestJobInfo:
     """Information about a test job"""
     testid: int   # testid (a.k.a. test run record ID in the database)
     jobtime: int  # timestamp of job
-    failed_tests: List[str]      # list of failed test names
-    attempted_tests: List[str]   # list of attempted test names
-    successful_tests: List[str]  # list of successful test names
+    failed_tests: list[str]      # list of failed test names
+    attempted_tests: list[str]   # list of attempted test names
+    successful_tests: list[str]  # list of successful test names
     url: str                     # URL to web page about the job
     checkrepo: str               # source code repository
     commit: str                  # git commit hash
@@ -61,7 +61,7 @@ class ResultsOverTimeByUniqueJob:
     def __init__(self, ds: db.Datastore):
         assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
-        self.all_jobs_status = []  # type: List[TestJobInfo]
+        self.all_jobs_status = []  # type: list[TestJobInfo]
 
     @staticmethod
     def make_global_unique_job(meta: TestMeta) -> str:
@@ -182,7 +182,7 @@ class ResultsOverTimeByUniqueJob:
                                         meta['checkrepo'], commit, is_aborted, test_result))
 
     def find_commit_range(self, last_good: TestJobInfo, first_fail: TestJobInfo
-                          ) -> Tuple[CommitInfo, int]:
+                          ) -> tuple[CommitInfo, int]:
         "Walk the commit chain to find all the commits in a range"
         logging.debug('Looking up commits before %s', last_good.commit)
         branch = config.expand('branch')
@@ -357,7 +357,7 @@ class ResultsOverTimeByUniqueJob:
         print('</body></html>')
 
     def prepare_uniquejob_analysis(self, globaluniquejob: str
-                                   ) -> Tuple[List[Tuple[str, float]], TestFailCount]:
+                                   ) -> tuple[list[tuple[str, float]], TestFailCount]:
         """Perform the bulk of the analysis work of a uniquejob
 
         Args:
@@ -533,7 +533,7 @@ class ResultsOverTimeByUniqueJob:
         print('</table>')
         # print('</div>')
 
-    def _count_consecutive_failures(self) -> List[collections.Counter[str]]:
+    def _count_consecutive_failures(self) -> list[collections.Counter[str]]:
         """Count consecutive failures of all tests for all jobs
 
         Loops from the end of the list to the beginning so it counts as
@@ -560,14 +560,14 @@ class ResultsOverTimeByUniqueJob:
                 prev_failure_count = failure_count + failed_missed_count
         return result
 
-    def find_uniquejob_failures(self) -> Dict[str, int]:
+    def find_uniquejob_failures(self) -> dict[str, int]:
         "Count the total failures in the current uniquejob by test name"
         counts = collections.Counter()
         for job_status in self.all_jobs_status:
             counts += collections.Counter(set(job_status.failed_tests))
         return counts
 
-    def find_uniquejob_consecutive_failures(self) -> List[TestFailCount]:
+    def find_uniquejob_consecutive_failures(self) -> list[TestFailCount]:
         """Analyze the current uniquejob for consistent failures over time
 
         Must have called load_unique_job() beforehand.
@@ -581,7 +581,7 @@ class ResultsOverTimeByUniqueJob:
             result.append((job_status.testid, job_status.jobtime, failures))
         return result
 
-    def find_uniquejob_successes(self, num_builds: int) -> Set[str]:
+    def find_uniquejob_successes(self, num_builds: int) -> set[str]:
         """Returns the set of tests that succeeded at least once
 
         num_builds is the number of recent builds to look at.
@@ -591,7 +591,7 @@ class ResultsOverTimeByUniqueJob:
             any_successes |= frozenset(job_status.successful_tests)
         return any_successes
 
-    def find_uniquejob_attempts(self) -> Dict[str, int]:
+    def find_uniquejob_attempts(self) -> dict[str, int]:
         """Returns the count of number of test attempts per test
         """
         counts = collections.Counter()
@@ -599,8 +599,8 @@ class ResultsOverTimeByUniqueJob:
             counts += collections.Counter(set(job_status.attempted_tests))
         return counts
 
-    def detect_flaky_tests(self, unique_failures: List[TestFailCount],
-                           successes: Set[str]) -> List[Tuple[str, float]]:
+    def detect_flaky_tests(self, unique_failures: list[TestFailCount],
+                           successes: set[str]) -> list[tuple[str, float]]:
         """Detects flaky tests in all the builds for one unique job
         """
         if len(unique_failures) < config.get('flaky_builds_min'):

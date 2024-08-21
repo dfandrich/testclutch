@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 from types import ModuleType
-from typing import Any, Dict
+from typing import Any
 
 from testclutch import configdef
 
@@ -47,7 +47,7 @@ def cache_dir() -> str:
     return '.'
 
 
-def environ() -> Dict[str, str]:
+def environ() -> dict[str, str]:
     """Return a dict with the config environment
 
     This contains the process environment variables, plus the default config variables,

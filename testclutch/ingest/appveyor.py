@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -62,10 +62,10 @@ class AppveyorIngestor:
         return datetime.datetime.strptime(t.group(1) + microsec + t.group(3) + t.group(4),
                                           '%Y-%m-%dT%H:%M:%S.%f%z')
 
-    def ingest_run(self, run: Dict[str, Any]):
+    def ingest_run(self, run: dict[str, Any]):
         self.process_run(run, self.store_test_run)
 
-    def process_run(self, run: Dict[str, Any],
+    def process_run(self, run: dict[str, Any],
                     log_processor: Callable[[TestMeta, TestCases], None]):
         """Ingests not one log, but logs for one job"""
         project = run['project']

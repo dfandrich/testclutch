@@ -6,7 +6,7 @@ import logging
 import os
 import stat
 import sys
-from typing import Dict, Optional
+from typing import Optional
 
 from testclutch import argparsing
 from testclutch import config
@@ -175,7 +175,7 @@ def curlauto_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datast
     return 0
 
 
-def parse_meta(args: argparse.Namespace) -> Dict:
+def parse_meta(args: argparse.Namespace) -> dict:
     """Parse the --meta option(s) to produce a dict"""
     meta = {}
     if args.meta:

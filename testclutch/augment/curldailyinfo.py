@@ -7,7 +7,6 @@ import logging
 import posixpath
 import re
 import tarfile
-from typing import Tuple
 
 
 # Extract the date from the directory name
@@ -34,7 +33,7 @@ PULL_TIME_LAG = 4
 BUILDER_TZ = '+0200'
 
 
-def get_daily_info(fn: str) -> Tuple[str, datetime.datetime, str]:
+def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
     """Get the exact time & commit when the daily tarball was generated
 
     Also, the daily date is not (necessarily) the date of availability at GitHub, which can be

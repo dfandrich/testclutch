@@ -3,7 +3,7 @@
 
 import json
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from testclutch import netreq
 from testclutch import urls
@@ -36,13 +36,13 @@ class CircleApi:
         self.vcs = 'github'
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         return {"Accept": DATA_TYPE,
                 "Content-Type": DATA_TYPE,
                 "User-Agent": netreq.USER_AGENT
                 }
 
-    def get_runs(self) -> List[Dict[str, Any]]:
+    def get_runs(self) -> list[dict[str, Any]]:
         """Returns info about all recent workflow runs on Cirrus CI"""
         # TODO: add date checking to break off pagination early
         combined_resp = []
@@ -65,7 +65,7 @@ class CircleApi:
             offset += PAGINATION
         return combined_resp
 
-    def get_run(self, build_id: int) -> Dict[str, Any]:
+    def get_run(self, build_id: int) -> dict[str, Any]:
         """Returns info about a single run"""
         url = RUN_URL.format(vcs=self.vcs, user=self.owner, project=self.repo, build=build_id)
         with self.http.get(url, headers=self._standard_headers()) as resp:
@@ -73,7 +73,7 @@ class CircleApi:
             last_resp = json.loads(resp.text)
         return last_resp
 
-    def get_logs(self, log_url: str) -> Tuple[str, str]:
+    def get_logs(self, log_url: str) -> tuple[str, str]:
         logging.info('Retrieving log from %s', log_url)
         with self.http.get(log_url, stream=True) as resp:
             return netreq.download_file(resp, log_url)

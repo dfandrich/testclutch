@@ -3,7 +3,7 @@
 
 import datetime
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from testclutch import config
 from testclutch import db
@@ -23,7 +23,7 @@ class GithubAnalyzeJob:
         self.ds = ds
         self.gh = ghaapi.GithubApi(owner, repo, token)
         self.ghi = gha.GithubIngestor(owner, repo, token, ds)
-        self.test_results = []  # type: List[ParsedLog]
+        self.test_results = []  # type: list[ParsedLog]
         self.prmeta = {}        # type: TestMeta
 
     def _is_matching_run(self, run: TestMeta, commit: str) -> bool:
@@ -31,7 +31,7 @@ class GithubAnalyzeJob:
                 and run['status'] == 'completed'
                 and run['head_sha'] == commit)
 
-    def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> List[int]:
+    def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> list[int]:
         "Find all runs on PRs for a particular commit"
         found = []
         for run in self.gh.get_runs(since=since)['workflow_runs']:
@@ -41,7 +41,7 @@ class GithubAnalyzeJob:
                 logging.debug('Found run %s from %s, %s', run['id'], run['created_at'], run['name'])
         return found
 
-    def find_for_pr(self, pr: int) -> List[int]:
+    def find_for_pr(self, pr: int) -> list[int]:
         pr_info = self.gh.get_pull(pr)
         commit = pr_info['head']['sha']
         logging.debug(f'PR#{pr} is about commit {commit:.9}')
@@ -70,7 +70,7 @@ class GithubAnalyzeJob:
 
         self.test_results.append((meta, testcases))
 
-    def gather_pr(self, pr: int) -> List[ParsedLog]:
+    def gather_pr(self, pr: int) -> list[ParsedLog]:
         """Clear any earlier results and start gathering job results for this PR"""
         self.test_results = []
         self.prmeta = {}

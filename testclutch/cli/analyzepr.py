@@ -11,7 +11,7 @@ from collections.abc import Collection, Container
 from contextlib import nullcontext
 from email import utils
 from html import escape
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Sequence
 
 import testclutch
 from testclutch import analysis
@@ -109,7 +109,7 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
     return parser.parse_args(args=args)
 
 
-def success_fail_count(meta: TestMeta, testcases: TestCases, is_aborted: bool) -> Tuple[str, str]:
+def success_fail_count(meta: TestMeta, testcases: TestCases, is_aborted: bool) -> tuple[str, str]:
     test_result = meta.get('testresult', 'unknown')
     prefix_char = ''
     if test_result == 'success':

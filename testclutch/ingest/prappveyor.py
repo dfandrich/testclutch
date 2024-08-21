@@ -2,7 +2,7 @@
 """
 
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from testclutch import config
 from testclutch import db
@@ -20,12 +20,12 @@ class AppveyorAnalyzeJob:
         self.av = appveyorapi.AppveyorApi(account, project, token)
         self.avi = appveyor.AppveyorIngestor(account, project, repo, ds, token)
         self.ds = ds
-        self.test_results = []  # type: List[ParsedLog]
+        self.test_results = []  # type: list[ParsedLog]
 
     def gather_log(self, logmeta: TestMeta, testcases: TestCases):
         self.test_results.append((logmeta, testcases))
 
-    def find_for_pr(self, pr: int) -> List[str]:
+    def find_for_pr(self, pr: int) -> list[str]:
         "Returns the build version for runs for this pr"
         # Start with a list of ALL recent completed runs
         branch = config.expand('branch')
@@ -38,7 +38,7 @@ class AppveyorAnalyzeJob:
                 results.append(job['version'])
         return results
 
-    def gather_pr(self, pr: int) -> List[ParsedLog]:
+    def gather_pr(self, pr: int) -> list[ParsedLog]:
         # Clear any earlier results and start again
         self.test_results = []
         buildvers = self.find_for_pr(pr)

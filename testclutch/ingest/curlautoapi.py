@@ -7,7 +7,6 @@ import html.parser
 import logging
 import re
 import urllib
-from typing import Dict, List
 
 from testclutch import netreq
 
@@ -70,12 +69,12 @@ class CurlAutoApi:
         # This should delay a total of 5+10+20+40 seconds before aborting
         self.http = netreq.Session(backoff_factor=5)
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         return {"Accept": DATA_TYPE,
                 "User-Agent": netreq.USER_AGENT
                 }
 
-    def get_runs(self) -> List[str]:
+    def get_runs(self) -> list[str]:
         """Returns info about all recent workflow runs"""
         url = BASE_URL
         logging.debug('Retrieving index from %s', url)

@@ -2,7 +2,6 @@
 """
 
 import logging
-from typing import List
 
 from testclutch.ingest import cirrus
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
@@ -23,9 +22,9 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         self.test_results.append((meta, testcases))
 
     def clear_test_results(self):
-        self.test_results = []  # type: List[ParsedLog]
+        self.test_results = []  # type: list[ParsedLog]
 
-    def _find_matching_runs(self, pr: int, branch: str) -> List[int]:
+    def _find_matching_runs(self, pr: int, branch: str) -> list[int]:
         matches = []
         rsp = self.cirrus.get_runs(branch)
         for run in rsp['data']['ownerRepository']['builds']['edges']:
@@ -35,7 +34,7 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
                 matches.append(int(node['id']))
         return matches
 
-    def gather_pr(self, pr: int) -> List[ParsedLog]:
+    def gather_pr(self, pr: int) -> list[ParsedLog]:
         self.clear_test_results()
         found = self._find_matching_runs(pr, '')
         logging.debug(f'Found {len(found)} builds')

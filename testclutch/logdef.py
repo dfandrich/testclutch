@@ -2,7 +2,7 @@
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Union
+from typing import Union
 
 from testclutch.testcasedef import TestResult
 
@@ -15,7 +15,7 @@ class SingleTestFinding:
     duration: int       # test duration in microseconds
 
 
-TestCases = List[SingleTestFinding]
-TestMetaStr = Dict[str, str]  # raw data from DB
-TestMeta = Dict[str, Union[str, int]]  # data to be stored into DB
-ParsedLog = Tuple[TestMeta, TestCases]
+TestCases = list[SingleTestFinding]
+TestMetaStr = dict[str, str]  # raw data from DB
+TestMeta = dict[str, Union[str, int]]  # data to be stored into DB
+ParsedLog = tuple[TestMeta, TestCases]

@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 import urllib.parse
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Iterable, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -81,7 +81,7 @@ class CirrusIngestor:
         run = self.cirrus.get_run(run_id)
         self.ingest_run(run)
 
-    def ingest_run(self, run: Dict[str, Any]):
+    def ingest_run(self, run: dict[str, Any]):
         """Ingests not one log, but logs for one job"""
         build = run['data']['build']
         if not build:

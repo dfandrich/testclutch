@@ -3,7 +3,7 @@
 
 import json
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 from testclutch import netreq
 
@@ -29,13 +29,13 @@ class AppveyorApi:
         self.token = token
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         return {"Accept": DATA_TYPE,
                 "Content-Type": DATA_TYPE,
                 "User-Agent": netreq.USER_AGENT
                 }
 
-    def get_runs(self, branch: str) -> Dict[str, Any]:
+    def get_runs(self, branch: str) -> dict[str, Any]:
         """Returns info about all recent workflow runs on Appveyor"""
         # TODO: add date checking to break off pagination early
         combined_resp = {'builds': []}
@@ -59,7 +59,7 @@ class AppveyorApi:
             combined_resp['builds'].extend(last_resp['builds'])
         return combined_resp
 
-    def get_run(self, build_id: int) -> Dict[str, Any]:
+    def get_run(self, build_id: int) -> dict[str, Any]:
         """Returns info about a single run on Appveyor"""
         url = RUNS_URL.format(account=self.account, project=self.project)
         params = {
@@ -80,7 +80,7 @@ class AppveyorApi:
         # Do another request by version to get the real info
         return self.get_run_by_buildver(build['version'])
 
-    def get_run_by_buildver(self, build_ver: str) -> Dict[str, Any]:
+    def get_run_by_buildver(self, build_ver: str) -> dict[str, Any]:
         """Returns info about a single run on Appveyor
 
         This one is more efficient than get_run() but requires the build version which isn't as
@@ -93,7 +93,7 @@ class AppveyorApi:
             resp.raise_for_status()
             return json.loads(resp.text)
 
-    def get_logs(self, job_id: str) -> Tuple[str, str]:
+    def get_logs(self, job_id: str) -> tuple[str, str]:
         """Retrieve log file for a job"""
         url = LOG_URL.format(job_id=job_id)
         params = {"fullLog": "true"

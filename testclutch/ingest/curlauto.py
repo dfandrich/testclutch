@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Optional, TextIO, Tuple
+from typing import Optional, TextIO
 
 from testclutch import db
 from testclutch import logcache
@@ -64,7 +64,7 @@ class CurlAutoIngestor:
         self.meta = {'origin': 'curlauto', 'checkrepo': repo}
         logcache.create_dirs(LOGSUBDIR)
 
-    def _extract_run_info(self, fn: str) -> Tuple[datetime.datetime, int]:
+    def _extract_run_info(self, fn: str) -> tuple[datetime.datetime, int]:
         run_info = LOG_FILE_RE.search(fn)
         if not run_info:
             raise RuntimeError("Unexpected log name: %s" % fn)

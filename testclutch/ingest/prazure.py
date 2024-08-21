@@ -2,7 +2,6 @@
 """
 
 import logging
-from typing import List
 
 from testclutch import config
 from testclutch.ingest import azure
@@ -24,9 +23,9 @@ class AzureAnalyzer(azure.AzureIngestor):
         self.test_results.append((meta, testcases))
 
     def clear_test_results(self):
-        self.test_results = []  # type: List[ParsedLog]
+        self.test_results = []  # type: list[ParsedLog]
 
-    def _find_matching_runs(self, pr: int, hours: int) -> List[int]:
+    def _find_matching_runs(self, pr: int, hours: int) -> list[int]:
         matches = []
         # Don't specify the branch in order to pick up PRs
         # There is a parameter in build['parameters'], namely system.pullRequest.targetBranch that
@@ -40,7 +39,7 @@ class AzureAnalyzer(azure.AzureIngestor):
                 matches.append(build['id'])
         return matches
 
-    def gather_pr(self, pr: int) -> List[ParsedLog]:
+    def gather_pr(self, pr: int) -> list[ParsedLog]:
         self.clear_test_results()
         found = self._find_matching_runs(pr, config.get('pr_age_hours_default'))
         if not found:

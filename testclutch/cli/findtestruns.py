@@ -4,7 +4,7 @@
 import argparse
 import datetime
 from contextlib import nullcontext
-from typing import Collection, List, Tuple
+from typing import Collection
 
 from testclutch import argparsing
 from testclutch import config
@@ -30,7 +30,7 @@ class FindFailedRuns:
         self.ds = ds
 
     def find_status_run(self, repo: str, since: datetime.datetime, testname: str,
-                        statuses: Collection[int]) -> List[Tuple[int, int, str]]:
+                        statuses: Collection[int]) -> list[tuple[int, int, str]]:
         jobruns = self.ds.db.cursor()
         if len(statuses) < 2:
             # Duplicate a single item
@@ -41,7 +41,7 @@ class FindFailedRuns:
                         (oldest, repo, testname, *statuses))
         return jobruns.fetchall()
 
-    def show_matches(self, testmatches: List[Tuple[int, int, str]]):
+    def show_matches(self, testmatches: list[tuple[int, int, str]]):
         # Sort by descending date
         testmatches.sort(key=lambda x: x[1], reverse=True)
         for testid, runtime, failtext in testmatches:

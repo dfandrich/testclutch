@@ -3,7 +3,7 @@
 
 import json
 import logging
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from testclutch import netreq
 from testclutch import urls
@@ -302,12 +302,12 @@ class CirrusApi:
         self.token = token
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> Dict:
+    def _standard_headers(self) -> dict:
         return {"Accept": DATA_TYPE,
                 "User-Agent": netreq.USER_AGENT
                 }
 
-    def query_graphql(self, query: str, var: Dict) -> Dict:
+    def query_graphql(self, query: str, var: dict) -> dict:
         """Send a GraphQL query to the server and return the raw Python data response"""
         jsonreq = {"query": query,
                    "variables": var,
@@ -317,7 +317,7 @@ class CirrusApi:
         resp.raise_for_status()
         return json.loads(resp.text)
 
-    def get_runs(self, branch: str) -> Dict[str, Any]:
+    def get_runs(self, branch: str) -> dict[str, Any]:
         """Returns info about all recent workflow runs on Cirrus CI
 
         If branch is an empty string, no branch matching is performed.
@@ -330,12 +330,12 @@ class CirrusApi:
                }
         return self.query_graphql(RUNS_GRAPHQL, var)
 
-    def get_run(self, run_id: int) -> Dict[str, Any]:
+    def get_run(self, run_id: int) -> dict[str, Any]:
         var = {"buildId": run_id
                }
         return self.query_graphql(RUN_GRAPHQL, var)
 
-    def get_logs(self, task_id: int, command_name: str) -> Tuple[str, str]:
+    def get_logs(self, task_id: int, command_name: str) -> tuple[str, str]:
         url = LOGS_URL.format(task_id=task_id, command_name=command_name)
         logging.info('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), stream=True) as resp:

@@ -4,7 +4,7 @@
 import argparse
 import logging
 import subprocess
-from typing import List, Optional
+from typing import Optional
 
 from testclutch import argparsing
 from testclutch import config
@@ -19,7 +19,7 @@ class GitCommitIngestor:
         self.ds = ds
         self.dry_run = ds is None
 
-    def extract_git_commit_info(self, repo: str, branch: str, since: str) -> List[CommitInfo]:
+    def extract_git_commit_info(self, repo: str, branch: str, since: str) -> list[CommitInfo]:
         "Returns information about git commits"
         try:
             # git nowadays has -C to select the repo to use, but this way works with

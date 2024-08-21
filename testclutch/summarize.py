@@ -2,7 +2,7 @@
 
 import contextlib
 import io
-from typing import List, Union
+from typing import Union
 
 from testclutch.logdef import TestCases
 from testclutch.testcasedef import TestResult
@@ -12,7 +12,7 @@ def show_totals(testcases: TestCases, details: bool = False):
     print(''.join(summarize_totals(testcases, details)))
 
 
-def summarize_totals(testcases: TestCases, details: bool = False) -> List[str]:
+def summarize_totals(testcases: TestCases, details: bool = False) -> list[str]:
     f = io.StringIO()
     print("OK:", len([1 for x in testcases if x.result == TestResult.PASS]), file=f)
     print("FAILED:", len([1 for x in testcases if x.result == TestResult.FAIL]), file=f)

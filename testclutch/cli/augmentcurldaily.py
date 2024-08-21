@@ -8,7 +8,6 @@ ingested tests with the information about the last commit.
 import argparse
 import datetime
 import logging
-from typing import Tuple
 
 from testclutch import argparsing
 from testclutch import config
@@ -39,7 +38,7 @@ class CurlDailyAugmenter:
         self.ds = ds
         self.dry_run = dry_run
 
-    def get_all_daily_info(self, fn: str) -> Tuple[str, str, str]:
+    def get_all_daily_info(self, fn: str) -> tuple[str, str, str]:
         day_code, daily_time, commithash = curldailyinfo.get_daily_info(fn)
         logging.debug(f'Daily snapshot from {day_code} at {daily_time.ctime()} '
                       f'with hash {commithash}')

@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Iterable, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -99,7 +99,7 @@ class AzureIngestor:
         build = self.azure.get_build(build_id)
         self.ingest_run(build)
 
-    def ingest_run(self, build: Dict[str, Any]):
+    def ingest_run(self, build: dict[str, Any]):
         """Ingests not one log, but logs for one job"""
         build_id = build['id']
         cimeta = {}
@@ -207,7 +207,7 @@ class AzureIngestor:
                         meta = {**cimeta, **jobmeta}
                         self.ingest_log(build_id, logs_tasks, meta)
 
-    def download_log(self, build_id: int, tasks: Iterable[Dict[str, Any]]):
+    def download_log(self, build_id: int, tasks: Iterable[dict[str, Any]]):
         for task in tasks:
             log_id = task['log']['id']
             newfn = self._log_file_path(build_id, log_id)
@@ -257,8 +257,8 @@ class AzureIngestor:
 
             self.store_test_run(meta, testcases)
 
-    def ingest_log(self, build_id: int, tasks: Iterable[Dict[str, Any]],
-                   cimeta: Dict[str, str]):
+    def ingest_log(self, build_id: int, tasks: Iterable[dict[str, Any]],
+                   cimeta: dict[str, str]):
         for task in tasks:
             jobmeta = {}
             jobmeta['cistep'] = task['name']
