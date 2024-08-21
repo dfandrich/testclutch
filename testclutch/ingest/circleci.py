@@ -10,7 +10,7 @@ import json
 import logging
 import re
 import urllib
-from typing import Any, Callable, Iterable, Optional, TextIO
+from typing import Any, Iterable, Optional, TextIO
 
 from testclutch import db
 from testclutch import logcache
@@ -109,21 +109,9 @@ class CircleIngestor:
         return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
 
     def ingest_a_run(self, build_num: int):
-        self.process_a_run(build_num, self.store_test_run)
-
-    def process_a_run(self, build_num: int,
-                      log_processor: Callable[[TestMeta, TestCases], None]):
+        """Ingests not one log, but logs for one job"""
         logging.debug('Getting build %s', build_num)
         build = self.circle.get_run(build_num)
-        self.process_run(build, log_processor)
-
-    # TODO: delete me
-    def ingest_run(self, build: dict[str, Any]):
-        self.process_run(build, self.store_test_run)
-
-    def process_run(self, build: dict[str, Any],
-                    log_processor: Callable[[TestMeta, TestCases], None]):
-        """Ingests not one log, but logs for one job"""
         build_num = build['build_num']
         cimeta = {}
         cimeta['ciname'] = 'CircleCI'
@@ -159,7 +147,7 @@ class CircleIngestor:
                  if step['actions'][0]['has_output'] and step['name'] not in SYSTEM_TASKS]
 
         self.download_log(build_num, steps)
-        self.process_log(build_num, steps, cimeta, log_processor)
+        self.process_log(build_num, steps, cimeta)
 
     def download_log(self, build_run: int, job_steps: Iterable[dict[str, Any]]) -> str:
         """Downloads the given log file.
@@ -228,6 +216,10 @@ class CircleIngestor:
         logging.debug(f'{count} matching runs found, {skipped} skipped')
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
+        """Store the data about one test
+
+        This method may be overridden to do something other than storing.
+        """
         if not self.dry_run:
             try:
                 self.ds.store_test_run(meta, testcases)
@@ -242,8 +234,7 @@ class CircleIngestor:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
-    def process_log_file(self, fn: str, cimeta: TestMeta,
-                         log_processor: Callable[[TestMeta, TestCases], None]):
+    def process_log_file(self, fn: str, cimeta: TestMeta):
         logging.debug('Ingesting file %s', fn)
         if GET_FULL_LOG:
             readylog = logcache.open_cache_file(fn)
@@ -268,10 +259,9 @@ class CircleIngestor:
             for l in summary:
                 logging.debug("%s", l.strip())
             logging.debug('')
-            log_processor(meta, testcases)
+            self.store_test_run(meta, testcases)
 
-    def process_log(self, build_run: int, steps: Iterable[dict[str, Any]], cimeta: TestMeta,
-                    log_processor: Callable[[TestMeta, TestCases], None]):
+    def process_log(self, build_run: int, steps: Iterable[dict[str, Any]], cimeta: TestMeta):
         for step in steps:
             assert len(step['actions']) == 1
             action = step['actions'][0]
@@ -288,5 +278,4 @@ class CircleIngestor:
             jobmeta['cistepresult'] = action['status']
 
             meta = {**cimeta, **jobmeta}
-            self.process_log_file(self._log_file_path(build_run, jobmeta['cistepid']), meta,
-                                  log_processor)
+            self.process_log_file(self._log_file_path(build_run, jobmeta['cistepid']), meta)

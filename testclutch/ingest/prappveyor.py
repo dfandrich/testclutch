@@ -2,27 +2,27 @@
 """
 
 import logging
-from typing import Optional
 
 from testclutch import config
-from testclutch import db
 from testclutch.ingest import appveyor
-from testclutch.ingest import appveyorapi
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
-class AppveyorAnalyzeJob:
-    def __init__(self, account: str, project: str, repo: str, ds: db.Datastore,
-                 token: Optional[str]):
-        self.account = account
-        self.project = project
-        self.repo = repo
-        self.av = appveyorapi.AppveyorApi(account, project, token)
-        self.avi = appveyor.AppveyorIngestor(account, project, repo, ds, token)
-        self.ds = ds
+class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
+    """Appveyor PR log analyzer
+
+    Based on AppveyorIngestor but with the store method replaced to store log data instead
+    and methods to retrieve by PR.
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
         self.test_results = []  # type: list[ParsedLog]
 
-    def gather_log(self, logmeta: TestMeta, testcases: TestCases):
+    def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
+        """Store test results in a list
+
+        This overrides the method in the base class.
+        """
         self.test_results.append((logmeta, testcases))
 
     def find_for_pr(self, pr: int) -> list[str]:
@@ -46,5 +46,5 @@ class AppveyorAnalyzeJob:
             logging.error('No Appveyor run found for PR#%d', pr)
         logging.info(f'Found {len(buildvers)} runs; only looking at the most recent')
         if buildvers:
-            self.avi.process_a_run_by_buildver(buildvers[0], self.gather_log)
+            self.ingest_a_run_by_buildver(buildvers[0])
         return self.test_results

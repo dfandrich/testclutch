@@ -221,6 +221,10 @@ class AzureIngestor:
         return newfn
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
+        """Store the data about one test
+
+        This method may be overridden to do something other than storing.
+        """
         if not self.dry_run:
             try:
                 self.ds.store_test_run(meta, testcases)

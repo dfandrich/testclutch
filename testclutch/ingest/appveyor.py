@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -41,13 +41,9 @@ class AppveyorIngestor:
         self.ingest_run(run)
 
     def ingest_a_run_by_buildver(self, build_ver: str):
-        self.process_a_run_by_buildver(build_ver, self.store_test_run)
-
-    def process_a_run_by_buildver(self, build_ver: str,
-                                  log_processor: Callable[[TestMeta, TestCases], None]):
         logging.debug('Getting run %s', build_ver)
         run = self.av.get_run_by_buildver(build_ver)
-        self.process_run(run, log_processor)
+        self.ingest_run(run)
 
     def _convert_time(self, timestamp: str) -> datetime.datetime:
         """Converts an Appveyor time into a datetime object.
@@ -63,10 +59,6 @@ class AppveyorIngestor:
                                           '%Y-%m-%dT%H:%M:%S.%f%z')
 
     def ingest_run(self, run: dict[str, Any]):
-        self.process_run(run, self.store_test_run)
-
-    def process_run(self, run: dict[str, Any],
-                    log_processor: Callable[[TestMeta, TestCases], None]):
         """Ingests not one log, but logs for one job"""
         project = run['project']
         build = run['build']
@@ -120,7 +112,7 @@ class AppveyorIngestor:
 
             if self.download_log(build_id, job_id):
                 meta = {**cimeta, **jobmeta}
-                self.process_log_file(self._log_file_path(build_id, job_id), meta, log_processor)
+                self.process_log_file(self._log_file_path(build_id, job_id), meta)
             else:
                 logging.info("No logs available to ingest")
 
@@ -142,6 +134,10 @@ class AppveyorIngestor:
         return newfn
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
+        """Store the data about one test
+
+        This method may be overridden to do something other than storing.
+        """
         if not self.dry_run:
             logging.info('Storing test result in database')
             try:
@@ -157,8 +153,7 @@ class AppveyorIngestor:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
-    def process_log_file(self, fn: str, cimeta: TestMeta,
-                         log_processor: Callable[[TestMeta, TestCases], None]):
+    def process_log_file(self, fn: str, cimeta: TestMeta):
         logging.debug('Processing file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = msbuild.MsBuildLog(
@@ -177,7 +172,7 @@ class AppveyorIngestor:
             for l in summary:
                 logging.debug("%s", l.strip())
             logging.debug('')
-            log_processor(meta, testcases)
+            self.store_test_run(meta, testcases)
 
     def ingest_all_logs(self, branch: str, hours: int):
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)

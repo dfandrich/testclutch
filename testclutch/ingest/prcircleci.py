@@ -2,26 +2,27 @@
 """
 
 import logging
-import urllib
 
-from testclutch import db
 from testclutch import urls
 from testclutch.ingest import circleci
-from testclutch.ingest import circleciapi
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
-class CircleAnalyzer:
-    def __init__(self, repo: str, ds: db.Datastore):
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
-        safe_path = circleci.sanitize_path(path)
-        self.repo = f'{netloc}{safe_path}'
-        self.circle = circleciapi.CircleApi(repo)
-        self.circlei = circleci.CircleIngestor(repo, ds)
-        self.ds = ds
+class CircleAnalyzer(circleci.CircleIngestor):
+    """Circle PR log analyzer
+
+    Based on CircleIngestor but with the store method replaced to store log data instead
+    and methods to retrieve by PR.
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
         self.test_results = []  # type: list[ParsedLog]
 
-    def gather_log(self, logmeta: TestMeta, testcases: TestCases):
+    def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
+        """Store test results in a list
+
+        This overrides the method in the base class.
+        """
         self.test_results.append((logmeta, testcases))
 
     def find_for_pr(self, pr: int) -> list[int]:
@@ -47,5 +48,5 @@ class CircleAnalyzer:
         self.test_results = []
         builds = self.find_for_pr(pr)
         for build in builds:
-            self.circlei.process_a_run(build, self.gather_log)
+            self.ingest_a_run(build)
         return self.test_results

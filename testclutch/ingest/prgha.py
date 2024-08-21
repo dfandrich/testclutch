@@ -6,9 +6,7 @@ import logging
 from typing import Optional
 
 from testclutch import config
-from testclutch import db
 from testclutch.ingest import gha
-from testclutch.ingest import ghaapi
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
@@ -16,13 +14,17 @@ from testclutch.logdef import ParsedLog, TestCases, TestMeta
 PR_EVENT = 'pull_request'
 
 
-class GithubAnalyzeJob:
-    def __init__(self, owner: str, repo: str, token: str, ds: db.Datastore):
-        self.owner = owner
-        self.repo = repo
-        self.ds = ds
-        self.gh = ghaapi.GithubApi(owner, repo, token)
-        self.ghi = gha.GithubIngestor(owner, repo, token, ds)
+class GithubAnalyzeJob(gha.GithubIngestor):
+    """GitHub PR log analyzer
+
+    Based on GithubIngestor but with the store method replaced to store log data instead
+    and methods to retrieve by PR.
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.clear_test_results()
+
+    def clear_test_results(self):
         self.test_results = []  # type: list[ParsedLog]
         self.prmeta = {}        # type: TestMeta
 
@@ -62,7 +64,11 @@ class GithubAnalyzeJob:
         logging.debug('Found %d matching runs', len(found))
         return found
 
-    def gather_log(self, logmeta: TestMeta, testcases: TestCases):
+    def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
+        """Store test results in a list
+
+        This overrides the method in the base class.
+        """
         meta = {**self.prmeta, **logmeta}
         if meta['trigger'] != 'pull_request':
             logging.info(f"Log is due to {meta['trigger']}, not a pull request; skipping")
@@ -72,8 +78,7 @@ class GithubAnalyzeJob:
 
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         """Clear any earlier results and start gathering job results for this PR"""
-        self.test_results = []
-        self.prmeta = {}
+        self.clear_test_results()
         runs = self.find_for_pr(pr)
         if not runs:
             logging.error('No GHA run found for PR#%d', pr)
@@ -81,5 +86,5 @@ class GithubAnalyzeJob:
         # But, we want all jobs in that run, even when configured from different sources
         for run_id in runs:
             self.prmeta = {'pullrequest': pr}
-            self.ghi.process_a_run(run_id, self.gather_log)
+            self.ingest_a_run(run_id)
         return self.test_results

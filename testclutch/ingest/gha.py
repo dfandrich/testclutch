@@ -9,7 +9,7 @@ import logging
 import posixpath
 import re
 import zipfile
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 from testclutch import db
 from testclutch import logcache
@@ -75,19 +75,11 @@ class GithubIngestor:
         logcache.create_dirs(LOGSUBDIR)
 
     def ingest_a_run(self, run_id: int):
-        self.process_a_run(run_id, self.store_test_run)
-
-    def process_a_run(self, run_id: int,
-                      log_processor: Callable[[TestMeta, TestCases], None]):
         logging.debug('Getting run %s', run_id)
         run = self.gh.get_run(run_id)
-        self.process_run(run, log_processor)
+        self.ingest_run(run)
 
     def ingest_run(self, run: dict[str, Any]):
-        self.process_run(run, self.store_test_run)
-
-    def process_run(self, run: dict[str, Any],
-                    log_processor: Callable[[TestMeta, TestCases], None]):
         run_id = run['id']
 
         if run['status'] != 'completed':
@@ -119,7 +111,7 @@ class GithubIngestor:
         cimeta['runfinishtime'] = int(ghaapi.convert_time(run['updated_at']).timestamp())
 
         if self.download_log(run_id):
-            self.process_log_file(self._log_file_path(run_id), cimeta, log_processor)
+            self.process_log_file(self._log_file_path(run_id), cimeta)
         else:
             logging.info("No logs available to ingest")
 
@@ -178,15 +170,6 @@ class GithubIngestor:
             logcache.move_into_cache(fn, newfn)
         return newfn
 
-    # TODO: remove this
-    def ingest_log(self, run_id: int, cimeta: TestMeta):
-        return self.ingest_log_file(self._log_file_path(run_id), cimeta)
-
-    # TODO: remove this
-    def ingest_log_file(self, fn: str, cimeta: TestMeta):
-        "Processes log file and calls store_test_run on each log in turn to store it"
-        self.process_log_file(fn, cimeta, self.store_test_run)
-
     def sanitize_log_fn(self, fn: str) -> str:
         "Sanitize the log file name for storing in a zip file, like GHA does"
         if not KNOWN_LOG_FN_RE.search(fn):
@@ -196,6 +179,10 @@ class GithubIngestor:
         return STRIP_LOG_FN_RE.sub('', fn)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
+        """Store the data about one test
+
+        This method may be overridden to do something other than storing.
+        """
         if not self.dry_run:
             logging.info('Storing test result in database')
             try:
@@ -231,8 +218,7 @@ class GithubIngestor:
                 return job
         return {}
 
-    def process_log_file(self, fn: str, cimeta: TestMeta,
-                         log_processor: Callable[[TestMeta, TestCases], None]):
+    def process_log_file(self, fn: str, cimeta: TestMeta):
         try:
             log = zipfile.ZipFile(logcache.open_cache_file(fn, 'rb'))
         except zipfile.BadZipFile:
@@ -275,7 +261,7 @@ class GithubIngestor:
                 job = self.find_job(jobs, meta)
                 if job:
                     if job['status'] != 'completed':
-                        # This should have been filtered out in ingest_all_logs and process_run,
+                        # This should have been filtered out in ingest_all_logs and ingest_run,
                         # but sometimes the status shows completed there but in_progress here.
                         logging.warning('Run %d is (strangely) %s in jobs; skipping',
                                         cimeta['runid'], job['status'])
@@ -310,4 +296,4 @@ class GithubIngestor:
                     logging.debug("%s", l.strip())
                 logging.debug('')
 
-                log_processor(meta, testcases)
+                self.store_test_run(meta, testcases)

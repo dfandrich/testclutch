@@ -18,7 +18,10 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         self.clear_test_results()
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        "Store test results in a list"
+        """Store test results in a list
+
+        This overrides the method in the base class.
+        """
         self.test_results.append((meta, testcases))
 
     def clear_test_results(self):
