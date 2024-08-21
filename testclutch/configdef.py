@@ -57,7 +57,7 @@ analysis_hours = 24 * 90  # 90 days
 pr_age_hours_default = 18
 
 # Maximum number of hours back to look for a requested PR;
-# no PR runs older than this will ever be found
+# no PR runs older than this will ever be found (at least for some CI services)
 pr_age_hours_max = 14 * 24
 
 # Character map used in git commit logs

@@ -28,6 +28,11 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         self.test_results = []  # type: list[ParsedLog]
 
     def _find_matching_runs(self, pr: int, branch: str) -> list[int]:
+        """Find runs for the given PR
+
+        Returns runs for all commits on this PR (if there were runs for more than one) in reverse
+        chronological order (most recent first).
+        """
         matches = []
         rsp = self.cirrus.get_runs(branch)
         for run in rsp['data']['ownerRepository']['builds']['edges']:
@@ -40,9 +45,8 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         self.clear_test_results()
         found = self._find_matching_runs(pr, '')
-        logging.debug(f'Found {len(found)} builds')
-        for build in found:
-            self.ingest_a_run(build)
-            # Only look at the first build found
-            break
+        logging.info(f'Found {len(found)} runs; only looking at the most recent one')
+        if found:
+            # Only look at the first (most recent) build
+            self.ingest_a_run(found[0])
         return self.test_results

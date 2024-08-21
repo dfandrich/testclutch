@@ -43,7 +43,11 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                 logging.debug('Found run %s from %s, %s', run['id'], run['created_at'], run['name'])
         return found
 
-    def find_for_pr(self, pr: int) -> list[int]:
+    def _find_for_pr(self, pr: int) -> list[int]:
+        """Find the most recent runs for the given PR
+
+        Only return runs for the most recent commit, if there were runs for more than one.
+        """
         pr_info = self.gh.get_pull(pr)
         commit = pr_info['head']['sha']
         logging.debug(f'PR#{pr} is about commit {commit:.9}')
@@ -79,11 +83,10 @@ class GithubAnalyzeJob(gha.GithubIngestor):
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         """Clear any earlier results and start gathering job results for this PR"""
         self.clear_test_results()
-        runs = self.find_for_pr(pr)
+        runs = self._find_for_pr(pr)
         if not runs:
             logging.error('No GHA run found for PR#%d', pr)
-        # TODO: we really only want to look at the most recent run, not all of them
-        # But, we want all jobs in that run, even when configured from different sources
+        # Look at all jobs in the most recent run
         for run_id in runs:
             self.prmeta = {'pullrequest': pr}
             self.ingest_a_run(run_id)

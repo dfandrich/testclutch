@@ -25,10 +25,13 @@ class CircleAnalyzer(circleci.CircleIngestor):
         """
         self.test_results.append((logmeta, testcases))
 
-    def find_for_pr(self, pr: int) -> list[int]:
-        "Returns the runs for this PR"
+    def _find_for_pr(self, pr: int) -> list[int]:
+        """Find runs for the given PR
+
+        Only return runs for the most recent commit, if there were runs for more than one.
+        """
         # Start with a list of ALL recent completed runs
-        builds = []
+        matchingpr = []
         runs = self.circle.get_runs()
         logging.debug('Search found %d runs', len(runs))
         for run in runs:
@@ -38,15 +41,23 @@ class CircleAnalyzer(circleci.CircleIngestor):
                 build_pr = urls.url_pr(url)
                 if pr == build_pr:
                     logging.debug('Found build %s on branch %s', run['build_num'], run['branch'])
-                    builds.append(run['build_num'])
+                    matchingpr.append((run['build_num'], run['vcs_revision']))
 
-        logging.info('Found %d runs for PR#%d', len(builds), pr)
+        # matchingpr now contains all runs for this PR, which could cover more than one git commit
+        # if the user pushed several that were run separately. Keep only the runs on the most recent
+        # commit by sorting by build ID and filtering for the commit handled by the most recent one.
+        builds = []
+        if matchingpr:
+            mostrecentcommit = max(matchingpr, key=lambda x: x[0])[1]
+            logging.info(f'Only getting runs for the most recent commit {mostrecentcommit:.9}')
+            builds = [match[0] for match in matchingpr if match[1] == mostrecentcommit]
         return builds
 
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         # Clear any earlier results and start again
         self.test_results = []
-        builds = self.find_for_pr(pr)
+        builds = self._find_for_pr(pr)
+        logging.info('Found %d runs for PR#%d', len(builds), pr)
         for build in builds:
             self.ingest_a_run(build)
         return self.test_results

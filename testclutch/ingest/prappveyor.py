@@ -25,8 +25,12 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
         """
         self.test_results.append((logmeta, testcases))
 
-    def find_for_pr(self, pr: int) -> list[str]:
-        "Returns the build version for runs for this pr"
+    def _find_for_pr(self, pr: int) -> list[str]:
+        """Find runs for the given PR made within the given number of hours
+
+        Returns runs for all commits on this PR (if there were runs for more than one) in reverse
+        chronological order (most recent first).
+        """
         # Start with a list of ALL recent completed runs
         branch = config.expand('branch')
         runs = self.av.get_runs(branch)
@@ -41,10 +45,11 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         # Clear any earlier results and start again
         self.test_results = []
-        buildvers = self.find_for_pr(pr)
+        buildvers = self._find_for_pr(pr)
         if not buildvers:
-            logging.error('No Appveyor run found for PR#%d', pr)
-        logging.info(f'Found {len(buildvers)} runs; only looking at the most recent')
+            logging.error('No Appveyor runs found for PR#%d', pr)
+        logging.info(f'Found {len(buildvers)} runs; only looking at the most recent one')
         if buildvers:
+            # Only look at the first (most recent) build found
             self.ingest_a_run_by_buildver(buildvers[0])
         return self.test_results

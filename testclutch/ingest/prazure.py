@@ -29,8 +29,13 @@ class AzureAnalyzer(azure.AzureIngestor):
         self.test_results = []  # type: list[ParsedLog]
 
     def _find_matching_runs(self, pr: int, hours: int) -> list[int]:
+        """Find runs for the given PR made within the given number of hours
+
+        Returns runs for all commits on this PR (if there were runs for more than one) in reverse
+        chronological order (most recent first).
+        """
         matches = []
-        # Don't specify the branch in order to pick up PRs
+        # Don't specify the branch in order to pick up PR runs
         # There is a parameter in build['parameters'], namely system.pullRequest.targetBranch that
         # could be compared to the branch we want, but 1) it seems to be JSON embedded in JSON, and
         # 2) we don't really care about the branch as long as the PR number matches.
@@ -49,9 +54,8 @@ class AzureAnalyzer(azure.AzureIngestor):
             # Nothing found recently; expand the search much longer
             found = self._find_matching_runs(pr, config.get('pr_age_hours_max'))
 
-        logging.debug(f'Found {len(found)} builds')
-        for build in found:
-            self.ingest_a_run(build)
-            # Only look at the first build found
-            break
+        logging.info(f'Found {len(found)} runs; only looking at the most recent one')
+        if found:
+            # Only look at the first (most recent) build found
+            self.ingest_a_run(found[0])
         return self.test_results
