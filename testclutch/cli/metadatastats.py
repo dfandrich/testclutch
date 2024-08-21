@@ -223,7 +223,7 @@ class FeatureMatrix:
         # Remove any metadata fields that were requested but not actually found
         foundmetas = [name for name in metas if name in features]
         return [(f'{name}: {value}', name, value) for name in foundmetas
-                for value in sorted(features[name])]
+                for value in sorted(features[name], key=str.casefold)]
 
 
 def idify(s: str) -> str:
