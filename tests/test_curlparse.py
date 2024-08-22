@@ -12,198 +12,224 @@ DATADIR = 'data'
 
 class TestParseUname(unittest.TestCase):
     def test_uname(self):
-        self.assertDictEqual(curlparse.parse_uname(
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': '0013249e7165',
+            'systemosver': '6.5.0-1023-azure',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Linux 0013249e7165 6.5.0-1023-azure #24~22.04.1-Ubuntu SMP Wed Jun 12 19:55:26 UTC '
-            '2024 x86_64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': '0013249e7165',
-             'systemosver': '6.5.0-1023-azure',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            '2024 x86_64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'ip-10-0-189-223',
+            'systemosver': '5.4.0-1025-aws',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Linux ip-10-0-189-223 5.4.0-1025-aws #25-Ubuntu SMP Fri Sep 11 09:37:24 UTC 2020 '
-            'x86_64 x86_64 x86_64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'ip-10-0-189-223',
-             'systemosver': '5.4.0-1025-aws',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'x86_64 x86_64 x86_64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'gcc1-power7.osuosl.org',
+            'systemosver': '3.10.0-1160.105.1.el7.ppc64',
+            'arch': 'ppc64'
+        }, curlparse.parse_uname(
             'Linux gcc1-power7.osuosl.org 3.10.0-1160.105.1.el7.ppc64 #1 SMP Thu Dec 7 16:07:07 '
-            'UTC 2023 ppc64 ppc64 ppc64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'gcc1-power7.osuosl.org',
-             'systemosver': '3.10.0-1160.105.1.el7.ppc64',
-             'arch': 'ppc64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'Linux cfarm91 5.18.11-starfive #1 SMP Sun Sep 4 12:09:06 CEST 2022 riscv64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'cfarm91',
-             'systemosver': '5.18.11-starfive',
-             'arch': 'riscv64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'UTC 2023 ppc64 ppc64 ppc64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'cfarm91',
+            'systemosver': '5.18.11-starfive',
+            'arch': 'riscv64'
+        }, curlparse.parse_uname(
+            'Linux cfarm91 5.18.11-starfive #1 SMP Sun Sep 4 12:09:06 CEST 2022 riscv64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'mgahost',
+            'systemosver': '6.6.43-desktop-1.mga9',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Linux mgahost 6.6.43-desktop-1.mga9 #1 SMP PREEMPT_DYNAMIC Sat Jul 27 17:18:39 UTC '
-            '2024 x86_64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'mgahost',
-             'systemosver': '6.6.43-desktop-1.mga9',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            '2024 x86_64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'scan',
+            'systemosver': '4.1.15-gentoo-r1',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Linux scan 4.1.15-gentoo-r1 #2 SMP Thu Feb 18 14:16:46 UTC 2016 x86_64 '
-            'Intel(R) Xeon(R) CPU X5675 @ 3.07GHz GenuineIntel GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'scan',
-             'systemosver': '4.1.15-gentoo-r1',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'Intel(R) Xeon(R) CPU X5675 @ 3.07GHz GenuineIntel GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'buildnode',
+            'systemosver': '6.6.37-desktop',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Linux buildnode 6.6.37-desktop #1 SMP PREEMPT_DYNAMIC Sat Jul  6 01:42:12 UTC 2024 '
-            'x86_64 GNU/Linux'),
-            {'systemos': 'Linux',
-             'systemhost': 'buildnode',
-             'systemosver': '6.6.37-desktop',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'Linux xyzzy 4.4.302-st28 #21521 Mon Feb 13 04:58:26 +06 2023 mips DD-WRT'),
-            {'systemos': 'Linux',
-             'systemhost': 'xyzzy',
-             'systemosver': '4.4.302-st28',
-             'arch': 'mips'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'CYGWIN_NT-10.0-20348 fv-az1105-214 3.5.3-1.x86_64 2024-04-03 17:25 UTC x86_64 Cygwin'),
-            {'systemos': 'CYGWIN_NT-10.0-20348',
-             'systemhost': 'fv-az1105-214',
-             'systemosver': '3.5.3-1.x86_64',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'x86_64 GNU/Linux')
+        )
+        self.assertDictEqual({
+            'systemos': 'Linux',
+            'systemhost': 'xyzzy',
+            'systemosver': '4.4.302-st28',
+            'arch': 'mips'
+        }, curlparse.parse_uname(
+            'Linux xyzzy 4.4.302-st28 #21521 Mon Feb 13 04:58:26 +06 2023 mips DD-WRT')
+        )
+        self.assertDictEqual({
+            'systemos': 'CYGWIN_NT-10.0-20348',
+            'systemhost': 'fv-az1105-214',
+            'systemosver': '3.5.3-1.x86_64',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
+            'CYGWIN_NT-10.0-20348 fv-az1105-214 3.5.3-1.x86_64 2024-04-03 17:25 UTC x86_64 Cygwin')
+        )
+        self.assertDictEqual({
+            'systemos': 'MINGW64_NT-10.0-20348',
+            'systemhost': 'fv-az980-747',
+            'systemosver': '3.5.3-d8b21b8c.x86_64',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'MINGW64_NT-10.0-20348 fv-az980-747 3.5.3-d8b21b8c.x86_64 2024-07-09 18:03 UTC x86_64 '
-            'Msys'),
-            {'systemos': 'MINGW64_NT-10.0-20348',
-             'systemhost': 'fv-az980-747',
-             'systemosver': '3.5.3-d8b21b8c.x86_64',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'MINGW32_NT-10.0-17763 68ab3802cea0 3.4.8.x86_64 2023-08-18 23:11 UTC x86_64 Msys'),
-            {'systemos': 'MINGW32_NT-10.0-17763',
-             'systemhost': '68ab3802cea0',
-             'systemosver': '3.4.8.x86_64',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'MINGW32_NT-6.2 D346320C23B2 1.0.19(0.48/3/2) 2016-07-13 17:45 i686 Msys'),
-            {'systemos': 'MINGW32_NT-6.2',
-             'systemhost': 'D346320C23B2',
-             'systemosver': '1.0.19(0.48/3/2)',
-             'arch': 'i686'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'MSYS_NT-10.0-20348 fv-az1105-175 3.5.3.x86_64 2024-06-03 06:22 UTC x86_64 Msys'),
-            {'systemos': 'MSYS_NT-10.0-20348',
-             'systemhost': 'fv-az1105-175',
-             'systemosver': '3.5.3.x86_64',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'Msys')
+        )
+        self.assertDictEqual({
+            'systemos': 'MINGW32_NT-10.0-17763',
+            'systemhost': '68ab3802cea0',
+            'systemosver': '3.4.8.x86_64',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
+            'MINGW32_NT-10.0-17763 68ab3802cea0 3.4.8.x86_64 2023-08-18 23:11 UTC x86_64 Msys')
+        )
+        self.assertDictEqual({
+            'systemos': 'MINGW32_NT-6.2',
+            'systemhost': 'D346320C23B2',
+            'systemosver': '1.0.19(0.48/3/2)',
+            'arch': 'i686'
+        }, curlparse.parse_uname(
+            'MINGW32_NT-6.2 D346320C23B2 1.0.19(0.48/3/2) 2016-07-13 17:45 i686 Msys')
+        )
+        self.assertDictEqual({
+            'systemos': 'MSYS_NT-10.0-20348',
+            'systemhost': 'fv-az1105-175',
+            'systemosver': '3.5.3.x86_64',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
+            'MSYS_NT-10.0-20348 fv-az1105-175 3.5.3.x86_64 2024-06-03 06:22 UTC x86_64 Msys')
+        )
+        self.assertDictEqual({
+            'systemos': 'Darwin',
+            'systemhost': 'Mac-1715788362745.local',
+            'systemosver': '23.4.0',
+            'arch': 'arm64'
+        }, curlparse.parse_uname(
             'Darwin Mac-1715788362745.local 23.4.0 Darwin Kernel Version 23.4.0: Fri Mar 15 '
-            '00:10:50 PDT 2024; root:xnu-10063.101.17~1/RELEASE_ARM64_VMAPPLE arm64'),
-            {'systemos': 'Darwin',
-             'systemhost': 'Mac-1715788362745.local',
-             'systemosver': '23.4.0',
-             'arch': 'arm64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            '00:10:50 PDT 2024; root:xnu-10063.101.17~1/RELEASE_ARM64_VMAPPLE arm64')
+        )
+        self.assertDictEqual({
+            'systemos': 'Darwin',
+            'systemhost': 'Mac-1686140684611.local',
+            'systemosver': '21.6.0',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
             'Darwin Mac-1686140684611.local 21.6.0 Darwin Kernel Version 21.6.0: Thu Mar  9 '
-            '20:08:59 PST 2023; root:xnu-8020.240.18.700.8~1/RELEASE_X86_64 x86_64'),
-            {'systemos': 'Darwin',
-             'systemhost': 'Mac-1686140684611.local',
-             'systemosver': '21.6.0',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            '20:08:59 PST 2023; root:xnu-8020.240.18.700.8~1/RELEASE_X86_64 x86_64')
+        )
+        self.assertDictEqual({
+            'systemos': 'FreeBSD',
+            'systemosver': '14.1-RELEASE',
+            'arch': 'amd64'
+        }, curlparse.parse_uname(
             'FreeBSD  14.1-RELEASE FreeBSD 14.1-RELEASE releng/14.1-n267679-10e31f0946d8 GENERIC '
-            'amd64'),
-            {'systemos': 'FreeBSD',
-             'systemosver': '14.1-RELEASE',
-             'arch': 'amd64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'amd64')
+        )
+        self.assertDictEqual({
+            'systemos': 'FreeBSD',
+            'systemhost': 'cirrus-task-4657416118206464',
+            'systemosver': '14.0-RELEASE',
+            'arch': 'amd64'
+        }, curlparse.parse_uname(
             'FreeBSD cirrus-task-4657416118206464 14.0-RELEASE FreeBSD 14.0-RELEASE #0 '
             'releng/14.0-n265380-f9716eee8ab4: Fri Nov 10 05:57:23 UTC 2023     '
-            'root@releng1.nyi.freebsd.org:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64'),
-            {'systemos': 'FreeBSD',
-             'systemhost': 'cirrus-task-4657416118206464',
-             'systemosver': '14.0-RELEASE',
-             'arch': 'amd64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'root@releng1.nyi.freebsd.org:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64')
+        )
+        self.assertDictEqual({
+            'systemos': 'FreeBSD',
+            'systemhost': 'cirrus-task-5504721130094592',
+            'systemosver': '12.4-RELEASE',
+            'arch': 'amd64'
+        }, curlparse.parse_uname(
             'FreeBSD cirrus-task-5504721130094592 12.4-RELEASE FreeBSD 12.4-RELEASE r372781 '
-            'GENERIC  amd64'),
-            {'systemos': 'FreeBSD',
-             'systemhost': 'cirrus-task-5504721130094592',
-             'systemosver': '12.4-RELEASE',
-             'arch': 'amd64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'OpenBSD openbsd.my.domain 7.5 GENERIC.MP#82 amd64'),
-            {'systemos': 'OpenBSD',
-             'systemhost': 'openbsd.my.domain',
-             'systemosver': '7.5',
-             'arch': 'amd64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'SunOS omnios 5.11 omnios-r151048-24333ee74c i86pc i386 i86pc'),
-            {'systemos': 'SunOS',
-             'systemhost': 'omnios',
-             'systemosver': '5.11',
-             'arch': 'i386'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'SunOS gcc-solaris11 5.11 11.3 sun4u sparc SUNW,SPARC-Enterprise'),
-            {'systemos': 'SunOS',
-             'systemhost': 'gcc-solaris11',
-             'systemosver': '5.11',
-             'arch': 'sparc'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
+            'GENERIC  amd64')
+        )
+        self.assertDictEqual({
+            'systemos': 'OpenBSD',
+            'systemhost': 'openbsd.my.domain',
+            'systemosver': '7.5',
+            'arch': 'amd64'
+        }, curlparse.parse_uname(
+            'OpenBSD openbsd.my.domain 7.5 GENERIC.MP#82 amd64')
+        )
+        self.assertDictEqual({
+            'systemos': 'SunOS',
+            'systemhost': 'omnios',
+            'systemosver': '5.11',
+            'arch': 'i386'
+        }, curlparse.parse_uname(
+            'SunOS omnios 5.11 omnios-r151048-24333ee74c i86pc i386 i86pc')
+        )
+        self.assertDictEqual({
+            'systemos': 'SunOS',
+            'systemhost': 'gcc-solaris11',
+            'systemosver': '5.11',
+            'arch': 'sparc'
+        }, curlparse.parse_uname(
+            'SunOS gcc-solaris11 5.11 11.3 sun4u sparc SUNW,SPARC-Enterprise')
+        )
+        self.assertDictEqual({
+            'systemos': 'NetBSD',
+            'systemosver': '10.0',
+            'arch': 'amd64'
+        }, curlparse.parse_uname(
             'NetBSD  10.0 NetBSD 10.0 (GENERIC) #0: Thu Mar 28 08:33:33 UTC 2024  '
-            'mkrepro@mkrepro.NetBSD.org:/usr/src/sys/arch/amd64/compile/GENERIC amd64'),
-            {'systemos': 'NetBSD',
-             'systemosver': '10.0',
-             'arch': 'amd64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'AIX gcc119 3 7 00F9C1964C00'),
-            {'systemos': 'AIX',
-             'systemhost': 'gcc119',
-             'systemosver': '7.3',
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'AIX power-aix 1 7 00F84C0C4C00'),
-            {'systemos': 'AIX',
-             'systemhost': 'power-aix',
-             'systemosver': '7.1',
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'Haiku shredder 1 hrev56578+59 Dec 17 2022 07:02: x86_64 x86_64 Haiku'),
-            {'systemos': 'Haiku',
-             'systemhost': 'shredder',
-             'systemosver': '1',
-             'arch': 'x86_64'
-             })
-        self.assertDictEqual(curlparse.parse_uname(
-            'Minix minix 3.3.0 Minix 3.3.0 (GENERIC) i386'),
-            {'systemos': 'Minix',
-             'systemhost': 'minix',
-             'systemosver': '3.3.0',
-             'arch': 'i386'
-             })
+            'mkrepro@mkrepro.NetBSD.org:/usr/src/sys/arch/amd64/compile/GENERIC amd64')
+        )
+        self.assertDictEqual({
+            'systemos': 'AIX',
+            'systemhost': 'gcc119',
+            'systemosver': '7.3',
+        }, curlparse.parse_uname(
+            'AIX gcc119 3 7 00F9C1964C00')
+        )
+        self.assertDictEqual({
+            'systemos': 'AIX',
+            'systemhost': 'power-aix',
+            'systemosver': '7.1',
+        }, curlparse.parse_uname(
+            'AIX power-aix 1 7 00F84C0C4C00')
+        )
+        self.assertDictEqual({
+            'systemos': 'Haiku',
+            'systemhost': 'shredder',
+            'systemosver': '1',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
+            'Haiku shredder 1 hrev56578+59 Dec 17 2022 07:02: x86_64 x86_64 Haiku')
+        )
+        self.assertDictEqual({
+            'systemos': 'Minix',
+            'systemhost': 'minix',
+            'systemosver': '3.3.0',
+            'arch': 'i386'
+        }, curlparse.parse_uname(
+            'Minix minix 3.3.0 Minix 3.3.0 (GENERIC) i386')
+        )
 
 
 class TestCurlParse(unittest.TestCase):
