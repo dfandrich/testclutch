@@ -20,13 +20,13 @@ SUMMARY_START_RE = re.compile(r'^={5,} short test summary info =+$')
 # uses SESSION_END_RE to end
 RESULT_RE = re.compile(r'^(\w+) (.*::\S*) *(- )?(.*)$')
 SKIPPED_RE = re.compile(r'^(\w+) \[\S*\] (\S*): (.*)$')
-NONVERBOSE_SENTINAL_RE = re.compile(r'^collected ([0-9]+) items$')
+NONVERBOSE_SENTINEL_RE = re.compile(r'^collected ([0-9]+) items$')
 SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?')
 
 # pytest -v format
 SESSION_END_RE = re.compile(r'^={3,} (\d+) (\w+).* in ([0-9.]+)s ([()\d:]+)? *=')
 RESULTV_RE = re.compile(r'^(\S+::\S+) (\w+) +(\(.*\) +)?\[[ \d]+%\]$')
-VERBOSE_SENTINAL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
+VERBOSE_SENTINEL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
 PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)?')
 
 # common lines
@@ -57,7 +57,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                 if r := SUMMARY_PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)
                     meta['testdeps'] = r.group(3)
-                elif VERBOSE_SENTINAL_RE .search(l):
+                elif VERBOSE_SENTINEL_RE.search(l):
                     # If this is found, this is a verbose log so clear data and give up
                     logging.debug("Acutally, it's a verbose log; give up")
                     meta = {}
@@ -136,7 +136,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
                 elif r := PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)
                     meta['testdeps'] = r.group(3)
-                elif NONVERBOSE_SENTINAL_RE .search(l):
+                elif NONVERBOSE_SENTINEL_RE.search(l):
                     # If this is found, this is not a verbose log so clear data and give up
                     logging.debug("Actually, it's not a verbose log at all; give up")
                     meta = {}

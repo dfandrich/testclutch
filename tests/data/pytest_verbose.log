@@ -2,7 +2,7 @@
 platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /tmp/t
-collecting ... collected 3 items
+collecting ... collected 9 items / 6 deselected / 3 selected
 
 bar_test.py::TestUupcCvt::test_ex PASSED                                 [ 33%]
 foo_test.py::TestUupcCvt::test_ex FAILED                                 [ 66%]
@@ -23,4 +23,4 @@ foo_test.py:5: AssertionError
 Bad
 =========================== short test summary info ============================
 FAILED foo_test.py::TestUupcCvt::test_ex - AssertionError: assert 0
-==================== 1 failed, 1 passed, 1 skipped in 0.07s ====================
+============= 1 failed, 1 passed, 1 skipped, 6 deselected in 0.07s =============
