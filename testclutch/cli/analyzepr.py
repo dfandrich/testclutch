@@ -530,7 +530,7 @@ class GatherPRAnalysis:
         del self.allpranalyses  # force user to read again in case file was updated outside
 
     def gather_failed(self, origin: str, pr: int
-                      ) -> Optional[list[prdef.FailedTest]]:
+                      ) -> tuple[Optional[list[prdef.FailedTest]], str]:
         logging.info(f'Gathering {origin} analysis for pull request {pr}')
         if origin == 'appveyor':
             return self.appveyor_gather_pr_failures(pr)
@@ -548,7 +548,7 @@ class GatherPRAnalysis:
             return self.gha_gather_pr_failures(pr)
 
         logging.error(f'Unsupported origin {origin}')
-        return None
+        return (None, '')
 
     def gather_analysis(self, prs: list[int]) -> int:
         """Gather information needed to analyze one or more PRs"""
@@ -568,16 +568,18 @@ class GatherPRAnalysis:
             if pr not in pranalyses or self.args.rerun:
                 logging.info(f'Starting new analysis of PR #{pr}')
                 thispr = prdef.PRAnalysis(pr, self.args.checkrepo,
-                                          int(datetime.datetime.now().timestamp()), {}, {}, {}, 0)
+                                          int(datetime.datetime.now().timestamp()),
+                                          {}, {}, {}, {}, 0)
                 pranalyses[pr] = thispr
             else:
                 thispr = pranalyses[pr]
 
             # For any new PRs we haven't seen before, look up which tests failed
             if origin not in thispr.failed:
-                failed = self.gather_failed(origin, pr)
+                failed, commit = self.gather_failed(origin, pr)
                 if failed is not None:
                     thispr.failed[origin] = failed
+                    thispr.commit[origin] = commit
             else:
                 logging.debug(f'Already have failed list for PR#{pr} from {origin}')
 
@@ -617,33 +619,58 @@ class GatherPRAnalysis:
 
         return rc
 
-    def appveyor_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+    def appveyor_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         account, project = urls.get_project_name(self.args)
         av = prappveyor.AppveyorAnalyzeJob(account, project, self.args.checkrepo, self.ds, None)
         results = av.gather_pr(pr)
-        return self.select_failures(results)
+        commit = results[0][0]['commit'] if results else ''
+        assert isinstance(commit, str)  # satisfy pytype that this isn't int
+        if any(result[0]['commit'] != commit for result in results):
+            logging.error('PR results have been gathered for more than one commit, not just '
+                          f'{commit:.9}')
+        return (self.select_failures(results), commit)
 
-    def azure_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+    def azure_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         owner, project = urls.get_project_name(self.args)
         azure = prazure.AzureAnalyzer(owner, project, self.args.checkrepo, self.ds)
         results = azure.gather_pr(pr)
-        return self.select_failures(results)
+        commit = results[0][0]['commit'] if results else ''
+        assert isinstance(commit, str)  # satisfy pytype that this isn't int
+        if any(result[0]['commit'] != commit for result in results):
+            logging.error('PR results have been gathered for more than one commit, not just '
+                          f'{commit:.9}')
+        return (self.select_failures(results), commit)
 
-    def circle_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+    def circle_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         ci = prcircleci.CircleAnalyzer(self.args.checkrepo, self.ds)
         results = ci.gather_pr(pr)
-        return self.select_failures(results)
+        commit = results[0][0]['commit'] if results else ''
+        assert isinstance(commit, str)  # satisfy pytype that this isn't int
+        if any(result[0]['commit'] != commit for result in results):
+            logging.error('PR results have been gathered for more than one commit, not just '
+                          f'{commit:.9}')
+        return (self.select_failures(results), commit)
 
-    def cirrus_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+    def cirrus_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         cirrus = prcirrus.CirrusAnalyzer(self.args.checkrepo, self.ds, None)
         results = cirrus.gather_pr(pr)
-        return self.select_failures(results)
+        commit = results[0][0]['commit'] if results else ''
+        assert isinstance(commit, str)  # satisfy pytype that this isn't int
+        if any(result[0]['commit'] != commit for result in results):
+            logging.error('PR results have been gathered for more than one commit, not just '
+                          f'{commit:.9}')
+        return (self.select_failures(results), commit)
 
-    def gha_gather_pr_failures(self, pr: int) -> list[prdef.FailedTest]:
+    def gha_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         owner, project = urls.get_project_name(self.args)
         ghi = prgha.GithubAnalyzeJob(owner, project, gha.read_token(self.args.authfile), self.ds)
         results = ghi.gather_pr(pr)
-        return self.select_failures(results)
+        commit = results[0][0]['commit'] if results else ''
+        assert isinstance(commit, str)  # satisfy pytype that this isn't int
+        if any(result[0]['commit'] != commit for result in results):
+            logging.error('PR results have been gathered for more than one commit, not just '
+                          f'{commit:.9}')
+        return (self.select_failures(results), commit)
 
     def select_failures(self, results: list[ParsedLog]) -> list[prdef.FailedTest]:
         results.sort(key=lambda x: x[0]['uniquejobname'])
@@ -736,7 +763,41 @@ class GatherPRAnalysis:
 
         Text is in MarkDown format.
         """
-        text = f'Analysis of PR #{analysis.num}:\n\n'
+        # First, check the consistency of the commits used in the analysis.
+        #
+        # It can happen that we analyze the results from one CI service at one commit, but the user
+        # then pushes a new commit to the PR and we get the results from another CI service at that
+        # second commit.
+        #
+        # Ideally, for consistency of analysis we would detect this situation and invalidate the
+        # older results (by deleting them out of "analysis") and wait for the new results to come
+        # in.  The problem with that approach is that it's possible that the new commit causes
+        # the CI service with the outdated results to not be triggered (e.g. due to path exclusions)
+        # so when the results are read again they will still be from the older commit. Under this
+        # invalidation approach, that would cause the OTHER CI service's results to be invalidated
+        # this time (because we can't unambiguously tell which is the newer of the two commits) and
+        # we would end up in an endless loop of invalidating some results on each iteration and
+        # never getting them all at the same consistent commit.
+        #
+        # Instead, we just detect the situation, which should be fairly rare, and merely warn the
+        # user.
+        commits = frozenset(v for v in analysis.commit.values() if v)
+        committext = ''
+        commitwarning = ''
+        if len(commits) == 1:
+            # This only works if checkrepo is GitHub
+            commit = next(iter(commits))
+            url = f'{self.args.checkrepo}/commit/{commit}'
+            committext = f' at [{commit:.9}]({escape(url)})'
+        elif len(commits) > 1:
+            commitwarning = (
+                f'###### Note that this analysis is based on tests run on {len(commits)} different '
+                'commits from this PR on different CI services\n')
+        else:
+            # This should never happen
+            logging.error('No commits found in PR#%d analysis', analysis.num)
+
+        text = f'Analysis of PR #{analysis.num}{committext}:\n\n'
         # Count of all tests that failed for this PR, by testname
         count_failed = collections.Counter(
             fail.testname for oneorigin in analysis.failed.values() for fail in oneorigin)
@@ -798,6 +859,7 @@ class GatherPRAnalysis:
                         """)
                         break
 
+        text += commitwarning
         text += f'###### Generated by [Testclutch]({config.get("pr_comment_url")})\n'
         return text
 

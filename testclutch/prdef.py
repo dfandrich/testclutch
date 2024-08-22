@@ -39,6 +39,7 @@ class PRAnalysis:
     failed: dict[str, list[FailedTest]]      # all tests that failed in this PR per origin
     flaky: dict[str, list[FailingTest]]      # flaky test information per origin
     permafail: dict[str, list[FailingTest]]  # permafail test information per origin
+    commit: dict[str, str]                   # commit being tested per origin
     commented: int                           # epoch time of PR comment
 
 
@@ -128,8 +129,20 @@ class PRAnalysisState:
             self.statefile = None
 
 
+def upgrade_state():
+    "Debugging tool to upgrade a PRAnalysis to a newer version"
+    state = PRAnalysisState()
+    pranalyses = state.read_state(True)
+    for repo in pranalyses.values():
+        for pr in repo.values():
+            # Add code here to add any new PRAnalysis fields to an older pr
+            pr.commit = {}
+    state.write_state(pranalyses)
+
+
 if __name__ == '__main__':
     # Debugging
+    # upgrade_state()
     state = PRAnalysisState()
     pranalyses = state.read_state(False)
     import pprint
