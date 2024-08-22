@@ -157,8 +157,14 @@ def parse_uname(uname: str) -> TestMetaStr:
         meta['arch'] = sysparts[14]
     elif meta['systemos'] == 'FreeBSD' and len(syspartsblanks) == 8:
         meta['arch'] = syspartsblanks[7]
+    elif meta['systemos'] == 'FreeBSD' and len(sysparts) == 8:
+        # one uname spotted in the wild had an extra space before the arch
+        meta['arch'] = sysparts[7]
     elif meta['systemos'] == 'FreeBSD' and len(syspartsblanks) == 15:  # starting 14.0
         meta['arch'] = syspartsblanks[14]
+    elif meta['systemos'] == 'FreeBSD' and len(sysparts) == 15:  # starting 14.0
+        # one uname spotted in the wild had four extra spaces after the year
+        meta['arch'] = sysparts[14]
     elif meta['systemos'] == 'NetBSD' and len(sysparts) == 15:
         meta['arch'] = sysparts[14]
     elif meta['systemos'] == 'NetBSD' and len(sysparts) == 14 and 'systemhost' not in meta:
@@ -177,6 +183,12 @@ def parse_uname(uname: str) -> TestMetaStr:
           or meta['systemos'].startswith('MINGW64_NT')
           or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 8:
         meta['arch'] = sysparts[6]
+    elif (meta['systemos'].startswith('MSYS_NT')
+          or meta['systemos'].startswith('MINGW32_NT')
+          or meta['systemos'].startswith('MINGW64_NT')
+          or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 7:
+        # This version is missing the time zone
+        meta['arch'] = sysparts[5]
     elif meta['systemos'] == 'AIX' and len(sysparts) == 5:
         # systemosver as set above is just the minor release number
         meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'

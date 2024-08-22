@@ -97,6 +97,13 @@ class TestParseUname(unittest.TestCase):
              'arch': 'x86_64'
              })
         self.assertDictEqual(curlparse.parse_uname(
+            'MINGW32_NT-6.2 D346320C23B2 1.0.19(0.48/3/2) 2016-07-13 17:45 i686 Msys'),
+            {'systemos': 'MINGW32_NT-6.2',
+             'systemhost': 'D346320C23B2',
+             'systemosver': '1.0.19(0.48/3/2)',
+             'arch': 'i686'
+             })
+        self.assertDictEqual(curlparse.parse_uname(
             'MSYS_NT-10.0-20348 fv-az1105-175 3.5.3.x86_64 2024-06-03 06:22 UTC x86_64 Msys'),
             {'systemos': 'MSYS_NT-10.0-20348',
              'systemhost': 'fv-az1105-175',
@@ -124,6 +131,23 @@ class TestParseUname(unittest.TestCase):
             'amd64'),
             {'systemos': 'FreeBSD',
              'systemosver': '14.1-RELEASE',
+             'arch': 'amd64'
+             })
+        self.assertDictEqual(curlparse.parse_uname(
+            'FreeBSD cirrus-task-4657416118206464 14.0-RELEASE FreeBSD 14.0-RELEASE #0 '
+            'releng/14.0-n265380-f9716eee8ab4: Fri Nov 10 05:57:23 UTC 2023     '
+            'root@releng1.nyi.freebsd.org:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64'),
+            {'systemos': 'FreeBSD',
+             'systemhost': 'cirrus-task-4657416118206464',
+             'systemosver': '14.0-RELEASE',
+             'arch': 'amd64'
+             })
+        self.assertDictEqual(curlparse.parse_uname(
+            'FreeBSD cirrus-task-5504721130094592 12.4-RELEASE FreeBSD 12.4-RELEASE r372781 '
+            'GENERIC  amd64'),
+            {'systemos': 'FreeBSD',
+             'systemhost': 'cirrus-task-5504721130094592',
+             'systemosver': '12.4-RELEASE',
              'arch': 'amd64'
              })
         self.assertDictEqual(curlparse.parse_uname(
