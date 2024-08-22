@@ -7,7 +7,7 @@ import datetime
 import enum
 import logging
 import textwrap
-from collections.abc import Collection, Container
+from collections.abc import Container
 from contextlib import nullcontext
 from email import utils
 from html import escape
@@ -663,11 +663,11 @@ class GatherPRAnalysis:
 
         return failed_tests
 
-    def all_origins(self) -> Collection[str]:
-        """Returns a list of all origins to check before commenting"""
+    def all_origins(self) -> set[str]:
+        """Returns the set of all origins to check before commenting"""
         origins = config.get('pr_comment_origins')
         if not origins:
-            origins = argparsing.KNOWN_ORIGINS
+            origins = set(argparsing.KNOWN_ORIGINS)
         return origins
 
     def comment(self, prs: list[int]) -> int:
@@ -692,7 +692,7 @@ class GatherPRAnalysis:
 
             # These are the origins that must have already been checked before commenting
             origins = self.all_origins()
-            remaining = [ci for ci in origins if ci not in analysis.failed]
+            remaining = origins - frozenset(analysis.failed)
             if remaining:
                 logging.warning(f'PR #{pr} has not completed failure checking yet '
                                 f'(missing {", ".join(remaining)}); skipping')
@@ -702,11 +702,11 @@ class GatherPRAnalysis:
                 logging.warning(f'PR #{pr} has no failed tests so no need to comment; skipping')
                 continue
 
-            remaining = [ci for ci in origins if ci in analysis.failed and analysis.failed[ci]
-                         and ci not in analysis.flaky]
-            if remaining:
+            flakyremaining = (frozenset(k for k, v in analysis.failed.items() if v)
+                              - frozenset(analysis.flaky))
+            if flakyremaining:
                 logging.warning(f'PR #{pr} has not completed flaky analysis yet '
-                                f'(missing {", ".join(remaining)}); skipping')
+                                f'(missing {", ".join(flakyremaining)}); skipping')
                 continue
 
             if analysis.commented and not self.args.dry_run:
