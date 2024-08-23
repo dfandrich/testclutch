@@ -789,7 +789,7 @@ class GatherPRAnalysis:
             # This only works if checkrepo is GitHub
             commit = next(iter(commits))
             url = f'{self.args.checkrepo}/commit/{commit}'
-            committext = f' at [{commit:.9}]({escape(url)})'
+            committext = f' at [{commit:.8}]({escape(url)})'
         elif len(commits) > 1:
             commitwarning = (
                 f'###### Note that this analysis is based on tests run on {len(commits)} different '
