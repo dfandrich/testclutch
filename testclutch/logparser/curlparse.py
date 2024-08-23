@@ -26,7 +26,7 @@ RE_COMPILERPATHAC = re.compile(r'''libtool .*--mode=compile (\S+) ''')
 # configure headers
 # These won't be available in most logs because they show up before a compile,
 # not before a test run, so jobs where those are separated won't see them.
-RE_COMPILERAC = re.compile(r'''compiler version\.\.\. (\S+) '([^']*)' \(raw: '([^']*)'\)''')
+RE_COMPILERAC = re.compile(r"compiler version\.\.\. ([^']+) '([^']*)'(?: \(raw: '([^']*)'\))?")
 RE_COMPILERCMAKE = re.compile(r'^-- The C compiler identification is (\S+) (\S+)')
 RE_USINGCMAKE = re.compile(r'^-- Using CMake version')
 RE_USINGCMAKEMSBUILD = re.compile(r'^(\d+>)?Checking Build System')
@@ -429,7 +429,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
         elif r := RE_COMPILERAC.search(l):
             meta['compiler'] = r.group(1)
             meta['compilerversioncode'] = r.group(2)
-            meta['compilerversion'] = r.group(3)
+            if r.group(3):
+                meta['compilerversion'] = r.group(3)
         elif r := RE_COMPILERCMAKE.search(l):
             meta['compiler'] = r.group(1)
             meta['compilerversion'] = r.group(2)
