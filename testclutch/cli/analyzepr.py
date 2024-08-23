@@ -558,6 +558,7 @@ class GatherPRAnalysis:
         # Prune out old entries
         oldest = (datetime.datetime.now()
                   - datetime.timedelta(hours=config.get('pr_gather_age_hours_max'))).timestamp()
+        # Make a list of the keys to fix them because we might be deleting them from the dict
         for pr in list(pranalyses.keys()):
             if pranalyses[pr].start < oldest:
                 logging.debug(f'Aging out PR#{pr} from cache (time {pranalyses[pr].start})')
