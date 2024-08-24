@@ -100,9 +100,7 @@ class GithubIngestor:
         cimeta['sourcerepo'] = f'https://github.com/{run["head_repository"]["full_name"]}'
         # This is the repo for which the job is running (should be the same as 'checkrepo')
         cimeta['runrepo'] = f'https://github.com/{run["repository"]["full_name"]}'
-        # This URL contains the official link to the run, but it's just the top-level link.
-        # This will usually be replaced later with a more specific URL.
-        cimeta['url'] = run['html_url']
+        cimeta['runurl'] = run['html_url']
         # Note: there doesn't seem to be a way to get the pull request # from these data
         # or from the runs data).  "trigger" at least lets you see that it was due to a PR.
         cimeta['trigger'] = run['event']
