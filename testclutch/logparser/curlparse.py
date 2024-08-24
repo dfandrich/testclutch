@@ -83,6 +83,7 @@ RE_TESTCURLCOMMIT = re.compile(r'^testcurl:( ){1,3}'
 RE_TESTCURLDAILY = re.compile(r'^testcurl: curl-([\d.]+)-(\d{8})/? is verified to be '
                               r'a fine daily source dir')
 RE_TESTCURLDATE = re.compile(r'^testcurl: date = (.*)$')
+RE_TESTCURLVER = re.compile(r'^testcurl: version = (.*)$')
 RE_TESTCURLNAME = re.compile(r'testcurl: NAME = (.*)$')
 RE_TESTCURLDESC = re.compile(r'testcurl: DESC = (.*)$')
 RE_TESTCURLBUILDCODE = re.compile(r'testcurl: (\w+) = ')
@@ -400,7 +401,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
             # TODO: it appears that this first displayed commit isn't necessarily the one
             # being used, since some logs show this being from a bagder/* branch instead.
             # Not sure what causes this, unless it's a weird way that the daily build has
-            # been set up.
+            # been set up. It is likely related to buildbot being set up to send PR build
+            # results to the daily build server, not just pushes to master.
             if r := RE_TESTCURLCOMMIT.search(l):
                 meta['commit'] = r.group('shash') if r.group('shash') else r.group('lhash')
         elif r := RE_TESTCURLDAILY .search(l):
@@ -415,6 +417,8 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
             datestr = r.group(1).replace(' UTC', '+0000')
             timestamp = datetime.datetime.strptime(datestr, "%a %b %d %H:%M:%S %Y%z")
             meta['runstarttime'] = int(timestamp.timestamp())
+        elif r := RE_TESTCURLVER.search(l):
+            meta['executorver'] = r.group(1)
         elif r := RE_TESTCURLBUILDCODE.search(l):
             # buildcode is a hash of testcurl lines that make up a unique code for the
             # source of this log. It is identical to the buildcode used internally on the

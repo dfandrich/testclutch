@@ -579,6 +579,7 @@ class TestCurlParse(unittest.TestCase):
             'curldeps': 'libcurl/8.3.0-20230729',
             'dailybuild': '20230729',
             'executor': 'testcurl',
+            'executorver': '2023-03-28',
             'features': 'alt-svc AsynchDNS Debug IPv6 Largefile threadsafe TrackMemory '
                         'UnixSockets',
             'host': 'fd398d7e60a2',
@@ -1921,6 +1922,7 @@ class TestCurlParse(unittest.TestCase):
             'curldeps': 'libcurl/8.10.0-20240806 GnuTLS/3.8.4 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 librtmp/2.3 OpenLDAP/2.5.14',
             'dailybuild': '20240806',
             'executor': 'testcurl',
+            'executorver': '2023-03-28',
             'features': 'alt-svc AsynchDNS brotli HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz '
                         'NTLM PSL SSL threadsafe TLS-SRP UnixSockets zstd',
             'host': 'buildnode',
@@ -1962,6 +1964,7 @@ class TestCurlParse(unittest.TestCase):
             'commit': '756c6a0',
             'curldeps': 'libcurl/8.3.0-DEV',
             'executor': 'testcurl',
+            'executorver': '2023-03-28',
             'features': 'alt-svc AsynchDNS Debug IPv6 Largefile threadsafe TrackMemory '
                         'UnixSockets',
             'host': 'fd398d7e60a2',
