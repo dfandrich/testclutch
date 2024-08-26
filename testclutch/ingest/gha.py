@@ -101,6 +101,8 @@ class GithubIngestor:
         # This is the repo for which the job is running (should be the same as 'checkrepo')
         cimeta['runrepo'] = f'https://github.com/{run["repository"]["full_name"]}'
         cimeta['runurl'] = run['html_url']
+        # This should almost always be replaced with a more specific URL later
+        cimeta['url'] = run['html_url']
         # Note: there doesn't seem to be a way to get the pull request # from these data
         # or from the runs data).  "trigger" at least lets you see that it was due to a PR.
         cimeta['trigger'] = run['event']
@@ -232,7 +234,7 @@ class GithubIngestor:
             if fileinfo.filename.find('/') < 0:
                 # GitHub stores the log entries in zip files twice--once as complete logs
                 # in the root, and once in separate steps in subdirectories. We don't need
-                # both, so ignore the root copies and just use the once in the subdirectories.
+                # both, so ignore the root copies and just use the ones in the subdirectories.
                 logging.debug('Skipping %s', fileinfo.filename)
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
@@ -257,7 +259,10 @@ class GithubIngestor:
                     logging.info('Retrieved test for %s %s %s',
                                  meta['origin'], meta['checkrepo'], meta['ciname'])
                 job = self.find_job(jobs, meta)
-                if job:
+                if not job:
+                    logging.warning(
+                        f'Could not find job {meta["cijob"]} in workflow {meta["ciname"]}')
+                else:
                     if job['status'] != 'completed':
                         # This should have been filtered out in ingest_all_logs and ingest_run,
                         # but sometimes the status shows completed there but in_progress here.
@@ -265,12 +270,16 @@ class GithubIngestor:
                                         cimeta['runid'], job['status'])
                         return
                     meta['ciresult'] = job['conclusion']
-                    meta['url'] = job['html_url']  # replace the generic job link
+                    # Replace the generic job link; should be replaced again below
+                    meta['url'] = job['html_url']
                     duration = (ghaapi.convert_time(job['completed_at'])
                                 - ghaapi.convert_time(job['started_at']))
                     meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
                     step = self.find_job_step(jobs, meta)
-                    if step:
+                    if not step:
+                        logging.warning(
+                            f'Could not find step {meta["cistep"]}')
+                    else:
                         if step['conclusion']:
                             meta['cistepresult'] = step['conclusion']
                         else:
@@ -283,8 +292,9 @@ class GithubIngestor:
                             meta['steprunduration'] = (duration.seconds * 1000000
                                                        + duration.microseconds)
                         # Make the URL directly open this step using an anchor.
-                        # This doesn't always work when first clicked on, but at the very least
-                        # it's a clue as to where the log is on the page.
+                        # This doesn't always work when first clicked on (probably due to delayed
+                        # loading), but at the very least it's a clue as to where the log is on the
+                        # page.
                         meta['url'] = f'{meta["url"]}#check-step-{step["number"]}'
 
                 for n, v in meta.items():
