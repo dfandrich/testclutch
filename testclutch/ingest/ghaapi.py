@@ -178,9 +178,9 @@ class GithubApi:
     def get_jobs(self, run_id: int) -> dict[str, Any]:
         """Returns info about the jobs in a workflow run on GitHub Actions"""
         url = JOBS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
-        resp = self.http.get(url, headers=self._standard_headers())
-        resp.raise_for_status()
-        return json.loads(resp.text)
+        result = self._http_get_paged_json(url, headers=self._standard_headers())
+        assert isinstance(result, dict)
+        return result
 
     def get_logs(self, run_id: int) -> tuple[str, str]:
         url = LOGS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
