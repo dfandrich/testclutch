@@ -92,7 +92,7 @@ TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
 
 # Characters to use for 'enabled' and 'disabled' in the features matrix
 YES = '✓'
-NO = '⨯'
+NO = '–'
 MAYBE = '?'
 
 
@@ -599,13 +599,13 @@ def output_feature_matrix_html(fm: FeatureMatrix):
           text-align: center;
         }
         .no {
-          background-color: #FFAAAA;
+          background-color: white;
         }
         .yes {
           background-color: #AAFFAA;
         }
         .maybe {
-          background-color: #FFCC00;
+          background-color: #EEEEEE;
         }
         thead {
           position: sticky;
@@ -627,7 +627,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <br>
         <span class="no">{NO}</span> job does not have this feature
         <br>
-        <span class="maybe">{MAYBE}</span> unable to tell if job has this feature
+        <span class="maybe">{MAYBE}</span> unable to determine if job has this feature
         </p>
         <p>
         The job links to the results of the latest run.
