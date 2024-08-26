@@ -594,9 +594,23 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         body {
           background-color: white;
         }
+        table {
+            border-spacing: 0px;
+        }
+        thead {
+          position: sticky;
+          top: 0px;
+          background-color: white;
+        }
+        th {
+          border-bottom: solid 3px;
+        }
         td {
           outline: 1px solid;
           text-align: center;
+        }
+        .newsection {
+          border-left: solid 2px;
         }
         .no {
           background-color: white;
@@ -606,11 +620,6 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         }
         .maybe {
           background-color: #EEEEEE;
-        }
-        thead {
-          position: sticky;
-          top: 0px;
-          background-color: white;
         }
         </style>
         """ + f"""
@@ -646,8 +655,11 @@ def output_feature_matrix_html(fm: FeatureMatrix):
 
     featurecounts = [IntCounter() for _ in features]
     print('<thead><tr><th>Job</th>')
-    for title, _, _ in features:
-        print(f'<th>{escape(title)}</th>')
+    lastname = ''
+    for title, name, _ in features:
+        newsec = ' class="newsection"' if name != lastname else ''
+        print(f'<th{newsec}>{escape(title)}</th>')
+        lastname = name
     print('</tr></thead><tbody>')
 
     for meta in fm.all_meta:
@@ -656,14 +668,17 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                   '</a></td>')
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
+        lastname = ''
         for (_, name, value), counter in zip(features, featurecounts):
             jobvalue = adjuster.adjust(name, meta.get(name, ''))
             match = value in set(jobvalue)
             maybe = name not in meta
-            print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}">'
+            newsec = ' newsection' if name != lastname else ''
+            print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}{newsec}">'
                   f'{MAYBE if maybe else YES if match else NO}</td>')
             if match:
                 counter.count += 1
+            lastname = name
         print('</tr>')
 
     # Print totals of each feature
