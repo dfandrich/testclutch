@@ -663,8 +663,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     print('</tr></thead><tbody>')
 
     for meta in fm.all_meta:
-        if 'url' in meta:
-            print(f'<tr><td><a href="{escape(meta["url"])}">{escape(fm.make_job_title(meta))}'
+        url = meta.get('url', meta.get('runurl', ''))
+        if url:
+            print(f'<tr><td><a href="{escape(url)}">{escape(fm.make_job_title(meta))}'
                   '</a></td>')
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')

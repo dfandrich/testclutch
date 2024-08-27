@@ -148,7 +148,7 @@ class ResultsOverTimeByUniqueJob:
             if meta.get('pullrequest', 0):
                 # skip pull requests
                 continue
-            url = meta.get('url', '')
+            url = meta.get('url', meta.get('runurl', ''))
             commit = meta.get('commit', '')
             is_aborted = self.check_aborted(meta)
             test_result = meta.get('testresult', 'unknown')
