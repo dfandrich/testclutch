@@ -58,7 +58,7 @@ pr_age_hours_default = 18
 
 # Maximum number of hours back to look for a requested PR;
 # no PR runs older than this will ever be found (at least for some CI services)
-pr_age_hours_max = 14 * 24
+pr_age_hours_max = 24 * 14  # 14 days
 
 # Character map used in git commit logs
 git_comment_encoding = 'UTF-8'
@@ -70,10 +70,10 @@ compress_threshold_bytes = 128
 
 # Report configuration: test_results_count
 # Number of failed tests for which to bother showing URLs (since that is slow)
-test_results_count_max_urls = 32
+test_results_count_max_urls = 75
 
 # Number of recent URLs to show for each test in the test failure counts report
-test_results_count_num_recent_urls = 4
+test_results_count_num_recent_urls = 5
 
 # Oldest created PR in hours to include in the PR check
 pr_ready_age_hours_max = 24 * 3  # 3 days
