@@ -613,13 +613,13 @@ def output_feature_matrix_html(fm: FeatureMatrix):
           border-left: solid 2px;
         }
         .no {
-          background-color: white;
+          background-color: #EEEEEE;
         }
         .yes {
           background-color: #AAFFAA;
         }
         .maybe {
-          background-color: #EEEEEE;
+          background-color: #CCCCCC;
         }
         </style>
         """ + f"""
