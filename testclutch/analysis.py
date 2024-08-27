@@ -472,8 +472,9 @@ class ResultsOverTimeByUniqueJob:
             badtext = 'flaky'
         else:
             badtext = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-        jobclass = 'jobfailure' if badtitle else ''
-        print(f'<td title="{"&#10;".join(badtitle)}" class="{jobclass}">{badtext}</td>')
+        jobtitle = f' title="{"&#10;".join(badtitle)}"' if badtitle else ''
+        jobclass = ' class="jobfailure"' if badtitle else ''
+        print(f'<td{jobtitle}{jobclass}>{badtext}</td>')
 
         for job_status in self.all_jobs_status:
             # title must contain safe HTML as it will not be escaped
