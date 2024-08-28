@@ -200,6 +200,12 @@ def parse_uname(uname: str) -> TestMetaStr:
         # itself once it comes out of beta.
     elif meta['systemos'] == 'Minix' and len(syspartsblanks) == 7:
         meta['arch'] = syspartsblanks[6]
+    elif meta['systemos'] == 'Fiwix' and len(syspartsblanks) == 11:
+        meta['arch'] = syspartsblanks[9]
+    elif meta['systemos'] == 'SerenityOS' and len(syspartsblanks) == 5:
+        meta['arch'] = syspartsblanks[4]
+    elif meta['systemos'] == 'Redox' and len(syspartsblanks) == 5:
+        meta['arch'] = syspartsblanks[4]
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 

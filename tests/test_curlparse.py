@@ -230,6 +230,29 @@ class TestParseUname(unittest.TestCase):
         }, curlparse.parse_uname(
             'Minix minix 3.3.0 Minix 3.3.0 (GENERIC) i386')
         )
+        self.assertDictEqual({
+            'systemos': 'Fiwix',
+            'systemhost': 'fiwix',
+            'systemosver': '1.5.0',
+            'arch': 'i386'
+        }, curlparse.parse_uname(
+            'Fiwix fiwix 1.5.0 Wed Nov 15 07:36:37 UTC 2023 i386 Fiwix')
+        )
+        self.assertDictEqual({
+            'systemos': 'SerenityOS',
+            'systemhost': 'courage',
+            'systemosver': '1.0-dev',
+            'arch': 'i686'
+        }, curlparse.parse_uname(
+            'SerenityOS courage 1.0-dev 1dc05fc i686')
+        )
+        self.assertDictEqual({
+            'systemos': 'Redox',
+            'systemosver': '0.3.4',
+            'arch': 'x86_64'
+        }, curlparse.parse_uname(
+            'Redox  0.3.4  x86_64')
+        )
 
 
 class TestCurlParse(unittest.TestCase):
