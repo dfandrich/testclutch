@@ -188,7 +188,7 @@ class GithubIngestor:
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.warning('Log file has already been ingested!')
+                logging.info('Log file has already been ingested!')
                 if self.overwrite:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)

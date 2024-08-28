@@ -232,7 +232,7 @@ def ingest_files(args: argparse.Namespace):
             try:
                 ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.warning('Log file has already been ingested!')
+                logging.info('Log file has already been ingested!')
 
     if not args.dry_run:
         ds.close()
