@@ -740,10 +740,10 @@ class GatherPRAnalysis:
             if analysis.commented and not self.args.dry_run:
                 date = utils.format_datetime(
                     datetime.datetime.fromtimestamp(analysis.commented))
-                logging.warning(f"Already commented on this PR on {date}; won't comment again")
+                logging.warning(f"Already commented on PR#{pr} on {date}; won't comment again")
             else:
                 message = self.compose_text(analysis)
-                logging.info(f'PR message: {message}')
+                logging.info(f'PR #{pr} message: {message}')
                 if self.args.dry_run:
                     logging.info('Skipping actual commenting in dry-run mode')
                 else:
