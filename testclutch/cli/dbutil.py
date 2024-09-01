@@ -97,7 +97,7 @@ def main():
             commit = sys.argv[2]
         commits = ds.select_all_commit_after_commit(repo, branch, commit)
         branch = config.expand('branch')
-        ds.cur.execute("SELECT count(1) FROM commitinfo WHERE repo='https://github.com/curl/curl' AND branch=?", (branch,))
+        ds.cur.execute("SELECT count(1) FROM commitinfo WHERE repo=? AND branch=?", (repo, branch,))
         commits_in_db = ds.cur.fetchone()[0]
         if commits_in_db != len(commits):
             print('Error: commit chain in db is incomplete')
