@@ -113,7 +113,7 @@ def main():
         # Default to same time as logfile analysis time since it's probably only
         # recent tests we would want to see
         since = (datetime.datetime.now()
-                 - datetime.timedelta(hours=int(config.get('analysis_hours'))))
+                 - datetime.timedelta(hours=config.get('analysis_hours')))
 
     if not args.succeeded and not args.failed and not args.resultcode:
         print('Must specify at least one of --failed, --succeeded or --resultcode')

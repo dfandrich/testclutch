@@ -62,7 +62,7 @@ def main():
         # Default to same time as logfile analysis time since it's probably only
         # recent tests we would want to see
         since = (datetime.datetime.now()
-                 - datetime.timedelta(hours=int(config.get('analysis_hours'))))
+                 - datetime.timedelta(hours=config.get('analysis_hours')))
 
     ds = db.Datastore()
     ds.connect()

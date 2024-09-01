@@ -305,7 +305,7 @@ class TestRunStats:
         values = self.ds.db.cursor()
         values.execute(MOST_RECENT_TEST_STATUS_META_SQL,
                        (self.oldest, self.repo, testname, status, 'url',
-                        int(config.get('test_results_count_num_recent_urls'))))
+                        config.get('test_results_count_num_recent_urls')))
         return values.fetchall()
 
 
@@ -505,7 +505,7 @@ def output_test_results_count(trstats: TestRunStats,
             continue
         code = TestResult(status)
         num_shown = num_shown + 1
-        if num_shown < int(config.get('test_results_count_max_urls')):
+        if num_shown < config.get('test_results_count_max_urls'):
             urls = trstats.get_test_results_url(test, status)
         else:
             # Getting the URLs is a slow operation, so only get them for the top few tests
