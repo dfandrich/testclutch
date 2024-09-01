@@ -42,7 +42,7 @@ def main():
 
     ds = db.Datastore()
     ds.connect()
-    analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
+    analyzer = analysis.ResultsOverTimeByUniqueJob(ds, args.checkrepo)
 
     if args.uniquejob:
         logging.info(f'Analyzing job {args.uniquejob[0]}')

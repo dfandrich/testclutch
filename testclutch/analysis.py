@@ -29,7 +29,7 @@ UNIQUE_JOBS_SQL = r"SELECT DISTINCT (account || ',' || repo || ',' || origin || 
 # Select the set of IDs of jobs that match a particular unique job name, sorted down by time
 # The unique job identifier comes from the RUNS_WITH_UNIQUE_JOB_SQL query.
 # This includes runs from pull requests, which must be removed later if undesired
-RUNS_BY_UNIQUE_JOB_SQL = r"SELECT id, time FROM testruns WHERE (account || ',' || repo || ',' || origin || ',' || uniquejobname)=? AND time >= ? AND time < ? ORDER BY time DESC"
+RUNS_BY_UNIQUE_JOB_SQL = r"SELECT id, time FROM testruns WHERE (account || ',' || repo || ',' || origin || ',' || uniquejobname)=? AND repo = ? AND time >= ? AND time < ? ORDER BY time DESC"
 
 # Internal configuration consistency checks
 assert config.get('flaky_builds_min') >= config.get('flaky_failures_min') * 2
@@ -58,9 +58,10 @@ class ResultsOverTimeByUniqueJob:
     Most methods assume load_unique_job() is called to prepare a job's data sets for analysis.
     """
 
-    def __init__(self, ds: db.Datastore):
+    def __init__(self, ds: db.Datastore, repo: str):
         assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
+        self.repo = repo
         self.all_jobs_status = []  # type: list[TestJobInfo]
 
     @staticmethod
@@ -138,7 +139,7 @@ class ResultsOverTimeByUniqueJob:
 
     def load_unique_job(self, unique: str, from_time: int, to_time: int):
         """Load tests for the unique job name"""
-        self.ds.cur.execute(RUNS_BY_UNIQUE_JOB_SQL, (unique, from_time, to_time))
+        self.ds.cur.execute(RUNS_BY_UNIQUE_JOB_SQL, (unique, self.repo, from_time, to_time))
         testids = self.ds.cur.fetchall()
         self.all_jobs_status = []
         # Iterate over all jobs for this unique job name

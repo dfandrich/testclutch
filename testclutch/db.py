@@ -76,7 +76,7 @@ class Datastore:
                          "uniquejobname TEXT NOT NULL, ingesttime INTEGER, "
                          "UNIQUE (repo, origin, account, runid, uniquejobname))"
                          )
-        self.cur.execute("CREATE INDEX testruns_index ON testruns (time)")
+        self.cur.execute("CREATE INDEX testruns_index ON testruns (repo, time)")
         # 0..n per test run
         self.cur.execute("CREATE TABLE testrunmeta(id INTEGER, name TEXT, value TEXT, "
                          "FOREIGN KEY (id) REFERENCES testruns (id) "

@@ -181,7 +181,8 @@ def print_html_footer():
     print('</html>')
 
 
-def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore, fragment: bool):
+def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore,
+                    fragment: bool):
     logging.info('Analyzing %d test results', len(test_results))
     if not fragment:
         print_html_header(pr)
@@ -208,7 +209,7 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
           '<!--Unique Job Name--></th></tr>')
     print('<tbody>')
 
-    analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
+    analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
     for meta, testcases in test_results:
         print('<tr>')
 
@@ -303,11 +304,11 @@ def analyze_pr_html(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore
         print_html_footer()
 
 
-def analyze_pr(pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
+def analyze_pr(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
     print(f'Analyzing pull request {pr}')
     logging.info('Analyzing %d test results', len(test_results))
     for testmeta, testcases in test_results:
-        analyzer = analysis.ResultsOverTimeByUniqueJob(ds)
+        analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
         print(f"Test [{testmeta['origin']}] {testmeta['ciname']} / {testmeta['cijob']} ({testmeta['testformat']})")
         failed = [x for x in testcases if x.result == TestResult.FAIL]
         if not failed:
@@ -348,9 +349,9 @@ def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
         results = av.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
-            analyze_pr_html(pr, results, ds, args.html_fragment)
+            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(pr, results, ds)
+            analyze_pr(args.checkrepo, pr, results, ds)
     return PRStatus.READY
 
 
@@ -363,9 +364,9 @@ def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int])
         results = azure.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
-            analyze_pr_html(pr, results, ds, args.html_fragment)
+            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(pr, results, ds)
+            analyze_pr(args.checkrepo, pr, results, ds)
     return PRStatus.READY
 
 
@@ -377,9 +378,9 @@ def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
         results = ci.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
-            analyze_pr_html(pr, results, ds, args.html_fragment)
+            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(pr, results, ds)
+            analyze_pr(args.checkrepo, pr, results, ds)
     return PRStatus.READY
 
 
@@ -391,9 +392,9 @@ def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]
         results = cirrus.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
-            analyze_pr_html(pr, results, ds, args.html_fragment)
+            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(pr, results, ds)
+            analyze_pr(args.checkrepo, pr, results, ds)
     return PRStatus.READY
 
 
@@ -406,9 +407,9 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -
         results = ghi.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
-            analyze_pr_html(pr, results, ds, args.html_fragment)
+            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
         else:
-            analyze_pr(pr, results, ds)
+            analyze_pr(args.checkrepo, pr, results, ds)
     return PRStatus.READY
 
 
@@ -587,7 +588,7 @@ class GatherPRAnalysis:
             # Now, analyze flakiness & permafails for this origin ONLY if there is at least one
             # failed test. No need to check both flaky AND permafails as they are set at once.
             if origin not in thispr.flaky and origin in thispr.failed and thispr.failed[origin]:
-                analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds)
+                analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds, self.args.checkrepo)
 
                 uniquejobs = {fail.uniquejob for fail in thispr.failed[origin]}
                 flaky = []
@@ -676,7 +677,7 @@ class GatherPRAnalysis:
     def select_failures(self, results: list[ParsedLog]) -> list[prdef.FailedTest]:
         results.sort(key=lambda x: x[0]['uniquejobname'])
 
-        analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds)
+        analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds, self.args.checkrepo)
         failed_tests = []
         for meta, testcases in results:
             logging.debug(
