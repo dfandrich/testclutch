@@ -454,7 +454,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
 
         total_run_time = trstats.get_test_run_time()
-        print_func('Total time spent running tests:', f'{total_run_time / 1000000:.0f} sec. '
+        print_func('Total clock time spent running tests:', f'{total_run_time / 1000000:.0f} sec. '
                    f'({total_run_time / 1000000 / 24 / 3600:.0f} days)')
         print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
                    f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
