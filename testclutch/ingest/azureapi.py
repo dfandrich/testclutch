@@ -19,6 +19,9 @@ GET_BUILD_URL = BASE_URL + "/build/builds/{build_id}"
 GET_BUILD_TIMELINES_URL = GET_BUILD_URL + "/timeline"
 LOGS_URL = GET_BUILD_URL + "/logs/{log_id}"
 
+# This doesn't seem to be part of any formalized API
+VIEW_LOG_URL = 'https://dev.azure.com/{organization}/{project}/_build/results?buildId={build_id}&view=logs&j={job_uuid}&t={log_uuid}'
+
 DATA_TYPE = "application/json"
 
 CHUNK_SIZE = 0x10000
@@ -90,3 +93,7 @@ class AzureApi:
         logging.info('Retrieving log from %s', url)
         with self.http.get(url, stream=True) as resp:
             return netreq.download_file(resp, url)
+
+    def get_build_log_url(self, build_id: int, job_uuid: str, log_uuid: str) -> str:
+        return VIEW_LOG_URL.format(project=self.project, organization=self.organization,
+                                   build_id=build_id, log_uuid=log_uuid, job_uuid=job_uuid)

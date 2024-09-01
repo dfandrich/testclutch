@@ -16,9 +16,6 @@ from testclutch.logparser import logparse
 DEFAULT_EXT = '.log'
 LOGSUBDIR = 'azure'
 
-# This doesn't seem to be part of any formalized API
-VIEW_LOG_URL = 'https://dev.azure.com/{organization}/curl/_build/results?buildId={build_id}&view=logs&j={job_uuid}&t={log_uuid}'
-
 # Azure timestamp
 AV_TIME_RE = re.compile(r'^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(\.\d{1,7})?Z$')
 # Tasks created by Azure, whose logs we don't care about
@@ -267,8 +264,6 @@ class AzureIngestor:
             jobmeta = {}
             jobmeta['cistep'] = task['name']
             jobmeta['cistepresult'] = task['result']
-            url = VIEW_LOG_URL.format(organization=self.organization, build_id=build_id,
-                                      log_uuid=task['id'], job_uuid=task['parentId'])
-            jobmeta['url'] = url
+            jobmeta['url'] = self.azure.get_build_log_url(build_id, task['parentId'], task['id'])
             meta = {**cimeta, **jobmeta}
             self.ingest_log_file(self._log_file_path(build_id, task['log']['id']), meta)
