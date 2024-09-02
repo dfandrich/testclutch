@@ -748,7 +748,7 @@ class GatherPRAnalysis:
                 if self.args.dry_run:
                     logging.info('Skipping actual commenting in dry-run mode')
                 else:
-                    logging.info(f'Adding to comment on PR#{pr}')
+                    logging.info(f'Adding as comment on PR#{pr}')
 
                     # Write the comment to the PR thread
                     gh.create_comment(pr, message)
