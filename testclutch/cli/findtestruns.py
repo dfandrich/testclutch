@@ -119,6 +119,10 @@ def main():
         print('Must specify at least one of --failed, --succeeded or --resultcode')
         return
 
+    if not args.succeeded and not args.failed and not args.tests:
+        print('Must specify tests with --failed, --succeeded or after --resultcode')
+        return
+
     ds = db.Datastore()
     ds.connect()
 
