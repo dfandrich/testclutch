@@ -44,7 +44,13 @@ TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN test
 TEST_RUN_TIME_SQL = r'SELECT SUM(runtime) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ?;'
 
 # Returns all metadata values for a given name since the given time
-ONE_NAME_VALUES_SQL = r'SELECT DISTINCT value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
+ONE_NAME_VALUES_SQL = r'SELECT DISTINCT value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? ORDER BY value;'
+
+# Returns a count for each metadata value for a given name since the given time
+COUNT_NAME_VALUES_SQL = r'SELECT value, COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? GROUP BY value ORDER BY value;'
+
+# Return count of matching name/value pairs since the given time
+COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?;'
 
 # Returns all unique job names run since the given time
 JOB_NAMES_SQL = r"SELECT DISTINCT origin, account, value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = 'uniquejobname';"
@@ -55,9 +61,6 @@ MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FRO
 # Returns largest & smallest values for a given name since the given time for runs matching a
 # secondary metadata value
 MAX_MIN_VALUE_SECONDARY_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testrunmeta WHERE id IN (SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?) AND name = ?;'
-
-# Return count of matching name/value pairs since the given time
-COUNT_NAME_VALUE_SQL = r'SELECT COUNT(1) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?;'
 
 # Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
 # and only counting distinct test IDs.
@@ -281,6 +284,11 @@ class TestRunStats:
                         (self.oldest, self.repo, secondary, value, name))
         return tuple(int(n) for n in nvalues.fetchone())
 
+    def get_counts_for_name_values(self, name: str) -> list[tuple[str, int]]:
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(COUNT_NAME_VALUES_SQL, (self.oldest, self.repo, name))
+        return nvalues.fetchall()
+
     def get_count_for_name_value(self, name: str, value: str) -> int:
         nvalues = self.ds.db.cursor()
         nvalues.execute(COUNT_NAME_VALUE_SQL, (self.oldest, self.repo, name, value))
@@ -386,6 +394,8 @@ def output_test_run_stats_html(trstats: TestRunStats):
             print('</li>', end='')
 
     output_test_run_stats(trstats, print_html)
+    if current_indent:
+        print('</ul>')
     print('</body></html>')
 
 
@@ -400,6 +410,16 @@ def num_precision(n: float, p: int) -> int:
 
 
 def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
+    def show_counts_for_name_values(title: str, name: str, sortkey=None):
+        resultcounts = trstats.get_counts_for_name_values(name)
+        if sortkey:
+            resultcounts.sort(key=sortkey)
+        total_runs = sum(x[1] for x in resultcounts)  # normally the same as total_count
+        print_func(title, f'{total_runs} (100%)')
+        for value, count in resultcounts:
+            pct = count / total_runs * 100
+            print_func(f'{escape(value)}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
+
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - trstats.since).total_seconds() / (24 * 3600)  # to handle fractional days
     print_func('Days of stats:', f'{days: 0.0f}')
@@ -429,8 +449,11 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         f'{datetime.datetime.fromtimestamp(oldest, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)}')
 
     total_count = trstats.get_test_run_count()
-    print_func('Total test runs:', f'{total_count}')
+    print_func('Test runs:', f'{total_count}')
     print_func('Runs per day:', f'{total_count / days: 0.1f}')
+    show_counts_for_name_values('Runs by test result:', 'testresult',
+                                # This sort key makes the results appear more intuitively
+                                sortkey=lambda x: x[0][2:] if len(x[0]) > 2 else x[0])
 
     results_count = trstats.get_test_results_count()
     total_tests = 0
@@ -438,10 +461,11 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     for result, count in results_count:
         total_tests += count
         total_tests_run += count if result != TestResult.SKIP else 0
-    print_func('Total tests run:', f'{total_tests_run}')
+    print_func('Tests run:', f'{total_tests_run}')
+
     print_func('Tests executed per day:', f'{total_tests_run / days:.1f}')
 
-    print_func('TOTAL tests considered:', f'{total_tests} (100%)')
+    print_func('Tests considered:', f'{total_tests} (100%)')
     # This sort key makes the results appear in a more logical progression
     for status, count in sorted(results_count, key=lambda x: x[0] if x[0] else 99):
         code = TestResult(status)
@@ -483,12 +507,12 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     for testtype, avgtests in trstats.get_avg_tests_by_type():
         print_func(f'{testtype}: {avgtests:.1f}', indent=1)
     print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
-    print_func('Number of unique CI systems:', len(trstats.get_values_for_name('origin')))
-    print_func('Number of unique build systems:', len(trstats.get_values_for_name('buildsystem')))
-    print_func('Number of kinds of test formats:', len(trstats.get_values_for_name('testformat')))
-    print_func('Number of kinds of test modes:', len(trstats.get_values_for_name('testmode')))
-    print_func('Number of unique operating systems:', len(trstats.get_values_for_name('os')))
     print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
+    show_counts_for_name_values('Runs by CI system:', 'origin')
+    show_counts_for_name_values('Runs by build system:', 'buildsystem')
+    show_counts_for_name_values('Runs by test format:', 'testformat')
+    show_counts_for_name_values('Runs by test mode:', 'testmode')
+    show_counts_for_name_values('Runs by operating systems:', 'os')
 
 
 def output_test_results_count(trstats: TestRunStats,
