@@ -369,6 +369,12 @@ def output_test_run_stats_html(trstats: TestRunStats):
         <!DOCTYPE html>
         <html><head><title>Test run statistics</title>
         <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        <style type="text/css">
+        ul {{
+            margin-top: 0.2em;
+            margin-bottom: 0.6em;
+        }}
+        </style>
         </head>
         <body>
         <h1>Test run statistics for test runs on {escape(trstats.repo)}</h1>
