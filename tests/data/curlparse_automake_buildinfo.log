@@ -1,0 +1,30 @@
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.10.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.10.0-DEV zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 librtmp/2.3 OpenLDAP/2.5.14
+* Features: alt-svc AsynchDNS brotli HTTP2 IDN IPv6 Largefile libz PSL threadsafe UnixSockets zstd
+* Disabled: 
+* Host: localhost
+* System: Linux localhost 6.6.43 #1 SMP PREEMPT_DYNAMIC Sat Jul 27 17:18:39 UTC 2024 x86_64 GNU/Linux
+* OS: linux
+* Env: 
+* Seed: 256992
+* buildinfo.configure.tool: configure
+* buildinfo.configure.args:  '--without-ssl'
+* buildinfo.host: x86_64-pc-linux-gnu
+* buildinfo.host.os: linux-gnu
+* buildinfo.host.cpu: x86_64
+* buildinfo.host.vendor: pc
+* buildinfo.target: x86_64-pc-linux-gnu
+* buildinfo.target.os: linux-gnu
+* buildinfo.target.cpu: x86_64
+* buildinfo.target.vendor: pc
+* buildinfo.target.flags: UNIX GCC
+* buildinfo.compiler: GNU_C
+* buildinfo.compiler.version: 1200
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0001...[HTTP GET]
+--pd---e--- OK (1   out of 1  , remaining: 00:00, took 1.122s, duration: 00:01)
+TESTDONE: 1 tests were considered during 1 seconds.
+TESTDONE: 1 tests out of 1 reported OK: 100%

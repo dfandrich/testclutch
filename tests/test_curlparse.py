@@ -3725,6 +3725,84 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('1117', curlparse.TestResult.PASS, '', 23316000),
         ], testcases)
 
+    # Test buildinfo reported by runtests starting 2024-09 using autoconf/automake
+    # Log created with:
+    # mkdir /tmp/buildam && cd /tmp/buildam && ~/curl/configure --without-ssl && make -j9
+    #   && cd tests && srcdir=~/src/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
+    def test_automake_buildinfo(self):
+        with self.open_data('curlparse_automake_buildinfo.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'buildsystem': 'automake',
+            'configureargs': "'--without-ssl'",
+            'compiler': 'GNU_C',
+            'compilerversioncode': '1200',
+            'testformat': 'curl',
+            'testresult': 'success',
+            'testmode': 'normal',
+            'withvalgrind': 'no',
+            'withevent': 'no',
+            'testingver': '8.10.0-DEV',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetarch': 'x86_64',
+            'targetvendor': 'pc',
+            'targetos': 'linux-gnu',
+            'hosttriplet': 'x86_64-pc-linux-gnu',
+            'hostarch': 'x86_64',
+            'hostvendor': 'pc',
+            'hostos': 'linux-gnu',
+            'curldeps': 'libcurl/8.10.0-DEV zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 librtmp/2.3 OpenLDAP/2.5.14',
+            'features': 'alt-svc AsynchDNS brotli HTTP2 IDN IPv6 Largefile libz PSL threadsafe UnixSockets zstd',
+            'host': 'localhost',
+            'systemos': 'Linux',
+            'systemhost': 'localhost',
+            'systemosver': '6.6.43',
+            'arch': 'x86_64',
+            'os': 'linux',
+            'randomseed': '256992',
+            'runtestsduration': '1000000',
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1122000),
+        ], testcases)
+
+    # Test buildinfo reported by runtests starting 2024-09 using cmake
+    # Log created with:
+    # mkdir /tmp/buildcm && cd /tmp/buildcm && cmake -GNinja ~/curl -DENABLE_DEBUG=ON && ninja &&
+    #   ninja testdeps && cd tests && srcdir=~/src/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
+    def test_cmake_buildinfo(self):
+        with self.open_data('curlparse_cmake_buildinfo.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'buildsystem': 'cmake/ninja',
+            'buildsystemver': '3.26.4',
+            'configureargs': '-DENABLE_DEBUG="ON"',
+            'compiler': 'GNU',
+            'compilerversion': '12.3.0',
+            'testformat': 'curl',
+            'testresult': 'success',
+            'testmode': 'normal',
+            'withvalgrind': 'no',
+            'withevent': 'no',
+            'testingver': '8.10.0-DEV',
+            'targettriplet': 'Linux',
+            'targetarch': 'x86_64',
+            'targetos': 'Linux',
+            'curldeps': 'libcurl/8.10.0-DEV OpenSSL/3.0.14 zlib/1.2.13 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 OpenLDAP/2.5.14',
+            'features': 'alt-svc AsynchDNS Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM PSL SSL threadsafe TLS-SRP UnixSockets',
+            'host': 'localhost',
+            'systemos': 'Linux',
+            'systemhost': 'localhost',
+            'systemosver': '6.6.43',
+            'arch': 'x86_64',
+            'os': 'linux',
+            'randomseed': '265424',
+            'runtestsduration': '1000000',
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1067000),
+        ], testcases)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -47,6 +47,31 @@ RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
 
+# Buildinfo fields in header, starting 2024-09-06
+# Some are duplicated and aren't store separately, namely:
+#   buildinfo.configure.os (same as RE_SYSTEM[2])
+#   buildinfo.target (same as RE_CURLVER[1])
+#   buildinfo.target.vendor (same as RE_CURLVER[1][-1])
+#   buildinfo.host.os (same as RE_OS)
+#   buildinfo.host.vendor (same as RE_BI_HOSTTRIPLET[-1])
+# TODO: Add the remaining fields:
+#   buildinfo.configure.command
+#   buildinfo.configure.make
+#   buildinfo.target.flags
+# Some duplicate information obtained earlier during the compile, but since the compile logs are
+# not always available, it's better to rely on these.
+# TODO: after a suitable period, remove the duplicate data fields that come from compile logs.
+RE_BI_COMPILER = re.compile(r'^\* buildinfo\.compiler: (.+)$')
+RE_BI_COMPILERVER = re.compile(r'^\* buildinfo\.compiler\.version: (\S+)')
+RE_BI_GENERATOR = re.compile(r'^\* buildinfo\.configure\.generator: (.+)$')
+RE_BI_CONFIGURETOOL = re.compile(r'^\* buildinfo\.configure\.tool: (.+)$')
+RE_BI_CONFIGUREARGS = re.compile(r'^\* buildinfo\.configure\.args: (.+)$')
+RE_BI_CONFIGUREVER = re.compile(r'^\* buildinfo\.configure\.version: (\S+)')
+RE_BI_TARGETCPU = re.compile(r'^\* buildinfo\.target\.cpu: (\S+)')
+RE_BI_TARGETOS = re.compile(r'^\* buildinfo\.target\.os: (\S+)')
+RE_BI_HOSTTRIPLET = re.compile(r'^\* buildinfo\.host: (\S+)$')
+RE_BI_HOSTCPU = re.compile(r'^\* buildinfo\.host\.cpu: (\S+)$')
+
 # Test log results
 RE_STARTRESULTS = re.compile(r'^\*{41}')
 RE_TOIGNORE = re.compile(r'^Warning: test(\d{1,5}) result is ignored')
@@ -90,7 +115,7 @@ RE_TESTCURLBUILDCODE = re.compile(r'testcurl: (\w+) = ')
 TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 # TODO: lots more testcurl headers that could be added here
 
-# autoconf target triplet (sometimes quadruplet)
+# autoconf target (or host) triplet (sometimes quadruplet)
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
 # Match a valid year since Linux was created, also 1970 in case of time issue
@@ -241,6 +266,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                 meta['testingver'] = r.group(1)
                 meta['targettriplet'] = r.group(2)
                 if rr := RE_TARGETTRIPLET.search(r.group(2)):
+                    # Some of these may be overwritten later by buildinfo data
                     meta['targetarch'] = rr.group(1)
                     meta['targetvendor'] = rr.group(2)
                     # targetos will contain the "kernel" field when it exists (in a target
@@ -275,7 +301,68 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                     elif r := RE_SYSTEM.search(l):
                         unamemeta = parse_uname(r.group(1))
                         meta = {**meta, **unamemeta}
-
+                    elif r := RE_BI_GENERATOR.search(l):
+                        if r.group(1) == 'Unix Makefiles':
+                            meta['buildsystem'] = 'cmake/make'
+                        elif r.group(1) == 'MSYS Makefiles':
+                            meta['buildsystem'] = 'cmake/make'
+                        elif r.group(1) == 'Ninja':
+                            meta['buildsystem'] = 'cmake/ninja'
+                        elif r.group(1).startswith('Visual Studio'):
+                            meta['buildsystem'] = 'cmake/msbuild'
+                        else:
+                            logging.warning('Unknown cmake generator %s', r.group(1))
+                    elif r := RE_BI_CONFIGURETOOL.search(l):
+                        if r.group(1) == 'configure':
+                            meta['buildsystem'] = 'automake'
+                        elif r.group(1).endswith('cmake') or r.group(1).endswith('cmake.exe'):
+                            # This should be made more specific momentarily on the generator line
+                            meta['buildsystem'] = 'cmake'
+                        else:
+                            logging.warning('Unknown configure program %s', r.group(1))
+                    elif r := RE_BI_CONFIGUREARGS.search(l):
+                        meta['configureargs'] = r.group(1).strip()
+                    elif r := RE_BI_CONFIGUREVER.search(l):
+                        meta['buildsystemver'] = r.group(1)
+                    elif r := RE_BI_COMPILER.search(l):
+                        meta['compiler'] = r.group(1)
+                    elif r := RE_BI_COMPILERVER.search(l):
+                        # This is terribly brittle; runtests should be changed to output a
+                        # consistent compiler version instead
+                        if 'buildsystem' in meta:
+                            buildsystem = meta['buildsystem']
+                            assert isinstance(buildsystem, str)  # satisfy pytype this isn't an int
+                            if buildsystem.startswith('cmake'):
+                                meta['compilerversion'] = r.group(1)
+                            elif buildsystem == 'automake':
+                                # autoconf only gives us the processed value here
+                                meta['compilerversioncode'] = r.group(1)
+                            else:
+                                logging.warning('Unknown build system: %s', r.group(1))
+                        else:
+                            logging.warning('Build system not specified; compiler version ignored')
+                    elif r := RE_BI_TARGETCPU.search(l):
+                        meta['targetarch'] = r.group(1)
+                    elif r := RE_BI_TARGETOS.search(l):
+                        meta['targetos'] = r.group(1)
+                    elif r := RE_BI_HOSTCPU.search(l):
+                        # This was probably already set in parse_uname()
+                        if 'arch' in meta and meta['arch'] != r.group(1):
+                            logging.info('Host CPU mismatch: %s vs %s', meta['arch'], r.group(1))
+                        meta['arch'] = r.group(1)
+                    elif r := RE_BI_HOSTTRIPLET.search(l):
+                        meta['hosttriplet'] = r.group(1)
+                        if rr := RE_TARGETTRIPLET.search(r.group(1)):
+                            meta['hostarch'] = rr.group(1)
+                            meta['hostvendor'] = rr.group(2)
+                            # hostos will contain the "kernel" field when it exists (in a host
+                            # quadruplet) AND the "os" field. This ends up being more consistent
+                            # than trying to separate them into two fields when they exist, as
+                            # "kernel" and "os" aren't always unique descriptors.
+                            meta['hostos'] = rr.group(3)
+                        else:
+                            # Probably created by CMake, which doesn't use a triplet but just the OS
+                            meta['hostos'] = r.group(1)
                     elif RE_STARTRESULTS.search(l):
                         # *****************************************
                         while l := f.readline():
