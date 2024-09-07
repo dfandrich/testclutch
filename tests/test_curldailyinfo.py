@@ -11,6 +11,7 @@ DATADIR = 'data'
 
 class TestCurlDailyInfo(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         self.maxDiff = 4000
 
     def data_file(self, fn: str) -> str:
@@ -32,7 +33,3 @@ class TestCurlDailyInfo(unittest.TestCase):
         self.assertEqual(datetime.datetime(2023, 8, 1, 0, 30, 18, tzinfo=datetime.timezone.utc),
                          daily_time)
         self.assertEqual('', commit)
-
-
-if __name__ == '__main__':
-    unittest.main()

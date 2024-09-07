@@ -1,11 +1,24 @@
+import os
 import unittest
+from unittest import mock
 
 from .context import testclutch  # noqa: F401
 
-from testclutch.cli import metadatastats  # noqa: I100
-
 
 class TestMetaDataStats(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        # Replace XDG_CONFIG_HOME to prevent the user's testclutchrc file from being loaded
+        self.env_patcher = mock.patch.dict(os.environ, {'XDG_CONFIG_HOME': '/dev/null'})
+        self.env_patcher.start()
+        # Import the code to test only after XDG_CONFIG_HOME has been replaced
+        global metadatastats
+        from testclutch.cli import metadatastats
+
+    def tearDown(self):
+        self.env_patcher.stop()
+        super().tearDown()
+
     def test_idify(self):
         self.assertEqual(metadatastats.idify('simple'), 'testsimple')
         self.assertEqual(metadatastats.idify('01234:567-89'), 'test01234:567-89')

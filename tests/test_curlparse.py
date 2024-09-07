@@ -257,6 +257,7 @@ class TestParseUname(unittest.TestCase):
 
 class TestCurlParse(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         self.maxDiff = 4000
 
     def open_data(self, fn: str) -> TextIO:
@@ -3802,7 +3803,3 @@ class TestCurlParse(unittest.TestCase):
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1067000),
         ], testcases)
-
-
-if __name__ == '__main__':
-    unittest.main()

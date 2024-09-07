@@ -12,6 +12,7 @@ DATADIR = 'data'
 
 class TestCurlParse(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         self.maxDiff = 4000
 
     def open_data(self, fn: str) -> TextIO:
@@ -147,7 +148,3 @@ class TestCurlParse(unittest.TestCase):
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({}, meta)
         self.assertEqual([], testcases)
-
-
-if __name__ == '__main__':
-    unittest.main()

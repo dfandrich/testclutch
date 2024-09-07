@@ -12,6 +12,7 @@ DATADIR = 'data'
 
 class TestCurlParse(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         self.maxDiff = 4000
 
     def open_data(self, fn: str) -> TextIO:
@@ -161,7 +162,3 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('test_read_algos.test 18', automakeparse.TestResult.FAIL, 'test_read-hmac-sha2-512-etm@openssh.com', 0),
             SingleTestFinding('mansyntax.sh', automakeparse.TestResult.PASS, '', 0)
         ], testcases)
-
-
-if __name__ == '__main__':
-    unittest.main()
