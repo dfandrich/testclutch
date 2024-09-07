@@ -327,20 +327,15 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                     elif r := RE_BI_COMPILER.search(l):
                         meta['compiler'] = r.group(1)
                     elif r := RE_BI_COMPILERVER.search(l):
-                        # This is terribly brittle; runtests should be changed to output a
-                        # consistent compiler version instead
-                        if 'buildsystem' in meta:
-                            buildsystem = meta['buildsystem']
-                            assert isinstance(buildsystem, str)  # satisfy pytype this isn't an int
-                            if buildsystem.startswith('cmake'):
-                                meta['compilerversion'] = r.group(1)
-                            elif buildsystem == 'automake':
-                                # autoconf only gives us the processed value here
-                                meta['compilerversioncode'] = r.group(1)
-                            else:
-                                logging.warning('Unknown build system: %s', r.group(1))
+                        # During a short transition period in 2024-09, this field could hold a
+                        # compilerversion or a compilerversioncode. Determine which it is by
+                        # looking at its contents. Once backward compatibility is no longer needed,
+                        # change this to unconditionally set compilerversion.
+                        ver = r.group(1)
+                        if len(ver) < 3 or ver.find('.') > 0:
+                            meta['compilerversion'] = ver
                         else:
-                            logging.warning('Build system not specified; compiler version ignored')
+                            meta['compilerversioncode'] = ver
                     elif r := RE_BI_TARGETCPU.search(l):
                         meta['targetarch'] = r.group(1)
                     elif r := RE_BI_TARGETOS.search(l):
