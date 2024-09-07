@@ -3767,6 +3767,46 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1122000),
         ], testcases)
 
+    # Test buildinfo reported by runtests starting 2024-09 using autoconf/automake
+    # Log created like the previous one with the configureargs given (except for host_alias, which
+    # is automatically created).
+    def test_automake_cross_buildinfo(self):
+        with self.open_data('curlparse_automake_cross_buildinfo.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'buildsystem': 'automake',
+            'configureargs': "'--prefix=/tmp/buildam/install' '--without-ssl' '--without-libpsl' '--without-zlib' '--host=arm-none-linux-gnueabihf' 'host_alias=arm-none-linux-gnueabihf'",
+            'compiler': 'GNU_C',
+            'compilerversioncode': '1203',
+            'testformat': 'curl',
+            'testresult': 'success',
+            'testmode': 'normal',
+            'withvalgrind': 'no',
+            'withevent': 'no',
+            'testingver': '8.10.0-DEV',
+            'targettriplet': 'arm-none-linux-gnueabihf',
+            'targetarch': 'arm',
+            'targetvendor': 'none',
+            'targetos': 'linux-gnueabihf',
+            'hosttriplet': 'x86_64-pc-linux-gnu',
+            'hostarch': 'x86_64',
+            'hostvendor': 'pc',
+            'hostos': 'linux-gnu',
+            'curldeps': 'libcurl/8.10.0-DEV',
+            'features': 'alt-svc AsynchDNS IPv6 Largefile threadsafe UnixSockets',
+            'host': 'crossbuilder',
+            'systemos': 'Linux',
+            'systemhost': 'crossbuilder',
+            'systemosver': '6.6.43',
+            'arch': 'x86_64',
+            'os': 'linux',
+            'randomseed': '214058',
+            'runtestsduration': '1000000',
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1346000),
+        ], testcases)
+
     # Test buildinfo reported by runtests starting 2024-09 using cmake
     # Log created with:
     # mkdir /tmp/buildcm && cd /tmp/buildcm && cmake -GNinja ~/curl -DENABLE_DEBUG=ON && ninja &&

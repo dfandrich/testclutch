@@ -53,6 +53,7 @@ RE_SEED = re.compile(r'^\* Seed: (\d+)')
 #   buildinfo.target (same as RE_CURLVER[1])
 #   buildinfo.target.vendor (same as RE_CURLVER[1][-1])
 #   buildinfo.host.os (same as RE_OS)
+#   buildinfo.host.cpu (same as RE_BI_HOSTTRIPLET[0])
 #   buildinfo.host.vendor (same as RE_BI_HOSTTRIPLET[-1])
 # TODO: Add the remaining fields:
 #   buildinfo.configure.command
@@ -70,7 +71,6 @@ RE_BI_CONFIGUREVER = re.compile(r'^\* buildinfo\.configure\.version: (\S+)')
 RE_BI_TARGETCPU = re.compile(r'^\* buildinfo\.target\.cpu: (\S+)')
 RE_BI_TARGETOS = re.compile(r'^\* buildinfo\.target\.os: (\S+)')
 RE_BI_HOSTTRIPLET = re.compile(r'^\* buildinfo\.host: (\S+)$')
-RE_BI_HOSTCPU = re.compile(r'^\* buildinfo\.host\.cpu: (\S+)$')
 
 # Test log results
 RE_STARTRESULTS = re.compile(r'^\*{41}')
@@ -345,11 +345,6 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                         meta['targetarch'] = r.group(1)
                     elif r := RE_BI_TARGETOS.search(l):
                         meta['targetos'] = r.group(1)
-                    elif r := RE_BI_HOSTCPU.search(l):
-                        # This was probably already set in parse_uname()
-                        if 'arch' in meta and meta['arch'] != r.group(1):
-                            logging.info('Host CPU mismatch: %s vs %s', meta['arch'], r.group(1))
-                        meta['arch'] = r.group(1)
                     elif r := RE_BI_HOSTTRIPLET.search(l):
                         meta['hosttriplet'] = r.group(1)
                         if rr := RE_TARGETTRIPLET.search(r.group(1)):
