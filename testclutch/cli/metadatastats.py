@@ -40,7 +40,7 @@ TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN test
 # Alternate formulation for memory efficiency testing
 #  TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testresults WHERE testresults.id in (SELECT id from testruns WHERE time >= ? AND repo = ?) GROUP BY result'
 
-# Returns the sum of a time spent on each test since the given time
+# Returns the sum of time spent on each test since the given time
 TEST_RUN_TIME_SQL = r'SELECT SUM(runtime) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ?;'
 
 # Returns all metadata values for a given name since the given time
@@ -58,9 +58,9 @@ JOB_NAMES_SQL = r"SELECT DISTINCT origin, account, value FROM testruns INNER JOI
 # Returns largest & smallest values for a given name since the given time
 MAX_MIN_VALUE_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ?;'
 
-# Returns largest & smallest values for a given name since the given time for runs matching a
-# secondary metadata value
-MAX_MIN_VALUE_SECONDARY_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)) FROM testrunmeta WHERE id IN (SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?) AND name = ?;'
+# Returns largest, smallest & average values for a given name since the given time for runs matching
+# a secondary metadata value
+STATS_VALUE_SECONDARY_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS INT)),AVG(CAST(value AS FLOAT))  FROM testrunmeta WHERE id IN (SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = ? AND value = ?) AND name = ?;'
 
 # Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
 # and only counting distinct test IDs.
@@ -277,12 +277,12 @@ class TestRunStats:
         nvalues.execute(MAX_MIN_VALUE_SQL, (self.oldest, self.repo, name))
         return tuple(int(n) for n in nvalues.fetchone())
 
-    def get_max_min_for_name_secondary(self, name: str, secondary: str, value: str,
-                                       ) -> tuple[int, int]:
+    def get_stats_for_name_secondary(self, name: str, secondary: str, value: str,
+                                     ) -> tuple[int, int, float]:
         nvalues = self.ds.db.cursor()
-        nvalues.execute(MAX_MIN_VALUE_SECONDARY_SQL,
+        nvalues.execute(STATS_VALUE_SECONDARY_SQL,
                         (self.oldest, self.repo, secondary, value, name))
-        return tuple(int(n) for n in nvalues.fetchone())
+        return nvalues.fetchone()
 
     def get_counts_for_name_values(self, name: str) -> list[tuple[str, int]]:
         nvalues = self.ds.db.cursor()
@@ -454,6 +454,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         'Oldest run used: '
         f'{datetime.datetime.fromtimestamp(oldest, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)}')
 
+    print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
     total_count = trstats.get_test_run_count()
     print_func('Test runs:', f'{total_count}')
     print_func('Runs per day:', f'{total_count / days: 0.1f}')
@@ -488,6 +489,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
                    f'({total_run_time / 1000000 / 24 / 3600:.0f} days)')
         print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
                    f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
+        # TODO: break this down by testformat
         print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
     with contextlib.suppress(TypeError):
         # "runtestsduration" isn't mandatory and TypeError will be raised if missing
@@ -496,15 +498,18 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         rundurations = []
         for formattup in trstats.get_values_for_name('testformat'):
             testformat = formattup[0]
-            largest, smallest = trstats.get_max_min_for_name_secondary(
+            largest, smallest, average = trstats.get_stats_for_name_secondary(
                 'runtestsduration', 'testformat', testformat)
-            rundurations.append((testformat, smallest, largest))
+            rundurations.append((testformat, smallest, largest, average))
         print_func('Longest test runs:')
-        for testformat, smallest, largest in rundurations:
+        for testformat, smallest, largest, average in rundurations:
             print_func(f'{testformat}:', f'{largest / 1000000: .0f} sec.', indent=1)
         print_func('Shortest test runs:')
-        for testformat, smallest, largest in rundurations:
+        for testformat, smallest, largest, average in rundurations:
             print_func(f'{testformat}:', f'{smallest / 1000000: .0f} sec.', indent=1)
+        print_func('Average test runs:')
+        for testformat, smallest, largest, average in rundurations:
+            print_func(f'{testformat}:', f'{average / 1000000: .0f} sec.', indent=1)
 
     print_func('Most number of unique tests attempted in one run by test format:')
     for testtype, maxtests in trstats.get_max_tests_by_type():
@@ -512,7 +517,6 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     print_func('Average number of tests attempted in one run by test format:')
     for testtype, avgtests in trstats.get_avg_tests_by_type():
         print_func(f'{testtype}: {avgtests:.1f}', indent=1)
-    print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
     print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
     show_counts_for_name_values('Runs by CI system:', 'origin')
     show_counts_for_name_values('Runs by build system:', 'buildsystem')
