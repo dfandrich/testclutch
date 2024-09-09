@@ -718,9 +718,11 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         print('</tr>')
 
     # Print totals of each feature
-    print(f'<tr><td>TOTALS: {len(fm.all_meta)}</td>')
+    total_count = len(fm.all_meta)
+    print(f'<tr><td>TOTALS: {total_count} (100%)</td>')
     for counter in featurecounts:
-        print(f'<td>{counter.count}</td>')
+        pct = counter.count / total_count * 100
+        print(f'<td>{counter.count} ' f'({pct:.{num_precision(pct, 1)}f}%)</td>')
 
     print('</tr></tbody></table></body></html>')
 
