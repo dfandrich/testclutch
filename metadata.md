@@ -40,6 +40,8 @@ Using these data types, where appropriate, will make analysis of data easier.
   contents of another field. e.g. the format of the "compiler" field might
   depend on the "buildsystem" field, or the values in the "ciarch" field might
   depend on the "origin" field.
+- Boolean fields should be defined so that the complete absence of the field
+  in the metadata should be treated as "no".
 
 ## Tests
 

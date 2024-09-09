@@ -2,6 +2,7 @@
 """
 
 import argparse
+import collections
 import contextlib
 import datetime
 import itertools
@@ -682,6 +683,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <span class="not">{NOT}</span> job does not have this mutually exclusive feature
         <br>
         <span class="maybe">{MAYBE}</span> unable to determine if job has this feature
+        <br>
+        <span class="not">{MAYBE}</span> unable to determine if job has this binary feature
+        (but likely no)
         </p>
         <p>
         The job links to the results of the latest run.
@@ -693,12 +697,16 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     adjuster = MetadataAdjuster(config.get('matrix_meta_splits'),
                                 config.get('matrix_meta_transforms'))
     features = fm.build_features(config.get('matrix_meta_fields'), adjuster)
+    # count the number of used values per feature
+    value_counts = collections.Counter()
+    for _, name, _ in features:
+        value_counts[name] += 1
 
     @dataclass
     class IntCounter:
         count: int = 0
 
-    featurecounts = [IntCounter() for _ in features]
+    featurecounts = [IntCounter() for _ in features]  # one counter per feature value
     print('<thead><tr><th>Job</th>')
     lastname = ''
     for title, name, _ in features:
@@ -720,7 +728,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
             match = value in jobvalue
             maybe = name not in meta
             newsec = ' newsection' if name != lastname else ''
-            classname = ("maybe" if maybe
+            classname = ("maybe" if maybe and value_counts[name] > 1
                          else "yes" if match
                          else "no" if adjuster.has_split(name)
                          else "not")
