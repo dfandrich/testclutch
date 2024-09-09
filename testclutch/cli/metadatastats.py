@@ -95,7 +95,8 @@ TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
 
 # Characters to use for 'enabled' and 'disabled' in the features matrix
 YES = '✓'
-NO = '–'
+NO = '\u2002'  # en space
+NOT = '–'
 MAYBE = '?'
 
 
@@ -132,6 +133,10 @@ class MetadataAdjuster:
         self.splits = {k: re.compile(v) for k, v in splits.items()}
         self.transforms = {k: [(re.compile(pat), repl) for pat, repl in l]
                            for k, l in transforms.items()}
+
+    def has_split(self, metaname: str) -> bool:
+        "Return True if this field would be split"
+        return metaname in self.splits
 
     def split(self, metaname: str, value: str) -> list[str]:
         """Transform a metadata value into multiple by splitting it on a regular expression
@@ -656,6 +661,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         .maybe {
           background-color: #CCCCCC;
         }
+        .not {
+          background-color: #EEEEEE;
+        }
         </style>
         """ + f"""
         <meta name="generator" content="Test Clutch {testclutch.__version__}">
@@ -670,6 +678,8 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         <span class="yes">{YES}</span> job has this feature
         <br>
         <span class="no">{NO}</span> job does not have this feature
+        <br>
+        <span class="not">{NOT}</span> job does not have this mutually exclusive feature
         <br>
         <span class="maybe">{MAYBE}</span> unable to determine if job has this feature
         </p>
@@ -706,12 +716,19 @@ def output_feature_matrix_html(fm: FeatureMatrix):
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
         lastname = ''
         for (_, name, value), counter in zip(features, featurecounts):
-            jobvalue = adjuster.adjust(name, meta.get(name, ''))
-            match = value in set(jobvalue)
+            jobvalue = set(adjuster.adjust(name, meta.get(name, '')))
+            match = value in jobvalue
             maybe = name not in meta
             newsec = ' newsection' if name != lastname else ''
-            print(f'<td class="{"maybe" if maybe else "yes" if match else "no"}{newsec}">'
-                  f'{MAYBE if maybe else YES if match else NO}</td>')
+            classname = ("maybe" if maybe
+                         else "yes" if match
+                         else "no" if adjuster.has_split(name)
+                         else "not")
+            symbol = (MAYBE if maybe
+                      else YES if match
+                      else NO if adjuster.has_split(name)
+                      else NOT)
+            print(f'<td class="{classname}{newsec}">{symbol}</td>')
             if match:
                 counter.count += 1
             lastname = name
