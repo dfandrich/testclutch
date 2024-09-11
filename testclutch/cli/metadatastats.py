@@ -486,10 +486,6 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)
     # Skip these on an empty DB
     if total_count:
-        truncated = trstats.get_count_for_name_value('testresult', 'truncated')
-        pct = truncated / total_count * 100
-        print_func('Tests runs that were aborted:', f'{truncated} ({pct:.{num_precision(pct, 3)}f}%)')
-
         total_run_time = trstats.get_test_run_time()
         print_func('Total clock time spent running tests:', f'{total_run_time / 1000000:.0f} sec. '
                    f'({total_run_time / 1000000 / 24 / 3600:.0f} days)')
