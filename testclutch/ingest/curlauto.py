@@ -36,7 +36,8 @@ class MassagedLog(TextIO):
     the curl autobuild logs.  This class restores them so that they can be
     correctly parsed by the curl log parser.
 
-    TODO: figure out what is stripping the spaces before they get to the curl server.
+    TODO: The inpipe script in the mail handler on haxx.se was fixed 2024-09-10 to
+    no longer strip spaces, so this class is now obsolete.
     """
     def __init__(self, f):
         self.file_obj = f

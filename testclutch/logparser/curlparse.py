@@ -12,6 +12,7 @@ from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta,
 from testclutch.testcasedef import TestResult
 
 
+# TODO: obsolete after 2024-09-10
 # NOTE: if lines are added below that match spaces at the start of a line,
 # update ingest/curlauto.py at the same time
 
@@ -331,6 +332,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                         # compilerversion or a compilerversioncode. Determine which it is by
                         # looking at its contents. Once backward compatibility is no longer needed,
                         # change this to unconditionally set compilerversion.
+                        # TODO: obsolete after 2024-09-10
                         ver = r.group(1)
                         if len(ver) < 3 or ver.find('.') > 0:
                             meta['compilerversion'] = ver
