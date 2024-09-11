@@ -77,19 +77,19 @@ def environ() -> dict[str, str]:
 
 
 def expandstr(var: str) -> str:
-    "Expand a string with environment variables"
+    """Expand a string with environment variables"""
     return var.format(**environ())
 
 
 @functools.lru_cache(maxsize=None)
 def expand(var: str) -> str:
-    "Get a config variable and Expand it with environment variables"
+    """Get a config variable and Expand it with environment variables"""
     return expandstr(get(var))
 
 
 @functools.lru_cache(maxsize=None)
 def get(var: str) -> Any:
-    "Get a raw config variable"
+    """Get a raw config variable"""
     return environ()[var]
 
 
@@ -111,7 +111,7 @@ def override_var(obj, name: str, value: Any):
 
 
 def config() -> ModuleType:
-    "Return the configuration file as a module"
+    """Return the configuration file as a module"""
     global config_module
     if config_module:
         return config_module
@@ -119,8 +119,8 @@ def config() -> ModuleType:
     configfn = os.path.join(config_dir(), CONFIG_FILE)
     # There is a race condition here, but if the race fails, the only impact is a messier message
     if os.access(configfn, os.R_OK):
-        spec = importlib.util.spec_from_loader("testclutchrc", importlib.machinery.SourceFileLoader(
-            "testclutchrc", configfn))
+        spec = importlib.util.spec_from_loader('testclutchrc', importlib.machinery.SourceFileLoader(
+            'testclutchrc', configfn))
         assert spec  # satisfy pytype that this isn't None
         config_module = importlib.util.module_from_spec(spec)
 
@@ -129,6 +129,6 @@ def config() -> ModuleType:
             spec.loader.exec_module(config_module)
     else:
         logging.info('Configuration file %s not found', configfn)
-        config_module = ModuleType("empty")
+        config_module = ModuleType('empty')
 
     return config_module

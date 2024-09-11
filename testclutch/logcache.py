@@ -19,7 +19,7 @@ CHARMAP = 'UTF-8'
 
 
 def create_dirs(subdir: str):
-    "Create any parent directories that don't exist"
+    """Create any parent directories that don't exist"""
     os.makedirs(os.path.join(config.expand('log_cache_path'), subdir), exist_ok=True)
 
 

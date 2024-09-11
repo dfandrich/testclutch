@@ -12,17 +12,17 @@ from testclutch import netreq
 # https://learn.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-7.1
 API_VERSION_A = '7.1-preview.7'
 API_VERSION_B = '7.1-preview.2'
-BASE_URL = "https://dev.azure.com/{organization}/{project}/_apis"
+BASE_URL = 'https://dev.azure.com/{organization}/{project}/_apis'
 
-LIST_BUILDS_URL = BASE_URL + "/build/builds"
-GET_BUILD_URL = BASE_URL + "/build/builds/{build_id}"
-GET_BUILD_TIMELINES_URL = GET_BUILD_URL + "/timeline"
-LOGS_URL = GET_BUILD_URL + "/logs/{log_id}"
+LIST_BUILDS_URL = BASE_URL + '/build/builds'
+GET_BUILD_URL = BASE_URL + '/build/builds/{build_id}'
+GET_BUILD_TIMELINES_URL = GET_BUILD_URL + '/timeline'
+LOGS_URL = GET_BUILD_URL + '/logs/{log_id}'
 
 # This doesn't seem to be part of any formalized API
 VIEW_LOG_URL = 'https://dev.azure.com/{organization}/{project}/_build/results?buildId={build_id}&view=logs&j={job_uuid}&t={log_uuid}'
 
-DATA_TYPE = "application/json"
+DATA_TYPE = 'application/json'
 
 CHUNK_SIZE = 0x10000
 MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
@@ -35,9 +35,9 @@ class AzureApi:
         self.http = netreq.Session()
 
     def _standard_headers(self) -> dict:
-        return {"Accept": DATA_TYPE,
-                "Content-Type": DATA_TYPE,
-                "User-Agent": netreq.USER_AGENT
+        return {'Accept': DATA_TYPE,
+                'Content-Type': DATA_TYPE,
+                'User-Agent': netreq.USER_AGENT
                 }
 
     def get_builds(self, branch: Optional[str], hours: int) -> dict[str, Any]:
@@ -64,8 +64,8 @@ class AzureApi:
         url = GET_BUILD_URL.format(organization=self.organization, project=self.project,
                                    build_id=build_id)
         logging.debug('Retrieving build from %s', url)
-        params = {"api-version": API_VERSION_A,
-                  "propertyFilters": "Build"
+        params = {'api-version': API_VERSION_A,
+                  'propertyFilters': 'Build'
                   }
         with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
             # Note: this can return 203 (Non-Authoritative Information) in case of bad account name,
@@ -80,8 +80,8 @@ class AzureApi:
         url = GET_BUILD_TIMELINES_URL.format(organization=self.organization, project=self.project,
                                              build_id=build_id)
         logging.debug('Retrieving build timeline from %s', url)
-        params = {"api-version": API_VERSION_B,
-                  "propertyFilters": "Build"
+        params = {'api-version': API_VERSION_B,
+                  'propertyFilters': 'Build'
                   }
         with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
             resp.raise_for_status()

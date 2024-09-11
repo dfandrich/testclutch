@@ -9,13 +9,13 @@ from testclutch import netreq
 
 
 # See https://www.appveyor.com/docs/api/
-BASE_URL = "https://ci.appveyor.com/api"
-BASE_PROJECT_URL = BASE_URL + "/projects/{account}/{project}"
-RUNS_URL = BASE_PROJECT_URL + "/history"
-RUN_BY_VERSION_URL = BASE_PROJECT_URL + "/build/{build_ver}"
-LOG_URL = "https://ci.appveyor.com/api/buildjobs/{job_id}/log"
+BASE_URL = 'https://ci.appveyor.com/api'
+BASE_PROJECT_URL = BASE_URL + '/projects/{account}/{project}'
+RUNS_URL = BASE_PROJECT_URL + '/history'
+RUN_BY_VERSION_URL = BASE_PROJECT_URL + '/build/{build_ver}'
+LOG_URL = 'https://ci.appveyor.com/api/buildjobs/{job_id}/log'
 
-DATA_TYPE = "application/json"
+DATA_TYPE = 'application/json'
 
 MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
 PAGINATION = 20       # Number to retrieve at once; maximum 20
@@ -30,9 +30,9 @@ class AppveyorApi:
         self.http = netreq.Session()
 
     def _standard_headers(self) -> dict:
-        return {"Accept": DATA_TYPE,
-                "Content-Type": DATA_TYPE,
-                "User-Agent": netreq.USER_AGENT
+        return {'Accept': DATA_TYPE,
+                'Content-Type': DATA_TYPE,
+                'User-Agent': netreq.USER_AGENT
                 }
 
     def get_runs(self, branch: str) -> dict[str, Any]:
@@ -45,8 +45,8 @@ class AppveyorApi:
         while (not combined_resp['builds'] or last_resp['builds']
                ) and len(combined_resp['builds']) < MAX_RETRIEVED:
             url = RUNS_URL.format(account=self.account, project=self.project)
-            params = {"branch": branch,
-                      "recordsNumber": PAGINATION
+            params = {'branch': branch,
+                      'recordsNumber': PAGINATION
                       }
             if 'project' in combined_resp:
                 params['startBuildId'] = last_resp['builds'][-1]['buildId']
@@ -65,8 +65,8 @@ class AppveyorApi:
         params = {
             # This API is intended for pagination, so it starts listing # builds EARLIER than
             # the startBuildId, so we must give a value larger than what we want.
-            "startBuildId": build_id + 1,
-            "recordsNumber": 1,
+            'startBuildId': build_id + 1,
+            'recordsNumber': 1,
         }
         logging.debug('Retrieving run from %s', url)
         with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
@@ -75,7 +75,7 @@ class AppveyorApi:
 
         build = run_search['builds'][0]
         if build['buildId'] != build_id:
-            raise RuntimeError(f"API error: wanted build_id {build_id}, got {build['buildId']}")
+            raise RuntimeError(f'API error: wanted build_id {build_id}, got {build["buildId"]}')
 
         # Do another request by version to get the real info
         return self.get_run_by_buildver(build['version'])
@@ -96,7 +96,7 @@ class AppveyorApi:
     def get_logs(self, job_id: str) -> tuple[str, str]:
         """Retrieve log file for a job"""
         url = LOG_URL.format(job_id=job_id)
-        params = {"fullLog": "true"
+        params = {'fullLog': 'true'
                   }
         logging.debug('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), params=params, stream=True

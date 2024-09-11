@@ -36,77 +36,77 @@ class Datastore:
         try:
             # Need IMMEDIATE to respect the timeout on writes
             self.db = sqlite3.connect(self.filename,
-                                      timeout=DB_TIMEOUT, isolation_level="IMMEDIATE")
+                                      timeout=DB_TIMEOUT, isolation_level='IMMEDIATE')
         except sqlite3.OperationalError:
             logging.error(f'Cannot open or create database (permission? missing dir?): {self.filename}')
             raise
 
         self.cur = self.db.cursor()
         # Increase cache to improve performance (negative means KiB)
-        self.cur.execute("PRAGMA cache_size = -10000")
+        self.cur.execute('PRAGMA cache_size = -10000')
         # Store temporary tables onto disk to reduce RAM requirements
-        self.cur.execute("PRAGMA temp_store = FILE")
+        self.cur.execute('PRAGMA temp_store = FILE')
         # Avoid wasting disk space
-        self.cur.execute("PRAGMA journal_size_limit = 27103364")
+        self.cur.execute('PRAGMA journal_size_limit = 27103364')
         # Use WAL mode to allow multiple concurrent readers/writers
-        self.cur.execute("PRAGMA journal_mode=WAL")
+        self.cur.execute('PRAGMA journal_mode=WAL')
         if self.cur.fetchone()[0] != 'wal':
-            logging.warning("Could not put DB into WAL mode")
+            logging.warning('Could not put DB into WAL mode')
         try:
             # See if table exists
-            self.cur.execute("SELECT 1 FROM testruns LIMIT 1")
+            self.cur.execute('SELECT 1 FROM testruns LIMIT 1')
         except sqlite3.OperationalError:
-            logging.warning("Creating new DB")
+            logging.warning('Creating new DB')
             self.create_new_db()
-        self.cur.execute("PRAGMA foreign_keys = ON")
+        self.cur.execute('PRAGMA foreign_keys = ON')
         self.cur.fetchall()
         self.db.commit()
-        self.cur.execute("PRAGMA foreign_keys")
+        self.cur.execute('PRAGMA foreign_keys')
 
     def close(self):
         self.cur.close()
         self.db.close()
 
     def create_new_db(self):
-        logging.info("Creating new database")
+        logging.info('Creating new database')
         # One per test run
-        self.cur.execute("CREATE TABLE testruns (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                         "time INTEGER, repo TEXT NOT NULL, origin TEXT NOT NULL, "
-                         "account TEXT, runid TEXT NOT NULL, "
-                         "uniquejobname TEXT NOT NULL, ingesttime INTEGER, "
-                         "UNIQUE (repo, origin, account, runid, uniquejobname))"
+        self.cur.execute('CREATE TABLE testruns (id INTEGER PRIMARY KEY AUTOINCREMENT, '
+                         'time INTEGER, repo TEXT NOT NULL, origin TEXT NOT NULL, '
+                         'account TEXT, runid TEXT NOT NULL, '
+                         'uniquejobname TEXT NOT NULL, ingesttime INTEGER, '
+                         'UNIQUE (repo, origin, account, runid, uniquejobname))'
                          )
-        self.cur.execute("CREATE INDEX testruns_index ON testruns (repo, time)")
+        self.cur.execute('CREATE INDEX testruns_index ON testruns (repo, time)')
         # 0..n per test run
-        self.cur.execute("CREATE TABLE testrunmeta(id INTEGER, name TEXT, value TEXT, "
-                         "FOREIGN KEY (id) REFERENCES testruns (id) "
-                         "ON UPDATE RESTRICT "
-                         "ON DELETE RESTRICT)")
-        self.cur.execute("CREATE INDEX testrunmeta_index ON testrunmeta (id, name, value)")
+        self.cur.execute('CREATE TABLE testrunmeta(id INTEGER, name TEXT, value TEXT, '
+                         'FOREIGN KEY (id) REFERENCES testruns (id) '
+                         'ON UPDATE RESTRICT '
+                         'ON DELETE RESTRICT)')
+        self.cur.execute('CREATE INDEX testrunmeta_index ON testrunmeta (id, name, value)')
         # 0..n per test run
         # testid is the test number or identifier
         # result is 0: unknown, 1 success, 2 failed, 3 skipped, etc. (see TestResult)
         # resulttext is an optional textual description of the failure
         # runtime is the time it took to run the test in microsec
-        self.cur.execute("CREATE TABLE testresults(id INTEGER, testid TEXT, result INTEGER, "
-                         "resulttext TEXT, runtime INTEGER, "
-                         "FOREIGN KEY (id) REFERENCES testruns (id) "
-                         "ON UPDATE RESTRICT "
-                         "ON DELETE RESTRICT)")
-        self.cur.execute("CREATE INDEX testresults_index ON testresults (id, testid)")
+        self.cur.execute('CREATE TABLE testresults(id INTEGER, testid TEXT, result INTEGER, '
+                         'resulttext TEXT, runtime INTEGER, '
+                         'FOREIGN KEY (id) REFERENCES testruns (id) '
+                         'ON UPDATE RESTRICT '
+                         'ON DELETE RESTRICT)')
+        self.cur.execute('CREATE INDEX testresults_index ON testresults (id, testid)')
 
-        self.cur.execute("CREATE TABLE commitinfo (commithash TEXT NOT NULL PRIMARY KEY, "
-                         "prevhash TEXT, "
-                         "repo TEXT NOT NULL, branch TEXT NOT NULL, committime INTEGER, "
-                         "committeremail TEXT NOT NULL, authoremail TEXT NOT NULL, title TEXT)")
-        self.cur.execute("CREATE INDEX commitinfo_index ON commitinfo "
-                         "(commithash, prevhash, committime, repo, branch)")
+        self.cur.execute('CREATE TABLE commitinfo (commithash TEXT NOT NULL PRIMARY KEY, '
+                         'prevhash TEXT, '
+                         'repo TEXT NOT NULL, branch TEXT NOT NULL, committime INTEGER, '
+                         'committeremail TEXT NOT NULL, authoremail TEXT NOT NULL, title TEXT)')
+        self.cur.execute('CREATE INDEX commitinfo_index ON commitinfo '
+                         '(commithash, prevhash, committime, repo, branch)')
         # TODO: create table to perform email->name mappings UNIQUE (repo, email)
         self.db.commit()
 
     def store_test_meta(self, recid: int, meta: TestMeta):
         for k, v in meta.items():
-            self.cur.execute("INSERT INTO testrunmeta VALUES (?, ?, ?)", (recid, k, v))
+            self.cur.execute('INSERT INTO testrunmeta VALUES (?, ?, ?)', (recid, k, v))
         self.db.commit()
 
     def store_test_run(self, meta: TestMeta, testresults: TestCases):
@@ -119,21 +119,21 @@ class Datastore:
         account = meta['account'] if 'account' in meta else ''
         runid = meta['runid']
         uniquejobname = meta['uniquejobname']
-        self.cur.execute("INSERT INTO testruns (time, repo, origin, account, runid, uniquejobname, "
-                         "ingesttime) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        self.cur.execute('INSERT INTO testruns (time, repo, origin, account, runid, uniquejobname, '
+                         'ingesttime) VALUES (?, ?, ?, ?, ?, ?, ?)',
                          (index_time, repo, origin, account, runid, uniquejobname,
                           int(datetime.datetime.now().timestamp())))
         recid = self.cur.execute(
-            "SELECT id FROM testruns WHERE rowid = ?", (self.cur.lastrowid, )).fetchone()[0]
+            'SELECT id FROM testruns WHERE rowid = ?', (self.cur.lastrowid, )).fetchone()[0]
         self.store_test_meta(recid, meta)
         for row in testresults:
-            self.cur.execute("INSERT INTO testresults VALUES (?, ?, ?, ?, ?)", (
+            self.cur.execute('INSERT INTO testresults VALUES (?, ?, ?, ?, ?)', (
                 recid, row.name, row.result, row.reason, row.duration))
         self.db.commit()
 
     def collect_meta(self, testid: int) -> TestMetaStr:
         metacur = self.db.cursor()
-        meta = metacur.execute("SELECT name, value FROM testrunmeta WHERE id = ?", (testid, ))
+        meta = metacur.execute('SELECT name, value FROM testrunmeta WHERE id = ?', (testid, ))
         metadict = {}
         # Collect over test run metadata items for one test run
         while metavalues := meta.fetchmany():
@@ -157,33 +157,33 @@ class Datastore:
     def select_all_test_runs(self, repo: str, since: datetime.datetime) -> TestRunRow:
         """Returns a list of all test runs"""
         oldest = int(since.timestamp())
-        runs = self.cur.execute("SELECT id, time FROM testruns "
-                                "WHERE testruns.repo = ? AND testruns.time >= ?",
+        runs = self.cur.execute('SELECT id, time FROM testruns '
+                                'WHERE testruns.repo = ? AND testruns.time >= ?',
                                 (repo, oldest))
         return self._collect_row(runs)
 
     def select_meta_test_runs(self, repo: str, since: datetime.datetime,
                               name: str, op: str, value: str) -> TestRunRow:
-        "Returns the tests matching a given piece of metadata"
+        """Returns the tests matching a given piece of metadata"""
         oldest = int(since.timestamp())
-        VALID_OPERATORS = frozenset(("=", "<", ">", "<=", ">=", "<>", "!=", "like", "LIKE",
-                                     "not like", "NOT LIKE"))
+        VALID_OPERATORS = frozenset(('=', '<', '>', '<=', '>=', '<>', '!=', 'like', 'LIKE',
+                                     'not like', 'NOT LIKE'))
         if op not in VALID_OPERATORS:
             # Safety check
-            logging.error("Invalid operator %s", op)
+            logging.error('Invalid operator %s', op)
             return []
-        logging.debug("testrunmeta.name = %s AND value %s %s", name, op, value)
-        runs = self.cur.execute("SELECT testruns.id, time FROM testrunmeta "
-                                "INNER JOIN testruns ON testruns.id=testrunmeta.id "
-                                "WHERE testruns.repo = ? AND testruns.time >= ? "
-                                f"AND testrunmeta.name = ? AND value {op} ?",
+        logging.debug('testrunmeta.name = %s AND value %s %s', name, op, value)
+        runs = self.cur.execute('SELECT testruns.id, time FROM testrunmeta '
+                                'INNER JOIN testruns ON testruns.id=testrunmeta.id '
+                                'WHERE testruns.repo = ? AND testruns.time >= ? '
+                                f'AND testrunmeta.name = ? AND value {op} ?',
                                 (repo, oldest, name, value))
         return self._collect_row(runs)
 
     def select_test_results(self, testid: int) -> TestCases:
-        "Returns the test results for a given test run"
-        res = self.cur.execute("SELECT testid, result, resulttext, runtime FROM testresults "
-                               "WHERE id = ?", (testid,))
+        """Returns the test results for a given test run"""
+        res = self.cur.execute('SELECT testid, result, resulttext, runtime FROM testresults '
+                               'WHERE id = ?', (testid,))
         results = []
         # Collect test case results
         while rows := res.fetchmany():
@@ -210,15 +210,15 @@ class Datastore:
 #        # and duplicate writes just raise IntegrityError which is ignored
 
     def select_rec_id(self, meta: dict[str, str]) -> Optional[int]:
-        "Return the record ID matching a given test run"
+        """Return the record ID matching a given test run"""
         repo = meta['checkrepo']
         origin = meta['origin']
         account = meta['account'] if 'account' in meta else ''
         runid = meta['runid']
         uniquejobname = meta['uniquejobname']
         res = self.cur.execute(
-            "SELECT id FROM testruns WHERE "
-            "repo = ? AND origin = ? AND account = ? AND runid = ? AND uniquejobname = ?",
+            'SELECT id FROM testruns WHERE '
+            'repo = ? AND origin = ? AND account = ? AND runid = ? AND uniquejobname = ?',
             (repo, origin, account, runid, uniquejobname))
         ids = res.fetchall()
         if len(ids) != 1:
@@ -226,38 +226,38 @@ class Datastore:
         return ids[0][0]
 
     def delete_test_run(self, rec_id: int):
-        "Delete a test run and all its metadata, by record ID"
+        """Delete a test run and all its metadata, by record ID"""
         # Delete in the right order to avoid failing FOREIGN KEY constraints
-        self.cur.execute("DELETE FROM testrunmeta WHERE id=?", (rec_id, ))
-        self.cur.execute("DELETE FROM testresults WHERE id=?", (rec_id, ))
-        self.cur.execute("DELETE FROM testruns WHERE id=?", (rec_id, ))
+        self.cur.execute('DELETE FROM testrunmeta WHERE id=?', (rec_id, ))
+        self.cur.execute('DELETE FROM testresults WHERE id=?', (rec_id, ))
+        self.cur.execute('DELETE FROM testruns WHERE id=?', (rec_id, ))
         self.db.commit()
 
     def store_commit_info(self, repo: str, branch: str, info: CommitInfo):
-        "Store information about a git commit in the repo"
-        self.cur.execute("INSERT INTO commitinfo VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        """Store information about a git commit in the repo"""
+        self.cur.execute('INSERT INTO commitinfo VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                          (info.commit_hash, info.prev_hash, repo, branch, info.commit_time,
                           info.committer_email, info.author_email, info.title))
         self.db.commit()
 
     def select_commit_before_time(self, repo: str, branch: str, since: int, num: int) -> list:
-        "Find the commits just before a given moment in time"
-        res = self.cur.execute("SELECT commithash, committime, title, committeremail, authoremail "
-                               "FROM commitinfo WHERE repo = ? AND branch = ? AND committime <= ? "
-                               "ORDER BY committime DESC LIMIT ?",
+        """Find the commits just before a given moment in time"""
+        res = self.cur.execute('SELECT commithash, committime, title, committeremail, authoremail '
+                               'FROM commitinfo WHERE repo = ? AND branch = ? AND committime <= ? '
+                               'ORDER BY committime DESC LIMIT ?',
                                (repo, branch, since, num))
         return res.fetchall()
 
     def select_all_commit_after_commit(self, repo: str, branch: str, commit: str
                                        ) -> list[CommitInfo]:
-        "Return the list of all commits starting with a given one"
+        """Return the list of all commits starting with a given one"""
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a
         # continuous singly-linked list.
         # Get info on the last commit
         res = self.cur.execute(
-            "SELECT commithash, prevhash, committime, title, committeremail, authoremail "
-            "FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1",
+            'SELECT commithash, prevhash, committime, title, committeremail, authoremail '
+            'FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1',
             (repo, branch, commit))
         data = res.fetchone()
         if not data:
@@ -274,8 +274,8 @@ class Datastore:
             while commit:
                 # Search backwards (away from HEAD) by searching for prev_hash
                 res = self.cur.execute(
-                    "SELECT commithash, prevhash, committime, title, committeremail, authoremail "
-                    "FROM commitinfo WHERE repo = ? AND branch = ? AND prevhash = ? LIMIT 1",
+                    'SELECT commithash, prevhash, committime, title, committeremail, authoremail '
+                    'FROM commitinfo WHERE repo = ? AND branch = ? AND prevhash = ? LIMIT 1',
                     (repo, branch, commit))
                 data = res.fetchone()
                 if not data:
@@ -293,14 +293,14 @@ class Datastore:
 
     def select_all_commit_before_commit(self, repo: str, branch: str, commit: str
                                         ) -> list[CommitInfo]:
-        "Return the list of all commits starting with a given one"
+        """Return the list of all commits starting with a given one"""
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a
         # continuous singly-linked list.
         # Get info on the last commit
         res = self.cur.execute(
-            "SELECT commithash, prevhash, committime, title, committeremail, authoremail "
-            "FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1",
+            'SELECT commithash, prevhash, committime, title, committeremail, authoremail '
+            'FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1',
             (repo, branch, commit))
         data = res.fetchone()
         if not data:
@@ -319,8 +319,8 @@ class Datastore:
                 logging.debug(prev_commit)
                 # Search forwards (towards HEAD) by searching for commit_hash
                 res = self.cur.execute(
-                    "SELECT commithash, prevhash, committime, title, committeremail, authoremail "
-                    "FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1",
+                    'SELECT commithash, prevhash, committime, title, committeremail, authoremail '
+                    'FROM commitinfo WHERE repo = ? AND branch = ? AND commithash = ? LIMIT 1',
                     (repo, branch, prev_commit))
                 data = res.fetchone()
                 if not data:

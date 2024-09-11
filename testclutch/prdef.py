@@ -130,7 +130,7 @@ class PRAnalysisState:
 
 
 def upgrade_state():
-    "Debugging tool to upgrade a PRAnalysis to a newer version"
+    """Debugging tool to upgrade a PRAnalysis to a newer version"""
     state = PRAnalysisState()
     pranalyses = state.read_state(True)
     for repo in pranalyses.values():

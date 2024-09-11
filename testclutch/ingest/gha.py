@@ -113,7 +113,7 @@ class GithubIngestor:
         if self.download_log(run_id):
             self.process_log_file(self._log_file_path(run_id), cimeta)
         else:
-            logging.info("No logs available to ingest")
+            logging.info('No logs available to ingest')
 
     def ingest_all_logs(self, branch: str, hours: int):
         count = 0
@@ -164,14 +164,14 @@ class GithubIngestor:
                 return None
 
             logging.debug(f'fn {fn} type {ft}')
-            assert file_ext_from_type(ft) == DEFAULT_EXT, "assumption about log format is wrong"
+            assert file_ext_from_type(ft) == DEFAULT_EXT, 'assumption about log format is wrong'
 
             logging.debug('Moving file to %s', newfn)
             logcache.move_into_cache(fn, newfn)
         return newfn
 
     def sanitize_log_fn(self, fn: str) -> str:
-        "Sanitize the log file name for storing in a zip file, like GHA does"
+        """Sanitize the log file name for storing in a zip file, like GHA does"""
         if not KNOWN_LOG_FN_RE.search(fn):
             # If this triggers, we might possibly need to to more sanitization
             logging.error('Possible internal inconsistency: check what GHA does on '
@@ -193,7 +193,7 @@ class GithubIngestor:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f"Unable to find existing test for run {meta['runid']}")
+                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
@@ -203,13 +203,13 @@ class GithubIngestor:
         job = self.find_job(jobs, meta)
         ci_step_fn = meta['cistep']
         for step in job['steps']:
-            step_fn = self.sanitize_log_fn(f"{step['number']}_{step['name']}.txt")
+            step_fn = self.sanitize_log_fn(f'{step["number"]}_{step["name"]}.txt')
             if ci_step_fn == step_fn:
                 return step
         return {}
 
     def find_job(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
-        "Find the right job step in the GHA job info for this job"
+        """Find the right job step in the GHA job info for this job"""
         workflow_name = meta['ciname']
         job_name = meta['cijob']
 
@@ -253,7 +253,7 @@ class GithubIngestor:
                     # The // here makes the name impossible to collide with a new job definition
                     # or name.
                     meta['uniquejobname'] = (
-                        f"{meta['cidef']}//{meta['cijob']}//{meta['testformat']}")
+                        f'{meta["cidef"]}//{meta["cijob"]}//{meta["testformat"]}')
                 if 'ciname' in meta:
                     # This might not be available if this was not called by this ingestor
                     logging.info('Retrieved test for %s %s %s',
@@ -301,7 +301,7 @@ class GithubIngestor:
                     logging.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug("%s", l.strip())
+                    logging.debug('%s', l.strip())
                 logging.debug('')
 
                 self.store_test_run(meta, testcases)

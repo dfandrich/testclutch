@@ -34,7 +34,7 @@ TEST_RUNS_COUNT_SQL = r'SELECT COUNT(1) FROM testruns WHERE time >= ? AND repo =
 TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
 
 # Subquery to select all recent test run IDs for a project
-RECENT_IDS_SQL = r'''SELECT id FROM testruns WHERE time >= ? AND repo = ?'''
+RECENT_IDS_SQL = r"""SELECT id FROM testruns WHERE time >= ? AND repo = ?"""
 
 # Returns a count of each kind of test result since the given time
 TEST_RESULTS_COUNT_SQL = r'SELECT result, COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY result;'
@@ -66,12 +66,12 @@ STATS_VALUE_SECONDARY_SQL = r'SELECT MAX(CAST(value AS INT)),MIN(CAST(value AS I
 # Job with highest/lowest/avg number of tests run by test format, ignoring SKIP tests (result==3)
 # and only counting distinct test IDs.
 # {function} must be defined by the caller
-FUNCTION_TESTS_BY_TYPE_SQL = f'''SELECT testformat, {{function}}(numtests) FROM (
+FUNCTION_TESTS_BY_TYPE_SQL = f"""SELECT testformat, {{function}}(numtests) FROM (
     SELECT testresults.id, value AS testformat, COUNT(DISTINCT testresults.testid) AS numtests FROM testresults INNER JOIN testrunmeta ON testresults.id = testrunmeta.id WHERE testresults.id IN
         ({RECENT_IDS_SQL})
     AND name = 'testformat' AND testresults.result <> 3 GROUP BY testresults.id, testformat
     )
-GROUP BY testformat ORDER BY testformat;'''
+GROUP BY testformat ORDER BY testformat;"""
 
 # Job with highest number of tests run by test format
 MAX_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='MAX')
@@ -128,7 +128,7 @@ class MetadataStats:
 
 
 class MetadataAdjuster:
-    "Adjust metadata values by splitting them and/or transforming them with regular expressions"
+    """Adjust metadata values by splitting them and/or transforming them with regular expressions"""
     def __init__(self, splits: dict[str, str], transforms: dict[str, list[tuple[str, str]]]):
         # Compile regular expressions so they're ready for use
         self.splits = {k: re.compile(v) for k, v in splits.items()}
@@ -136,7 +136,7 @@ class MetadataAdjuster:
                            for k, l in transforms.items()}
 
     def has_split(self, metaname: str) -> bool:
-        "Return True if this field would be split"
+        """Return True if this field would be split"""
         return metaname in self.splits
 
     def split(self, metaname: str, value: str) -> list[str]:
@@ -204,11 +204,11 @@ class FeatureMatrix:
         return self.analyzer.make_job_title(job)
 
     def load_all_meta(self):
-        "Read metadata for all jobs"
+        """Read metadata for all jobs"""
         self.all_meta = []
         for job in self.all_unique_jobs():
             meta = self.get_uniquejob_meta(job)
-            assert meta, "Each job must have metadata; edge condition on expiry?"
+            assert meta, 'Each job must have metadata; edge condition on expiry?'
             self.all_meta.append(meta)
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
@@ -724,10 +724,10 @@ def output_feature_matrix_html(fm: FeatureMatrix):
             match = value in jobvalue
             maybe = name not in meta
             newsec = ' newsection' if name != lastname else ''
-            classname = ("maybe" if maybe and value_counts[name] > 1
-                         else "yes" if match
-                         else "no" if adjuster.has_split(name)
-                         else "not")
+            classname = ('maybe' if maybe and value_counts[name] > 1
+                         else 'yes' if match
+                         else 'no' if adjuster.has_split(name)
+                         else 'not')
             symbol = (MAYBE if maybe
                       else YES if match
                       else NO if adjuster.has_split(name)

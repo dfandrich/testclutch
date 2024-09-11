@@ -17,11 +17,11 @@ SHORT_HASHES_SQL = r"SELECT testrunmeta.id, testrunmeta.value AS shorthash FROM 
 
 # Select records with short hashes on the desired repo
 SHORT_HASHES_REPO_SQL = (
-    f"SELECT testrunmeta.id, shorthash FROM ({SHORT_HASHES_SQL}) AS hashmatch "
+    f'SELECT testrunmeta.id, shorthash FROM ({SHORT_HASHES_SQL}) AS hashmatch '
     r"INNER JOIN testrunmeta ON hashmatch.id = testrunmeta.id WHERE name = 'checkrepo' AND value = ?")
 
 # Match a short hash in the commit database
-SHORT_HASH_SQL = r"SELECT commithash FROM commitinfo WHERE SUBSTR(commithash, 1, ?) = ?"
+SHORT_HASH_SQL = r'SELECT commithash FROM commitinfo WHERE SUBSTR(commithash, 1, ?) = ?'
 
 # Update a commit hash
 # Checking value is a fail-safe and shouldn't really be needed

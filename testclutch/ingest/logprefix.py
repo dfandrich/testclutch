@@ -6,7 +6,7 @@ from typing import TextIO
 
 
 class FakeDerivedTextIOWithArgs(TextIO):
-    """This class is only used for typing hints for duck typing TextIO, no in code
+    """This class is only used for typing hints for duck typing TextIO, not in code
 
     We don't want to actually derive from TextIO in the classes that need this because then calls to
     the object's members won't be caught by the __getattr__ function and the wrong member will be
@@ -16,7 +16,7 @@ class FakeDerivedTextIOWithArgs(TextIO):
         pass
 
     def __call__(self, *a2, **args) -> 'FakeDerivedTextIOWithArgs':
-        "For some reason, pytype doesn't see that constructing this object actually uses __init__"
+        """For some reason, pytype can't see that constructing this object actually uses __init__"""
         return self
 
 

@@ -10,12 +10,12 @@ from typing import Optional
 
 
 def calling_program() -> str:
-    "Return the name of the program that started us"
+    """Return the name of the program that started us"""
     return os.path.basename(sys.argv[0])
 
 
 def logging_level_to_syslog(level: int) -> int:
-    "Converts a logging level into a syslog-compatible one"
+    """Converts a logging level into a syslog-compatible one"""
     if level <= logging.DEBUG:
         return 7  # KERN_DEBUG
     if level <= logging.INFO:
@@ -32,7 +32,7 @@ def logging_level_to_syslog(level: int) -> int:
 
 
 class SyslogFormatter(logging.Formatter):
-    "Formats log messages with a syslog-style level prefix"
+    """Formats log messages with a syslog-style level prefix"""
 
     def __init__(self, fmt: str):
         super().__init__()

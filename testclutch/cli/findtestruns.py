@@ -51,11 +51,11 @@ class FindFailedRuns:
                 name = meta['cijob']
             else:
                 name = meta['uniquejobname']
-            print("Job:", f"{meta['origin'].capitalize()}: {name}")
-            print("Time:", datetime.datetime.fromtimestamp(int(runtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                  f"(run ID {meta['runid']})")
+            print('Job:', f'{meta["origin"].capitalize()}: {name}')
+            print('Time:', datetime.datetime.fromtimestamp(int(runtime)).strftime('%Y-%m-%d %H:%M:%S'),
+                  f'(run ID {meta["runid"]})')
             if failtext:
-                print(f"Failure reason: {failtext}")
+                print(f'Failure reason: {failtext}')
             if 'url' in meta:
                 print('URL:', meta['url'])
             else:
@@ -88,7 +88,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         'tests',
         nargs='*',
-        help="Tests to match against --resultcode")
+        help='Tests to match against --resultcode')
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),

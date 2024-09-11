@@ -80,7 +80,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
                     break
 
     if testcases:
-        logging.debug("Found an automake test log")
+        logging.debug('Found an automake test log')
         meta['testformat'] = 'automake'
         if 'testresult' not in meta:
             meta['testresult'] = 'truncated'

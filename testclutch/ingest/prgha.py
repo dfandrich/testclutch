@@ -34,7 +34,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                 and run['head_sha'] == commit)
 
     def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> list[int]:
-        "Find all runs on PRs for a particular commit"
+        """Find all runs on PRs for a particular commit"""
         found = []
         for run in self.gh.get_runs(since=since)['workflow_runs']:
             if self._is_matching_run(run, commit):

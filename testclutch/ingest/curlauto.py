@@ -68,8 +68,8 @@ class CurlAutoIngestor:
     def _extract_run_info(self, fn: str) -> tuple[datetime.datetime, int]:
         run_info = LOG_FILE_RE.search(fn)
         if not run_info:
-            raise RuntimeError("Unexpected log name: %s" % fn)
-        d = datetime.datetime.strptime(run_info.group(1) + "+0000", "%Y%m%d%H%M%S%z")
+            raise RuntimeError('Unexpected log name: %s' % fn)
+        d = datetime.datetime.strptime(run_info.group(1) + '+0000', '%Y%m%d%H%M%S%z')
         return (d, int(run_info.group(2)))
 
     def ingest_run(self, log_name: str):
@@ -127,7 +127,7 @@ class CurlAutoIngestor:
             # cijob is probably unique, but the buildcode really makes it so (just not in a
             # cryptographically secure fashion, so a malicious user could easily cause
             # duplicate codes).
-            meta['uniquejobname'] = f"{meta['cijob']} {meta['buildcode']}!{meta['testformat']}"
+            meta['uniquejobname'] = f'{meta["cijob"]} {meta["buildcode"]}!{meta["testformat"]}'
             meta['jobstarttime'] = meta['runstarttime']
             run_info = LOG_FILE_RE.search(meta['runid'])
             if run_info:
@@ -139,7 +139,7 @@ class CurlAutoIngestor:
                 logging.debug(f'{n}={v}')
             summary = summarize.summarize_totals(testcases)
             for l in summary:
-                logging.debug("%s", l.strip())
+                logging.debug('%s', l.strip())
             logging.debug('')
             self.store_test_run(meta, testcases)
 
@@ -158,7 +158,7 @@ class CurlAutoIngestor:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f"Unable to find existing test for run {meta['runid']}")
+                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)

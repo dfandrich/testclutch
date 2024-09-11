@@ -14,15 +14,15 @@ from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
 
-DEFAULT_EXT = ".log"
+DEFAULT_EXT = '.log'
 LOGSUBDIR = 'cirrus'
 
-SANITIZE_PATH_RE = re.compile(r"[^-\w+!@#%^&()]")
+SANITIZE_PATH_RE = re.compile(r'[^-\w+!@#%^&()]')
 
 
 def sanitize_path(path: str) -> str:
-    "Convert the given URL path into one that is not too problematic to have on a filesystem"
-    return SANITIZE_PATH_RE.sub("-", path)
+    """Convert the given URL path into one that is not too problematic to have on a filesystem"""
+    return SANITIZE_PATH_RE.sub('-', path)
 
 
 class CirrusIngestor:
@@ -148,8 +148,8 @@ class CirrusIngestor:
                 except cirrusapi.HTTPError as e:
                     logging.error(e.args[0])
                     if e.response.status_code == 404:
-                        return "Log not found on server error"
-                    return "Unknown error downloading log"
+                        return 'Log not found on server error'
+                    return 'Unknown error downloading log'
                 logging.debug(f'fn {fn} type {ft}')
                 logging.debug('Moving file to %s', newfn)
                 logcache.move_into_cache_compressed(fn, newfn)
@@ -169,7 +169,7 @@ class CirrusIngestor:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f"Unable to find existing test for run {meta['runid']}")
+                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
@@ -193,7 +193,7 @@ class CirrusIngestor:
                 logging.debug(f'{n}={v}')
             summary = summarize.summarize_totals(testcases)
             for l in summary:
-                logging.debug("%s", l.strip())
+                logging.debug('%s', l.strip())
             logging.debug('')
 
             self.store_test_run(meta, testcases)

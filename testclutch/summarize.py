@@ -14,22 +14,22 @@ def show_totals(testcases: TestCases, details: bool = False):
 
 def summarize_totals(testcases: TestCases, details: bool = False) -> list[str]:
     f = io.StringIO()
-    print("OK:", len([1 for x in testcases if x.result == TestResult.PASS]), file=f)
-    print("FAILED:", len([1 for x in testcases if x.result == TestResult.FAIL]), file=f)
-    print("SKIPPED:", len([1 for x in testcases if x.result == TestResult.SKIP]), file=f)
+    print('OK:', len([1 for x in testcases if x.result == TestResult.PASS]), file=f)
+    print('FAILED:', len([1 for x in testcases if x.result == TestResult.FAIL]), file=f)
+    print('SKIPPED:', len([1 for x in testcases if x.result == TestResult.SKIP]), file=f)
     if match := [1 for x in testcases if x.result == TestResult.UNKNOWN]:
-        print("UNKNOWN:", len(match), file=f)
+        print('UNKNOWN:', len(match), file=f)
     if match := [1 for x in testcases if x.result == TestResult.TIMEOUT]:
-        print("TIMEDOUT:", len(match), file=f)
+        print('TIMEDOUT:', len(match), file=f)
     if match := [1 for x in testcases if x.result == TestResult.FAILIGNORE]:
-        print("FAILIGNORED:", len(match), file=f)
+        print('FAILIGNORED:', len(match), file=f)
     if match := [1 for x in testcases if x.result == TestResult.ABORT]:
-        print("ABORTED:", len(match), file=f)
+        print('ABORTED:', len(match), file=f)
     if match := [1 for x in testcases if x.result == TestResult.ERROR]:
-        print("ERRORED:", len(match), file=f)
+        print('ERRORED:', len(match), file=f)
     if match := [1 for x in testcases if x.result > TestResult.LAST]:
-        print("???:", len(match), file=f)
-    print("TOTAL:", len(testcases), file=f)
+        print('???:', len(match), file=f)
+    print('TOTAL:', len(testcases), file=f)
     if details:
         # Display interesting test results
         for test in testcases:

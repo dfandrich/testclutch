@@ -11,14 +11,14 @@ from testclutch import urls
 HTTPError = netreq.HTTPError
 
 # See https://circleci.com/docs/api/v1/
-BASE_URL = "https://circleci.com/api/v1.1"
-RECENT_URL = BASE_URL + "/project/{vcs}/{user}/{project}"
-RUN_URL = RECENT_URL + "/{build}"
+BASE_URL = 'https://circleci.com/api/v1.1'
+RECENT_URL = BASE_URL + '/project/{vcs}/{user}/{project}'
+RUN_URL = RECENT_URL + '/{build}'
 # Undocumented, but used in Circle's web UI
-PRIVATE_BASE_URL = "https://circleci.com/api/private"
-OUTPUT_URL = PRIVATE_BASE_URL + "/output/raw/{vcs}/{user}/{project}/{build}/output/0/{step}"
+PRIVATE_BASE_URL = 'https://circleci.com/api/private'
+OUTPUT_URL = PRIVATE_BASE_URL + '/output/raw/{vcs}/{user}/{project}/{build}/output/0/{step}'
 
-DATA_TYPE = "application/json"
+DATA_TYPE = 'application/json'
 
 PAGINATION = 100      # Number to retrieve at once; maximum 100
 MAX_RETRIEVED = 3000  # Don't ever retrieve more than this number
@@ -37,9 +37,9 @@ class CircleApi:
         self.http = netreq.Session()
 
     def _standard_headers(self) -> dict:
-        return {"Accept": DATA_TYPE,
-                "Content-Type": DATA_TYPE,
-                "User-Agent": netreq.USER_AGENT
+        return {'Accept': DATA_TYPE,
+                'Content-Type': DATA_TYPE,
+                'User-Agent': netreq.USER_AGENT
                 }
 
     def get_runs(self) -> list[dict[str, Any]]:
@@ -50,9 +50,9 @@ class CircleApi:
         offset = 0
         while len(combined_resp) < MAX_RETRIEVED:
             url = RECENT_URL.format(vcs=self.vcs, user=self.owner, project=self.repo)
-            params = {"limit": PAGINATION,
-                      "offset": offset,
-                      "shallow": "true",  # non-shallow doesn't give enough info; rely on get_run
+            params = {'limit': PAGINATION,
+                      'offset': offset,
+                      'shallow': 'true',  # non-shallow doesn't give enough info; rely on get_run
                       }
             logging.debug('Retrieving runs from %s', url)
             with self.http.get(url, headers=self._standard_headers(), params=params) as resp:

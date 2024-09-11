@@ -12,9 +12,9 @@ from testclutch import urls
 HTTPError = netreq.HTTPError
 
 # See https://cirrus-ci.org/api/
-GRAPHQL_URL = "https://api.cirrus-ci.com/graphql"
-LOGS_URL = "https://api.cirrus-ci.com/v1/task/{task_id}/logs/{command_name}.log"
-DATA_TYPE = "application/json"
+GRAPHQL_URL = 'https://api.cirrus-ci.com/graphql'
+LOGS_URL = 'https://api.cirrus-ci.com/v1/task/{task_id}/logs/{command_name}.log'
+DATA_TYPE = 'application/json'
 
 MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
 
@@ -95,7 +95,7 @@ fragment RepositoryOwnerChipNew_repository on Repository {
 """
 
 # Retrieve information about one test run
-RUN_GRAPHQL = r'''
+RUN_GRAPHQL = r"""
 query BuildByIdQuery(
   $buildId: ID!
 ) {
@@ -288,7 +288,7 @@ fragment TaskNameChip_task on Task {
   id
   name
 }
-'''
+"""
 
 
 class CirrusApi:
@@ -303,14 +303,14 @@ class CirrusApi:
         self.http = netreq.Session()
 
     def _standard_headers(self) -> dict:
-        return {"Accept": DATA_TYPE,
-                "User-Agent": netreq.USER_AGENT
+        return {'Accept': DATA_TYPE,
+                'User-Agent': netreq.USER_AGENT
                 }
 
     def query_graphql(self, query: str, var: dict) -> dict:
         """Send a GraphQL query to the server and return the raw Python data response"""
-        jsonreq = {"query": query,
-                   "variables": var,
+        jsonreq = {'query': query,
+                   'variables': var,
                    }
         resp = self.http.post(GRAPHQL_URL, headers=self._standard_headers(),
                               data=json.dumps(jsonreq))
@@ -322,16 +322,16 @@ class CirrusApi:
 
         If branch is an empty string, no branch matching is performed.
         """
-        var = {"platform": self.platform,
-               "owner": self.owner,
-               "name": self.repo,
-               "branch": branch,
-               "numbuilds": MAX_RETRIEVED
+        var = {'platform': self.platform,
+               'owner': self.owner,
+               'name': self.repo,
+               'branch': branch,
+               'numbuilds': MAX_RETRIEVED
                }
         return self.query_graphql(RUNS_GRAPHQL, var)
 
     def get_run(self, run_id: int) -> dict[str, Any]:
-        var = {"buildId": run_id
+        var = {'buildId': run_id
                }
         return self.query_graphql(RUN_GRAPHQL, var)
 

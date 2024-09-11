@@ -231,7 +231,7 @@ class AzureIngestor:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f"Unable to find existing test for run {meta['runid']}")
+                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
@@ -253,7 +253,7 @@ class AzureIngestor:
                 logging.debug(f'{n}={v}')
             summary = summarize.summarize_totals(testcases)
             for l in summary:
-                logging.debug("%s", l.strip())
+                logging.debug('%s', l.strip())
             logging.debug('')
 
             self.store_test_run(meta, testcases)

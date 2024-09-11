@@ -74,7 +74,7 @@ class ResultsOverTimeByUniqueJob:
         return ','.join((meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname']))
 
     def check_aborted(self, meta: TestMeta) -> bool:
-        "Check if the CI metadata indicates an aborted test run"
+        """Check if the CI metadata indicates an aborted test run"""
         if meta['origin'] == 'azure' and meta.get('cistepresult', '') == 'canceled':
             return True
         if meta['origin'] == 'circle' and meta.get('cistepresult', '') == 'timedout':
@@ -133,8 +133,7 @@ class ResultsOverTimeByUniqueJob:
                 # always going to be correct
 
         else:
-            logging.info(
-                "None of the prior test runs attempted to run this test")
+            logging.info('None of the prior test runs attempted to run this test')
         return last_good
 
     def load_unique_job(self, unique: str, from_time: int, to_time: int):
@@ -184,7 +183,7 @@ class ResultsOverTimeByUniqueJob:
 
     def find_commit_range(self, last_good: TestJobInfo, first_fail: TestJobInfo
                           ) -> tuple[CommitInfo, int]:
-        "Walk the commit chain to find all the commits in a range"
+        """Walk the commit chain to find all the commits in a range"""
         logging.debug('Looking up commits before %s', last_good.commit)
         branch = config.expand('branch')
         commits = self.ds.select_all_commit_after_commit(
@@ -203,7 +202,7 @@ class ResultsOverTimeByUniqueJob:
         return (first_bad, commit_range)
 
     def recent_failed_link(self, testname: str) -> str:
-        "Find a link for the most recent test failure for this test"
+        """Find a link for the most recent test failure for this test"""
         for job_status in self.all_jobs_status:
             if testname in job_status.failed_tests:
                 if job_status.url:
@@ -212,7 +211,7 @@ class ResultsOverTimeByUniqueJob:
 
     def report_permafail(self, testname: str, num_fails: int) -> str:
         assert num_fails >= 1  # only call this with a failed test
-        msg = "<internal error>"
+        msg = '<internal error>'
         # Make sure that the count+1 test shows a succeeded test (not unknown).
         if num_fails >= len(self.all_jobs_status):
             # Bypass all the analysis below when there's no point. The end result
@@ -232,13 +231,13 @@ class ResultsOverTimeByUniqueJob:
                 first_bad, commit_range = self.find_commit_range(
                     last_good, first_test_fail)
                 if first_test_fail.commit == first_bad.commit_hash:
-                    msg = (f"Failures started with commit {first_bad.commit_hash:.9} "
-                           f"(last success: {last_good.url}")
+                    msg = (f'Failures started with commit {first_bad.commit_hash:.9} '
+                           f'(last success: {last_good.url}')
                 else:
-                    msg = (f"Failures started somewhere in the commit range "
-                           f"{first_bad.commit_hash:.9}^..{first_test_fail.commit:.9} "
-                           f"({commit_range} possible commits) "
-                           f"(last success: {last_good.url}")
+                    msg = (f'Failures started somewhere in the commit range '
+                           f'{first_bad.commit_hash:.9}^..{first_test_fail.commit:.9} '
+                           f'({commit_range} possible commits) '
+                           f'(last success: {last_good.url}')
         return msg
 
     def analyze_by_unique_job(self, globaluniquejob: str):
@@ -251,11 +250,11 @@ class ResultsOverTimeByUniqueJob:
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
         if flaky:
-            print("These tests were found to be flaky:")
+            print('These tests were found to be flaky:')
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
             for testname, ratio in flaky:
-                urltext = (f" (latest failure: {url})"
-                           if (url := self.recent_failed_link(testname)) else "")
+                urltext = (f' (latest failure: {url})'
+                           if (url := self.recent_failed_link(testname)) else '')
                 print(f'{testname} fails {ratio * 100:.1f}%{urltext}')
 
         if self.all_jobs_status:
@@ -265,9 +264,9 @@ class ResultsOverTimeByUniqueJob:
             permafails = self.get_permafails(current_failure_counts)
             if permafails:
                 if job_status.test_result == 'success':
-                    print("Some tests are failing but the test was marked as successful. "
-                          "These tests were likely marked to be ignored in this job.")
-                print("These tests are now consistently failing:")
+                    print('Some tests are failing but the test was marked as successful. '
+                          'These tests were likely marked to be ignored in this job.')
+                print('These tests are now consistently failing:')
                 permafails.sort(key=summarize.try_integer)
                 for testname in permafails:
                     print(testname)
@@ -284,8 +283,8 @@ class ResultsOverTimeByUniqueJob:
                 print('Latest failure:', job_status.url)
 
             elif job_status.is_aborted:
-                print("No tests are currently failing on this job but the last test run aborted, "
-                      "probably due to a timeout")
+                print('No tests are currently failing on this job but the last test run aborted, '
+                      'probably due to a timeout')
         print()
 
     def all_unique_jobs(self, repo: str, from_time: int) -> list[str]:
@@ -298,14 +297,14 @@ class ResultsOverTimeByUniqueJob:
         return [row[0] for row in uniquejobs.fetchall()]
 
     def analyze_all_by_unique_job(self, repo: str):
-        "Look for consistent failures for all unique job names"
+        """Look for consistent failures for all unique job names"""
         now = datetime.datetime.now(datetime.timezone.utc)
         from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
         for globalunique in self.all_unique_jobs(repo, from_time):
             self.analyze_by_unique_job(globalunique)
 
     def show_job_failure_table(self, repo: str):
-        "Create a table showing failures in jobs"
+        """Create a table showing failures in jobs"""
         now = datetime.datetime.now(datetime.timezone.utc)
         print(textwrap.dedent("""\
             <!DOCTYPE html>
@@ -421,9 +420,9 @@ class ResultsOverTimeByUniqueJob:
             # reduce duplication of information
             origin = ''
         else:
-            origin = f"[{origin}] "
+            origin = f'[{origin}] '
         cijob = meta.get('cijob', '')
-        testformat = f" ({meta['testformat']})" if 'testformat' in meta else ''
+        testformat = f' ({meta["testformat"]})' if 'testformat' in meta else ''
         return f'{origin}{ciname} / {cijob}{testformat}'
 
     def show_unique_job_failures_table(self, globaluniquejob: str):
@@ -467,7 +466,7 @@ class ResultsOverTimeByUniqueJob:
         elif flaky:
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
             num_builds = min(len(self.all_jobs_status), config.get('flaky_builds_max'))
-            badtitle.append(f"Over the past {num_builds} builds:")
+            badtitle.append(f'Over the past {num_builds} builds:')
             for testname, ratio in flaky:
                 badtitle.append(f'Test {escape(testname)} fails {ratio * 100:.1f}%')
             badtext = 'flaky'
@@ -563,7 +562,7 @@ class ResultsOverTimeByUniqueJob:
         return result
 
     def find_uniquejob_failures(self) -> dict[str, int]:
-        "Count the total failures in the current uniquejob by test name"
+        """Count the total failures in the current uniquejob by test name"""
         counts = collections.Counter()
         for job_status in self.all_jobs_status:
             counts += collections.Counter(set(job_status.failed_tests))

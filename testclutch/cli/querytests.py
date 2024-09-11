@@ -24,7 +24,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         '-t', '--show-tests',
         action='store_true',
-        help="Show test results")
+        help='Show test results')
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),
@@ -36,12 +36,12 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         'query',
         nargs='?',
-        help="DB query arguments")
+        help='DB query arguments')
     return parser.parse_args(args=args)
 
 
 def operator_from_matcher(matcher: str) -> str:
-    '''Convert the command-line operator to a SQL operator'''
+    """Convert the command-line operator to a SQL operator"""
     if matcher == '%':
         return 'LIKE'
     if matcher == '!%':

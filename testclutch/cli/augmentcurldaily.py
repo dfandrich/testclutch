@@ -21,13 +21,12 @@ CURLAUTO_BUILDS_SQL = r"SELECT testruns.id FROM testruns INNER JOIN testrunmeta 
 
 # Select records for curlauto daily builds for a particular day
 DAILY_BUILDS_MATCHING_DATE_SQL = (
-    f"SELECT testrunmeta.id, testrunmeta.value FROM ({CURLAUTO_BUILDS_SQL}) AS originmatch "
-    r"INNER JOIN testrunmeta ON originmatch.id = testrunmeta.id "
-    r"WHERE name = 'dailybuild' AND value = ?")
+    f'SELECT testrunmeta.id, testrunmeta.value FROM ({CURLAUTO_BUILDS_SQL}) AS originmatch '
+    r"INNER JOIN testrunmeta ON originmatch.id = testrunmeta.id WHERE name = 'dailybuild' AND value = ?")
 
 # Select records from curlauto daily builds that also have commit metadata
 DAILY_BUILDS_WITH_COMMIT_SQL = (
-    f"SELECT datematch.id FROM ({DAILY_BUILDS_MATCHING_DATE_SQL}) AS datematch "
+    f'SELECT datematch.id FROM ({DAILY_BUILDS_MATCHING_DATE_SQL}) AS datematch '
     r"INNER JOIN testrunmeta ON datematch.id = testrunmeta.id WHERE name = 'commit'")
 
 
@@ -111,7 +110,7 @@ def augment_curl_daily(args):
     if args.howrecent:
         since = int(datetime.datetime.now().timestamp()) - args.howrecent * 3600
     else:
-        logging.warning("Use --howrecent to speed up augmentation")
+        logging.warning('Use --howrecent to speed up augmentation')
         since = 0
 
     for fn in args.filenames:
@@ -132,7 +131,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         'filenames',
         nargs='+',
-        help="Path to one or more daily build tarball")
+        help='Path to one or more daily build tarball')
     parser.add_argument(
         '--howrecent',
         type=int,

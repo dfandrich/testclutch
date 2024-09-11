@@ -93,7 +93,7 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
         output_mode.add_argument(
             '--ci-status',
             action='store_true',
-            help="Check the status of CI runs associated with this PR")
+            help='Check the status of CI runs associated with this PR')
         output_mode.add_argument(
             '--report',
             action='store_true',
@@ -221,9 +221,9 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
             # reduce duplication of information displayed
             origin = ''
         else:
-            origin = f"[{origin}] "
+            origin = f'[{origin}] '
         cijob = meta.get('cijob', '')
-        testformat = f" ({meta['testformat']})" if 'testformat' in meta else ''
+        testformat = f' ({meta["testformat"]})' if 'testformat' in meta else ''
         name = f'{origin}{ciname} / {cijob}{testformat}'
         print(f'<td class="jobname">{escape(name)}</td>')
 
@@ -252,7 +252,7 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
         # A test might be on the permafail list even if the job is successful if the test result
         # was marked to be ignored. Don't consider that a failure worth reporting.
         if permafails and job_status.test_result != 'success':
-            permafailtitle = permafailtitle + "These tests are now consistently failing: "
+            permafailtitle = permafailtitle + 'These tests are now consistently failing: '
             permafails.sort(key=summarize.try_integer)
             permafailtitle = permafailtitle + (
                 ', '.join([escape(testname) for testname in permafails]))
@@ -309,7 +309,7 @@ def analyze_pr(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Dat
     logging.info('Analyzing %d test results', len(test_results))
     for testmeta, testcases in test_results:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
-        print(f"Test [{testmeta['origin']}] {testmeta['ciname']} / {testmeta['cijob']} ({testmeta['testformat']})")
+        print(f'Test [{testmeta["origin"]}] {testmeta["ciname"]} / {testmeta["cijob"]} ({testmeta["testformat"]})')
         failed = [x for x in testcases if x.result == TestResult.FAIL]
         if not failed:
             logging.debug('All tests succeeded; no failures to analyze')
@@ -414,7 +414,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -
 
 
 class GHAPRReady:
-    "Class to determine if CI jobs for PRs have completed"
+    """Class to determine if CI jobs for PRs have completed"""
 
     def __init__(self, args: argparse.Namespace):
         if urls.url_host(args.checkrepo) != 'github.com':
@@ -425,7 +425,7 @@ class GHAPRReady:
         self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
     def get_ready_prs(self, authors: Container[str]) -> list[int]:
-        "Return recent PRs that have not been closed"
+        """Return recent PRs that have not been closed"""
         pulls = self.gh.get_pulls('open')
         pr_recency = self.args.oldest if self.args.oldest else config.get('pr_ready_age_hours_max')
         recent = (datetime.datetime.now(tz=datetime.timezone.utc)
@@ -467,21 +467,21 @@ class GHAPRReady:
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
             elif stat['state'] != 'success':
-                logging.debug(f"failed with state {stat['state']}")
+                logging.debug(f'failed with state {stat["state"]}')
                 ret = max(PRStatus.FAILURE, ret)
 
         checkruns = self.gh.get_check_runs(commit)
-        logging.debug(f"{len(checkruns['check_runs'])} check runs")
+        logging.debug(f'{len(checkruns["check_runs"])} check runs')
         jobcount += len(checkruns['check_runs'])
         for run in checkruns['check_runs']:
             # (queued, in_progress, completed)
             if run['status'] != 'completed':
-                logging.debug(f"check run {run['id']} is in state {run['status']}")
+                logging.debug(f'check run {run["id"]} is in state {run["status"]}')
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
             # (success, neutral, failure)
             elif run['conclusion'] == 'failure':
-                logging.debug(f"check run {run['id']} concluded with {run['conclusion']}")
+                logging.debug(f'check run {run["id"]} concluded with {run["conclusion"]}')
                 ret = max(PRStatus.FAILURE, ret)
 
         logging.info(f'PR#{pr} has ready state {ret.name} '
@@ -505,7 +505,7 @@ def dedentnonl(text: str) -> str:
 
 
 class GatherPRAnalysis:
-    "Class for gathering data to analyze and comment on a PR"
+    """Class for gathering data to analyze and comment on a PR"""
 
     def __init__(self, ds: db.Datastore, args: argparse.Namespace):
         self.ds = ds
@@ -901,7 +901,7 @@ def main():
         # The highest value for PRStatus wins as the result code for the batch
         status = max(prstates, key=lambda x: x[1])[1] if prstates else PRStatus.READY
         if status == PRStatus.ERROR:
-            logging.error("A PR is in an unacceptable state")
+            logging.error('A PR is in an unacceptable state')
         logging.warning(f'Overall status return code is {status.name}')
         return status
 

@@ -47,7 +47,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
     testcases = []  # type: TestCases
     while l := f.readline():
         if SESSION_START_RE.search(l):
-            logging.debug("Found the start of a pytest log")
+            logging.debug('Found the start of a pytest log')
             meta = {
                 'testformat': 'pytest',
                 'testresult': 'truncated',  # will be overwritten if the real end is found
@@ -59,11 +59,11 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                     meta['testdeps'] = r.group(3)
                 elif VERBOSE_SENTINEL_RE.search(l):
                     # If this is found, this is a verbose log so clear data and give up
-                    logging.debug("Acutally, it's a verbose log; give up")
+                    logging.debug("Actually, it's a verbose log; give up")
                     meta = {}
                     break
                 elif SUMMARY_START_RE.search(l):
-                    logging.debug("Found the start of a pytest short log")
+                    logging.debug('Found the start of a pytest short log')
                     while l := f.readline():
                         l = l.rstrip()
                         if r := SESSION_END_RE.search(l):
@@ -88,7 +88,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                                 testcases.append(SingleTestFinding(
                                     r.group(2), TestResult.FAILIGNORE, r.group(4), 0))
                             else:
-                                logging.error("Unknown pytest result: %s", r.group(1))
+                                logging.error('Unknown pytest result: %s', r.group(1))
                         elif r := SKIPPED_RE.search(l):
                             if r.group(1) == 'SKIPPED':
                                 # The actual test name being skipped is not available here. The
@@ -98,7 +98,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
                                 testcases.append(SingleTestFinding(
                                     r.group(2), TestResult.SKIP, r.group(3), 0))
                             else:
-                                logging.debug("Ignoring not SKIPPED type: %s", r.group(1))
+                                logging.debug('Ignoring not SKIPPED type: %s', r.group(1))
 
     if not testcases:
         logging.debug('No pytest test summary could be found in the file')
@@ -119,7 +119,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
     testcases = []  # type: TestCases
     while l := f.readline():
         if SESSION_START_RE.search(l):
-            logging.debug("Found the start of a pytest log")
+            logging.debug('Found the start of a pytest log')
             meta = {
                 'testformat': 'pytest',
                 'testresult': 'truncated',  # will be overwritten if the real end is found
@@ -155,7 +155,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:
                         testcases.append(SingleTestFinding(
                             r.group(1), TestResult.FAILIGNORE, '', 0))
                     else:
-                        logging.error("Unknown pytest result: %s", r.group(2))
+                        logging.error('Unknown pytest result: %s', r.group(2))
 
     if not testcases:
         logging.debug('No pytest verbose logs could be found in the file')

@@ -56,7 +56,7 @@ def get_project_name(args: Union[str, NamedTuple]) -> tuple[str, str]:
 
 
 def url_host(url: str) -> str:
-    "Return the host component of the URL"
+    """Return the host component of the URL"""
     _, netloc, _, _, _ = urllib.parse.urlsplit(url)
     assert isinstance(netloc, str)  # pytype is confused about this
     return netloc.casefold()

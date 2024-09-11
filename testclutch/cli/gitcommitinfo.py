@@ -20,7 +20,7 @@ class GitCommitIngestor:
         self.dry_run = ds is None
 
     def extract_git_commit_info(self, repo: str, branch: str, since: str) -> list[CommitInfo]:
-        "Returns information about git commits"
+        """Returns information about git commits"""
         try:
             # git nowadays has -C to select the repo to use, but this way works with
             # much older versions
@@ -101,13 +101,13 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         '--branch',
         default=config.expand('branch'),
-        help="Branch whose commits will be read")
+        help='Branch whose commits will be read')
     parser.add_argument(
         'localrepo',
-        help="Path to the local repository patching --checkrepo")
+        help='Path to the local repository patching --checkrepo')
     parser.add_argument(
         'since',
-        help="Date/time from which git commits will be read")
+        help='Date/time from which git commits will be read')
     return parser.parse_args(args=args)
 
 

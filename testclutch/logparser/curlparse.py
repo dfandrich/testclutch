@@ -22,7 +22,7 @@ RE_RUNTESTS = re.compile(r'perl.*/runtests\.pl (.*)$')
 # RE_USINGAUTOMAKE = re.compile(r'make +all-am')
 RE_USINGAUTOMAKE = re.compile(r'^Making all in ')
 # It's easier to figure out the compiler path on a libtool invocation, so restrict checking to that
-RE_COMPILERPATHAC = re.compile(r'''libtool .*--mode=compile (\S+) ''')
+RE_COMPILERPATHAC = re.compile(r"""libtool .*--mode=compile (\S+) """)
 
 # configure headers
 # These won't be available in most logs because they show up before a compile,
@@ -156,7 +156,7 @@ def check_found_result(testcases: TestCases):
 
 
 def parse_uname(uname: str) -> TestMetaStr:
-    "Parse the output of 'uname -a' from many OSes for relevant data"
+    """Parse the output of 'uname -a' from many OSes for relevant data"""
     meta = {}
 
     # This one treats multiple spaces as one separator (needed on Linux, NetBSD
@@ -250,10 +250,10 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
     got_first = False
     while l := f.readline():
         if not got_first:
-            logging.debug("First log line: %s", escs(l))
+            logging.debug('First log line: %s', escs(l))
             got_first = True
         if RE_START.search(l):
-            logging.debug("Found the start of a curl test log")
+            logging.debug('Found the start of a curl test log')
             meta['testformat'] = 'curl'
             meta['testresult'] = 'truncated'  # will be overwritten if the real end is found
             meta['testmode'] = 'normal'       # will be overwritten if another mode is used
@@ -382,11 +382,11 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                         duration = 0  # bug in the test harness
                                     testno = strip0(r.group(1))
                                     testcases.append(SingleTestFinding(
-                                        testno, TestResult.PASS, "", duration))
+                                        testno, TestResult.PASS, '', duration))
                                 elif rr := RE_TORTUREOK.search(l):
                                     testno = strip0(r.group(1))
                                     testcases.append(SingleTestFinding(
-                                        testno, TestResult.PASS, "", 0))
+                                        testno, TestResult.PASS, '', 0))
                                     meta['testmode'] = 'torture'
                                 elif rr := RE_FAILED.search(l):
                                     if rr.group(1) in toignore:
@@ -450,20 +450,20 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
                                 # number, so we can't do anything but ignore it
                                 pass
                             elif r := RE_TESTRESULTSHORT.search(l):
-                                assert r.group(2) == "OK"  # I think this is true
+                                assert r.group(2) == 'OK'  # I think this is true
                                 duration = int(float(r.group(3)) * 1000000)
                                 if duration < 0:
                                     duration = 0  # bug in the test harness
                                 testno = str(int(r.group(1)))
                                 testcases.append(SingleTestFinding(
-                                    testno, TestResult.PASS, "", duration))
+                                    testno, TestResult.PASS, '', duration))
                             elif r := RE_TESTFAILEDSHORT.search(l):
                                 if r.group(1) in toignore:
                                     result = TestResult.FAILIGNORE
                                 else:
                                     result = TestResult.FAIL
                                 testno = str(int(r.group(1)))
-                                testcases.append(SingleTestFinding(testno, result, "", 0))
+                                testcases.append(SingleTestFinding(testno, result, '', 0))
                             elif r := RE_TOTALTIME.search(l):
                                 meta['runtestsduration'] = str(int(r.group(1)) * 1000000)
                             elif r := RE_OKSUMMARY.search(l):
@@ -500,7 +500,7 @@ def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
         elif r := RE_TESTCURLDATE .search(l):
             # Replace "UTC" with the numeric time zone, which strptime can deal with
             datestr = r.group(1).replace(' UTC', '+0000')
-            timestamp = datetime.datetime.strptime(datestr, "%a %b %d %H:%M:%S %Y%z")
+            timestamp = datetime.datetime.strptime(datestr, '%a %b %d %H:%M:%S %Y%z')
             meta['runstarttime'] = int(timestamp.timestamp())
         elif r := RE_TESTCURLVER.search(l):
             meta['executorver'] = r.group(1)

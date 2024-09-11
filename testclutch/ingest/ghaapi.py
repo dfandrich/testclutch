@@ -17,18 +17,18 @@ from testclutch import netreq
 HTTPError = netreq.HTTPError
 
 # See https://docs.github.com/en/rest?apiVersion=2022-11-28
-API_URL = "https://api.github.com"
-BASE_URL = API_URL + "/repos/{owner}/{repo}/actions/{endpoint}"
-RUN_URL = BASE_URL + "/{run_id}"
-LOGS_URL = RUN_URL + "/logs"
-JOBS_URL = RUN_URL + "/jobs"
-PULLS_URL = API_URL + "/repos/{owner}/{repo}/pulls"
-PULL_URL = PULLS_URL + "/{pull_number}"
-COMMITS_URL = API_URL + "/repos/{owner}/{repo}/commits/{commit_id}/status"
-CHECKRUNS_URL = API_URL + "/repos/{owner}/{repo}/commits/{commit_id}/check-runs"
-COMMENTS_URL = API_URL + "/repos/{owner}/{repo}/issues/{issue_number}/comments"
-API_VERSION = "2022-11-28"
-DATA_TYPE = "application/vnd.github+json"
+API_URL = 'https://api.github.com'
+BASE_URL = API_URL + '/repos/{owner}/{repo}/actions/{endpoint}'
+RUN_URL = BASE_URL + '/{run_id}'
+LOGS_URL = RUN_URL + '/logs'
+JOBS_URL = RUN_URL + '/jobs'
+PULLS_URL = API_URL + '/repos/{owner}/{repo}/pulls'
+PULL_URL = PULLS_URL + '/{pull_number}'
+COMMITS_URL = API_URL + '/repos/{owner}/{repo}/commits/{commit_id}/status'
+CHECKRUNS_URL = API_URL + '/repos/{owner}/{repo}/commits/{commit_id}/check-runs'
+COMMENTS_URL = API_URL + '/repos/{owner}/{repo}/issues/{issue_number}/comments'
+API_VERSION = '2022-11-28'
+DATA_TYPE = 'application/vnd.github+json'
 
 MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number (max. 1000)
 PAGINATION = 100      # Number to retrieve at once
@@ -75,9 +75,9 @@ class GithubApi:
                                    status_forcelist=[403, 429, 500, 502, 503, 504])
 
     def _standard_headers(self) -> dict:
-        headers = {"Accept": DATA_TYPE,
-                   "X-GitHub-Api-Version": API_VERSION,
-                   "User-Agent": netreq.USER_AGENT
+        headers = {'Accept': DATA_TYPE,
+                   'X-GitHub-Api-Version': API_VERSION,
+                   'User-Agent': netreq.USER_AGENT
                    }
         if ALWAYS_AUTH and self.token:
             headers['Authorization'] = 'Bearer ' + self.token
@@ -105,12 +105,12 @@ class GithubApi:
         Returns the Python equivalent of the JSON data structure (which will be a dict).
         """
         useparams = params.copy() if params else {}
-        useparams["per_page"] = PAGINATION
-        useparams["page"] = 1
+        useparams['per_page'] = PAGINATION
+        useparams['page'] = 1
         combined = None
 
         done = False
-        while not done and useparams["page"] <= MAX_RETRIEVED / PAGINATION:
+        while not done and useparams['page'] <= MAX_RETRIEVED / PAGINATION:
             resp = self.http.get(url, headers=headers, params=useparams)
             resp.raise_for_status()
 
@@ -142,9 +142,9 @@ class GithubApi:
                 combined.extend(j)
 
             else:
-                assert False, f"Unexpected return type {type(j)} from API "
+                assert False, f'Unexpected return type {type(j)} from API '
 
-            useparams["page"] += 1
+            useparams['page'] += 1
 
         assert combined is not None  # since it hasn't raised an exception this must be true
         return combined
@@ -153,16 +153,16 @@ class GithubApi:
                  ) -> dict[str, Any]:
         """Returns info about all recent workflow runs on GitHub Actions"""
         url = BASE_URL.format(owner=self.owner, repo=self.repo, endpoint='runs')
-        params = {"status": "completed"}
+        params = {'status': 'completed'}
         if branch:
-            params["branch"] = branch
+            params['branch'] = branch
             # Assume we don't want PRs if we supply a specific branch
-            params["exclude_pull_requests"] = "true"
+            params['exclude_pull_requests'] = 'true'
         else:
             # Assume we only want PRs if we DON'T supply a specific branch
-            params["event"] = "pull_request"
+            params['event'] = 'pull_request'
         if since:
-            params["created"] = ">" + since.isoformat()
+            params['created'] = '>' + since.isoformat()
 
         result = self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
         assert isinstance(result, dict)
@@ -190,7 +190,7 @@ class GithubApi:
     def get_pulls(self, state: str) -> list[Any]:
         """Returns info about pull requests"""
         url = PULLS_URL.format(owner=self.owner, repo=self.repo)
-        params = {"state": state}
+        params = {'state': state}
         result = self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
         assert isinstance(result, list)
         return result

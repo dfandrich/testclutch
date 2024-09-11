@@ -7,14 +7,14 @@ from testclutch import netreq  # noqa: I100
 
 
 class RaiseFirst:
-    "Raise an exception on the first call, then succeed on subsequent calls"
+    """Raise an exception on the first call, then succeed on subsequent calls"""
     def __init__(self):
         self.count = 0
 
     def __call__(self):
         self.count += 1
         if self.count == 1:
-            raise RuntimeError("First call")
+            raise RuntimeError('First call')
         return self.count
 
 
@@ -38,4 +38,4 @@ class TestNetreq(unittest.TestCase):
         start = time.time()
         result = netreq.retry_on_exception(RaiseFirst(), RuntimeError, retries=100, delay=0.1)
         assert result == 2
-        assert time.time() - start < 9, "too many retries"
+        assert time.time() - start < 9, 'too many retries'

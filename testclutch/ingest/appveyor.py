@@ -99,7 +99,7 @@ class AppveyorIngestor:
                               jobmeta['cijob'])
                 continue
             found_jobs.add(jobmeta['cijob'])
-            jobmeta['url'] = f"https://ci.appveyor.com/project/{project['accountName']}/{project['slug']}/builds/{build['buildId']}/job/{job['jobId']}"
+            jobmeta['url'] = f'https://ci.appveyor.com/project/{project["accountName"]}/{project["slug"]}/builds/{build["buildId"]}/job/{job["jobId"]}'
             jobmeta['jobstarttime'] = int(self._convert_time(job['started']).timestamp())
             jobmeta['runtriggertime'] = int(self._convert_time(job['created']).timestamp())
             jobmeta['jobfinishtime'] = int(self._convert_time(job['finished']).timestamp())
@@ -114,7 +114,7 @@ class AppveyorIngestor:
                 meta = {**cimeta, **jobmeta}
                 self.process_log_file(self._log_file_path(build_id, job_id), meta)
             else:
-                logging.info("No logs available to ingest")
+                logging.info('No logs available to ingest')
 
     def _log_file_path(self, build_id: int, job_id: str) -> str:
         if not job_id.isalnum():
@@ -148,7 +148,7 @@ class AppveyorIngestor:
                     logging.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f"Unable to find existing test for run {meta['runid']}")
+                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
@@ -170,7 +170,7 @@ class AppveyorIngestor:
                 logging.debug(f'{n}={v}')
             summary = summarize.summarize_totals(testcases)
             for l in summary:
-                logging.debug("%s", l.strip())
+                logging.debug('%s', l.strip())
             logging.debug('')
             self.store_test_run(meta, testcases)
 

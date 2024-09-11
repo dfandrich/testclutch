@@ -11,8 +11,8 @@ import urllib
 from testclutch import netreq
 
 
-BASE_URL = "https://curl.se/dev/inbox/"
-DATA_TYPE = "text/html,text/plain"
+BASE_URL = 'https://curl.se/dev/inbox/'
+DATA_TYPE = 'text/html,text/plain'
 
 LOG_FILE_RE = re.compile(r'^build-.*\.log$')
 
@@ -42,7 +42,7 @@ class HTMLDirParser(html.parser.HTMLParser):
         self.links = []
 
     def error(self, message: str):
-        logging.warning("%s", message)
+        logging.warning('%s', message)
 
     def handle_starttag(self, tag: str, attrs: list[tuple]):
         if tag == 'th':
@@ -70,8 +70,8 @@ class CurlAutoApi:
         self.http = netreq.Session(backoff_factor=5)
 
     def _standard_headers(self) -> dict:
-        return {"Accept": DATA_TYPE,
-                "User-Agent": netreq.USER_AGENT
+        return {'Accept': DATA_TYPE,
+                'User-Agent': netreq.USER_AGENT
                 }
 
     def get_runs(self) -> list[str]:

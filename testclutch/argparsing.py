@@ -33,7 +33,7 @@ class ExpandUserFileName:
                     | (os.W_OK if 'w' in self.mode or 'x' in self.mode or 'a' in self.mode
                        or '+' in self.mode else 0))
         if not os.access(fn, modebits):
-            raise argparse.ArgumentTypeError("{0} does not exist or have permission".format(fn))
+            raise argparse.ArgumentTypeError('{0} does not exist or have permission'.format(fn))
         return fn
 
 
@@ -69,7 +69,7 @@ class StoreMultipleConstAction(argparse.Action):
 
 
 def arguments_logging(parser: argparse.ArgumentParser):
-    "Add arguments needed for logging"
+    """Add arguments needed for logging"""
     parser.add_argument(
         '--dry-run',
         action='store_true',
@@ -77,29 +77,29 @@ def arguments_logging(parser: argparse.ArgumentParser):
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
-        help="Show more log messages")
+        help='Show more log messages')
     parser.add_argument(
         '--debug',
         action=StoreMultipleConstAction,
         attrs=['verbose'],
-        help="Show debug level log messages")
+        help='Show debug level log messages')
     parser.add_argument(
         '--level-prefix',
         action='store_true',
-        help="Include syslog priority level in log message as <N> prefix")
+        help='Include syslog priority level in log message as <N> prefix')
 
 
 def arguments_ci(parser: argparse.ArgumentParser, required: bool = True):
-    "Add arguments needed for selecting and using a CI system"
+    """Add arguments needed for selecting and using a CI system"""
     parser.add_argument(
         '--origin',
         required=required,
         choices=KNOWN_ORIGINS,
-        help="Origin of the log file")
+        help='Origin of the log file')
     parser.add_argument(
         '--authfile',
         type=ExpandUserFileName('r'),
-        help="File holding authentication token if needed for this --origin")
+        help='File holding authentication token if needed for this --origin')
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),
@@ -107,7 +107,7 @@ def arguments_ci(parser: argparse.ArgumentParser, required: bool = True):
         help="URL of the source repository we're dealing with")
     parser.add_argument(
         '--account',
-        help="account name in the CI service, if different from that in --checkrepo")
+        help='account name in the CI service, if different from that in --checkrepo')
     parser.add_argument(
         '--project',
-        help="project name in the CI service, if different from that in --checkrepo")
+        help='project name in the CI service, if different from that in --checkrepo')

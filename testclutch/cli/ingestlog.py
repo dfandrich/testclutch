@@ -31,7 +31,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser.add_argument(
         '--branch',
         default=config.expand('branch'),
-        help="Branch to use when searching for test logs to ingest")
+        help='Branch to use when searching for test logs to ingest')
     parser.add_argument(
         '--runid',
         nargs='+',
