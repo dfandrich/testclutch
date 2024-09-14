@@ -38,7 +38,12 @@ class FixedPrefixedLog:  # type: FakeDerivedTextIOWithArgs
     def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
         if l:
+            origl = l
             l = l[self.prefixlen:]
+            if not l and origl.endswith('\n'):
+                # If the line is too short but isn't the last one, return an empty line
+                return '\n'
+
         return l
 
 
