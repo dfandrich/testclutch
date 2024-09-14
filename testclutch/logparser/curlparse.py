@@ -6,8 +6,9 @@ import datetime
 import logging
 import re
 import zlib
-from typing import Set, TextIO  # noqa: F401
+from typing import Set  # noqa: F401
 
+from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
 
@@ -238,7 +239,7 @@ def parse_uname(uname: str) -> TestMetaStr:
     return meta
 
 
-def parse_log_file(f: TextIO) -> ParsedLog:  # noqa: C901
+def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
     """Parses curl's runtests.pl test log output.
 
     Returns: tuple of dict with metadata, list of tests

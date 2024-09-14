@@ -4,14 +4,14 @@
 import importlib
 import logging
 import sys
-from typing import TextIO
 
 from testclutch import config
 from testclutch import summarize
+from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog
 
 
-def parse_log_file(f: TextIO) -> ParsedLog:
+def parse_log_file(f: TextIOReadline) -> ParsedLog:
     """Tries one or more methods to parse a log file and returns the first one that works
 
     Returns: tuple of dict with metadata, list of tests

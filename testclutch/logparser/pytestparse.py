@@ -9,8 +9,8 @@ test run times.
 
 import logging
 import re
-from typing import TextIO
 
+from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
@@ -33,7 +33,7 @@ PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)?')
 SESSION_START_RE = re.compile(r'^={5,} test session starts =+$')
 
 
-def parse_log_file_summary(f: TextIO) -> ParsedLog:
+def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
     """Parses pytest's test summary output.
 
     This is output with the "-r ap" or "-r A" flag.
@@ -105,7 +105,7 @@ def parse_log_file_summary(f: TextIO) -> ParsedLog:
     return meta, testcases
 
 
-def parse_log_file(f: TextIO) -> ParsedLog:
+def parse_log_file(f: TextIOReadline) -> ParsedLog:
     """Parses pytest's verbose output.
 
     This is output with the "-v" flag.

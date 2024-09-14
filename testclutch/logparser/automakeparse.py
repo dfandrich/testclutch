@@ -7,8 +7,8 @@ If more than one test series is found in the log, they are concatenated and trea
 
 import logging
 import re
-from typing import TextIO
 
+from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
@@ -40,7 +40,7 @@ def result_code(result: str) -> TestResult:
     return TestResult.UNKNOWN
 
 
-def parse_log_file(f: TextIO) -> ParsedLog:
+def parse_log_file(f: TextIOReadline) -> ParsedLog:
     """Parses automake's test output."""
     meta = {}       # type: TestMeta
     testcases = []  # type: TestCases

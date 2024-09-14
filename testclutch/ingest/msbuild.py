@@ -1,24 +1,20 @@
 """Class to handle builds created by MSBuild
 """
 
-from typing import TextIO
-
-from testclutch.ingest.logprefix import FakeDerivedTextIOWithArgs  # noqa: F401
+from testclutch.filedef import TextIOReadline
 
 
-# pytype: disable=annotation-type-mismatch
-class MsBuildLog:  # type: FakeDerivedTextIOWithArgs
-    # pytype: enable=annotation-type-mismatch
+class MsBuildLog:
     """Remove the indentation that msbuild adds to child output
 
     This issue mentions the indentation that is done and implies that there is no way to
     stop it (as of 2021, anyway):
     https://github.com/dotnet/msbuild/issues/6614#issuecomment-866447382
 
-    This has been tested with msbuild ver. 4.8.3761.0, 15.9.21+g9802d43bc3 for .NET,
+    This has been tested with msbuild ver. 4.8.3761.0, 15.9.21+g9802d43bc3 for .NET and
     17.7.2+d6990bcfa for .NET
     """
-    def __init__(self, f: TextIO):
+    def __init__(self, f: TextIOReadline):
         self.file_obj = f
         self.in_msbuild = False
 
