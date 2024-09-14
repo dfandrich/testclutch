@@ -33,17 +33,14 @@ jobs:
           python -m pip install '.[dev]' '.[test]'
       - name: Compile
         run: |
-          python -m compileall -x '/\.git/' .
+          python -m compileall -x '/\.git/' -x /test.git/ -x /build/ .
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # stop the build on any other warnings, too
           flake8 . --count --statistics
-      - if: matrix.python-version != '3.11' && matrix.python-version != '3.12'
-        # pytype as of 2024.4.11 doesn't support Python 3.12
-        # pytype 2024.4.11 has a bug recognizing FakeDerivedTextIOWithArgs only on Python 3.11
-        name: Type check with pytype
+      - name: Type check with pytype
         run: |
           pytype -j auto $(find testclutch tests -name '*.py')
       - name: Lint with shellcheck
