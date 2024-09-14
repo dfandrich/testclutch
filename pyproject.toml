@@ -36,7 +36,7 @@ dependencies = [
 # actually been tested
 [project.optional-dependencies]
 test = [
-    "pytest >= 6.1.5, <= 8.2.2"
+    "pytest >= 6.1.5, <= 8.3.3"
 ]
 dev = [
     "flake8 >= 5.0.4, <= 7.1.1",
@@ -47,7 +47,7 @@ dev = [
     "flake8-mutable",
     "flake8-pyproject",
     "flake8-quotes",
-    "pytype >= 2023.9.19, <= 2024.4.11"
+    "pytype >= 2023.9.19, <= 2024.9.13"
 ]
 
 [project.urls]
