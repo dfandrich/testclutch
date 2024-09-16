@@ -475,9 +475,6 @@ class ResultsOverTimeByUniqueJob:
         jobtitle = f' title="{"&#10;".join(badtitle)}"' if badtitle else ''
         jobclass = ' class="jobfailure"' if badtitle else ''
         print(f'<td{jobtitle}{jobclass}>{badtext}</td>')
-        # Commit of the most recent job
-        # TODO: show the commit for EACH job
-        firstcommit = ' ' + escape(meta.get('commit', '')[:9])
 
         for job_status in self.all_jobs_status:
             # title must contain safe HTML as it will not be escaped
@@ -485,12 +482,11 @@ class ResultsOverTimeByUniqueJob:
                 job_status.jobtime, tz=datetime.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S %z')
             # Cannot use summarize_totals here because we have the wrong structure
             title = (title
-                     + firstcommit
+                     + ' ' + escape(job_status.commit[:9])
                      + f'&#10;Success: {len(job_status.successful_tests)}'
                      + f', Failed: {len(job_status.failed_tests)}'
                      + f', Attempted: {len(job_status.attempted_tests)}'
                      + f'&#10;Result: {escape(job_status.test_result)}')
-            firstcommit = ''
 
             prefix_char = ''
             if job_status.test_result == 'success':
