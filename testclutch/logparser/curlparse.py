@@ -45,6 +45,7 @@ RE_FEATURES = re.compile(r'^\* Features: (.+)$')
 RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
 RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
 RE_OS = re.compile(r'^\* OS: (\S+)')
+RE_PERL = re.compile(r'^\* Perl: v([\d.]+\d)')
 RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
@@ -296,6 +297,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         meta['features'] = r.group(1)
                     elif r := RE_OS.search(l):
                         meta['os'] = r.group(1)
+                    elif r := RE_PERL.search(l):
+                        meta['perlver'] = r.group(1)
                     elif r := RE_VALGRIND.search(l):
                         meta['withvalgrind'] = 'yes'
                     elif r := RE_EVENT.search(l):

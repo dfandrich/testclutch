@@ -3737,7 +3737,7 @@ class TestCurlParse(unittest.TestCase):
     # Test buildinfo reported by runtests starting 2024-09 using autoconf/automake
     # Log created with:
     # mkdir /tmp/buildam && cd /tmp/buildam && ~/curl/configure --without-ssl && make -j9
-    #   && cd tests && srcdir=~/src/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
+    #   && cd tests && srcdir=~/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
     def test_automake_buildinfo(self):
         with self.open_data('curlparse_automake_buildinfo.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
@@ -3751,6 +3751,7 @@ class TestCurlParse(unittest.TestCase):
             'testmode': 'normal',
             'withvalgrind': 'no',
             'withevent': 'no',
+            'perlver': '5.36.0',
             'testingver': '8.10.0-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetarch': 'x86_64',

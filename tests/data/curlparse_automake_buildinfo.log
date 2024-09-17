@@ -7,6 +7,7 @@ Using curl: ../src/curl
 * Host: localhost
 * System: Linux localhost 6.6.43 #1 SMP PREEMPT_DYNAMIC Sat Jul 27 17:18:39 UTC 2024 x86_64 GNU/Linux
 * OS: linux
+* Perl: v5.36.0 (/usr/bin/perl5.36.0)
 * Env: 
 * Seed: 256992
 * buildinfo.configure.tool: configure
