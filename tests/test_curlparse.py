@@ -253,6 +253,14 @@ class TestParseUname(unittest.TestCase):
         }, curlparse.parse_uname(
             'Redox  0.3.4  x86_64')
         )
+        self.assertDictEqual({
+            'systemos': 'syllable',
+            'systemhost': 'syllable',
+            'systemosver': '0.6.7',
+            'arch': 'i586'
+        }, curlparse.parse_uname(
+            'syllable syllable 7 0.6 i586 Syllable')
+        )
 
 
 class TestCurlParse(unittest.TestCase):

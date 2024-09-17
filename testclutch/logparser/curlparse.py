@@ -233,6 +233,10 @@ def parse_uname(uname: str) -> TestMetaStr:
         meta['arch'] = syspartsblanks[4]
     elif meta['systemos'] == 'Redox' and len(syspartsblanks) == 5:
         meta['arch'] = syspartsblanks[4]
+    elif meta['systemos'] == 'syllable' and len(syspartsblanks) == 6:
+        # systemosver as set above is just the minor release number
+        meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
+        meta['arch'] = syspartsblanks[4]
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 
