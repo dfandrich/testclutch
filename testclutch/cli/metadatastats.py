@@ -645,6 +645,11 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         td {
           outline: 1px solid;
           text-align: center;
+          padding: 0.3em;
+        }
+        td:first-child {
+          text-align: left;
+          min-width: 28em;
         }
         .newsection {
           border-left: solid 2px;
