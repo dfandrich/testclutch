@@ -461,6 +461,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         f'{datetime.datetime.fromtimestamp(oldest, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)}')
 
     print_func('Number of git commits tested:', len(trstats.get_values_for_name('commit')))
+    print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
     total_count = trstats.get_test_run_count()
     print_func('Test runs:', f'{total_count}')
     print_func('Runs per day:', f'{total_count / days: 0.1f}')
@@ -519,7 +520,6 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
     print_func('Average number of tests attempted in one run by test format:')
     for testtype, avgtests in trstats.get_avg_tests_by_type():
         print_func(f'{testtype}: {avgtests:.1f}', indent=1)
-    print_func('Number of unique configured test jobs:', len(trstats.get_job_names()))
     show_counts_for_name_values('Runs by CI system:', 'origin')
     show_counts_for_name_values('Runs by build system:', 'buildsystem')
     show_counts_for_name_values('Runs by test format:', 'testformat')
