@@ -18,6 +18,7 @@ from testclutch.testcasedef import TestResult
 # update ingest/curlauto.py at the same time
 
 # Early headers
+# TODO: this is obsolete after 2024-09-20 which added Args:
 RE_RUNTESTS = re.compile(r'perl.*/runtests\.pl (.*)$')
 # If a log is truncated, this line won't be found; use a different one (that may not be as reliable)
 # RE_USINGAUTOMAKE = re.compile(r'make +all-am')
@@ -42,11 +43,13 @@ RE_CURLVER = re.compile(r'^\* curl (\S+) \(([^)]+)\)')
 RE_DEPS = re.compile(r'^\* (.+)$')
 RE_HOST = re.compile(r'^\* Host: (\S+)')
 RE_FEATURES = re.compile(r'^\* Features: (.+)$')
+RE_PROTOCOLS = re.compile(r'^\* Protocols: (.+)$')
 RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
 RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
 RE_OS = re.compile(r'^\* OS: (\S+)')
 RE_PERL = re.compile(r'^\* Perl: v([\d.]+\d)')
 RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
+RE_ARGS = re.compile(r'^\* Args: (.+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
 
@@ -295,6 +298,10 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         meta['host'] = r.group(1)
                     elif r := RE_FEATURES.search(l):
                         meta['features'] = r.group(1)
+                    elif r := RE_PROTOCOLS.search(l):
+                        meta['curlprotocols'] = r.group(1)
+                    elif r := RE_ARGS.search(l):
+                        meta['runtestsopts'] = r.group(1)
                     elif r := RE_OS.search(l):
                         meta['os'] = r.group(1)
                     elif r := RE_PERL.search(l):
@@ -522,6 +529,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                 # as anything else
                 meta['buildcode'] = zlib.crc32(l.strip().encode('ISO-8859-1'), current_code)
         elif r := RE_RUNTESTS.search(l):
+            # This may be overwritten later by RE_ARGS
             meta['runtestsopts'] = r.group(1)
         elif r := RE_COMPILERAC.search(l):
             meta['compiler'] = r.group(1)
