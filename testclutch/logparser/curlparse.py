@@ -171,7 +171,12 @@ def parse_uname(uname: str) -> TestMetaStr:
     # FreeBSD because its hostname can be empty)
     syspartsblanks = uname.split(sep=' ')
 
-    meta['systemos'] = syspartsblanks[0]
+    if syspartsblanks[0]:
+        meta['systemos'] = syspartsblanks[0]
+    if len(syspartsblanks) < 3:
+        # This needs at least 3 parts to obtain any more details, which a real uname should provide
+        return meta
+
     # hostname can be blank
     if syspartsblanks[1]:
         meta['systemhost'] = syspartsblanks[1]

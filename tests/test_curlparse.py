@@ -262,6 +262,13 @@ class TestParseUname(unittest.TestCase):
             'syllable syllable 7 0.6 i586 Syllable')
         )
 
+    def test_bad_uname(self):
+        self.assertDictEqual({
+            'systemos': 'xyzzy',
+        }, curlparse.parse_uname('xyzzy'))
+        self.assertDictEqual({
+        }, curlparse.parse_uname(''))
+
 
 class TestCurlParse(unittest.TestCase):
     def setUp(self):
