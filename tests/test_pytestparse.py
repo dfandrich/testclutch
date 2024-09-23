@@ -135,16 +135,59 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
         ], testcases)
 
-    def test_verbose_as_summary(self):
-        # use the wrong parser
-        with self.open_data('pytest_faillogs.log') as f:
+    def test_xdist(self):
+        with self.open_data('pytest_xdist.log') as f:
+            meta, testcases = pytestparse.parse_log_file(f)
+        self.assertDictEqual({
+            'os': 'linux',
+            'runtestsduration': '720000',
+            'testdeps': 'Python 3.10.11, pytest-8.3.3, pluggy-1.5.0',
+            'paralleljobs': '2',
+            'testformat': 'pytest',
+            'testresult': 'failure'
+        }, meta)
+        self.assertCountEqual([
+            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+        ], testcases)
+
+    def test_xdist_summary(self):
+        with self.open_data('pytest_xdist_summary.log') as f:
             meta, testcases = pytestparse.parse_log_file_summary(f)
-        self.assertDictEqual({}, meta)
-        self.assertEqual([], testcases)
+        self.assertDictEqual({
+            'os': 'linux',
+            'runtestsduration': '730000',
+            'testdeps': 'Python 3.10.11, pytest-8.3.3, pluggy-1.5.0',
+            'paralleljobs': '2',
+            'testformat': 'pytest',
+            'testresult': 'failure'
+        }, meta)
+        self.assertCountEqual([
+            SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.FAIL, "AssertionError: 'From[9...", 0),
+        ], testcases)
+
+    def test_verbose_as_summary(self):
+        # use the wrong parser on verbose logs
+        for fn in ['pytest_success.log', 'pytest_verbose.log', 'pytest_truncated.log',
+                   'pytest_faillogs.log', 'pytest_longtime.log', 'pytest_xdist.log']:
+            with self.subTest(fn):
+                with self.open_data(fn) as f:
+                    meta, testcases = pytestparse.parse_log_file_summary(f)
+                self.assertDictEqual({}, meta)
+                self.assertEqual([], testcases)
 
     def test_summary_as_verbose(self):
-        # use the wrong parser
-        with self.open_data('pytest_nonverbose.log') as f:
-            meta, testcases = pytestparse.parse_log_file(f)
-        self.assertDictEqual({}, meta)
-        self.assertEqual([], testcases)
+        # use the wrong parser on summary logs
+        for fn in ['pytest_nonverbose.log', 'pytest_xdist_summary.log']:
+            with self.subTest(fn):
+                with self.open_data(fn) as f:
+                    meta, testcases = pytestparse.parse_log_file(f)
+                self.assertDictEqual({}, meta)
+                self.assertEqual([], testcases)

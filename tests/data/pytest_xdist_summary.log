@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.11, pytest-8.3.3, pluggy-1.5.0
+rootdir: /tmp/tst
+configfile: pyproject.toml
+plugins: cov-4.1.0, astropy-header-0.2.2, xdist-3.6.1
+created: 2/2 workers
+2 workers [9 items]
+
+..sX....F                                                                [100%]
+=================================== FAILURES ===================================
+__________________________ TestUupcCvt.test_message_1 __________________________
+[gw1] linux -- Python 3.10.11 /home/user/testing/.venv/bin/python3
+
+self = <uupccvt_test.TestUupcCvt testMethod=test_message_1>
+
+    def test_message_1(self):
+>       self.run_inout_test('testdata/uupc.input.1', 'testdata/uupc.expected.1')
+
+uupccvt_test.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+uupccvt_test.py:41: in run_inout_test
+    self.assertEqual(expecteddata, actualdata)
+E   AssertionError: 'From[911 chars]ding: 3 TEXT\n\n[The Response]\n\n>From the #1 source\nxyzzy\n' != 'From[911 chars]ding: 3 TEXT\n\n[The Response]\n\n>From the #1 source\n\n'
+E   Diff is 998 characters long. Set self.maxDiff to None to see it.
+----------------------------- Captured stderr call -----------------------------
+Warning: Line needed to be escaped: From the #1 source
+Messages copied:  1
+Dates converted:  0
+From lines added: 0
+=========================== short test summary info ============================
+FAILED uupccvt_test.py::TestUupcCvt::test_message_1 - AssertionError: 'From[9...
+============== 1 failed, 6 passed, 1 skipped, 1 xpassed in 0.73s ===============

@@ -21,13 +21,22 @@ SUMMARY_START_RE = re.compile(r'^={5,} short test summary info =+$')
 RESULT_RE = re.compile(r'^(\w+) (.*::\S*) *(- )?(.*)$')
 SKIPPED_RE = re.compile(r'^(\w+) \[\S*\] (\S*): (.*)$')
 NONVERBOSE_SENTINEL_RE = re.compile(r'^collected ([0-9]+) items$')
-SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?')
+# This is for xdist since NONVERBOSE_SENTINEL_RE doesn't appear
+NONVERBOSE_SENTINEL2_RE = re.compile(r'^[a-zA-Z.]* +\[100%\]$')
+SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?$')
 
 # pytest -v format
 SESSION_END_RE = re.compile(r'^={3,} (\d+) (\w+).* in ([0-9.]+)s ([()\d:]+)? *=')
-RESULTV_RE = re.compile(r'^(\S+::\S+) (\w+) +(\(.*\) +)?\[[ \d]+%\]$')
+RESULTV_RE = re.compile(r'^(?P<name>\S+::\S+) (?P<result>\w+) +(\(.*\) +)?\[[ \d]+%\]$')
 VERBOSE_SENTINEL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
-PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)?')
+# This is for xdist since VERBOSE_SENTINEL_RE doesn't appear
+VERBOSE_SENTINEL2_RE = re.compile(r'^cachedir: ')
+PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)')
+
+# pytest -v format with xdist
+# This one shows up in the short output format as well
+XDIST_WORKERS_RE = re.compile(r'^([0-9]+) workers \[([0-9]+) items\]$')
+RESULTV_XDIST_RE = re.compile(r'^\[\w+\] \[ *\d+%\] (?P<result>\w+) (?P<name>\S+::\S+)$')
 
 # common lines
 SESSION_START_RE = re.compile(r'^={5,} test session starts =+$')
@@ -57,13 +66,16 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                 if r := SUMMARY_PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)
                     meta['testdeps'] = r.group(3)
-                elif VERBOSE_SENTINEL_RE.search(l):
+                elif r := XDIST_WORKERS_RE.search(l):
+                    # This shows up in short logs as well with xdist
+                    meta['paralleljobs'] = r.group(1)
+                elif VERBOSE_SENTINEL_RE.search(l) or VERBOSE_SENTINEL2_RE.search(l):
                     # If this is found, this is a verbose log so clear data and give up
                     logging.debug("Actually, it's a verbose log; give up")
                     meta = {}
                     break
                 elif SUMMARY_START_RE.search(l):
-                    logging.debug('Found the start of a pytest short log')
+                    logging.debug('Found a pytest short log')
                     while l := f.readline():
                         l = l.rstrip()
                         if r := SESSION_END_RE.search(l):
@@ -136,26 +148,29 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                 elif r := PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)
                     meta['testdeps'] = r.group(3)
-                elif NONVERBOSE_SENTINEL_RE.search(l):
+                elif r := XDIST_WORKERS_RE.search(l):
+                    meta['paralleljobs'] = r.group(1)
+                elif NONVERBOSE_SENTINEL_RE.search(l) or NONVERBOSE_SENTINEL2_RE.search(l):
                     # If this is found, this is not a verbose log so clear data and give up
+                    # Note that this does not appear with xdist
                     logging.debug("Actually, it's not a verbose log at all; give up")
                     meta = {}
                     break
-                elif r := RESULTV_RE.search(l):
-                    if r.group(2) == 'PASSED':
-                        testcases.append(SingleTestFinding(r.group(1), TestResult.PASS, '', 0))
-                    elif r.group(2) == 'FAILED':
-                        testcases.append(SingleTestFinding(r.group(1), TestResult.FAIL, '', 0))
-                    elif r.group(2) == 'SKIPPED':
-                        testcases.append(SingleTestFinding(r.group(1), TestResult.SKIP, '', 0))
-                    elif r.group(2) == 'XPASS':
+                elif (r := RESULTV_RE.search(l)) or (r := RESULTV_XDIST_RE.search(l)):
+                    if r.group('result') == 'PASSED':
+                        testcases.append(SingleTestFinding(r.group('name'), TestResult.PASS, '', 0))
+                    elif r.group('result') == 'FAILED':
+                        testcases.append(SingleTestFinding(r.group('name'), TestResult.FAIL, '', 0))
+                    elif r.group('result') == 'SKIPPED':
+                        testcases.append(SingleTestFinding(r.group('name'), TestResult.SKIP, '', 0))
+                    elif r.group('result') == 'XPASS':
                         # Treat this as a normal pass (it was expected to fail)
-                        testcases.append(SingleTestFinding(r.group(1), TestResult.PASS, '', 0))
-                    elif r.group(2) == 'XFAIL':
+                        testcases.append(SingleTestFinding(r.group('name'), TestResult.PASS, '', 0))
+                    elif r.group('result') == 'XFAIL':
                         testcases.append(SingleTestFinding(
-                            r.group(1), TestResult.FAILIGNORE, '', 0))
+                            r.group('name'), TestResult.FAILIGNORE, '', 0))
                     else:
-                        logging.error('Unknown pytest result: %s', r.group(2))
+                        logging.error('Unknown pytest result: %s', r.group('result'))
 
     if not testcases:
         logging.debug('No pytest verbose logs could be found in the file')
