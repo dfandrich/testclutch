@@ -1,5 +1,4 @@
-"""Retrieve logs from CircleCI runs
-"""
+"""Retrieve logs from CircleCI runs."""
 
 import json
 import logging
@@ -27,6 +26,8 @@ CHUNK_SIZE = 0x10000
 
 
 class CircleApi:
+    """Retrieve logs from CircleCI runs."""
+
     def __init__(self, checkurl: str):
         account, project = urls.get_project_name(checkurl)
         self.owner = account
@@ -43,7 +44,7 @@ class CircleApi:
                 }
 
     def get_runs(self) -> list[dict[str, Any]]:
-        """Returns info about all recent workflow runs on Cirrus CI"""
+        """Returns info about all recent workflow runs on Cirrus CI."""
         # TODO: add date checking to break off pagination early
         combined_resp = []
         last_resp = None
@@ -66,7 +67,7 @@ class CircleApi:
         return combined_resp
 
     def get_run(self, build_id: int) -> dict[str, Any]:
-        """Returns info about a single run"""
+        """Returns info about a single run."""
         url = RUN_URL.format(vcs=self.vcs, user=self.owner, project=self.repo, build=build_id)
         with self.http.get(url, headers=self._standard_headers()) as resp:
             resp.raise_for_status()
@@ -79,7 +80,7 @@ class CircleApi:
             return netreq.download_file(resp, log_url)
 
     def make_log_url(self, build_id: int, step_id: str) -> str:
-        """Return the URL to obtain the log output
+        """Return the URL to obtain the log output.
 
         This is an undocumented URL, but it is untruncated, unlike the 'output_url' value returned
         in the 'output_url' field of the 'steps' data set which truncates logs to the last

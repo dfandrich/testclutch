@@ -1,5 +1,4 @@
-"""Query database of tests
-"""
+"""Query database of tests."""
 
 import argparse
 import datetime
@@ -41,7 +40,7 @@ def parse_args(args=None) -> argparse.Namespace:
 
 
 def operator_from_matcher(matcher: str) -> str:
-    """Convert the command-line operator to a SQL operator"""
+    """Convert the command-line operator to a SQL operator."""
     if matcher == '%':
         return 'LIKE'
     if matcher == '!%':

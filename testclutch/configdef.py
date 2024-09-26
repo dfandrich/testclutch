@@ -1,4 +1,4 @@
-"""Testclutch default configuration file
+"""Testclutch default configuration file.
 
 Every configuration element ever used in the program must exist here.
 These defaults may be overridden in the user's config file.

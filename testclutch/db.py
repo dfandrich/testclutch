@@ -1,5 +1,4 @@
-"""Database operations
-"""
+"""Database operations."""
 
 
 import datetime
@@ -24,6 +23,8 @@ TestRunRow = Sequence[tuple[int, datetime.datetime, TestMeta]]
 
 # TODO: make this a context manager
 class Datastore:
+    """Class through which all operations on the main database are performed."""
+
     def __init__(self, filename: Optional[str] = None):
         if not filename:
             filename = config.expand('database_path')
@@ -32,7 +33,7 @@ class Datastore:
         self.cur = None  # type: Optional[sqlite3.Cursor]
 
     def connect(self):
-        """Opens an existing DB or creates a new one"""
+        """Open an existing DB or creates a new one."""
         try:
             # Need IMMEDIATE to respect the timeout on writes
             self.db = sqlite3.connect(self.filename,
@@ -143,7 +144,7 @@ class Datastore:
         return metadict
 
     def _collect_row(self, runs: sqlite3.dbapi2.Cursor) -> TestRunRow:
-        """Collect test runs"""
+        """Collect test runs."""
         results = []
         while rows := runs.fetchmany():
             for row in rows:
@@ -155,7 +156,7 @@ class Datastore:
         return results
 
     def select_all_test_runs(self, repo: str, since: datetime.datetime) -> TestRunRow:
-        """Returns a list of all test runs"""
+        """Return a list of all test runs."""
         oldest = int(since.timestamp())
         runs = self.cur.execute('SELECT id, time FROM testruns '
                                 'WHERE testruns.repo = ? AND testruns.time >= ?',
@@ -164,7 +165,7 @@ class Datastore:
 
     def select_meta_test_runs(self, repo: str, since: datetime.datetime,
                               name: str, op: str, value: str) -> TestRunRow:
-        """Returns the tests matching a given piece of metadata"""
+        """Return the tests matching a given piece of metadata."""
         oldest = int(since.timestamp())
         VALID_OPERATORS = frozenset(('=', '<', '>', '<=', '>=', '<>', '!=', 'like', 'LIKE',
                                      'not like', 'NOT LIKE'))
@@ -181,7 +182,7 @@ class Datastore:
         return self._collect_row(runs)
 
     def select_test_results(self, testid: int) -> TestCases:
-        """Returns the test results for a given test run"""
+        """Return the test results for a given test run."""
         res = self.cur.execute('SELECT testid, result, resulttext, runtime FROM testresults '
                                'WHERE id = ?', (testid,))
         results = []
@@ -210,7 +211,7 @@ class Datastore:
 #        # and duplicate writes just raise IntegrityError which is ignored
 
     def select_rec_id(self, meta: dict[str, str]) -> Optional[int]:
-        """Return the record ID matching a given test run"""
+        """Return the record ID matching a given test run."""
         repo = meta['checkrepo']
         origin = meta['origin']
         account = meta['account'] if 'account' in meta else ''
@@ -226,7 +227,7 @@ class Datastore:
         return ids[0][0]
 
     def delete_test_run(self, rec_id: int):
-        """Delete a test run and all its metadata, by record ID"""
+        """Delete a test run and all its metadata, by record ID."""
         # Delete in the right order to avoid failing FOREIGN KEY constraints
         self.cur.execute('DELETE FROM testrunmeta WHERE id=?', (rec_id, ))
         self.cur.execute('DELETE FROM testresults WHERE id=?', (rec_id, ))
@@ -234,14 +235,15 @@ class Datastore:
         self.db.commit()
 
     def store_commit_info(self, repo: str, branch: str, info: CommitInfo):
-        """Store information about a git commit in the repo"""
+        """Store information about a git commit in the repo."""
         self.cur.execute('INSERT INTO commitinfo VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                          (info.commit_hash, info.prev_hash, repo, branch, info.commit_time,
                           info.committer_email, info.author_email, info.title))
         self.db.commit()
 
-    def select_commit_before_time(self, repo: str, branch: str, since: int, num: int) -> list:
-        """Find the commits just before a given moment in time"""
+    def select_commit_before_time(self, repo: str, branch: str, since: int, num: int
+                                  ) -> list[tuple[str]]:
+        """Find the commits just before a given moment in time."""
         res = self.cur.execute('SELECT commithash, committime, title, committeremail, authoremail '
                                'FROM commitinfo WHERE repo = ? AND branch = ? AND committime <= ? '
                                'ORDER BY committime DESC LIMIT ?',
@@ -250,7 +252,7 @@ class Datastore:
 
     def select_all_commit_after_commit(self, repo: str, branch: str, commit: str
                                        ) -> list[CommitInfo]:
-        """Return the list of all commits starting with a given one"""
+        """Return the list of all commits starting with a given one."""
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a
         # continuous singly-linked list.
@@ -293,7 +295,7 @@ class Datastore:
 
     def select_all_commit_before_commit(self, repo: str, branch: str, commit: str
                                         ) -> list[CommitInfo]:
-        """Return the list of all commits starting with a given one"""
+        """Return the list of all commits starting with a given one."""
         results = []
         # The LIMIT 1 in the SQL shouldn't be necessary since we import the commits as a
         # continuous singly-linked list.
@@ -335,3 +337,10 @@ class Datastore:
                 ))
                 prev_commit = data[1]  # prev_hash
         return results
+
+    def select_all_commit_after_time(self, repo: str, branch: str, since: int) -> list[CommitInfo]:
+        """Return commits after and including the given time."""
+        commit = self.select_commit_before_time(repo, branch, since, 1)
+        if not commit:
+            return []
+        return self.select_all_commit_after_commit(repo, branch, commit[0][0])

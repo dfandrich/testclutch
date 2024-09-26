@@ -1,5 +1,4 @@
-"""Code to get GitHub pull request logs from results on GitHub Actions
-"""
+"""Code to get GitHub pull request logs from results on GitHub Actions."""
 
 import datetime
 import logging
@@ -15,7 +14,7 @@ PR_EVENT = 'pull_request'
 
 
 class GithubAnalyzeJob(gha.GithubIngestor):
-    """GitHub PR log analyzer
+    """GitHub PR log analyzer.
 
     Based on GithubIngestor but with the store method replaced to store log data instead
     and methods to retrieve by PR.
@@ -34,7 +33,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                 and run['head_sha'] == commit)
 
     def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> list[int]:
-        """Find all runs on PRs for a particular commit"""
+        """Find all runs on PRs for a particular commit."""
         found = []
         for run in self.gh.get_runs(since=since)['workflow_runs']:
             if self._is_matching_run(run, commit):
@@ -44,7 +43,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         return found
 
     def _find_for_pr(self, pr: int) -> list[int]:
-        """Find the most recent runs for the given PR
+        """Find the most recent runs for the given PR.
 
         Only return runs for the most recent commit, if there were runs for more than one.
         """
@@ -69,7 +68,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         return found
 
     def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
-        """Store test results in a list
+        """Store test results in a list.
 
         This overrides the method in the base class.
         """
@@ -81,7 +80,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         self.test_results.append((meta, testcases))
 
     def gather_pr(self, pr: int) -> list[ParsedLog]:
-        """Clear any earlier results and start gathering job results for this PR"""
+        """Clear any earlier results and start gathering job results for this PR."""
         self.clear_test_results()
         runs = self._find_for_pr(pr)
         if not runs:

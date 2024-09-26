@@ -1,5 +1,4 @@
-"""Methods for retrieving the program configuration
-"""
+"""Methods for retrieving the program configuration."""
 
 import contextlib
 import functools
@@ -21,7 +20,7 @@ CONFIG_FILE = 'testclutchrc'
 
 
 def config_dir() -> str:
-    """Get the directory in which to store the configuration files"""
+    """Get the directory in which to store the configuration files."""
     if 'XDG_CONFIG_HOME' in os.environ:
         return os.environ['XDG_CONFIG_HOME']
     if 'HOME' in os.environ:
@@ -30,7 +29,7 @@ def config_dir() -> str:
 
 
 def persistent_dir() -> str:
-    """Get the directory in which to store persistent data files"""
+    """Get the directory in which to store persistent data files."""
     if 'XDG_DATA_HOME' in os.environ:
         return os.environ['XDG_DATA_HOME']
     if 'HOME' in os.environ:
@@ -39,7 +38,7 @@ def persistent_dir() -> str:
 
 
 def cache_dir() -> str:
-    """Get the directory in which to store cache files"""
+    """Get the directory in which to store cache files."""
     if 'XDG_CACHE_HOME' in os.environ:
         return os.environ['XDG_CACHE_HOME']
     if 'HOME' in os.environ:
@@ -48,7 +47,7 @@ def cache_dir() -> str:
 
 
 def environ() -> dict[str, str]:
-    """Return a dict with the config environment
+    """Return a dict with the config environment.
 
     This contains the process environment variables, plus the default config variables,
     plus the local config variables, plus a few guaranteed variables
@@ -77,25 +76,25 @@ def environ() -> dict[str, str]:
 
 
 def expandstr(var: str) -> str:
-    """Expand a string with environment variables"""
+    """Expand a string with environment variables."""
     return var.format(**environ())
 
 
 @functools.lru_cache(maxsize=None)
 def expand(var: str) -> str:
-    """Get a config variable and Expand it with environment variables"""
+    """Get a config variable and Expand it with environment variables."""
     return expandstr(get(var))
 
 
 @functools.lru_cache(maxsize=None)
 def get(var: str) -> Any:
-    """Get a raw config variable"""
+    """Get a raw config variable."""
     return environ()[var]
 
 
 @contextlib.contextmanager
 def override_var(obj, name: str, value: Any):
-    """Change an object variable within a with context
+    """Change an object variable within a with context.
 
     The original value of the attribute is restore on context exit.
 
@@ -111,7 +110,7 @@ def override_var(obj, name: str, value: Any):
 
 
 def config() -> ModuleType:
-    """Return the configuration file as a module"""
+    """Return the configuration file as a module."""
     global config_module
     if config_module:
         return config_module

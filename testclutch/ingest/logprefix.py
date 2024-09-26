@@ -1,5 +1,4 @@
-"""Class to remove a prefix from each log line
-"""
+"""Class to remove a prefix from each log line."""
 
 import re
 
@@ -7,7 +6,7 @@ from testclutch.filedef import TextIOReadline
 
 
 class FixedPrefixedLog:
-    """Remove the timestamp at the head of every log line
+    """Remove the timestamp at the head of every log line.
 
     Args:
         prefixlen - length of prefix to remove
@@ -17,6 +16,7 @@ class FixedPrefixedLog:
         self.prefixlen = prefixlen
 
     def __getattr__(self, attr: str):
+        """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
     def readline(self, size: int = -1) -> str:
@@ -31,12 +31,12 @@ class FixedPrefixedLog:
         return l
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        """Satisfy pytype, even though the __getattr__ actually does the same thing"""
+        """Satisfy pytype, even though the __getattr__ actually does the same thing."""
         return self.file_obj.seek(offset, whence)
 
 
 class RegexPrefixedLog:
-    """TextIOWrapper that removes a matching regex at the head of every log line
+    """TextIOWrapper that removes a matching regex at the head of every log line.
 
     Lines that don't match are sent through unchanged.
     """
@@ -45,6 +45,7 @@ class RegexPrefixedLog:
         self.regex = regex
 
     def __getattr__(self, attr: str):
+        """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
     def readline(self, size: int = -1) -> str:
@@ -60,5 +61,5 @@ class RegexPrefixedLog:
         return l
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        """Satisfy pytype, even though the __getattr__ actually does the same thing"""
+        """Satisfy pytype, even though the __getattr__ actually does the same thing."""
         return self.file_obj.seek(offset, whence)

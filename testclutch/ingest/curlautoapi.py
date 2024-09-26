@@ -1,5 +1,4 @@
-"""API to access the curl autobuilds system
-"""
+"""API to access the curl autobuilds system."""
 
 import enum
 import html
@@ -64,6 +63,7 @@ class HTMLDirParser(html.parser.HTMLParser):
 
 
 class CurlAutoApi:
+    """API to access the curl autobuilds system."""
 
     def __init__(self):
         # This should delay a total of 5+10+20+40 seconds before aborting
@@ -75,7 +75,7 @@ class CurlAutoApi:
                 }
 
     def get_runs(self) -> list[str]:
-        """Returns info about all recent workflow runs"""
+        """Returns info about all recent workflow runs."""
         url = BASE_URL
         logging.debug('Retrieving index from %s', url)
         with self.http.get(url, headers=self._standard_headers()) as resp:

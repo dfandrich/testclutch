@@ -1,3 +1,5 @@
+"""Test gitcommitinfo."""
+
 import os
 import unittest
 from unittest import mock
@@ -10,6 +12,8 @@ DATADIR = 'data'
 
 
 class TestGitCommitInfo(unittest.TestCase):
+    """Test gitcommitinfo."""
+
     def setUp(self):
         super().setUp()
         self.maxDiff = 4000

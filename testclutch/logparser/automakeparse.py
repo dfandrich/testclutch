@@ -1,4 +1,4 @@
-"""Parses automake test logs files
+"""Parses automake test logs files.
 
 This is a simple format that is probably prone to false positives.
 

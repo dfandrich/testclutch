@@ -1,5 +1,4 @@
-"""Retrieve logs from Cirrus CI runs
-"""
+"""Retrieve logs from Cirrus CI runs."""
 
 import json
 import logging
@@ -292,6 +291,8 @@ fragment TaskNameChip_task on Task {
 
 
 class CirrusApi:
+    """Retrieve logs from Cirrus CI runs."""
+
     def __init__(self, checkurl: str, token: str):
         account, project = urls.get_project_name(checkurl)
         self.owner = account
@@ -308,7 +309,7 @@ class CirrusApi:
                 }
 
     def query_graphql(self, query: str, var: dict) -> dict:
-        """Send a GraphQL query to the server and return the raw Python data response"""
+        """Send a GraphQL query to the server and return the raw Python data response."""
         jsonreq = {'query': query,
                    'variables': var,
                    }
@@ -318,7 +319,7 @@ class CirrusApi:
         return json.loads(resp.text)
 
     def get_runs(self, branch: str) -> dict[str, Any]:
-        """Returns info about all recent workflow runs on Cirrus CI
+        """Returns info about all recent workflow runs on Cirrus CI.
 
         If branch is an empty string, no branch matching is performed.
         """

@@ -1,4 +1,4 @@
-"""Disk cache of log files
+"""Disk cache of log files.
 
 Transparently compresses and decompresses logs, if desired.
 """
@@ -19,12 +19,12 @@ CHARMAP = 'UTF-8'
 
 
 def create_dirs(subdir: str):
-    """Create any parent directories that don't exist"""
+    """Create any parent directories that don't exist."""
     os.makedirs(os.path.join(config.expand('log_cache_path'), subdir), exist_ok=True)
 
 
 def in_cache(fn: str) -> bool:
-    """Returns true if file exists in cache
+    """Return true if file exists in cache.
 
     The file may optionally be compressed.
     """
@@ -57,14 +57,13 @@ def open_cache_file(fn: str, mode: str = 'r'):
 
 
 def move_into_cache(from_file: str, to_file: str):
-    """Move a file directly into the cache
-    """
+    """Move a file directly into the cache."""
     to_path = os.path.join(config.expand('log_cache_path'), to_file)
     shutil.move(from_file, to_path)
 
 
 def move_into_cache_compressed(from_file: str, to_file: str):
-    """Compress a file and move it into the cache
+    """Compress a file and move it into the cache.
 
     Don't compress it if it's too small.
     """

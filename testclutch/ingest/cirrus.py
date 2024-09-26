@@ -1,4 +1,4 @@
-"""Ingest logs from Cirrus CI"""
+"""Ingest logs from Cirrus CI."""
 
 import datetime
 import logging
@@ -21,11 +21,13 @@ SANITIZE_PATH_RE = re.compile(r'[^-\w+!@#%^&()]')
 
 
 def sanitize_path(path: str) -> str:
-    """Convert the given URL path into one that is not too problematic to have on a filesystem"""
+    """Convert the given URL path into one that is not too problematic to have on a filesystem."""
     return SANITIZE_PATH_RE.sub('-', path)
 
 
 class CirrusIngestor:
+    """Ingest logs from Cirrus CI."""
+
     def __init__(self, repo: str, ds: Optional[db.Datastore], token: Optional[str],
                  overwrite: bool = False):
         # TODO: probably need account/project to be passed in, like Appveyor
@@ -82,7 +84,7 @@ class CirrusIngestor:
         self.ingest_run(run)
 
     def ingest_run(self, run: dict[str, Any]):
-        """Ingests not one log, but logs for one job"""
+        """Ingests not one log, but logs for one job."""
         build = run['data']['build']
         if not build:
             raise RuntimeError('Run ID is invalid')
@@ -156,7 +158,7 @@ class CirrusIngestor:
         return None
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """

@@ -1,4 +1,4 @@
-"""Debug program to summarize ingested logs"""
+"""Debug program to summarize ingested logs."""
 
 import contextlib
 import io
@@ -40,7 +40,7 @@ def summarize_totals(testcases: TestCases, details: bool = False) -> list[str]:
 
 
 def try_integer(val: str) -> Union[int, str]:
-    """Try to convert the value to an integer, but return string if it cannot
+    """Try to convert the value to an integer, but return string if it cannot.
 
     Use as a sort key function to sort numeric test names by numeric value and string
     test names alphabetically.  When sorting, members of the list must be either all ints or all

@@ -1,4 +1,4 @@
-"""Ingest logs from curl's autobuild system"""
+"""Ingest logs from curl's autobuild system."""
 
 import datetime
 import logging
@@ -30,7 +30,7 @@ RE_VALGRINDFAILED = re.compile(r'^(valgrind) ERROR')
 
 
 class MassagedLog(TextIO):
-    """Restore some missing spaces from logs
+    """Restore some missing spaces from logs.
 
     At some point in the data flow, leading spaces in log lines get removed in
     the curl autobuild logs.  This class restores them so that they can be
@@ -43,6 +43,7 @@ class MassagedLog(TextIO):
         self.file_obj = f
 
     def __getattr__(self, attr):
+        """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
     def readline(self) -> str:
@@ -55,6 +56,8 @@ class MassagedLog(TextIO):
 
 
 class CurlAutoIngestor:
+    """Ingest logs from curl's autobuild system."""
+
     def __init__(self, repo: str, ds: Optional[db.Datastore], overwrite: bool = False):
         self.repo = repo
         self.curlauto = curlautoapi.CurlAutoApi()
@@ -144,7 +147,7 @@ class CurlAutoIngestor:
             self.store_test_run(meta, testcases)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """

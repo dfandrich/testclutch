@@ -1,4 +1,4 @@
-"""Ingest logs from Circle CI
+"""Ingest logs from Circle CI.
 
 The pipeline ID in the URL of Circle CI log UI doesn't seem to be used in the API
 anywhere, and the build_num used there isn't visible in the UI.
@@ -52,7 +52,6 @@ RESOURCE_ARCH = {'arm-medium': 'aarch64',
                  'xlarge': 'x86_64',
                  '2xlarge': 'x86_64',
                  '2xlarge+': 'x86_64',
-                 'macos-x86-medium-gen2': 'x86_64',
                  'windows-medium': 'x86_64',
                  'windows-large': 'x86_64',
                  'windows-xlarge': 'x86_64',
@@ -61,12 +60,12 @@ RESOURCE_ARCH = {'arm-medium': 'aarch64',
 
 
 def sanitize_path(path: str) -> str:
-    """Convert the given URL path into one that is not too problematic to have on a filesystem"""
+    """Convert the given URL path into one that is not too problematic to have on a filesystem."""
     return SANITIZE_PATH_RE.sub('-', path)
 
 
 class MassagedLog(io.StringIO):
-    """Extract the log from the JSON input coming from the official log output URL
+    """Extract the log from the JSON input coming from the official log output URL.
 
     This URL truncates long logs, so it is not ideal.
     """
@@ -88,6 +87,8 @@ class MassagedLog(io.StringIO):
 
 
 class CircleIngestor:
+    """Ingest logs from Circle CI."""
+
     def __init__(self, repo: str, ds: Optional[db.Datastore], overwrite: bool = False):
         scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
         safe_path = sanitize_path(path)
@@ -101,15 +102,14 @@ class CircleIngestor:
         logcache.create_dirs(LOGSUBDIR)
 
     def _convert_time(self, timestamp: str) -> datetime.datetime:
-        """Converts a CircleCI time into a datetime object.
-        """
+        """Converts a CircleCI time into a datetime object."""
         if timestamp.find('.') >= 0:
             # This timestamp has subsecond resolution
             return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%S.%fZ%z')
         return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
 
     def ingest_a_run(self, build_num: int):
-        """Ingests not one log, but logs for one job"""
+        """Ingests not one log, but logs for one job."""
         logging.debug('Getting build %s', build_num)
         build = self.circle.get_run(build_num)
         build_num = build['build_num']
@@ -216,7 +216,7 @@ class CircleIngestor:
         logging.debug(f'{count} matching runs found, {skipped} skipped')
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """

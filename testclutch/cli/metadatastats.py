@@ -1,5 +1,4 @@
-"""Metadata statistics analysis
-"""
+"""Metadata statistics analysis."""
 
 import argparse
 import collections
@@ -102,7 +101,7 @@ MAYBE = '?'
 
 
 def _try_integer(val: str) -> Union[int, str]:
-    """Try to convert the value to a low-value 0-prefixed integer in string form
+    """Try to convert the value to a low-value 0-prefixed integer in string form.
 
     Returns raw string if it cannot. Use as a sort key function to sort numeric test names by
     numeric value and string test names alphabetically, allowing sorting mixed integers and strings.
@@ -114,6 +113,8 @@ def _try_integer(val: str) -> Union[int, str]:
 
 
 class MetadataStats:
+    """Find all unique name,value pairs since the given time."""
+
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
         assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
@@ -128,7 +129,8 @@ class MetadataStats:
 
 
 class MetadataAdjuster:
-    """Adjust metadata values by splitting them and/or transforming them with regular expressions"""
+    """Adjust metadata values by splitting them and transforming them with regular expressions."""
+
     def __init__(self, splits: dict[str, str], transforms: dict[str, list[tuple[str, str]]]):
         # Compile regular expressions so they're ready for use
         self.splits = {k: re.compile(v) for k, v in splits.items()}
@@ -136,11 +138,11 @@ class MetadataAdjuster:
                            for k, l in transforms.items()}
 
     def has_split(self, metaname: str) -> bool:
-        """Return True if this field would be split"""
+        """Return True if this field would be split."""
         return metaname in self.splits
 
     def split(self, metaname: str, value: str) -> list[str]:
-        """Transform a metadata value into multiple by splitting it on a regular expression
+        """Transform a metadata value into multiple by splitting it on a regular expression.
 
         Any blank values are removed.
         """
@@ -151,7 +153,7 @@ class MetadataAdjuster:
         return [value for value in splitvalues if value]
 
     def transform(self, metaname: str, value: str) -> str:
-        """Transform a metadata value by passing it through one or more regular expressions
+        """Transform a metadata value by passing it through one or more regular expressions.
 
         The value may end up empty, depending on the transformation.
         """
@@ -162,7 +164,7 @@ class MetadataAdjuster:
         return value
 
     def adjust(self, metaname: str, value: str) -> list[str]:
-        """Adjust metadata value by performing any splitting and transforming that was requested
+        """Adjust metadata value by performing any splitting and transforming that was requested.
 
         Any blank entries are removed.
 
@@ -174,6 +176,8 @@ class MetadataAdjuster:
 
 
 class FeatureMatrix:
+    """Retrieve metadata to build a job feature matrix of recent jobs."""
+
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
         assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
@@ -204,7 +208,7 @@ class FeatureMatrix:
         return self.analyzer.make_job_title(job)
 
     def load_all_meta(self):
-        """Read metadata for all jobs"""
+        """Read metadata for all jobs."""
         self.all_meta = []
         for job in self.all_unique_jobs():
             meta = self.get_uniquejob_meta(job)
@@ -214,7 +218,7 @@ class FeatureMatrix:
 
     def build_features(self, metas: Sequence[str], adjuster: MetadataAdjuster
                        ) -> list[tuple[str, str, Union[str, int]]]:
-        """Build a list of convolved features available in the tests
+        """Build a list of convolved features available in the tests.
 
         load_all_meta() must have been called first.
 
@@ -236,7 +240,7 @@ class FeatureMatrix:
 
 
 def idify(s: str) -> str:
-    """Make the given string valid as a double-quoted HTML id token
+    """Make the given string valid as a double-quoted HTML id token.
 
     Invalid characters are replaced with underscores, double quotes are replaced with an HTML entity
     and the whole string is prefixed with "test" to guarantee the first character is a letter.
@@ -246,6 +250,8 @@ def idify(s: str) -> str:
 
 
 class TestRunStats:
+    """Retrieve test results to calculate statistics about recent runs."""
+
     def __init__(self, ds: db.Datastore, repo: str, since: datetime.datetime):
         assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds
@@ -412,7 +418,7 @@ def output_test_run_stats_html(trstats: TestRunStats):
 
 
 def num_precision(n: float, p: int) -> int:
-    """Returns the number of digits of precision
+    """Returns the number of digits of precision.
 
     Given the number of decimal points to print p of the number n, return the number of digits
     for the floating point format operator. The intent is to display very small numbers without
@@ -505,13 +511,13 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
                 'runtestsduration', 'testformat', testformat)
             rundurations.append((testformat, smallest, largest, average))
         print_func('Longest test runs:')
-        for testformat, smallest, largest, average in rundurations:
+        for testformat, _, largest, _ in rundurations:
             print_func(f'{testformat}:', f'{largest / 1000000: .0f} sec.', indent=1)
         print_func('Shortest test runs:')
-        for testformat, smallest, largest, average in rundurations:
+        for testformat, smallest, _, _ in rundurations:
             print_func(f'{testformat}:', f'{smallest / 1000000: .0f} sec.', indent=1)
         print_func('Average test runs:')
-        for testformat, smallest, largest, average in rundurations:
+        for testformat, _, _, average in rundurations:
             print_func(f'{testformat}:', f'{average / 1000000: .0f} sec.', indent=1)
 
     print_func('Most number of unique tests attempted in one run by test format:')
@@ -585,7 +591,7 @@ def output_test_results_count_html(trstats: TestRunStats):
     anchors = set()  # keep track to avoid duplicates
 
     def print_html(test: str, code: str, count: int, urls: Sequence[str], title: bool = False):
-        """Print a row of data
+        """Print a row of data.
 
         urls[0] contains the title, not a URL, when title=True
         """

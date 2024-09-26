@@ -1,3 +1,5 @@
+"""Test automakeparse."""
+
 import os
 import unittest
 from typing import TextIO
@@ -11,6 +13,8 @@ DATADIR = 'data'
 
 
 class TestCurlParse(unittest.TestCase):
+    """Test automakeparse."""
+
     def setUp(self):
         super().setUp()
         self.maxDiff = 4000

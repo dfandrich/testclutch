@@ -1,5 +1,4 @@
-"""Retrieve logs from Azure Devops runs
-"""
+"""Retrieve logs from Azure Devops runs."""
 
 import datetime
 import json
@@ -29,6 +28,8 @@ MAX_RETRIEVED = 1000  # Don't ever retrieve more than this number
 
 
 class AzureApi:
+    """Retrieve logs from Azure Devops runs."""
+
     def __init__(self, organization: str, project: str):
         self.organization = organization
         self.project = project
@@ -41,7 +42,7 @@ class AzureApi:
                 }
 
     def get_builds(self, branch: Optional[str], hours: int) -> dict[str, Any]:
-        """Returns info about all recent builds"""
+        """Returns info about all recent builds."""
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
         url = LIST_BUILDS_URL.format(organization=self.organization, project=self.project)
         logging.debug('Retrieving builds from %s', url)
@@ -60,7 +61,7 @@ class AzureApi:
             return json.loads(resp.text)
 
     def get_build(self, build_id: int) -> dict[str, Any]:
-        """Returns info about a build"""
+        """Returns info about a build."""
         url = GET_BUILD_URL.format(organization=self.organization, project=self.project,
                                    build_id=build_id)
         logging.debug('Retrieving build from %s', url)
@@ -76,7 +77,7 @@ class AzureApi:
             return json.loads(resp.text)
 
     def get_build_timelines(self, build_id: int) -> dict[str, Any]:
-        """Returns timeline for a build"""
+        """Returns timeline for a build."""
         url = GET_BUILD_TIMELINES_URL.format(organization=self.organization, project=self.project,
                                              build_id=build_id)
         logging.debug('Retrieving build timeline from %s', url)

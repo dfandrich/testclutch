@@ -1,4 +1,4 @@
-"""Ingest logs from Azure"""
+"""Ingest logs from Azure."""
 
 import datetime
 import logging
@@ -24,6 +24,8 @@ SYSTEM_TASKS_RE = re.compile(r'^Initialize job$|^Initialize containers$|^Stop Co
 
 
 class AzureIngestor:
+    """Ingest logs from Azure."""
+
     def __init__(self, organization: str, project: str, repo: str, ds: Optional[db.Datastore],
                  overwrite: bool = False):
         self.organization = organization
@@ -97,7 +99,7 @@ class AzureIngestor:
         self.ingest_run(build)
 
     def ingest_run(self, build: dict[str, Any]):
-        """Ingests not one log, but logs for one job"""
+        """Ingests not one log, but logs for one job."""
         build_id = build['id']
         cimeta = {}
         cimeta['ciname'] = build['project']['name']
@@ -218,7 +220,7 @@ class AzureIngestor:
         return newfn
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """

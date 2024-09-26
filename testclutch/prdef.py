@@ -1,5 +1,4 @@
-"""Structures to hold PR data during analysis
-"""
+"""Structures to hold PR data during analysis."""
 
 import contextlib
 import fcntl
@@ -12,7 +11,8 @@ from testclutch import config
 
 @dataclass
 class FailedTest:
-    """Data about a failed test in a PR"""
+    """Data about a failed test in a PR."""
+
     uniquejob: str  # unique job name
     testname: str   # test name
     url: str        # URL to test logs
@@ -20,7 +20,8 @@ class FailedTest:
 
 @dataclass
 class FailingTest:
-    """Data about a flaky test in a CI job"""
+    """Data about a flaky test in a CI job."""
+
     uniquejob: str   # unique job name
     testname: str    # test name
     rate: float      # ratio of failed to attempted runs (for flaky tests)
@@ -28,11 +29,12 @@ class FailingTest:
 
 @dataclass
 class PRAnalysis:
-    """Analysis data for a PR
+    """Analysis data for a PR.
 
     This is persisted between invocations so individual job runs can be
     performed to obtain data for each origin.
     """
+
     num: int                                 # PR number
     checkrepo: str                           # source repository on which the PR is made
     start: int                               # epoch time when analysis started
@@ -44,12 +46,13 @@ class PRAnalysis:
 
 
 class PRAnalysisState:
+    """Class to persist the PR analysis data."""
 
     def __init__(self):
         self.statefile = None
 
     def read_state(self, wrlock: bool) -> dict[str, dict[int, PRAnalysis]]:
-        """Reads the persistent state of PRs being analyzed
+        """Read the persistent state of PRs being analyzed.
 
         Args:
             wrlock: True to obtain an exclusive lock on the state file, which must be later cleared
@@ -130,7 +133,7 @@ class PRAnalysisState:
 
 
 def upgrade_state():
-    """Debugging tool to upgrade a PRAnalysis to a newer version"""
+    """Debugging tool to upgrade a PRAnalysis to a newer version."""
     state = PRAnalysisState()
     pranalyses = state.read_state(True)
     for repo in pranalyses.values():

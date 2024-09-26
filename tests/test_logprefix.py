@@ -1,3 +1,5 @@
+"""Test logprefix."""
+
 import io
 import re
 import textwrap
@@ -9,6 +11,8 @@ from testclutch.ingest import logprefix   # noqa: I100
 
 
 class TestLogPrefix(unittest.TestCase):
+    """Test logprefix."""
+
     def test_fixedprefixed(self):
         infile = io.StringIO(textwrap.dedent("""\
             12345 First line

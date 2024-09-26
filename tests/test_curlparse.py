@@ -1,3 +1,5 @@
+"""Test curlparse."""
+
 import os
 import unittest
 from typing import TextIO
@@ -11,6 +13,8 @@ DATADIR = 'data'
 
 
 class TestParseUname(unittest.TestCase):
+    """Test curlparse.parse_uname."""
+
     def test_uname(self):
         self.assertDictEqual({
             'systemos': 'Linux',
@@ -271,6 +275,8 @@ class TestParseUname(unittest.TestCase):
 
 
 class TestCurlParse(unittest.TestCase):
+    """Test curlparse.parse_log_file."""
+
     def setUp(self):
         super().setUp()
         self.maxDiff = 4000

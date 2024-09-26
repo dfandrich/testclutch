@@ -1,4 +1,4 @@
-"""Augment build metadata with daily curl snapshot commit info
+"""Augment build metadata with daily curl snapshot commit info.
 
 The git commit at which daily builds are snapshotted is not available from the build logs.
 This extracts what information is available from a daily snapshot file and augments existing
@@ -31,6 +31,8 @@ DAILY_BUILDS_WITH_COMMIT_SQL = (
 
 
 class CurlDailyAugmenter:
+    """Augment build metadata with daily curl snapshot commit info."""
+
     def __init__(self, repo: str, ds: db.Datastore, dry_run: bool = False):
         assert ds.cur  # satisfy pytype that this isn't None
         self.repo = repo

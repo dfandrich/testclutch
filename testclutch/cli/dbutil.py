@@ -1,5 +1,4 @@
-"""Test program to manipulate the database
-"""
+"""Test program to manipulate the database."""
 
 import datetime
 import logging

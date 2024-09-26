@@ -1,3 +1,5 @@
+"""Test urls."""
+
 import unittest
 from dataclasses import dataclass
 
@@ -7,6 +9,8 @@ from testclutch import urls  # noqa: I100
 
 
 class TestUrls(unittest.TestCase):
+    """Test urls."""
+
     def test_get_generic_project_name(self):
         self.assertEqual(('user', 'project'),
                          urls.get_generic_project_name('https://github.com/user/project'))

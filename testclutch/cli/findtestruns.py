@@ -1,5 +1,4 @@
-"""Find test job runs where a particular test failed or succeeded.
-"""
+"""Find test job runs where a particular test failed or succeeded."""
 
 import argparse
 import datetime
@@ -25,6 +24,8 @@ RUNS_BY_TEST_STATUS_SQL = r'SELECT testresults.id, testruns.time, resulttext FRO
 
 
 class FindFailedRuns:
+    """Find test job runs where a particular test has a specific status."""
+
     def __init__(self, ds: db.Datastore):
         assert ds.db  # satisfy pytype that this isn't None
         self.ds = ds

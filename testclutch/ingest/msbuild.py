@@ -1,11 +1,10 @@
-"""Class to handle builds created by MSBuild
-"""
+"""Class to handle builds created by MSBuild."""
 
 from testclutch.filedef import TextIOReadline
 
 
 class MsBuildLog:
-    """Remove the indentation that msbuild adds to child output
+    """Remove the indentation that msbuild adds to child output.
 
     This issue mentions the indentation that is done and implies that there is no way to
     stop it (as of 2021, anyway):
@@ -19,11 +18,11 @@ class MsBuildLog:
         self.in_msbuild = False
 
     def __getattr__(self, attr: str):
-        """Send everything else to the embedded file"""
+        """Send everything else to the embedded file."""
         return getattr(self.file_obj, attr)
 
     def seek(self, offset: int, whence: int = 0):
-        """Capture to seek to reset the state"""
+        """Capture to seek to reset the state."""
         if offset == 0 and whence < 16:
             # Stream is starting again from (near) the beginning
             self.in_msbuild = False

@@ -1,5 +1,4 @@
-"""Generate analysis summary of test data.
-"""
+"""Generate analysis summary of test data."""
 
 import argparse
 import logging

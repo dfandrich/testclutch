@@ -1,5 +1,4 @@
-"""Perform analysis of tests run on a pull request
-"""
+"""Perform analysis of tests run on a pull request."""
 
 import argparse
 import collections
@@ -42,7 +41,7 @@ MAX_NOTIFIED_PER_ORIGIN = 7
 
 
 class PRStatus(enum.IntEnum):
-    """Status of CI jobs for a PR
+    """Status of CI jobs for a PR.
 
     These are in numerical order where higher-numbered statuses override lower-numbered one.
     """
@@ -414,7 +413,7 @@ def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -
 
 
 class GHAPRReady:
-    """Class to determine if CI jobs for PRs have completed"""
+    """Class to determine if CI jobs for PRs have completed."""
 
     def __init__(self, args: argparse.Namespace):
         if urls.url_host(args.checkrepo) != 'github.com':
@@ -425,7 +424,7 @@ class GHAPRReady:
         self.gh = ghaapi.GithubApi(owner, project, gha.read_token(args.authfile))
 
     def get_ready_prs(self, authors: Container[str]) -> list[int]:
-        """Return recent PRs that have not been closed"""
+        """Return recent PRs that have not been closed."""
         pulls = self.gh.get_pulls('open')
         pr_recency = self.args.oldest if self.args.oldest else config.get('pr_ready_age_hours_max')
         recent = (datetime.datetime.now(tz=datetime.timezone.utc)
@@ -489,14 +488,11 @@ class GHAPRReady:
         return ret
 
     def check_gha_pr_states(self, prs: list[int]) -> list[tuple[int, PRStatus]]:
-        states = []
-        for pr in prs:
-            states.append((pr, self.check_gha_pr_state(pr)))
-        return states
+        return [(pr, self.check_gha_pr_state(pr)) for pr in prs]
 
 
 def dedentnonl(text: str) -> str:
-    """Remove leading space like dedent() then replace any \n with a space
+    r"""Remove leading space like dedent() then replace any \n with a space.
 
     This is useful when generating Markdown for GitHub comments, which, unlike other Markdown
     parsers, treats each \n as an actual end of line, not just two \n in a row.
@@ -505,7 +501,7 @@ def dedentnonl(text: str) -> str:
 
 
 class GatherPRAnalysis:
-    """Class for gathering data to analyze and comment on a PR"""
+    """Class for gathering data to analyze and comment on a PR."""
 
     def __init__(self, ds: db.Datastore, args: argparse.Namespace):
         self.ds = ds
@@ -513,7 +509,7 @@ class GatherPRAnalysis:
         self.analysisstate = prdef.PRAnalysisState()
 
     def read_analyses(self, lock: bool) -> dict[int, prdef.PRAnalysis]:
-        """Return the analyses so far for this repo
+        """Return the analyses so far for this repo.
 
         Args:
             lock: True if the analysis data may be written later; this adds an exclusive lock
@@ -552,7 +548,7 @@ class GatherPRAnalysis:
         return (None, '')
 
     def gather_analysis(self, prs: list[int]) -> int:
-        """Gather information needed to analyze one or more PRs"""
+        """Gather information needed to analyze one or more PRs."""
         pranalyses = self.read_analyses(True)  # lock for writing
         origin = self.args.origin
 
@@ -693,14 +689,14 @@ class GatherPRAnalysis:
         return failed_tests
 
     def all_origins(self) -> set[str]:
-        """Returns the set of all origins to check before commenting"""
+        """Returns the set of all origins to check before commenting."""
         origins = config.get('pr_comment_origins')
         if not origins:
             origins = set(argparsing.KNOWN_ORIGINS)
         return origins
 
     def comment(self, prs: list[int]) -> int:
-        """Comment on a PR"""
+        """Comment on a PR."""
         if not self.args.dry_run:
             owner, project = urls.get_generic_project_name(self.args.checkrepo)
             gh = ghaapi.GithubApi(owner, project, gha.read_token(self.args.authfile))
@@ -761,7 +757,7 @@ class GatherPRAnalysis:
         return PRStatus.READY
 
     def compose_text(self, analysis: prdef.PRAnalysis) -> str:
-        """Compose text for a comment about a PR
+        """Compose text for a comment about a PR.
 
         Text is in MarkDown format.
         """

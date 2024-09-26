@@ -1,10 +1,12 @@
-"""Test case data"""
+"""Test case data."""
 
 from enum import IntEnum
 
 
 # These are stored directly in the database
 class TestResult(IntEnum):
+    """Enumeration of all possible results of a test."""
+
     UNKNOWN = 0     # test result is not known
     PASS = 1        # test succeeded
     FAIL = 2        # test failed

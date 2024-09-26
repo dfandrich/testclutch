@@ -1,3 +1,5 @@
+"""Test msbuild."""
+
 import io
 import textwrap
 import unittest
@@ -8,6 +10,8 @@ from testclutch.ingest import msbuild   # noqa: I100
 
 
 class TestMsBuildLog(unittest.TestCase):
+    """Test msbuild."""
+
     def test_msbuildlog(self):
         infile = io.StringIO(textwrap.dedent("""\
             First line

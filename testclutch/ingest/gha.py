@@ -1,4 +1,4 @@
-"""Ingest logs from GitHub Actions
+"""Ingest logs from GitHub Actions.
 
 GitHub API docs are at https://docs.github.com/en/rest?apiVersion=2022-11-28
 """
@@ -52,7 +52,7 @@ def file_ext_from_type(content_type: str) -> str:
 
 
 def read_token(authfile: Optional[str]) -> Optional[str]:
-    """Read the authorization token supplied in the file"""
+    """Read the authorization token supplied in the file."""
     if not authfile:
         return None
     with open(authfile) as tokfile:
@@ -60,6 +60,8 @@ def read_token(authfile: Optional[str]) -> Optional[str]:
 
 
 class GithubIngestor:
+    """Ingest logs from GitHub Actions."""
+
     def __init__(self, owner: str, repo: str, token: str, ds: Optional[db.Datastore],
                  overwrite: bool = False):
         self.owner = owner
@@ -171,7 +173,7 @@ class GithubIngestor:
         return newfn
 
     def sanitize_log_fn(self, fn: str) -> str:
-        """Sanitize the log file name for storing in a zip file, like GHA does"""
+        """Sanitize the log file name for storing in a zip file, like GHA does."""
         if not KNOWN_LOG_FN_RE.search(fn):
             # If this triggers, we might possibly need to to more sanitization
             logging.error('Possible internal inconsistency: check what GHA does on '
@@ -179,7 +181,7 @@ class GithubIngestor:
         return STRIP_LOG_FN_RE.sub('', fn)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """
@@ -209,7 +211,7 @@ class GithubIngestor:
         return {}
 
     def find_job(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
-        """Find the right job step in the GHA job info for this job"""
+        """Find the right job step in the GHA job info for this job."""
         workflow_name = meta['ciname']
         job_name = meta['cijob']
 

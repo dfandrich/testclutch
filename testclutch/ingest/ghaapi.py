@@ -1,4 +1,4 @@
-"""Retrieve logs from GitHub Actions runs
+"""Retrieve logs from GitHub Actions runs.
 
 The token must be created from the GitHub personal settings "Developer Settings" menu as a
 fine-grained personal access token. It can be set for only public repositories and does not need any
@@ -44,7 +44,7 @@ TIME_WITH_ZONE_RE = re.compile(r'^.{19}.*[-+]')
 
 
 def convert_time(timestamp: str) -> datetime.datetime:
-    """Converts a GitHub time into a datetime object.
+    """Convert a GitHub time into a datetime object.
 
     There seem to be three kinds of time formats used:
         2023-07-24T15:16:01.000-07:00
@@ -62,6 +62,8 @@ def convert_time(timestamp: str) -> datetime.datetime:
 
 
 class GithubApi:
+    """Retrieve logs from GitHub Actions runs."""
+
     def __init__(self, owner: str, repo: str, token: Optional[str]):
         self.owner = owner
         self.repo = repo
@@ -95,7 +97,7 @@ class GithubApi:
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
                              params: Optional[dict[str, str]] = None
                              ) -> Union[dict[str, Any], list[Any]]:
-        """Perform a paged HTTP get, combining all paged results in array
+        """Perform a paged HTTP get, combining all paged results in array.
 
         The JSON response must have at least one array member if a dict, the last of which will be
         used as the signal for completed paging when it is empty. The JSON response may also be a
@@ -151,7 +153,7 @@ class GithubApi:
 
     def get_runs(self, branch: Optional[str] = None, since: Optional[datetime.datetime] = None
                  ) -> dict[str, Any]:
-        """Returns info about all recent workflow runs on GitHub Actions"""
+        """Returns info about all recent workflow runs on GitHub Actions."""
         url = BASE_URL.format(owner=self.owner, repo=self.repo, endpoint='runs')
         params = {'status': 'completed'}
         if branch:
@@ -169,14 +171,14 @@ class GithubApi:
         return result
 
     def get_run(self, run_id: int) -> dict[str, Any]:
-        """Returns info about a single workflow run on GitHub Actions"""
+        """Returns info about a single workflow run on GitHub Actions."""
         url = RUN_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         resp = self.http.get(url, headers=self._standard_headers())
         resp.raise_for_status()
         return json.loads(resp.text)
 
     def get_jobs(self, run_id: int) -> dict[str, Any]:
-        """Returns info about the jobs in a workflow run on GitHub Actions"""
+        """Returns info about the jobs in a workflow run on GitHub Actions."""
         url = JOBS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
         result = self._http_get_paged_json(url, headers=self._standard_headers())
         assert isinstance(result, dict)
@@ -188,7 +190,7 @@ class GithubApi:
             return netreq.download_file(resp, url)
 
     def get_pulls(self, state: str) -> list[Any]:
-        """Returns info about pull requests"""
+        """Returns info about pull requests."""
         url = PULLS_URL.format(owner=self.owner, repo=self.repo)
         params = {'state': state}
         result = self._http_get_paged_json(url, headers=self._standard_headers(), params=params)
@@ -196,21 +198,21 @@ class GithubApi:
         return result
 
     def get_pull(self, pr: int) -> dict[str, Any]:
-        """Returns info about a pull request on GitHub Actions"""
+        """Returns info about a pull request on GitHub Actions."""
         url = PULL_URL.format(owner=self.owner, repo=self.repo, pull_number=pr)
         resp = self.http.get(url, headers=self._standard_headers())
         resp.raise_for_status()
         return json.loads(resp.text)
 
     def get_commit_status(self, commit: str) -> dict[str, Any]:
-        """Returns the status of checks on a commit"""
+        """Returns the status of checks on a commit."""
         url = COMMITS_URL.format(owner=self.owner, repo=self.repo, commit_id=commit)
         result = self._http_get_paged_json(url, headers=self._standard_headers())
         assert isinstance(result, dict)
         return result
 
     def get_check_runs(self, commit: str) -> dict[str, Any]:
-        """Returns the check runs on a commit
+        """Returns the check runs on a commit.
 
         This requires one of the following fine-grained token permissions:
             "Checks" repository permissions (read)
@@ -221,7 +223,7 @@ class GithubApi:
         return result
 
     def create_comment(self, issue_id: int, comment: str) -> dict[str, Any]:
-        """Creates a comment on a GitHub issue or pull request
+        """Creates a comment on a GitHub issue or pull request.
 
         This requires one of the following fine-grained token permissions:
             "Issues" repository permissions (write)

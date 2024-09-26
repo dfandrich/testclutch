@@ -1,4 +1,4 @@
-"""Augment short git hashes to make them full
+"""Augment short git hashes to make them full.
 
 This can currently happen for origin=curlauto builds, but the code doesn't discriminate.
 """
@@ -29,6 +29,8 @@ UPDATE_HASH_SQL = r"UPDATE testrunmeta SET value = ? WHERE id = ? AND name = 'co
 
 
 class GitHashAugmenter:
+    """Augment short git hashes to make them full."""
+
     def __init__(self, repo: str, ds: db.Datastore, dry_run: bool = False):
         self.repo = repo
         assert ds and ds.cur and ds.db  # satisfy pytype that these aren't None

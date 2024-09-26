@@ -1,4 +1,4 @@
-"""Parses pytest test log files
+"""Parses pytest test log files.
 
 The test is expected to have been run with the "-r ap" (or "-r A") option to get the test summary
 at the end.
@@ -52,7 +52,7 @@ PLAT_DEFAULT_RE = re.compile(r'^(?P<system>[^-]+)-(?P<release>.+?)(-(?P<mach>[^-
 
 
 def parse_platform(platform: str) -> TestMetaStr:
-    """Parse the output of Python's 'platform.platform()'
+    """Parse the output of Python's 'platform.platform()'.
 
     This is explicitly not intended for parsing, but that's the easiest string to obtain in pytest
     output. This means it will be a bit brittle against future changes.

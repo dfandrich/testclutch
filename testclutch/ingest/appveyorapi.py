@@ -1,5 +1,4 @@
-"""Retrieve logs from Appveyor runs
-"""
+"""Retrieve logs from Appveyor runs."""
 
 import json
 import logging
@@ -23,6 +22,8 @@ CHUNK_SIZE = 0x10000
 
 
 class AppveyorApi:
+    """Retrieve logs from Appveyor runs."""
+
     def __init__(self, account: str, project: str, token: Optional[str]):
         self.account = account
         self.project = project
@@ -36,7 +37,7 @@ class AppveyorApi:
                 }
 
     def get_runs(self, branch: str) -> dict[str, Any]:
-        """Returns info about all recent workflow runs on Appveyor"""
+        """Returns info about all recent workflow runs on Appveyor."""
         # TODO: add date checking to break off pagination early
         combined_resp = {'builds': []}
         last_resp = None
@@ -60,7 +61,7 @@ class AppveyorApi:
         return combined_resp
 
     def get_run(self, build_id: int) -> dict[str, Any]:
-        """Returns info about a single run on Appveyor"""
+        """Returns info about a single run on Appveyor."""
         url = RUNS_URL.format(account=self.account, project=self.project)
         params = {
             # This API is intended for pagination, so it starts listing # builds EARLIER than
@@ -81,7 +82,7 @@ class AppveyorApi:
         return self.get_run_by_buildver(build['version'])
 
     def get_run_by_buildver(self, build_ver: str) -> dict[str, Any]:
-        """Returns info about a single run on Appveyor
+        """Returns info about a single run on Appveyor.
 
         This one is more efficient than get_run() but requires the build version which isn't as
         convenient to find as build_id.
@@ -94,7 +95,7 @@ class AppveyorApi:
             return json.loads(resp.text)
 
     def get_logs(self, job_id: str) -> tuple[str, str]:
-        """Retrieve log file for a job"""
+        """Retrieve log file for a job."""
         url = LOG_URL.format(job_id=job_id)
         params = {'fullLog': 'true'
                   }

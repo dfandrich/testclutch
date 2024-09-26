@@ -1,5 +1,4 @@
-"""Code to perform analysis of test data.
-"""
+"""Code to perform analysis of test data."""
 
 import collections
 import datetime
@@ -39,7 +38,8 @@ assert (config.get('flaky_builds_min')
 
 @dataclass
 class TestJobInfo:
-    """Information about a test job"""
+    """Information about a test job."""
+
     testid: int   # testid (a.k.a. test run record ID in the database)
     jobtime: int  # timestamp of job
     failed_tests: list[str]      # list of failed test names
@@ -66,7 +66,7 @@ class ResultsOverTimeByUniqueJob:
 
     @staticmethod
     def make_global_unique_job(meta: TestMeta) -> str:
-        """Create a unique job name from the available metadata
+        """Create a unique job name from the available metadata.
 
         This is the concatenation of: account,repo,origin,uniquejobname
         It is used as a key to get info on a unique job name.
@@ -74,7 +74,7 @@ class ResultsOverTimeByUniqueJob:
         return ','.join((meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname']))
 
     def check_aborted(self, meta: TestMeta) -> bool:
-        """Check if the CI metadata indicates an aborted test run"""
+        """Check if the CI metadata indicates an aborted test run."""
         if meta['origin'] == 'azure' and meta.get('cistepresult', '') == 'canceled':
             return True
         if meta['origin'] == 'circle' and meta.get('cistepresult', '') == 'timedout':
@@ -93,7 +93,7 @@ class ResultsOverTimeByUniqueJob:
         return False
 
     def find_first_failing_job(self, testname: str, num_fails: int) -> Optional[TestJobInfo]:
-        """First test run that started failing
+        """First test run that started failing.
 
         num_fails is the index into self.all_jobs_status of the entry prior to the
         first one that failed.
@@ -137,7 +137,7 @@ class ResultsOverTimeByUniqueJob:
         return last_good
 
     def load_unique_job(self, unique: str, from_time: int, to_time: int):
-        """Load tests for the unique job name"""
+        """Load tests for the unique job name."""
         self.ds.cur.execute(RUNS_BY_UNIQUE_JOB_SQL, (unique, self.repo, from_time, to_time))
         testids = self.ds.cur.fetchall()
         self.all_jobs_status = []
@@ -183,7 +183,7 @@ class ResultsOverTimeByUniqueJob:
 
     def find_commit_range(self, last_good: TestJobInfo, first_fail: TestJobInfo
                           ) -> tuple[CommitInfo, int]:
-        """Walk the commit chain to find all the commits in a range"""
+        """Walk the commit chain to find all the commits in a range."""
         logging.debug('Looking up commits before %s', last_good.commit)
         branch = config.expand('branch')
         commits = self.ds.select_all_commit_after_commit(
@@ -202,7 +202,7 @@ class ResultsOverTimeByUniqueJob:
         return (first_bad, commit_range)
 
     def recent_failed_link(self, testname: str) -> str:
-        """Find a link for the most recent test failure for this test"""
+        """Find a link for the most recent test failure for this test."""
         for job_status in self.all_jobs_status:
             if testname in job_status.failed_tests:
                 if job_status.url:
@@ -241,7 +241,7 @@ class ResultsOverTimeByUniqueJob:
         return msg
 
     def analyze_by_unique_job(self, globaluniquejob: str):
-        """Analyze a unique job series
+        """Analyze a unique job series.
 
         globaluniquejob is the concatenation of metadata fields:
           account,repo,origin,uniquejobname
@@ -288,7 +288,7 @@ class ResultsOverTimeByUniqueJob:
         print()
 
     def all_unique_jobs(self, repo: str, from_time: int) -> list[str]:
-        """Return all recent unique job IDs
+        """Return all recent unique job IDs.
 
         These are the concatenation of: account,repo,origin,uniquejobname
         """
@@ -297,14 +297,14 @@ class ResultsOverTimeByUniqueJob:
         return [row[0] for row in uniquejobs.fetchall()]
 
     def analyze_all_by_unique_job(self, repo: str):
-        """Look for consistent failures for all unique job names"""
+        """Look for consistent failures for all unique job names."""
         now = datetime.datetime.now(datetime.timezone.utc)
         from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
         for globalunique in self.all_unique_jobs(repo, from_time):
             self.analyze_by_unique_job(globalunique)
 
     def show_job_failure_table(self, repo: str):
-        """Create a table showing failures in jobs"""
+        """Create a table showing failures in jobs."""
         now = datetime.datetime.now(datetime.timezone.utc)
         print(textwrap.dedent("""\
             <!DOCTYPE html>
@@ -358,7 +358,7 @@ class ResultsOverTimeByUniqueJob:
 
     def prepare_uniquejob_analysis(self, globaluniquejob: str
                                    ) -> tuple[list[tuple[str, float]], TestFailCount]:
-        """Perform the bulk of the analysis work of a uniquejob
+        """Perform the bulk of the analysis work of a uniquejob.
 
         Args:
             globaluniquejob: globally-unique job ID to analyze
@@ -399,7 +399,7 @@ class ResultsOverTimeByUniqueJob:
         return (flaky, recent_failures)
 
     def get_permafails(self, current_failure_counts: dict[str, int]) -> list[str]:
-        """Return list of permafailing tests for this job
+        """Return list of permafailing tests for this job.
 
         The list includes failed tests even if the overall CI job was marked as "success", so the
         if the caller is not interested in them it must check the CI job status.
@@ -536,7 +536,7 @@ class ResultsOverTimeByUniqueJob:
         # print('</div>')
 
     def _count_consecutive_failures(self) -> list[collections.Counter[str]]:
-        """Count consecutive failures of all tests for all jobs
+        """Count consecutive failures of all tests for all jobs.
 
         Loops from the end of the list to the beginning so it counts as
         it goes.
@@ -563,14 +563,14 @@ class ResultsOverTimeByUniqueJob:
         return result
 
     def find_uniquejob_failures(self) -> dict[str, int]:
-        """Count the total failures in the current uniquejob by test name"""
+        """Count the total failures in the current uniquejob by test name."""
         counts = collections.Counter()
         for job_status in self.all_jobs_status:
             counts += collections.Counter(set(job_status.failed_tests))
         return counts
 
     def find_uniquejob_consecutive_failures(self) -> list[TestFailCount]:
-        """Analyze the current uniquejob for consistent failures over time
+        """Analyze the current uniquejob for consistent failures over time.
 
         Must have called load_unique_job() beforehand.
         Returns a list of failures in a row per test, by run
@@ -584,18 +584,17 @@ class ResultsOverTimeByUniqueJob:
         return result
 
     def find_uniquejob_successes(self, num_builds: int) -> set[str]:
-        """Returns the set of tests that succeeded at least once
+        """Return the set of tests that succeeded at least once.
 
         num_builds is the number of recent builds to look at.
         """
         any_successes = set()
-        for i, job_status in enumerate(self.all_jobs_status[:num_builds]):
+        for _, job_status in enumerate(self.all_jobs_status[:num_builds]):
             any_successes |= frozenset(job_status.successful_tests)
         return any_successes
 
     def find_uniquejob_attempts(self) -> dict[str, int]:
-        """Returns the count of number of test attempts per test
-        """
+        """Return the count of number of test attempts per test."""
         counts = collections.Counter()
         for job_status in self.all_jobs_status:
             counts += collections.Counter(set(job_status.attempted_tests))
@@ -603,8 +602,7 @@ class ResultsOverTimeByUniqueJob:
 
     def detect_flaky_tests(self, unique_failures: list[TestFailCount],
                            successes: set[str]) -> list[tuple[str, float]]:
-        """Detects flaky tests in all the builds for one unique job
-        """
+        """Detect flaky tests in all the builds for one unique job."""
         if len(unique_failures) < config.get('flaky_builds_min'):
             logging.info('Not enough data to perform flakiness analysis')
             return []
@@ -612,7 +610,7 @@ class ResultsOverTimeByUniqueJob:
         # Set of all test names that had at least one failure in this unique job
         any_failed = {testname
                       for recid, jobtime, failure_counts in unique_failures
-                      for testname in failure_counts.keys()}
+                      for testname in failure_counts}
 
         # Track the number of times each test started to fail
         fail_changes = {}
@@ -636,8 +634,6 @@ class ResultsOverTimeByUniqueJob:
         test_attempt_counts = self.find_uniquejob_attempts()
         test_fail_counts = self.find_uniquejob_failures()
         flaky_tests.sort(key=summarize.try_integer)
-        flaky_rates = []
-        for flake in flaky_tests:
-            # Calculate the ratio of failures to attempts
-            flaky_rates.append((flake, test_fail_counts[flake] / test_attempt_counts[flake]))
-        return flaky_rates
+        # Calculate the ratio of failures to attempts
+        return [(flake, test_fail_counts[flake] / test_attempt_counts[flake])
+                for flake in flaky_tests]

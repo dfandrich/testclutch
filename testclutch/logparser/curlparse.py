@@ -1,6 +1,4 @@
-"""Parses curl test log files
-
-"""
+"""Parses curl test log files."""
 
 import datetime
 import logging
@@ -129,7 +127,7 @@ LINUX_YEAR_RE = re.compile(r'^(20\d\d)|(199\d)|(1970)$')
 
 
 def escs(s: str) -> str:
-    """Escape non-ascii characters in a string
+    """Escape non-ascii characters in a string.
 
     This makes it safer to display by avoiding invalid UTF-8 and ANSI escape sequences.
     """
@@ -137,12 +135,12 @@ def escs(s: str) -> str:
 
 
 def strip0(n: str) -> str:
-    """Strip leading zeros in a string integer"""
+    """Strip leading zeros in a string integer."""
     return str(int(n))
 
 
 def check_found_result(testcases: TestCases):
-    """Check if a missing test result was found
+    """Check if a missing test result was found.
 
     It can happen that an expected test result line is not found, usually due to an unexpected
     line appearing instead (like a verbose log output line, or postcheck failure or similar.
@@ -161,7 +159,7 @@ def check_found_result(testcases: TestCases):
 
 
 def parse_uname(uname: str) -> TestMetaStr:
-    """Parse the output of 'uname -a' from many OSes for relevant data"""
+    """Parse the output of 'uname -a' from many OSes for relevant data."""
     meta = {}
 
     # This one treats multiple spaces as one separator (needed on Linux, NetBSD

@@ -1,4 +1,4 @@
-"""Ingest logs from Appveyor"""
+"""Ingest logs from Appveyor."""
 
 import datetime
 import logging
@@ -22,6 +22,8 @@ AV_TIME_RE = re.compile(r'^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(\.\d{1,7})([-+]\d\d)
 
 
 class AppveyorIngestor:
+    """Ingest logs from Appveyor."""
+
     def __init__(self, account: str, project: str, repo: str, ds: Optional[db.Datastore],
                  token: Optional[str], overwrite: bool = False):
         self.account = account
@@ -59,7 +61,7 @@ class AppveyorIngestor:
                                           '%Y-%m-%dT%H:%M:%S.%f%z')
 
     def ingest_run(self, run: dict[str, Any]):
-        """Ingests not one log, but logs for one job"""
+        """Ingests not one log, but logs for one job."""
         project = run['project']
         build = run['build']
         build_id = build['buildId']
@@ -134,7 +136,7 @@ class AppveyorIngestor:
         return newfn
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store the data about one test
+        """Store the data about one test.
 
         This method may be overridden to do something other than storing.
         """

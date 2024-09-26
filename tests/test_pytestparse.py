@@ -1,3 +1,5 @@
+"""Test pytestparse."""
+
 import os
 import unittest
 from typing import TextIO
@@ -11,6 +13,8 @@ DATADIR = 'data'
 
 
 class TestParsePlatform(unittest.TestCase):
+    """Test pytestparse.parse_platform."""
+
     def test_platform_linux(self):
         self.assertDictEqual({
             'systemos': 'Linux',
@@ -176,7 +180,9 @@ class TestParsePlatform(unittest.TestCase):
         }, pytestparse.parse_platform('Fiwix-1.5.0-i386-32bit-ELF'))
 
 
-class TestCurlParse(unittest.TestCase):
+class TestPytestParse(unittest.TestCase):
+    """Test pytestparse.parse_log_file and pytestparse.parse_log_file_summary."""
+
     def setUp(self):
         super().setUp()
         self.maxDiff = 4000

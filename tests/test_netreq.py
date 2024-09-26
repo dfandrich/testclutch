@@ -1,3 +1,5 @@
+"""Test netreq."""
+
 import time
 import unittest
 
@@ -7,7 +9,7 @@ from testclutch import netreq  # noqa: I100
 
 
 class RaiseFirst:
-    """Raise an exception on the first call, then succeed on subsequent calls"""
+    """Raise an exception on the first call, then succeed on subsequent calls."""
     def __init__(self):
         self.count = 0
 
@@ -19,6 +21,8 @@ class RaiseFirst:
 
 
 class TestNetreq(unittest.TestCase):
+    """Test netreq."""
+
     def test_retry_on_exception(self):
         # no exception
         result = netreq.retry_on_exception(lambda: 'OK', RuntimeError)

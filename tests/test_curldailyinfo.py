@@ -1,3 +1,5 @@
+"""Test curldailyinfo."""
+
 import datetime
 import os
 import unittest
@@ -10,6 +12,8 @@ DATADIR = 'data'
 
 
 class TestCurlDailyInfo(unittest.TestCase):
+    """Test curldailyinfo."""
+
     def setUp(self):
         super().setUp()
         self.maxDiff = 4000

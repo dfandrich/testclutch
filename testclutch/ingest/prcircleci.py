@@ -1,5 +1,4 @@
-"""Code to get GitHub pull request logs from results on Circle CI
-"""
+"""Code to get GitHub pull request logs from results on Circle CI."""
 
 import logging
 
@@ -9,7 +8,7 @@ from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class CircleAnalyzer(circleci.CircleIngestor):
-    """Circle PR log analyzer
+    """Circle PR log analyzer.
 
     Based on CircleIngestor but with the store method replaced to store log data instead
     and methods to retrieve by PR.
@@ -19,14 +18,14 @@ class CircleAnalyzer(circleci.CircleIngestor):
         self.test_results = []  # type: list[ParsedLog]
 
     def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
-        """Store test results in a list
+        """Store test results in a list.
 
         This overrides the method in the base class.
         """
         self.test_results.append((logmeta, testcases))
 
     def _find_for_pr(self, pr: int) -> list[int]:
-        """Find runs for the given PR
+        """Find runs for the given PR.
 
         Only return runs for the most recent commit, if there were runs for more than one.
         """

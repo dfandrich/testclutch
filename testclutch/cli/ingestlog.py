@@ -1,5 +1,4 @@
-"""Ingests a curl test log file into the database
-"""
+"""Ingests a curl test log file into the database."""
 
 import argparse
 import logging
@@ -176,7 +175,7 @@ def curlauto_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datast
 
 
 def parse_meta(args: argparse.Namespace) -> dict:
-    """Parse the --meta option(s) to produce a dict"""
+    """Parse the --meta option(s) to produce a dict."""
     meta = {}
     if args.meta:
         for metaval in args.meta:

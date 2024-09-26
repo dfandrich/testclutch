@@ -1,5 +1,4 @@
-"""Extract information from curl daily tar balls
-"""
+"""Extract information from curl daily tar balls."""
 
 import datetime
 import io
@@ -34,7 +33,7 @@ BUILDER_TZ = '+0200'
 
 
 def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
-    """Get the exact time & commit when the daily tarball was generated
+    """Get the exact time & commit when the daily tarball was generated.
 
     Also, the daily date is not (necessarily) the date of availability at GitHub, which can be
     much longer if the user takes his time to upload it. It is only an upper bound on the commit

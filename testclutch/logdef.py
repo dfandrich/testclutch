@@ -1,5 +1,4 @@
-"""Type definitions of parsed logs
-"""
+"""Type definitions of parsed logs."""
 
 from dataclasses import dataclass
 from typing import Union
@@ -9,6 +8,8 @@ from testclutch.testcasedef import TestResult
 
 @dataclass
 class SingleTestFinding:
+    """Class to hold the result of a single run of a single test."""
+
     name: str           # test name
     result: TestResult  # test result
     reason: str         # reason for result (if any)

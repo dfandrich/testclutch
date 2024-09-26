@@ -1,5 +1,4 @@
-"""Get commit information from a git repository
-"""
+"""Ingest commit information from a git repository."""
 
 import argparse
 import logging
@@ -14,13 +13,15 @@ from testclutch.gitdef import CommitInfo
 
 
 class GitCommitIngestor:
+    """Ingest commit information from a git repository."""
+
     def __init__(self, repo: str, ds: Optional[db.Datastore]):
         self.repo = repo
         self.ds = ds
         self.dry_run = ds is None
 
     def extract_git_commit_info(self, repo: str, branch: str, since: str) -> list[CommitInfo]:
-        """Returns information about git commits"""
+        """Returns information about git commits."""
         try:
             # git nowadays has -C to select the repo to use, but this way works with
             # much older versions

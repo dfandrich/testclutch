@@ -1,4 +1,4 @@
-"""Common URL manipulation functions
+"""Common URL manipulation functions.
 
 This contains functions relating to source repositories but not CI services.
 """
@@ -10,7 +10,7 @@ from typing import NamedTuple, Union
 
 
 def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
-    """Returns the source code owner and project to use for a CI system
+    """Return the source code owner and project to use for a CI system.
 
     This extracts them only from the source repository URL.  This currently supports GitHub URLs and
     others with a similar format (like GitLab).
@@ -25,7 +25,7 @@ def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
 
 
 def get_project_name(args: Union[str, NamedTuple]) -> tuple[str, str]:
-    """Returns the source code owner and project to use for a CI system
+    """Return the source code owner and project to use for a CI system.
 
     This extracts them from the source repository URL, unless they are overridden by command-line
     arguments. This currently supports GitHub URLs and others with a similar format (like GitLab).
@@ -56,14 +56,14 @@ def get_project_name(args: Union[str, NamedTuple]) -> tuple[str, str]:
 
 
 def url_host(url: str) -> str:
-    """Return the host component of the URL"""
+    """Return the host component of the URL."""
     _, netloc, _, _, _ = urllib.parse.urlsplit(url)
     assert isinstance(netloc, str)  # pytype is confused about this
     return netloc.casefold()
 
 
 def url_pr(url: str) -> int:
-    """Extracts the PR number from a GitHub URL
+    """Extract the PR number from a GitHub URL.
 
     Returns 0 in case of invalid URL or one not containing a PR number
     """

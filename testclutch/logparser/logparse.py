@@ -1,5 +1,4 @@
-"""Parse test logs
-"""
+"""Parse test logs."""
 
 import importlib
 import logging
@@ -12,7 +11,7 @@ from testclutch.logdef import ParsedLog
 
 
 def parse_log_file(f: TextIOReadline) -> ParsedLog:
-    """Tries one or more methods to parse a log file and returns the first one that works
+    """Tries one or more methods to parse a log file and returns the first one that works.
 
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty

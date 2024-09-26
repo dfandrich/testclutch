@@ -1,3 +1,5 @@
+"""Test metadatastats."""
+
 import os
 import unittest
 from unittest import mock
@@ -6,6 +8,8 @@ from .context import testclutch  # noqa: F401
 
 
 class TestMetaDataStats(unittest.TestCase):
+    """Test metadatastats."""
+
     def setUp(self):
         super().setUp()
         # Replace XDG_CONFIG_HOME to prevent the user's testclutchrc file from being loaded

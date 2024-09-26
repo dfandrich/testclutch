@@ -1,5 +1,4 @@
-"""Code to get GitHub pull request logs from results on Cirrus CI
-"""
+"""Code to get GitHub pull request logs from results on Cirrus CI."""
 
 import logging
 
@@ -8,7 +7,7 @@ from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class CirrusAnalyzer(cirrus.CirrusIngestor):
-    """Cirrus log analyzer
+    """Cirrus log analyzer.
 
     Based on CirrusIngestor but with the store method replaced to store log data instead
     and methods to retrieve by PR.
@@ -18,7 +17,7 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         self.clear_test_results()
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
-        """Store test results in a list
+        """Store test results in a list.
 
         This overrides the method in the base class.
         """
@@ -28,7 +27,7 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
         self.test_results = []  # type: list[ParsedLog]
 
     def _find_matching_runs(self, pr: int, branch: str) -> list[int]:
-        """Find runs for the given PR
+        """Find runs for the given PR.
 
         Returns runs for all commits on this PR (if there were runs for more than one) in reverse
         chronological order (most recent first).

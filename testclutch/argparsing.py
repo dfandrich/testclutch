@@ -1,5 +1,4 @@
-"""Functions to set up common argument parsers
-"""
+"""Functions to set up common argument parsers."""
 
 import argparse
 import os
@@ -24,6 +23,7 @@ class ExpandUserFileName:
     - if the file is writable but it doesn't exist, it should check the write status of the
       containing directory to ensure that the file can be created
     """
+
     def __init__(self, mode: str = 'r'):
         self.mode = mode
 
@@ -43,6 +43,7 @@ class StoreMultipleConstAction(argparse.Action):
     const holds the value to store (defaults to True) and attrs is an iterable
     of attribute names to store the value, in addition to dest.
     """
+
     def __init__(self,
                  option_strings,
                  dest: str,
@@ -69,7 +70,7 @@ class StoreMultipleConstAction(argparse.Action):
 
 
 def arguments_logging(parser: argparse.ArgumentParser):
-    """Add arguments needed for logging"""
+    """Add arguments needed for logging."""
     parser.add_argument(
         '--dry-run',
         action='store_true',
@@ -90,7 +91,7 @@ def arguments_logging(parser: argparse.ArgumentParser):
 
 
 def arguments_ci(parser: argparse.ArgumentParser, required: bool = True):
-    """Add arguments needed for selecting and using a CI system"""
+    """Add arguments needed for selecting and using a CI system."""
     parser.add_argument(
         '--origin',
         required=required,

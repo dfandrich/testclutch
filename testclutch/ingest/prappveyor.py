@@ -1,5 +1,4 @@
-"""Code to get GitHub pull request logs from results on Appveyor
-"""
+"""Code to get GitHub pull request logs from results on Appveyor."""
 
 import logging
 
@@ -9,7 +8,7 @@ from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
 class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
-    """Appveyor PR log analyzer
+    """Appveyor PR log analyzer.
 
     Based on AppveyorIngestor but with the store method replaced to store log data instead
     and methods to retrieve by PR.
@@ -19,14 +18,14 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
         self.test_results = []  # type: list[ParsedLog]
 
     def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
-        """Store test results in a list
+        """Store test results in a list.
 
         This overrides the method in the base class.
         """
         self.test_results.append((logmeta, testcases))
 
     def _find_for_pr(self, pr: int) -> list[str]:
-        """Find runs for the given PR made within the given number of hours
+        """Find runs for the given PR made within the given number of hours.
 
         Returns runs for all commits on this PR (if there were runs for more than one) in reverse
         chronological order (most recent first).
@@ -34,13 +33,10 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
         # Start with a list of ALL recent completed runs
         branch = config.expand('branch')
         runs = self.av.get_runs(branch)
-        results = []
-        for job in runs['builds']:
-            # Only look at completed runs
-            if (job['status'] in frozenset(('success', 'failed', 'cancelled'))
-                    and 'pullRequestId' in job and int(job['pullRequestId']) == pr):
-                results.append(job['version'])
-        return results
+        # Only look at completed runs
+        return [job['version'] for job in runs['builds']
+                if (job['status'] in frozenset(('success', 'failed', 'cancelled'))
+                    and 'pullRequestId' in job and int(job['pullRequestId']) == pr)]
 
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         # Clear any earlier results and start again
