@@ -3,10 +3,12 @@
 import collections
 import datetime
 import logging
+import re
 import textwrap
 from dataclasses import dataclass
 from html import escape
 from typing import Optional
+from urllib import parse
 
 import testclutch
 from testclutch import config
@@ -36,6 +38,20 @@ assert (config.get('flaky_builds_min')
         >= config.get('report_consecutive_failures') * 2 + config.get('flaky_failures_min'))
 
 
+# Displayed when no run was made for a commit
+NO_RUN = '-'
+
+# strftime() format string including time zone
+TIMEZ_FMT = '%a, %d %b %Y %H:%M:%S %z'
+
+# How much time a run has at the end of the analysis phase before it looks out of place.
+# This is enough time for a daily build to be processed right before the new build is ready.
+END_MARGIN_SECS = 28 * 3600
+
+# Regex to canonicalize some git repository URLs
+CANON_REPO_RE = re.compile(r'(\.git)?(/)*$')
+
+
 @dataclass
 class TestJobInfo:
     """Information about a test job."""
@@ -52,6 +68,24 @@ class TestJobInfo:
     test_result: str             # what the test suite thought about the tests
 
 
+def compare_hashes(a: str, b: str) -> bool:
+    """Compare two git hashes for equality.
+
+    One or both may be truncated hashes, which are compared as much as possible.
+    """
+    if not len(a) or not len(b):
+        # An empty has is never equal to anything
+        return False
+
+    if len(a) < len(b):
+        return b.startswith(a)
+
+    if len(a) > len(b):
+        return a.startswith(b)
+
+    return a == b
+
+
 class ResultsOverTimeByUniqueJob:
     """Analyze test job runs.
 
@@ -63,6 +97,7 @@ class ResultsOverTimeByUniqueJob:
         self.ds = ds
         self.repo = repo
         self.all_jobs_status = []  # type: list[TestJobInfo]
+        self.commits = []          # type: list[CommitInfo]
 
     @staticmethod
     def make_global_unique_job(meta: TestMeta) -> str:
@@ -72,6 +107,33 @@ class ResultsOverTimeByUniqueJob:
         It is used as a key to get info on a unique job name.
         """
         return ','.join((meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname']))
+
+    def commit_url(self, commit_hash: str) -> str:
+        """Return a URL for the given commit hash."""
+        canon_repo = CANON_REPO_RE.sub('', self.repo)
+
+        if self.repo.startswith('https://github.com/'):
+            return f'{canon_repo}/commit/{parse.quote(commit_hash)}'
+
+        elif (self.repo.startswith('https://gitlab.com/')
+              or self.repo.startswith('https://invent.kde.org/')):
+            # Many public sites use gitlab.com software and will use this form
+            return f'{canon_repo}/-/commit/{parse.quote(commit_hash)}'
+
+        elif self.repo.startswith('https://pagure.io/'):
+            return f'{canon_repo}/c/{parse.quote(commit_hash)}'
+
+        elif self.repo.startswith('https://git.code.sf.net/p/'):
+            # TODO: maybe the human-readable URL is better to use for sf.net
+            _, _, path, _, _ = parse.urlsplit(canon_repo)
+            parts = path.split('/')
+            if len(parts) < 3:
+                return ''
+            return (f'https://sourceforge.net/p/{parse.quote(parts[2])}/code/ci/'
+                    f'{parse.quote(commit_hash)}')
+        logging.warning('Repo source {canon_repo} is unknown')
+
+        return ''
 
     def check_aborted(self, meta: TestMeta) -> bool:
         """Check if the CI metadata indicates an aborted test run."""
@@ -310,20 +372,63 @@ class ResultsOverTimeByUniqueJob:
             <!DOCTYPE html>
             <html><head><title>Test Job Failures</title>
             <style type="text/css">
-             /* test success/failure */
-             .success    {background-color: limegreen;}
-             .successold {background-color: yellowgreen;}
-             .failure    {background-color: orangered;}
-             .failureold {background-color: tomato;}
-             .aborted    {background-color: yellow;}
-             .unknown    {background-color: orange;}
-             .jobfailure {background-color: orange;}
-             .disabled   {background-color: silver;}
+            body {
+                background-color: white;
+            }
+            /* test success/failure */
+            .success    {
+                background-color: limegreen;
+                text-align: center;
+            }
+            .successold {
+                background-color: yellowgreen;
+                text-align: center;
+            }
+            .failure    {
+                background-color: orangered;
+                text-align: center;
+            }
+            .failureold {
+                background-color: tomato;
+                text-align: center;
+            }
+            .aborted    {
+                background-color: yellow;
+                text-align: center;
+            }
+            .unknown    {
+                background-color: orange;
+                text-align: center;
+            }
+            .jobfailure {
+                background-color: orange;
+                text-align: center;
+            }
+            .disabled   {background-color: silver;}
+            .newday     {background-color: whitesmoke;}
 
-             td {padding: 0.3em;}
-             .arrow {font-size: 200%;}
+            td {padding: 0.3em;}
+            .arrow {font-size: 200%;}
 
-             .jobname {min-width: 30em; }
+            .jobname {min-width: 30em; }
+
+            thead {
+                position: sticky;
+                top: 0px;
+                background-color: white;
+            }
+
+            .head  {
+                font-size: 80%;
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+            .hash  {
+                transform: rotate(-30deg);
+                font-size: 70%;
+                padding-top: 1.4em;
+            }
+            .date  {padding-top: 1.4em;}
             </style>\
             """))
         print(textwrap.dedent(f"""\
@@ -335,26 +440,46 @@ class ResultsOverTimeByUniqueJob:
             covering runs over the past {config.get('analysis_hours') / 24:.0f} days
             <p>
             Hover over cells for more information.
-            <br><span class="success">successful test run</span>
+            <br><span class="success" title="All tests expected to succeed succeeded">successful test run</span>
                 <span class="successold" title="Older than {round(config.get('old_job_hours')) / 24:.0f} days">successful older test run</span>
-            <br><span class="failure">*failed test run</span>
+            <br><span class="failure" title="At least one test failed">*failed test run</span>
                 <span class="failureold" title="Older than {round(config.get('old_job_hours')) / 24:.0f} days">*failed older test run</span>
             <br><span class="aborted" title="Test run did not complete">aborted test run</span>
             <br><span class="unknown" title="Test results were inconclusive">unknown test run</span>
             <br><span class="disabled" title="No results for {round(config.get('disabled_job_hours')) / 24:.0f} days">disabled job</span>
+            <br><span class="newday" title="The last commit of each day is highlighted">new day</span>
 
             <table class="testtable"><tr>
-            <th title="configured test job name" class="jobname">Job Name</th>
-            <th title="test flakiness">Flake<span class="arrow">&nbsp;</span></th>
-            <th title="the most recent test run is on the left">
+            <th title="Configured test job name" class="jobname">Job Name</th>
+            <th title="If test is flaky or permanently failing">Flake<span class="arrow">&nbsp;&nbsp;&nbsp;</span></th>
+            <th title="The most recent test run is on the left">
             Older runs <span class="arrow">&rarr;</span></th></tr></table>
             """))
 
         from_time = int((now - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
+        branch = config.expand('branch')
+        self.commits = self.ds.select_all_commit_after_time(repo, branch, from_time)
+
+        # Print the header with commit hashes and dates.
+        # The first two columns are for the job name and flake status.
+        print('<table class="testtable"><thead><tr><th></th><th></th>')
+        lastdatecode = ''
+        for commit in self.commits:
+            datecode = datetime.datetime.fromtimestamp(commit.commit_time, tz=datetime.timezone.utc
+                                                       ).strftime('%b%d')
+            newday = ' newday' if lastdatecode != datecode else ''
+            lastdatecode = datecode
+            print(f'<th class="head{newday}"><div class="hash">'
+                  f'<a href="{escape(self.commit_url(commit.commit_hash))}" '
+                  f' title="{escape(commit.title)}">'
+                  f'{escape(commit.commit_hash[:9])}</a></div>'
+                  f'<div class="date">{datecode}</div></th>')
+        print('</tr></thead>')
+
         for globalunique in self.all_unique_jobs(repo, from_time):
             self.show_unique_job_failures_table(globalunique)
 
-        print('</body></html>')
+        print('</table></body></html>')
 
     def prepare_uniquejob_analysis(self, globaluniquejob: str
                                    ) -> tuple[list[tuple[str, float]], TestFailCount]:
@@ -432,12 +557,6 @@ class ResultsOverTimeByUniqueJob:
             return
         logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
 
-        # This puts a scroll bar on the individual table
-        # print('<div style="width: 100%; overflow: auto;">')
-        print('<table class="testtable"><tr><th title="job name" class="jobname">'
-              '<!--Unique Job Name--></th></tr>')
-        print('<tbody>')
-
         oldjobtimestamp = (datetime.datetime.now()
                            - datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
 
@@ -476,6 +595,9 @@ class ResultsOverTimeByUniqueJob:
         jobclass = ' class="jobfailure"' if badtitle else ''
         print(f'<td{jobtitle}{jobclass}>{badtext}</td>')
 
+        all_commits = iter(self.commits)
+        first_run = True
+        last_commit = CommitInfo()
         for job_status in self.all_jobs_status:
             # title must contain safe HTML as it will not be escaped
             title = datetime.datetime.fromtimestamp(
@@ -527,13 +649,49 @@ class ResultsOverTimeByUniqueJob:
                 elif cssclass == 'failure':
                     cssclass = 'failureold'
 
-            print(f'<td class="{cssclass}" title="{title}"><a href="{escape(job_status.url)}">'
-                  f'{prefix_char}{num}</a></td>')
+            jobtime = datetime.datetime.fromtimestamp(
+                job_status.jobtime, tz=datetime.timezone.utc).strftime(TIMEZ_FMT)
 
+            # Find the right table column, matching the commit.
+            # It sometimes happens that there is more than one run per commit, so compare the
+            # last commit before iterating to find the next one.
+            if not compare_hashes(job_status.commit, last_commit.commit_hash):
+                if not first_run:
+                    # Finish off the last column if there was one
+                    print('</td>')
+
+                try:
+                    while ((last_commit := next(all_commits))
+                           and not compare_hashes(job_status.commit, last_commit.commit_hash)):
+                        # Fill in a column without a run
+                        print(f'<td class="{cssclass}" title="(no run)">{NO_RUN}</td>')
+                except StopIteration:
+                    # When the iterator reaches the end, there is no more space needing filling,
+                    # but it also means that we have an unknown commit.
+                    msg = (f"Couldn't find commit {job_status.commit:.9} among known commits "
+                           f'for run of {job_title} at {jobtime}')
+                    margin = (job_status.jobtime
+                              - (datetime.datetime.now()
+                                 - datetime.timedelta(hours=config.get('analysis_hours'))
+                                 ).timestamp())
+                    if abs(margin) < END_MARGIN_SECS:
+                        logging.info(f"%s, but it's timed only about {margin / 3600:.1f} hours "
+                                     'from the end of the analysis so it probably simply just '
+                                     'missed the cutoff time', msg)
+                    else:
+                        logging.error('%s', msg)
+                print(f'<td class="{cssclass}" title="{title}">')
+            else:
+                logging.warning(f'More than one run found for commit {job_status.commit:.9} '
+                                f'among known commits for run of {job_title} at {jobtime}')
+
+            print(f'<a href="{escape(job_status.url)}">{prefix_char}{num}</a>')
+            first_run = False
+
+        if not first_run:
+            # Finish off the final column if there was one
+            print('</td>')
         print('</tr>')
-        print('</tbody>')
-        print('</table>')
-        # print('</div>')
 
     def _count_consecutive_failures(self) -> list[collections.Counter[str]]:
         """Count consecutive failures of all tests for all jobs.
