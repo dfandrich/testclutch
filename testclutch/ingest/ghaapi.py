@@ -55,9 +55,8 @@ def convert_time(timestamp: str) -> datetime.datetime:
         if timestamp.find('.') > 0:
             # need to add this so the datetime object will be time zone aware, with sub-seconds
             return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%S.%fZ%z')
-        else:
-            # need to add this so the datetime object will be time zone aware
-            return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
+        # need to add this so the datetime object will be time zone aware
+        return datetime.datetime.strptime(timestamp + '+0000', '%Y-%m-%dT%H:%M:%SZ%z')
     return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
 
 
@@ -144,7 +143,8 @@ class GithubApi:
                 combined.extend(j)
 
             else:
-                assert False, f'Unexpected return type {type(j)} from API '
+                logging.error(f'Unexpected return type {type(j)} from API')
+                raise RuntimeError('Bad JSON type from GHA')
 
             useparams['page'] += 1
 

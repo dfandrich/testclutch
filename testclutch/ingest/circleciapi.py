@@ -71,8 +71,7 @@ class CircleApi:
         url = RUN_URL.format(vcs=self.vcs, user=self.owner, project=self.repo, build=build_id)
         with self.http.get(url, headers=self._standard_headers()) as resp:
             resp.raise_for_status()
-            last_resp = json.loads(resp.text)
-        return last_resp
+            return json.loads(resp.text)
 
     def get_logs(self, log_url: str) -> tuple[str, str]:
         logging.info('Retrieving log from %s', log_url)

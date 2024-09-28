@@ -48,12 +48,11 @@ class FindFailedRuns:
         for testid, runtime, failtext in testmatches:
             meta = self.ds.collect_meta(testid)
             assert isinstance(meta['origin'], str)  # satisfy pytype that this isn't int
-            if 'cijob' in meta:
-                name = meta['cijob']
-            else:
-                name = meta['uniquejobname']
+            name = meta.get('cijob', meta['uniquejobname'])
             print('Job:', f'{meta["origin"].capitalize()}: {name}')
-            print('Time:', datetime.datetime.fromtimestamp(int(runtime)).strftime('%Y-%m-%d %H:%M:%S'),
+            print('Time:',
+                  datetime.datetime.fromtimestamp(
+                      int(runtime), tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'),
                   f'(run ID {meta["runid"]})')
             if failtext:
                 print(f'Failure reason: {failtext}')
@@ -107,13 +106,14 @@ def main():
 
     if args.since:
         try:
-            since = datetime.datetime.now() - datetime.timedelta(hours=int(args.since))
+            since = (datetime.datetime.now(tz=datetime.timezone.utc)
+                     - datetime.timedelta(hours=int(args.since)))
         except ValueError:
             since = datetime.datetime.fromisoformat(args.since)
     else:
         # Default to same time as logfile analysis time since it's probably only
         # recent tests we would want to see
-        since = (datetime.datetime.now()
+        since = (datetime.datetime.now(tz=datetime.timezone.utc)
                  - datetime.timedelta(hours=config.get('analysis_hours')))
 
     if not args.succeeded and not args.failed and not args.resultcode:

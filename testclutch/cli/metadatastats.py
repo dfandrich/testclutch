@@ -108,7 +108,7 @@ def _try_integer(val: str) -> Union[int, str]:
     A more general alternative would be natsort.natsorted()
     """
     with contextlib.suppress(ValueError):
-        return '%09d' % int(val)
+        return f'{int(val):09d}'
     return val
 
 
@@ -191,7 +191,7 @@ class FeatureMatrix:
         return self.analyzer.all_unique_jobs(self.repo, self.from_time)
 
     def get_uniquejob_meta(self, globaluniquejob: str) -> TestMetaStr:
-        to_time = int(datetime.datetime.now().timestamp())
+        to_time = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
         # Using disabled_job_hours instead of analysis_hours because we want only the most current
         # job run, and anything older than that is irrelevant
         logging.info(f'Getting runs since {self.since.ctime()} '

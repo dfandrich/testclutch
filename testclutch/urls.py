@@ -75,7 +75,6 @@ def url_pr(url: str) -> int:
     if len(paths) < 5 or paths[3] != 'pull':
         logging.error('Cannot extract PR from URL %s', url)
         return 0
-    pr = 0
     with contextlib.suppress(ValueError):
-        pr = int(paths[4])
-    return pr
+        return int(paths[4])
+    return 0

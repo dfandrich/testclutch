@@ -49,7 +49,7 @@ class CirrusIngestor:
         return f'{LOGSUBDIR}/cirrus-{self.repo}-{run_id}-{task_id}-{command_name}{DEFAULT_EXT}'
 
     def ingest_all_logs(self, branch: str, hours: int):
-        since = datetime.datetime.now() - datetime.timedelta(hours=hours)
+        since = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(hours=hours)
         count = 0
         skipped = 0
         if self.dry_run:
@@ -69,7 +69,8 @@ class CirrusIngestor:
                 skipped += 1
                 logging.debug('Run %s is a pull request #%d', node['id'], node['pullRequest'])
                 continue
-            if datetime.datetime.fromtimestamp(node['buildCreatedTimestamp'] / 1000) < since:
+            if datetime.datetime.fromtimestamp(node['buildCreatedTimestamp'] / 1000,
+                                               tz=datetime.timezone.utc) < since:
                 # Build is too old
                 skipped += 1
                 logging.debug('Run %s is too old', node['id'])

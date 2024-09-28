@@ -33,14 +33,16 @@ class MsBuildLog:
         if l.startswith('Microsoft (R) Build Engine') or l.startswith('MSBuild version '):
             # Start of indented section
             self.in_msbuild = True
+
         elif self.in_msbuild:
             # In indented section
             if l.startswith('  '):
                 # Strip off indentation
-                l = l[2:]
-            elif l.startswith('CUSTOMBUILD : warning :'):
+                return l[2:]
+
+            if l.startswith('CUSTOMBUILD : warning :'):
                 # This must be some kind of special msbuild escaping going on
-                l = 'Warning' + l[22:]
+                return 'Warning' + l[22:]
 
             # Let through special cases: two strings that are part of the headers
             # that begin the indented section, a completely empty line, and CUSTOMBUILD.

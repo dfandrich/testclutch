@@ -122,8 +122,9 @@ class GithubIngestor:
         skipped = 0
         if self.dry_run:
             logging.info('Skipping ingestion into database')
-        runs = self.gh.get_runs(branch=branch,
-                                since=datetime.datetime.now() - datetime.timedelta(hours=hours))
+        runs = self.gh.get_runs(
+            branch=branch,
+            since=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(hours=hours))
         if runs:
             for run in runs['workflow_runs']:
                 if run['head_branch'] == branch and run['event'] == EVENT:
@@ -162,7 +163,7 @@ class GithubIngestor:
                 else:
                     logging.error(e.args[0])
                     # Re-raise the exception for better visibility for now
-                    raise e
+                    raise
                 return None
 
             logging.debug(f'fn {fn} type {ft}')

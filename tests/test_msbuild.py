@@ -38,4 +38,5 @@ class TestMsBuildLog(unittest.TestCase):
             'Warning: some weird kind of escaping\n',
             'An indent without a special prefix line\n',
             'Final unindented line\n'
-        ], lines)
+        ],
+            lines)

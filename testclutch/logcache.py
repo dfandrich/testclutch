@@ -43,14 +43,14 @@ def in_cache(fn: str) -> bool:
 # TODO: figure out return type; -> IO gives errors on callers
 def open_cache_file(fn: str, mode: str = 'r'):
     if mode.find('r') < 0:
-        raise RuntimeError('Must be read mode: %s' % mode)
+        raise RuntimeError(f'Must be read mode: {mode}')
     path = os.path.join(config.expand('log_cache_path'), fn)
     try:
         compress_path = path + COMPRESS_EXT
         with open(compress_path, 'rb') as compress_file:
             if mode.find('b') >= 0:
                 # Could add this using io.BytesIO if we need to
-                raise RuntimeError('Binary mode not supported: %s' % mode)
+                raise RuntimeError(f'Binary mode not supported: {mode}')
             return io.StringIO(zstd.decompress(compress_file.read()).decode(CHARMAP))
     except FileNotFoundError:
         return open(path, mode)
@@ -72,7 +72,8 @@ def move_into_cache_compressed(from_file: str, to_file: str):
         # "PY_SSIZE_T_CLEAN will be required for '#' formats" into the file that corrupts it when
         # given a zero-length file. This threshold eliminates that problem, as well as the overhead
         # to compress and decompress an already-tiny file.
-        return move_into_cache(from_file, to_file)
+        move_into_cache(from_file, to_file)
+        return
 
     compressed = zstd.compress(open(from_file, 'rb').read())
     to_path = os.path.join(config.expand('log_cache_path'), to_file + COMPRESS_EXT)

@@ -51,7 +51,7 @@ class MassagedLog(TextIO):
         if (RE_FAILED.search(l) or RE_IGNORED.search(l) or RE_SKIPAFTERSTART_PART.search(l)
             or RE_EXITFAILED.search(l) or RE_TORTURESKIPPED.search(l)
                 or RE_VALGRINDFAILED.search(l)):
-            l = ' ' + l
+            return ' ' + l
         return l
 
 
@@ -71,7 +71,7 @@ class CurlAutoIngestor:
     def _extract_run_info(self, fn: str) -> tuple[datetime.datetime, int]:
         run_info = LOG_FILE_RE.search(fn)
         if not run_info:
-            raise RuntimeError('Unexpected log name: %s' % fn)
+            raise RuntimeError(f'Unexpected log name: {fn}')
         d = datetime.datetime.strptime(run_info.group(1) + '+0000', '%Y%m%d%H%M%S%z')
         return (d, int(run_info.group(2)))
 

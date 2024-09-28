@@ -76,7 +76,6 @@ class PRAnalysisState:
                 self.statefile = f
             else:
                 fcntl.lockf(f.fileno(), fcntl.LOCK_SH)
-
         except FileNotFoundError:
             logging.error('pr_gather_path file not found; creating an empty one')
 
@@ -95,7 +94,6 @@ class PRAnalysisState:
         # File is open here and holding an appropriate lock
         try:
             pranalyses = pickle.load(f)
-
         except EOFError:
             # This will happen when reading an empty file, such as is created on the first run.
             logging.error('Empty pr_gather_path file; starting fresh')

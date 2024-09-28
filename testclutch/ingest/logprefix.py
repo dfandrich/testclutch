@@ -50,15 +50,16 @@ class RegexPrefixedLog:
 
     def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
-        if l:
-            # Unfortunately, some log files have timestamps and some don't. It's probably something
-            # to do with embedded newlines in log messages, but I can't think of a more accurate way
-            # to remove them than with a regular expression. This will erroneously match "extended"
-            # log files that happen to include something that looks like a timestamp, but since
-            # these extended lines almost never happen in the first place (so far it seems only
-            # those using cross-platform-actions/action), this isn't a big concern.
-            l = self.regex.sub('', l)
-        return l
+        if not l:
+            return l
+
+        # Unfortunately, some log files have timestamps and some don't. It's probably something
+        # to do with embedded newlines in log messages, but I can't think of a more accurate way
+        # to remove them than with a regular expression. This will erroneously match "extended"
+        # log files that happen to include something that looks like a timestamp, but since
+        # these extended lines almost never happen in the first place (so far it seems only
+        # those using cross-platform-actions/action), this isn't a big concern.
+        return self.regex.sub('', l)
 
     def seek(self, offset: int, whence: int = 0) -> int:
         """Satisfy pytype, even though the __getattr__ actually does the same thing."""

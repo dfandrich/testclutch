@@ -50,7 +50,7 @@ class AzureIngestor:
         t = AV_TIME_RE.search(timestamp)
         if not t:
             logging.error('Cannot parse date: %s', timestamp)
-            return datetime.datetime.fromtimestamp(0)
+            return datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
         microsec = t.group(2)[:7] if t.group(2) else '.0'
         return datetime.datetime.strptime(t.group(1) + microsec + 'Z+0000',
                                           '%Y-%m-%dT%H:%M:%S.%fZ%z')

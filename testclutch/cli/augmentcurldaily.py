@@ -110,7 +110,8 @@ def augment_curl_daily(args):
 
     cda = CurlDailyAugmenter(args.checkrepo, ds, args.dry_run)
     if args.howrecent:
-        since = int(datetime.datetime.now().timestamp()) - args.howrecent * 3600
+        since = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+                    ) - args.howrecent * 3600
     else:
         logging.warning('Use --howrecent to speed up augmentation')
         since = 0

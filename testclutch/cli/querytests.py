@@ -54,13 +54,14 @@ def main():
 
     if args.since:
         try:
-            since = datetime.datetime.now() - datetime.timedelta(hours=int(args.since))
+            since = (datetime.datetime.now(tz=datetime.timezone.utc)
+                     - datetime.timedelta(hours=int(args.since)))
         except ValueError:
             since = datetime.datetime.fromisoformat(args.since)
     else:
         # Default to same time as logfile analysis time since it's probably only
         # recent tests we would want to see
-        since = (datetime.datetime.now()
+        since = (datetime.datetime.now(tz=datetime.timezone.utc)
                  - datetime.timedelta(hours=config.get('analysis_hours')))
 
     ds = db.Datastore()

@@ -10,6 +10,7 @@ from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
 
+# flake8: noqa: SIM114
 
 # TODO: obsolete after 2024-09-10
 # NOTE: if lines are added below that match spaces at the start of a line,

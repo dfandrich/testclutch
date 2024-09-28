@@ -1,6 +1,5 @@
 """Database operations."""
 
-
 import datetime
 import logging
 import sqlite3
@@ -123,7 +122,7 @@ class Datastore:
         self.cur.execute('INSERT INTO testruns (time, repo, origin, account, runid, uniquejobname, '
                          'ingesttime) VALUES (?, ?, ?, ?, ?, ?, ?)',
                          (index_time, repo, origin, account, runid, uniquejobname,
-                          int(datetime.datetime.now().timestamp())))
+                          int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())))
         recid = self.cur.execute(
             'SELECT id FROM testruns WHERE rowid = ?', (self.cur.lastrowid, )).fetchone()[0]
         self.store_test_meta(recid, meta)
@@ -151,7 +150,7 @@ class Datastore:
                 metadict = self.collect_meta(row[0])
                 results.append(
                     (row[0],
-                     datetime.datetime.fromtimestamp(row[1]).astimezone(datetime.timezone.utc),
+                     datetime.datetime.fromtimestamp(row[1], tz=datetime.timezone.utc),
                      metadict))
         return results
 

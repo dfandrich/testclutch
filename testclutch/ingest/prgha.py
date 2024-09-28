@@ -53,7 +53,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
 
         found = self._find_matching_runs(
             commit,
-            since=datetime.datetime.now() - datetime.timedelta(
+            since=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
                 hours=config.get('pr_age_hours_default'))
         )
         if not found:
@@ -61,7 +61,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                          f'hours; trying again for {config.get("pr_age_hours_max")} hours')
             found = self._find_matching_runs(
                 commit,
-                since=datetime.datetime.now() - datetime.timedelta(
+                since=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
                     hours=config.get('pr_age_hours_max'))
             )
         logging.debug('Found %d matching runs', len(found))

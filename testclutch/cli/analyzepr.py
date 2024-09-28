@@ -532,16 +532,16 @@ class GatherPRAnalysis:
         if origin == 'appveyor':
             return self.appveyor_gather_pr_failures(pr)
 
-        elif origin == 'azure':
+        if origin == 'azure':
             return self.azure_gather_pr_failures(pr)
 
-        elif origin == 'circle':
+        if origin == 'circle':
             return self.circle_gather_pr_failures(pr)
 
-        elif origin == 'cirrus':
+        if origin == 'cirrus':
             return self.cirrus_gather_pr_failures(pr)
 
-        elif origin == 'gha':
+        if origin == 'gha':
             return self.gha_gather_pr_failures(pr)
 
         logging.error(f'Unsupported origin {origin}')
@@ -549,11 +549,12 @@ class GatherPRAnalysis:
 
     def gather_analysis(self, prs: list[int]) -> int:
         """Gather information needed to analyze one or more PRs."""
+        # TODO: remove return value since it is constant
         pranalyses = self.read_analyses(True)  # lock for writing
         origin = self.args.origin
 
         # Prune out old entries
-        oldest = (datetime.datetime.now()
+        oldest = (datetime.datetime.now(tz=datetime.timezone.utc)
                   - datetime.timedelta(hours=config.get('pr_gather_age_hours_max'))).timestamp()
         # Make a list of the keys to fix them because we might be deleting them from the dict
         for pr in list(pranalyses.keys()):
@@ -561,13 +562,13 @@ class GatherPRAnalysis:
                 logging.debug(f'Aging out PR#{pr} from cache (time {pranalyses[pr].start})')
                 del pranalyses[pr]
 
-        rc = PRStatus.READY
         for pr in prs:
             if pr not in pranalyses or self.args.rerun:
                 logging.info(f'Starting new analysis of PR #{pr}')
-                thispr = prdef.PRAnalysis(pr, self.args.checkrepo,
-                                          int(datetime.datetime.now().timestamp()),
-                                          {}, {}, {}, {}, 0)
+                thispr = prdef.PRAnalysis(
+                    pr, self.args.checkrepo,
+                    int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()),
+                    {}, {}, {}, {}, 0)
                 pranalyses[pr] = thispr
             else:
                 thispr = pranalyses[pr]
@@ -615,7 +616,7 @@ class GatherPRAnalysis:
 
         self.write_analyses()
 
-        return rc
+        return PRStatus.READY
 
     def appveyor_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
         account, project = urls.get_project_name(self.args)
@@ -683,8 +684,8 @@ class GatherPRAnalysis:
             if failed:
                 globaluniquejob = analyzer.make_global_unique_job(meta)
                 logging.info(f'Found {len(failed)} failed tests in job {globaluniquejob}')
-                failed_tests.extend((prdef.FailedTest(
-                    globaluniquejob, fail.name, meta.get('url', '')) for fail in failed))
+                failed_tests.extend(prdef.FailedTest(
+                    globaluniquejob, fail.name, meta.get('url', '')) for fail in failed)
 
         return failed_tests
 
@@ -692,7 +693,7 @@ class GatherPRAnalysis:
         """Returns the set of all origins to check before commenting."""
         origins = config.get('pr_comment_origins')
         if not origins:
-            origins = set(argparsing.KNOWN_ORIGINS)
+            return set(argparsing.KNOWN_ORIGINS)
         return origins
 
     def comment(self, prs: list[int]) -> int:
@@ -736,7 +737,7 @@ class GatherPRAnalysis:
 
             if analysis.commented and not self.args.dry_run:
                 date = utils.format_datetime(
-                    datetime.datetime.fromtimestamp(analysis.commented))
+                    datetime.datetime.fromtimestamp(analysis.commented, tz=datetime.timezone.utc))
                 logging.warning(f"Already commented on PR#{pr} on {date}; won't comment again")
             else:
                 message = self.compose_text(analysis)
@@ -749,7 +750,8 @@ class GatherPRAnalysis:
                     # Write the comment to the PR thread
                     gh.create_comment(pr, message)
 
-                    analysis.commented = int(datetime.datetime.now().timestamp())
+                    analysis.commented = int(
+                        datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
 
         # Update with the commented times
         self.write_analyses()
@@ -938,7 +940,7 @@ def main():
             rc = PRStatus.ERROR
 
     ds.close()
-    return rc
+    return rc  # noqa: R504
 
 
 if __name__ == '__main__':

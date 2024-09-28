@@ -130,4 +130,4 @@ def config() -> ModuleType:
         logging.info('Configuration file %s not found', configfn)
         config_module = ModuleType('empty')
 
-    return config_module
+    return config_module  # noqa: R504

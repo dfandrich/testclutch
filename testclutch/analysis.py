@@ -106,7 +106,7 @@ class ResultsOverTimeByUniqueJob:
         This is the concatenation of: account,repo,origin,uniquejobname
         It is used as a key to get info on a unique job name.
         """
-        return ','.join((meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname']))
+        return ','.join(meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname'])
 
     def commit_url(self, commit_hash: str) -> str:
         """Return a URL for the given commit hash."""
@@ -115,15 +115,15 @@ class ResultsOverTimeByUniqueJob:
         if self.repo.startswith('https://github.com/'):
             return f'{canon_repo}/commit/{parse.quote(commit_hash)}'
 
-        elif (self.repo.startswith('https://gitlab.com/')
-              or self.repo.startswith('https://invent.kde.org/')):
+        if (self.repo.startswith('https://gitlab.com/')
+           or self.repo.startswith('https://invent.kde.org/')):
             # Many public sites use gitlab.com software and will use this form
             return f'{canon_repo}/-/commit/{parse.quote(commit_hash)}'
 
-        elif self.repo.startswith('https://pagure.io/'):
+        if self.repo.startswith('https://pagure.io/'):
             return f'{canon_repo}/c/{parse.quote(commit_hash)}'
 
-        elif self.repo.startswith('https://git.code.sf.net/p/'):
+        if self.repo.startswith('https://git.code.sf.net/p/'):
             # TODO: maybe the human-readable URL is better to use for sf.net
             _, _, path, _, _ = parse.urlsplit(canon_repo)
             parts = path.split('/')
@@ -131,6 +131,7 @@ class ResultsOverTimeByUniqueJob:
                 return ''
             return (f'https://sourceforge.net/p/{parse.quote(parts[2])}/code/ci/'
                     f'{parse.quote(commit_hash)}')
+
         logging.warning('Repo source {canon_repo} is unknown')
 
         return ''
@@ -150,9 +151,7 @@ class ResultsOverTimeByUniqueJob:
         # the test run time >1h is too brittle).
 
         # This is a generic method that should work anywhere
-        if meta.get('testresult', '') == 'truncated':
-            return True
-        return False
+        return meta.get('testresult', '') == 'truncated'
 
     def find_first_failing_job(self, testname: str, num_fails: int) -> Optional[TestJobInfo]:
         """First test run that started failing.
@@ -183,7 +182,7 @@ class ResultsOverTimeByUniqueJob:
                 logging.debug('Found a success; last good test run #%d', run)
                 last_good = last_job_status
                 break
-            elif testname in last_job_status.attempted_tests:
+            if testname in last_job_status.attempted_tests:
                 logging.debug('Only attempted (not run) in run #%d', run)
             elif testname in last_job_status.failed_tests:
                 logging.debug('Hmmm...another failure run #%d', run)
@@ -266,41 +265,38 @@ class ResultsOverTimeByUniqueJob:
     def recent_failed_link(self, testname: str) -> str:
         """Find a link for the most recent test failure for this test."""
         for job_status in self.all_jobs_status:
-            if testname in job_status.failed_tests:
-                if job_status.url:
-                    return job_status.url
+            if testname in job_status.failed_tests and job_status.url:
+                return job_status.url
         return ''
 
     def report_permafail(self, testname: str, num_fails: int) -> str:
         assert num_fails >= 1  # only call this with a failed test
-        msg = '<internal error>'
         # Make sure that the count+1 test shows a succeeded test (not unknown).
         if num_fails >= len(self.all_jobs_status):
             # Bypass all the analysis below when there's no point. The end result
             # will be the same, anyway.
-            msg = (f'Test {testname} has been failing too long to know '
-                   'when the problem started')
-        else:
-            # First test run that started failing
-            last_good = self.find_first_failing_job(testname, num_fails)
-            if not last_good:
-                msg = ('The commit that introduced this failure '
-                       'could not be determined (it may be failing for too long)')
-            else:
-                # Walk the commit chain to find all the commits in which the
-                # problem may have started
-                first_test_fail = self.all_jobs_status[num_fails - 1]
-                first_bad, commit_range = self.find_commit_range(
-                    last_good, first_test_fail)
-                if first_test_fail.commit == first_bad.commit_hash:
-                    msg = (f'Failures started with commit {first_bad.commit_hash:.9} '
-                           f'(last success: {last_good.url}')
-                else:
-                    msg = (f'Failures started somewhere in the commit range '
-                           f'{first_bad.commit_hash:.9}^..{first_test_fail.commit:.9} '
-                           f'({commit_range} possible commits) '
-                           f'(last success: {last_good.url}')
-        return msg
+            return (f'Test {testname} has been failing too long to know '
+                    'when the problem started')
+
+        # First test run that started failing
+        last_good = self.find_first_failing_job(testname, num_fails)
+        if not last_good:
+            return ('The commit that introduced this failure '
+                    'could not be determined (it may be failing for too long)')
+
+        # Walk the commit chain to find all the commits in which the
+        # problem may have started
+        first_test_fail = self.all_jobs_status[num_fails - 1]
+        first_bad, commit_range = self.find_commit_range(
+            last_good, first_test_fail)
+        if first_test_fail.commit == first_bad.commit_hash:
+            return (f'Failures started with commit {first_bad.commit_hash:.9} '
+                    f'(last success: {last_good.url}')
+
+        return (f'Failures started somewhere in the commit range '
+                f'{first_bad.commit_hash:.9}^..{first_test_fail.commit:.9} '
+                f'({commit_range} possible commits) '
+                f'(last success: {last_good.url}')
 
     def analyze_by_unique_job(self, globaluniquejob: str):
         """Analyze a unique job series.
@@ -491,8 +487,8 @@ class ResultsOverTimeByUniqueJob:
         Returns:
             list of (flaky_test_name, flaky_ratio) and TestFailCount
         """
-        to_time = int(datetime.datetime.now().timestamp())
-        from_time = int((datetime.datetime.now()
+        to_time = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
+        from_time = int((datetime.datetime.now(tz=datetime.timezone.utc)
                          - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
         logging.info(f'Starting new analysis over last {config.get("analysis_hours")}h '
                      f'of unique job {globaluniquejob}')
@@ -529,13 +525,12 @@ class ResultsOverTimeByUniqueJob:
         The list includes failed tests even if the overall CI job was marked as "success", so the
         if the caller is not interested in them it must check the CI job status.
         """
-        permafails = []
         if self.all_jobs_status and self.all_jobs_status[0].failed_tests:
             last_job_status = self.all_jobs_status[0]
             min_fails = config.get('permafail_failures_min')
-            permafails = [failure for failure in last_job_status.failed_tests
-                          if (current_failure_counts[failure] > min_fails)]
-        return permafails
+            return [failure for failure in last_job_status.failed_tests
+                    if current_failure_counts[failure] > min_fails]
+        return []
 
     def make_job_title(self, meta: TestMeta) -> str:
         origin = meta['origin']
@@ -557,11 +552,12 @@ class ResultsOverTimeByUniqueJob:
             return
         logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
 
-        oldjobtimestamp = (datetime.datetime.now()
+        oldjobtimestamp = (datetime.datetime.now(tz=datetime.timezone.utc)
                            - datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
 
-        disabledjobtimestamp = (datetime.datetime.now() - datetime.timedelta(
-            hours=config.get('disabled_job_hours'))).timestamp()
+        disabledjobtimestamp = (datetime.datetime.now(tz=datetime.timezone.utc)
+                                - datetime.timedelta(
+                                    hours=config.get('disabled_job_hours'))).timestamp()
         last_job_status = self.all_jobs_status[0]
 
         # All testids will be the same, so just grab the first one
@@ -671,7 +667,7 @@ class ResultsOverTimeByUniqueJob:
                     msg = (f"Couldn't find commit {job_status.commit:.9} among known commits "
                            f'for run of {job_title} at {jobtime}')
                     margin = (job_status.jobtime
-                              - (datetime.datetime.now()
+                              - (datetime.datetime.now(tz=datetime.timezone.utc)
                                  - datetime.timedelta(hours=config.get('analysis_hours'))
                                  ).timestamp())
                     if abs(margin) < END_MARGIN_SECS:

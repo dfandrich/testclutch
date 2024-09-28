@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from typing import Optional
 
 from testclutch import config
 
@@ -33,7 +34,7 @@ class ExpandUserFileName:
                     | (os.W_OK if 'w' in self.mode or 'x' in self.mode or 'a' in self.mode
                        or '+' in self.mode else 0))
         if not os.access(fn, modebits):
-            raise argparse.ArgumentTypeError('{0} does not exist or have permission'.format(fn))
+            raise argparse.ArgumentTypeError(f'{fn} does not exist or have permission')
         return fn
 
 
@@ -48,7 +49,7 @@ class StoreMultipleConstAction(argparse.Action):
                  option_strings,
                  dest: str,
                  const: bool = True,
-                 attrs: list[str] = [],
+                 attrs: Optional[list[str]] = None,
                  default=None,
                  required: bool = False,
                  help=None,     # noqa: A002
@@ -61,7 +62,7 @@ class StoreMultipleConstAction(argparse.Action):
             default=default,
             required=required,
             help=help)
-        self.attrs = attrs
+        self.attrs = attrs if attrs else []
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, self.const)

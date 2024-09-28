@@ -25,7 +25,7 @@ def main():
             print('Usage: dbutil deleteid <id>')
             sys.exit(1)
         rec_id = int(sys.argv[2])
-        print('Deleting job record id %d' % rec_id)
+        print('Deleting job record id {rec_id}')
         ds.delete_test_run(rec_id)
 
     elif sys.argv[1] == 'commitchain':
@@ -45,7 +45,7 @@ def main():
             print(f'Author: {c.author_name} <{c.author_email}>')
             print(f'Commit: {c.committer_name} <{c.committer_email}>')
             format_date = utils.format_datetime(datetime.datetime.fromtimestamp(
-                c.commit_time).astimezone(datetime.timezone.utc))
+                c.commit_time, tz=datetime.timezone.utc))
             print(f'CommitDate: {format_date}')
             print()
             print(f'    {c.title}')
@@ -60,8 +60,8 @@ def main():
         elif len(sys.argv) == 4:
             repo, branch = sys.argv[2:5]
             # Get the most recent commit
-            commits = ds.select_commit_before_time(repo, branch,
-                                                   int(datetime.datetime.now().timestamp()), 1)
+            commits = ds.select_commit_before_time(
+                repo, branch, int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()), 1)
             if not commits:
                 print('Error: no matching commits found in db')
                 sys.exit(1)
@@ -76,7 +76,8 @@ def main():
             print(f'prev {c.prev_hash}')
             print(f'Author: {c.author_name} <{c.author_email}>')
             print(f'Commit: {c.committer_name} <{c.committer_email}>')
-            format_date = utils.format_datetime(datetime.datetime.fromtimestamp(c.commit_time).astimezone(datetime.timezone.utc))
+            format_date = utils.format_datetime(
+                datetime.datetime.fromtimestamp(c.commit_time, tz=datetime.timezone.utc))
             print(f'CommitDate: {format_date}')
             print()
             print(f'    {c.title}')

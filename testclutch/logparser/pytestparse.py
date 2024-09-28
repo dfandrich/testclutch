@@ -70,7 +70,7 @@ def parse_platform(platform: str) -> TestMetaStr:
         # which happens surprisingly often. For that reason and because mach isn't that interesting,
         # don't bother including it in the metadata.
 
-    elif (platparts[0] == 'Windows') and (r := PLAT_WINDOWS_RE.search(platform)):
+    elif platparts[0] == 'Windows' and (r := PLAT_WINDOWS_RE.search(platform)):
         meta['systemosver'] = r.group('version')
 
     elif platparts[0] == 'Java' and (r := PLAT_JAVA_RE.search(platform)):
@@ -120,7 +120,7 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
-                elif VERBOSE_SENTINEL_RE.search(l) or VERBOSE_SENTINEL2_RE.search(l):
+                elif VERBOSE_SENTINEL_RE.search(l) or VERBOSE_SENTINEL2_RE.search(l):  # noqa: R508
                     # If this is found, this is a verbose log so clear data and give up
                     logging.debug("Actually, it's a verbose log; give up")
                     meta = {}
@@ -196,7 +196,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                         meta['testresult'] = 'success'
                     meta['runtestsduration'] = str(int(float(r.group(3)) * 1000000))
                     break
-                elif r := PLATFORM_RE.search(l):
+                if r := PLATFORM_RE.search(l):
                     meta['os'] = r.group(1)
                     meta['testdeps'] = r.group(3)
                 elif r := XDIST_WORKERS_RE.search(l):
@@ -205,7 +205,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
-                elif NONVERBOSE_SENTINEL_RE.search(l) or NONVERBOSE_SENTINEL2_RE.search(l):
+                elif (NONVERBOSE_SENTINEL_RE.search(l)  # noqa: R508
+                      or NONVERBOSE_SENTINEL2_RE.search(l)):
                     # If this is found, this is not a verbose log so clear data and give up
                     # Note that this does not appear with xdist
                     logging.debug("Actually, it's not a verbose log at all; give up")

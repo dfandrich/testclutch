@@ -45,12 +45,11 @@ class CircleAnalyzer(circleci.CircleIngestor):
         # matchingpr now contains all runs for this PR, which could cover more than one git commit
         # if the user pushed several that were run separately. Keep only the runs on the most recent
         # commit by sorting by build ID and filtering for the commit handled by the most recent one.
-        builds = []
         if matchingpr:
             mostrecentcommit = max(matchingpr, key=lambda x: x[0])[1]
             logging.info(f'Only getting runs for the most recent commit {mostrecentcommit:.9}')
-            builds = [match[0] for match in matchingpr if match[1] == mostrecentcommit]
-        return builds
+            return [match[0] for match in matchingpr if match[1] == mostrecentcommit]
+        return []
 
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         # Clear any earlier results and start again

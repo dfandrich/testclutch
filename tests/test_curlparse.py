@@ -3863,7 +3863,9 @@ class TestCurlParse(unittest.TestCase):
             'os': 'linux',
             'randomseed': '265424',
             'runtestsduration': '1000000',
-        }, meta)
+        },
+            meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1067000),
-        ], testcases)
+        ],
+            testcases)

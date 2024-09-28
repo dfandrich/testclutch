@@ -53,4 +53,5 @@ class TestGitCommitInfo(unittest.TestCase):
                               'Author',
                               'author',
                               'This commit is missing the e-mail domains'),
-        ], results)
+        ],
+            results)

@@ -55,7 +55,7 @@ class AppveyorIngestor:
         t = AV_TIME_RE.search(timestamp)
         if not t:
             logging.error('Cannot parse date: %s', timestamp)
-            return datetime.datetime.fromtimestamp(0)
+            return datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
         microsec = t.group(2)[:7]
         return datetime.datetime.strptime(t.group(1) + microsec + t.group(3) + t.group(4),
                                           '%Y-%m-%dT%H:%M:%S.%f%z')

@@ -51,4 +51,5 @@ class TestLogPrefix(unittest.TestCase):
             '0000No space\n',
             '11111\n',
             'Final\n'
-        ], lines)
+        ],
+            lines)

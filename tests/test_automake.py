@@ -118,7 +118,8 @@ class TestCurlParse(unittest.TestCase):
             'testformat': 'automake',
             'testresult': 'failure',
             'testtarget': 'libssh2',
-        }, meta)
+        },
+            meta)
         self.assertEqual([
             SingleTestFinding('test_auth_password_fail_password', automakeparse.TestResult.FAIL, '', 0),
             SingleTestFinding('test_auth_password_ok', automakeparse.TestResult.FAIL, '', 0),
@@ -165,4 +166,5 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('test_read_algos.test 17', automakeparse.TestResult.FAIL, 'test_read-hmac-sha2-512', 0),
             SingleTestFinding('test_read_algos.test 18', automakeparse.TestResult.FAIL, 'test_read-hmac-sha2-512-etm@openssh.com', 0),
             SingleTestFinding('mansyntax.sh', automakeparse.TestResult.PASS, '', 0)
-        ], testcases)
+        ],
+            testcases)
