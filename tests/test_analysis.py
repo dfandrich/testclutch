@@ -12,105 +12,62 @@ class TestCompareHashes(unittest.TestCase):
     """Test analysis.compare_hashes."""
 
     def test_same_hashes(self):
-        self.assertTrue(analysis.compare_hashes(
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'))
-        self.assertTrue(analysis.compare_hashes(
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
-            'aaaaaab'))
-        self.assertTrue(analysis.compare_hashes(
-            'aaaaaab',
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'))
-        self.assertTrue(analysis.compare_hashes(
-            '12345',
-            '123456'))
+        for a, b in [
+            ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
+             'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
+            ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', 'aaaaaab'),
+            ('aaaaaab', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
+            ('12345', '123456')
+        ]:
+            with self.subTest(a=a, b=b):
+                self.assertTrue(analysis.compare_hashes(a, b))
 
     def test_different_hashes(self):
-        self.assertFalse(analysis.compare_hashes(
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
-            '0000000000111111111222222222233333333333'))
-        self.assertFalse(analysis.compare_hashes(
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
-            'aaaaaac'))
-        self.assertFalse(analysis.compare_hashes(
-            'aaaaaac',
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'))
-        self.assertFalse(analysis.compare_hashes(
-            '',
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'))
-        self.assertFalse(analysis.compare_hashes(
-            'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
-            ''))
-        self.assertFalse(analysis.compare_hashes(
-            '',
-            ''))
+        for a, b in [
+            ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
+             '0000000000111111111222222222233333333333'),
+            ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', 'aaaaaac'),
+            ('aaaaaac', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
+            ('', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
+            ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', ''),
+            ('', '')
+        ]:
+            with self.subTest(a=a, b=b):
+                self.assertFalse(analysis.compare_hashes(a, b))
 
 
 class TestCommitUrl(unittest.TestCase):
-    """Test commit_url.."""
+    """Test commit_url."""
 
     HASH = 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'
 
     def test_commit_url(self):
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://github.com/user/proj')
-        self.assertEqual('https://github.com/user/proj/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://github.com/user/proj/')
-        self.assertEqual('https://github.com/user/proj/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://github.com/user/proj.git')
-        self.assertEqual('https://github.com/user/proj/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://gitlab.com/user/repo.git')
-        self.assertEqual('https://gitlab.com/user/repo/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://gitlab.com/user/repo')
-        self.assertEqual('https://gitlab.com/user/repo/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://gitlab.com/user/repo/')
-        self.assertEqual('https://gitlab.com/user/repo/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://invent.kde.org/pim/xyzzy')
-        self.assertEqual('https://invent.kde.org/pim/xyzzy/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://invent.kde.org/pim/xyzzy/')
-        self.assertEqual('https://invent.kde.org/pim/xyzzy/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://invent.kde.org/pim/xyzzy.git')
-        self.assertEqual('https://invent.kde.org/pim/xyzzy/-/commit/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://pagure.io/category/repo.git')
-        self.assertEqual('https://pagure.io/category/repo/c/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://pagure.io/category/repo')
-        self.assertEqual('https://pagure.io/category/repo/c/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://pagure.io/category/repo/')
-        self.assertEqual('https://pagure.io/category/repo/c/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://git.code.sf.net/p/legacy/code')
-        self.assertEqual('https://sourceforge.net/p/legacy/code/ci/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://git.code.sf.net/p/legacy/')
-        self.assertEqual('https://sourceforge.net/p/legacy/code/ci/' + self.HASH,
-                         obj.commit_url(self.HASH))
-
-        obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://git.code.sf.net/p/legacy')
-        self.assertEqual('https://sourceforge.net/p/legacy/code/ci/' + self.HASH,
-                         obj.commit_url(self.HASH))
+        for repo, url in [
+            # The commit hash is simply appended to each of these urls, making them shorter and this
+            # table easier to read.
+            ('https://github.com/user/proj', 'https://github.com/user/proj/commit/'),
+            ('https://github.com/user/proj/', 'https://github.com/user/proj/commit/'),
+            ('https://github.com/user/proj', 'https://github.com/user/proj/commit/'),
+            ('https://github.com/user/proj/', 'https://github.com/user/proj/commit/'),
+            ('https://github.com/user/proj.git', 'https://github.com/user/proj/commit/'),
+            ('https://gitlab.com/user/repo.git', 'https://gitlab.com/user/repo/-/commit/'),
+            ('https://gitlab.com/user/repo', 'https://gitlab.com/user/repo/-/commit/'),
+            ('https://gitlab.com/user/repo/', 'https://gitlab.com/user/repo/-/commit/'),
+            ('https://invent.kde.org/pim/xyzzy', 'https://invent.kde.org/pim/xyzzy/-/commit/'),
+            ('https://invent.kde.org/pim/xyzzy/', 'https://invent.kde.org/pim/xyzzy/-/commit/'),
+            ('https://invent.kde.org/pim/xyzzy.git', 'https://invent.kde.org/pim/xyzzy/-/commit/'),
+            ('https://pagure.io/category/repo.git', 'https://pagure.io/category/repo/c/'),
+            ('https://pagure.io/category/repo', 'https://pagure.io/category/repo/c/'),
+            ('https://pagure.io/category/repo/', 'https://pagure.io/category/repo/c/'),
+            ('https://git.code.sf.net/p/legacy/code', 'https://sourceforge.net/p/legacy/code/ci/'),
+            ('https://git.code.sf.net/p/legacy/', 'https://sourceforge.net/p/legacy/code/ci/'),
+            ('https://git.code.sf.net/p/legacy', 'https://sourceforge.net/p/legacy/code/ci/')
+        ]:
+            with self.subTest(repo=repo, url=url):
+                self.assertEqual(
+                    url + self.HASH,
+                    analysis.ResultsOverTimeByUniqueJob(
+                        Mock(), repo).commit_url(self.HASH))
 
     def test_unknown(self):
         obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://some.unknown.site/xyzzy.git')
