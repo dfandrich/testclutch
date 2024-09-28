@@ -39,20 +39,18 @@ def main():
         print('--uniquejob and --html are not compatible', file=sys.stderr)
         sys.exit(1)
 
-    ds = db.Datastore()
-    ds.connect()
-    analyzer = analysis.ResultsOverTimeByUniqueJob(ds, args.checkrepo)
+    with db.Datastore() as ds:
+        analyzer = analysis.ResultsOverTimeByUniqueJob(ds, args.checkrepo)
 
-    if args.uniquejob:
-        logging.info(f'Analyzing job {args.uniquejob[0]}')
-        analyzer.analyze_by_unique_job(args.uniquejob[0])
-    elif args.html:
-        logging.info('Analyzing all unique jobs and creating table')
-        analyzer.show_job_failure_table(args.checkrepo)
-    else:
-        logging.info('Analyzing all unique jobs')
-        analyzer.analyze_all_by_unique_job(args.checkrepo)
-    ds.close()
+        if args.uniquejob:
+            logging.info(f'Analyzing job {args.uniquejob[0]}')
+            analyzer.analyze_by_unique_job(args.uniquejob[0])
+        elif args.html:
+            logging.info('Analyzing all unique jobs and creating table')
+            analyzer.show_job_failure_table(args.checkrepo)
+        else:
+            logging.info('Analyzing all unique jobs')
+            analyzer.analyze_all_by_unique_job(args.checkrepo)
 
 
 if __name__ == '__main__':

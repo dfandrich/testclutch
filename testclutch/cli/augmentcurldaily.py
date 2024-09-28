@@ -105,21 +105,17 @@ class CurlDailyAugmenter:
 
 
 def augment_curl_daily(args):
-    ds = db.Datastore()
-    ds.connect()
+    with db.Datastore() as ds:
+        cda = CurlDailyAugmenter(args.checkrepo, ds, args.dry_run)
+        if args.howrecent:
+            since = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+                        ) - args.howrecent * 3600
+        else:
+            logging.warning('Use --howrecent to speed up augmentation')
+            since = 0
 
-    cda = CurlDailyAugmenter(args.checkrepo, ds, args.dry_run)
-    if args.howrecent:
-        since = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
-                    ) - args.howrecent * 3600
-    else:
-        logging.warning('Use --howrecent to speed up augmentation')
-        since = 0
-
-    for fn in args.filenames:
-        cda.augment_daily(fn, since)
-
-    ds.close()
+        for fn in args.filenames:
+            cda.augment_daily(fn, since)
 
 
 def parse_args(args=None) -> argparse.Namespace:

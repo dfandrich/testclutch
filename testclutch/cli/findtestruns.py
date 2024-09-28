@@ -124,31 +124,27 @@ def main():
         print('Must specify tests with --failed, --succeeded or after --resultcode')
         return
 
-    ds = db.Datastore()
-    ds.connect()
+    with db.Datastore() as ds:
+        ffr = FindFailedRuns(ds)
 
-    ffr = FindFailedRuns(ds)
+        for testname in args.succeeded:
+            print('------------------------------------')
+            print(f'Looking for succeeded test {testname} runs')
+            testmatches = ffr.find_status_run(args.checkrepo, since, testname, SUCCEEDED)
+            ffr.show_matches(testmatches)
 
-    for testname in args.succeeded:
-        print('------------------------------------')
-        print(f'Looking for succeeded test {testname} runs')
-        testmatches = ffr.find_status_run(args.checkrepo, since, testname, SUCCEEDED)
-        ffr.show_matches(testmatches)
+        for testname in args.failed:
+            print('------------------------------------')
+            print(f'Looking for failed test {testname} runs')
+            testmatches = ffr.find_status_run(args.checkrepo, since, testname, FAILED)
+            ffr.show_matches(testmatches)
 
-    for testname in args.failed:
-        print('------------------------------------')
-        print(f'Looking for failed test {testname} runs')
-        testmatches = ffr.find_status_run(args.checkrepo, since, testname, FAILED)
-        ffr.show_matches(testmatches)
-
-    for testname in args.tests:
-        print('------------------------------------')
-        print(f'Looking for runs of test {testname} matching {args.resultcode}')
-        testmatches = ffr.find_status_run(
-            args.checkrepo, since, testname, (TestResult[args.resultcode],))
-        ffr.show_matches(testmatches)
-
-    ds.close()
+        for testname in args.tests:
+            print('------------------------------------')
+            print(f'Looking for runs of test {testname} matching {args.resultcode}')
+            testmatches = ffr.find_status_run(
+                args.checkrepo, since, testname, (TestResult[args.resultcode],))
+            ffr.show_matches(testmatches)
 
 
 if __name__ == '__main__':

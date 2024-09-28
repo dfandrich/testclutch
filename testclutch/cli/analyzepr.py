@@ -912,35 +912,36 @@ def main():
         logging.error('--authfile is required with gha')
         return PRStatus.ERROR
 
-    ds = db.Datastore()
-    ds.connect()
+    with db.Datastore() as ds:
+        if args.gather_analysis:
+            ga = GatherPRAnalysis(ds, args)
+            return ga.gather_analysis(prs)
 
-    if args.gather_analysis:
-        ga = GatherPRAnalysis(ds, args)
-        rc = ga.gather_analysis(prs)
+        if args.comment:
+            ga = GatherPRAnalysis(ds, args)
+            return ga.comment(prs)
 
-    elif args.comment:
-        ga = GatherPRAnalysis(ds, args)
-        rc = ga.comment(prs)
-
-    else:  # must be --report
+        # must be --report
         # Analyze only one origin at a time because each one might have different login credentials
         if args.origin == 'appveyor':
-            rc = appveyor_analyze_pr(args, ds, prs)
-        elif args.origin == 'azure':
-            rc = azure_analyze_pr(args, ds, prs)
-        elif args.origin == 'circle':
-            rc = circle_analyze_pr(args, ds, prs)
-        elif args.origin == 'cirrus':
-            rc = cirrus_analyze_pr(args, ds, prs)
-        elif args.origin == 'gha':
-            rc = gha_analyze_pr(args, ds, prs)
-        else:
-            logging.error(f'Unsupported origin {args.origin}')
-            rc = PRStatus.ERROR
+            return appveyor_analyze_pr(args, ds, prs)
 
-    ds.close()
-    return rc  # noqa: R504
+        if args.origin == 'azure':
+            return azure_analyze_pr(args, ds, prs)
+
+        if args.origin == 'circle':
+            return circle_analyze_pr(args, ds, prs)
+
+        if args.origin == 'cirrus':
+            return cirrus_analyze_pr(args, ds, prs)
+
+        if args.origin == 'gha':
+            return gha_analyze_pr(args, ds, prs)
+
+        logging.error(f'Unsupported origin {args.origin}')
+        return PRStatus.ERROR
+
+    return PRStatus.READY
 
 
 if __name__ == '__main__':

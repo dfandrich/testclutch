@@ -1,6 +1,7 @@
 """Ingest commit information from a git repository."""
 
 import argparse
+import contextlib
 import logging
 import subprocess
 from typing import Optional
@@ -77,17 +78,9 @@ class GitCommitIngestor:
 
 
 def ingest_commits(args):
-    if not args.dry_run:
-        ds = db.Datastore()
-        ds.connect()
-    else:
-        ds = None
-
-    gc = GitCommitIngestor(args.checkrepo, ds)
-    gc.ingest_commit_info(args.localrepo, args.branch, args.since)
-
-    if ds:
-        ds.close()
+    with db.Datastore() if not args.dry_run else contextlib.nullcontext() as ds:
+        gc = GitCommitIngestor(args.checkrepo, ds)
+        gc.ingest_commit_info(args.localrepo, args.branch, args.since)
 
 
 def parse_args(args=None) -> argparse.Namespace:

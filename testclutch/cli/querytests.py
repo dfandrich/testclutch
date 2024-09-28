@@ -64,38 +64,35 @@ def main():
         since = (datetime.datetime.now(tz=datetime.timezone.utc)
                  - datetime.timedelta(hours=config.get('analysis_hours')))
 
-    ds = db.Datastore()
-    ds.connect()
+    with db.Datastore() as ds:
+        if args.query:
+            # Search for logs matching metadata
+            # e.g. runid=1234567, runtestsduration>555000000
+            val = NVO_RE.search(args.query)
+            if not val:
+                logging.error('Invalid match query: %s', args.query)
+                sys.exit(1)
+            op = operator_from_matcher(val.group(2))
+            rows = ds.select_meta_test_runs(args.checkrepo, since,
+                                            val.group(1), op, val.group(3))
 
-    if args.query:
-        # Search for logs matching metadata
-        # e.g. runid=1234567, runtestsduration>555000000
-        val = NVO_RE.search(args.query)
-        if not val:
-            logging.error('Invalid match query: %s', args.query)
-            sys.exit(1)
-        op = operator_from_matcher(val.group(2))
-        rows = ds.select_meta_test_runs(args.checkrepo, since,
-                                        val.group(1), op, val.group(3))
+        else:
+            # Show all logs
+            rows = ds.select_all_test_runs(args.checkrepo, since)
 
-    else:
-        # Show all logs
-        rows = ds.select_all_test_runs(args.checkrepo, since)
+        for row in rows:
+            print(row[0], row[1])
+            meta = row[2]
+            for n, v in meta.items():
+                print(f'{n}={v}')
+            testcases = ds.select_test_results(row[0])
+            summarize.show_totals(testcases)
+            if args.show_tests:
+                testcases.sort(key=lambda x: summarize.try_integer(x[0]))
+                for t in testcases:
+                    print(t)
+            print()
 
-    for row in rows:
-        print(row[0], row[1])
-        meta = row[2]
-        for n, v in meta.items():
-            print(f'{n}={v}')
-        testcases = ds.select_test_results(row[0])
-        summarize.show_totals(testcases)
-        if args.show_tests:
-            testcases.sort(key=lambda x: summarize.try_integer(x[0]))
-            for t in testcases:
-                print(t)
-        print()
-
-    ds.close()
     print(f'{len(rows)} matching logs')
 
 

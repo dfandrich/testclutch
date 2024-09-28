@@ -60,13 +60,9 @@ class GitHashAugmenter:
 
 
 def augment_short_hashes(args):
-    ds = db.Datastore()
-    ds.connect()
-
-    gitaugment = GitHashAugmenter(args.checkrepo, ds, args.dry_run)
-    gitaugment.augment_short_hashes()
-
-    ds.close()
+    with db.Datastore() as ds:
+        gitaugment = GitHashAugmenter(args.checkrepo, ds, args.dry_run)
+        gitaugment.augment_short_hashes()
 
 
 def parse_args(args=None) -> argparse.Namespace:

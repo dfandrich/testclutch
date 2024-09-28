@@ -792,47 +792,46 @@ def main():
         hours = config.get('analysis_hours')
     since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
 
-    ds = db.Datastore()
-    ds.connect()
-    logging.info(f'Creating report "{args.report}" since {since}')
+    with db.Datastore() as ds:
+        logging.info(f'Creating report "{args.report}" since {since}')
 
-    if args.report == 'metadata_values':
-        mdstats = MetadataStats(ds, config.expand('check_repo'), since)
-        nv = mdstats.get_name_values()
-        if args.html:
-            output_nv_summary_html(nv, repo=config.expand('check_repo'),
-                                   hours=hours, full_list=args.full)
+        if args.report == 'metadata_values':
+            mdstats = MetadataStats(ds, config.expand('check_repo'), since)
+            nv = mdstats.get_name_values()
+            if args.html:
+                output_nv_summary_html(nv, repo=config.expand('check_repo'),
+                                       hours=hours, full_list=args.full)
+            else:
+                output_nv_summary_text(nv, full_list=args.full)
+
+        elif args.report == 'test_run_stats':
+            trstats = TestRunStats(ds, config.expand('check_repo'), since)
+            if args.html:
+                output_test_run_stats_html(trstats)
+            else:
+                output_test_run_stats_text(trstats)
+
+        elif args.report == 'test_results_count':
+            trstats = TestRunStats(ds, config.expand('check_repo'), since)
+            if args.html:
+                output_test_results_count_html(trstats)
+            else:
+                output_test_results_count_text(trstats)
+
+        elif args.report == 'feature_matrix':
+            # The default hours is different for this job, so set it again from scratch here
+            hours = args.howrecent
+            if not hours:
+                hours = config.get('disabled_job_hours')
+            since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
+            featurematrix = FeatureMatrix(ds, config.expand('check_repo'), since)
+            if args.html:
+                output_feature_matrix_html(featurematrix)
+            else:
+                logging.error(f'--html must be used with {args.report}')
+
         else:
-            output_nv_summary_text(nv, full_list=args.full)
-
-    elif args.report == 'test_run_stats':
-        trstats = TestRunStats(ds, config.expand('check_repo'), since)
-        if args.html:
-            output_test_run_stats_html(trstats)
-        else:
-            output_test_run_stats_text(trstats)
-
-    elif args.report == 'test_results_count':
-        trstats = TestRunStats(ds, config.expand('check_repo'), since)
-        if args.html:
-            output_test_results_count_html(trstats)
-        else:
-            output_test_results_count_text(trstats)
-
-    elif args.report == 'feature_matrix':
-        # The default hours is different for this job, so set it again from scratch here
-        hours = args.howrecent
-        if not hours:
-            hours = config.get('disabled_job_hours')
-        since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
-        featurematrix = FeatureMatrix(ds, config.expand('check_repo'), since)
-        if args.html:
-            output_feature_matrix_html(featurematrix)
-        else:
-            logging.error(f'--html must be used with {args.report}')
-
-    else:
-        logging.error(f'Unknown report "{args.report}"')
+            logging.error(f'Unknown report "{args.report}"')
 
 
 if __name__ == '__main__':

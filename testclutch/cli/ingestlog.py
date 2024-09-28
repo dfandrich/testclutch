@@ -1,6 +1,7 @@
 """Ingests a curl test log file into the database."""
 
 import argparse
+import contextlib
 import logging
 import os
 import stat
@@ -282,32 +283,24 @@ def main():
             logging.error('Metadata fields cannot be added in search mode')
             sys.exit(1)
 
-        if not args.dry_run:
-            ds = db.Datastore()
-            ds.connect()
-        else:
-            ds = None
-
-        if args.origin == 'gha':
-            sys.exit(gha_ingest_recent_runs(args, ds))
-        elif args.origin == 'circle':
-            sys.exit(circle_ingest_recent_runs(args, ds))
-        elif args.origin == 'cirrus':
-            sys.exit(cirrus_ingest_recent_runs(args, ds))
-        elif args.origin == 'appveyor':
-            sys.exit(appveyor_ingest_recent_runs(args, ds))
-        elif args.origin == 'azure':
-            sys.exit(azure_ingest_recent_runs(args, ds))
-        elif args.origin == 'curlauto':
-            sys.exit(curlauto_ingest_recent_runs(args, ds))
-        else:
-            logging.error('Origin %s is not supported with --howrecent', args.origin)
-            if ds:
-                ds.close()
-            sys.exit(1)
-
-        if ds:
-            ds.close()
+        with db.Datastore() if not args.dry_run else contextlib.nullcontext() as ds:
+            if args.origin == 'gha':
+                sys.exit(gha_ingest_recent_runs(args, ds))
+            elif args.origin == 'circle':
+                sys.exit(circle_ingest_recent_runs(args, ds))
+            elif args.origin == 'cirrus':
+                sys.exit(cirrus_ingest_recent_runs(args, ds))
+            elif args.origin == 'appveyor':
+                sys.exit(appveyor_ingest_recent_runs(args, ds))
+            elif args.origin == 'azure':
+                sys.exit(azure_ingest_recent_runs(args, ds))
+            elif args.origin == 'curlauto':
+                sys.exit(curlauto_ingest_recent_runs(args, ds))
+            else:
+                logging.error('Origin %s is not supported with --howrecent', args.origin)
+                if ds:
+                    ds.close()
+                sys.exit(1)
 
     if args.origin != 'local':
         logging.warning(f"It's odd to be reading {args.origin} logs from files, but ok")

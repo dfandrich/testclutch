@@ -20,9 +20,11 @@ IntegrityError = sqlite3.IntegrityError
 TestRunRow = Sequence[tuple[int, datetime.datetime, TestMeta]]
 
 
-# TODO: make this a context manager
 class Datastore:
-    """Class through which all operations on the main database are performed."""
+    """Class through which all operations on the main database are performed.
+
+    This class can be used as a context manager to open and close the DB connection.
+    """
 
     def __init__(self, filename: Optional[str] = None):
         if not filename:
@@ -30,6 +32,15 @@ class Datastore:
         self.filename = filename
         self.db = None   # type: Optional[sqlite3.Connection]
         self.cur = None  # type: Optional[sqlite3.Cursor]
+
+    def __enter__(self):
+        """Open the database connection and return the object itself."""
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        """Close the database connection."""
+        self.close()
 
     def connect(self):
         """Open an existing DB or creates a new one."""
@@ -64,8 +75,10 @@ class Datastore:
         self.cur.execute('PRAGMA foreign_keys')
 
     def close(self):
-        self.cur.close()
-        self.db.close()
+        if self.cur:
+            self.cur.close()
+        if self.db:
+            self.db.close()
 
     def create_new_db(self):
         logging.info('Creating new database')
