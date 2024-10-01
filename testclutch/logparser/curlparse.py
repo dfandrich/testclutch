@@ -132,7 +132,7 @@ def escs(s: str) -> str:
 
     This makes it safer to display by avoiding invalid UTF-8 and ANSI escape sequences.
     """
-    return s.encode('utf-8').decode('us-ascii', 'backslashreplace')
+    return s.encode('utf-8').decode('us-ascii', errors='backslashreplace')
 
 
 def strip0(n: str) -> str:

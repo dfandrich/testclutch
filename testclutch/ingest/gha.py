@@ -11,6 +11,7 @@ import re
 import zipfile
 from typing import Any, Optional
 
+from testclutch import config
 from testclutch import db
 from testclutch import logcache
 from testclutch import summarize
@@ -24,11 +25,6 @@ from testclutch.logparser import logparse
 DEFAULT_EXT = '.zip'  # simplifying assumption, that all log files are of this type
 LOGSUBDIR = 'gha'
 EVENT = 'push'  # only look at logs of this event type
-
-# This is the Python character map in which the logs are assumed. If any errors are encountered
-# during decoding (such as if a binary file was displayed in a log dump), they will automatically
-# be replaced with backslash escapes in the decode call.
-LOG_CHARMAP = 'UTF-8'
 
 # Matches may fail if GHA does filename substitution on characters other that this
 KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}$]*$')
@@ -242,8 +238,12 @@ class GithubIngestor:
                 logging.debug('Skipping %s', fileinfo.filename)
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
+
+            # If any bad characters are encountered while decoding using this charset (such as if a
+            # binary file was displayed in a log dump), they will automatically be replaced with
+            # backslash escapes.
             readylog = msbuild.MsBuildLog(logprefix.RegexPrefixedLog(
-                io.TextIOWrapper(log.open(fileinfo.filename), encoding=LOG_CHARMAP,
+                io.TextIOWrapper(log.open(fileinfo.filename), encoding=config.expand('log_charset'),
                                  errors='backslashreplace'),
                 regex=LOG_TIMESTAMP_RE))
             meta, testcases = logparse.parse_log_file(readylog)

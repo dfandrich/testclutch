@@ -26,6 +26,10 @@ log_parsers = [
     'testclutch.logparser.automakeparse.parse_log_file',
 ]
 
+# Use this character set when reading logs. Any errors when reading cause the bad bytes to be
+# replaced with backslash escape sequences.
+log_charset = 'UTF-8'
+
 # Minimum number of failures in a row that need to occur before reporting on it
 # (currently (mostly) ignored)
 report_consecutive_failures = 3
