@@ -757,7 +757,7 @@ class GatherPRAnalysis:
 
         return PRStatus.READY
 
-    def compose_text(self, analysis: prdef.PRAnalysis) -> str:
+    def compose_text(self, pranalysis: prdef.PRAnalysis) -> str:
         """Compose text for a comment about a PR.
 
         Text is in MarkDown format.
@@ -780,37 +780,36 @@ class GatherPRAnalysis:
         #
         # Instead, we just detect the situation, which should be fairly rare, and merely warn the
         # user.
-        commits = frozenset(v for v in analysis.commit.values() if v)
+        commits = frozenset(v for v in pranalysis.commit.values() if v)
         committext = ''
         commitwarning = ''
         if len(commits) == 1:
-            # This only works if checkrepo is GitHub
             commit = next(iter(commits))
-            url = f'{self.args.checkrepo}/commit/{commit}'
-            committext = f' at [{commit:.8}]({escape(url)})'
+            analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds, self.args.checkrepo)
+            committext = f' at [{commit:.8}]({escape(analyzer.commit_url(commit))})'
         elif len(commits) > 1:
             commitwarning = (
                 f'###### Note that this analysis is based on tests run on {len(commits)} different '
                 'commits from this PR on different CI services\n')
         else:
             # This should never happen
-            logging.error('No commits found in PR#%d analysis', analysis.num)
+            logging.error('No commits found in PR#%d analysis', pranalysis.num)
 
-        text = f'Analysis of PR #{analysis.num}{committext}:\n\n'
+        text = f'Analysis of PR #{pranalysis.num}{committext}:\n\n'
         # Count of all tests that failed for this PR, by testname
         count_failed = collections.Counter(
-            fail.testname for oneorigin in analysis.failed.values() for fail in oneorigin)
+            fail.testname for oneorigin in pranalysis.failed.values() for fail in oneorigin)
         mentioned = set()
         for origin in self.all_origins():
             nummentioned = 0
-            for fail in analysis.failed[origin]:
+            for fail in pranalysis.failed[origin]:
                 if fail.testname not in mentioned:
                     logging.debug(f'test {fail.testname} on uniquejob {fail.uniquejob}')
                     # TODO: display "cijob" or similar; maybe create function from
                     # "First, show job name" code and use that; can you make it a tooltip in
                     # markdown instead?
                     text += f'[Test {fail.testname} failed]({escape(fail.url)}),'
-                    flakyfailuniquejob = [flake for flake in analysis.flaky[origin]
+                    flakyfailuniquejob = [flake for flake in pranalysis.flaky[origin]
                                           if flake.uniquejob == fail.uniquejob]
                     flakyfail = [flake for flake in flakyfailuniquejob
                                  if flake.testname == fail.testname]
@@ -822,7 +821,7 @@ class GatherPRAnalysis:
                             """)
                     else:
                         # check for permafail
-                        if any(perma for perma in analysis.permafail[origin]
+                        if any(perma for perma in pranalysis.permafail[origin]
                                if (perma.uniquejob == fail.uniquejob
                                    and perma.testname == fail.testname)):
                             text += dedentnonl("""
