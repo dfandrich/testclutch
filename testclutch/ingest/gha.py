@@ -24,10 +24,11 @@ from testclutch.logparser import logparse
 DEFAULT_EXT = '.zip'  # simplifying assumption, that all log files are of this type
 LOGSUBDIR = 'gha'
 EVENT = 'push'  # only look at logs of this event type
-# This is the Python character map in which the logs are assumed. This has a mapping for all 256
-# bytes so it will never have a conversion failure. And as long as the log regex parsing only looks
-# at bytes in the ASCII, everything will succeed.
-LOG_CHARMAP = 'ISO-8859-1'
+
+# This is the Python character map in which the logs are assumed. If any errors are encountered
+# during decoding (such as if a binary file was displayed in a log dump), they will automatically
+# be replaced with backslash escapes in the decode call.
+LOG_CHARMAP = 'UTF-8'
 
 # Matches may fail if GHA does filename substitution on characters other that this
 KNOWN_LOG_FN_RE = re.compile(r'^[-a-zA-Z0-9 .@,_/(){}$]*$')
@@ -242,7 +243,8 @@ class GithubIngestor:
                 continue
             logging.debug('Processing member %s', fileinfo.filename)
             readylog = msbuild.MsBuildLog(logprefix.RegexPrefixedLog(
-                io.TextIOWrapper(log.open(fileinfo.filename), encoding=LOG_CHARMAP),
+                io.TextIOWrapper(log.open(fileinfo.filename), encoding=LOG_CHARMAP,
+                                 errors='backslashreplace'),
                 regex=LOG_TIMESTAMP_RE))
             meta, testcases = logparse.parse_log_file(readylog)
             if meta:

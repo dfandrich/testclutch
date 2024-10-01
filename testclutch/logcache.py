@@ -14,8 +14,11 @@ import zstd
 
 
 COMPRESS_EXT = '.zst'
-# Files are always assumed to be using this character map
-CHARMAP = 'UTF-8'
+
+# This is the Python character map in which the logs are assumed. If any errors are encountered
+# during decoding (such as if a binary file was displayed in a log dump), they will automatically
+# be replaced with backslash escapes in the decode call.
+LOG_CHARMAP = 'UTF-8'
 
 
 def create_dirs(subdir: str):
@@ -51,7 +54,8 @@ def open_cache_file(fn: str, mode: str = 'r'):
             if mode.find('b') >= 0:
                 # Could add this using io.BytesIO if we need to
                 raise RuntimeError(f'Binary mode not supported: {mode}')
-            return io.StringIO(zstd.decompress(compress_file.read()).decode(CHARMAP))
+            return io.StringIO(zstd.decompress(compress_file.read()).decode(
+                LOG_CHARMAP, errors='backslashreplace'))
     except FileNotFoundError:
         return open(path, mode)
 
