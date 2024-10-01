@@ -158,6 +158,9 @@ with commands other than --ci-status.
 Adds git commit hashes & summary to autobuilds built from curl's daily
 tarballs.
 
+OBSOLETE since curl started storing the commit hash in daily tarballs on
+2024-08-07.
+
 ### tcaugmentgithash
 
 Adds full-length git commit hashes & summary to runs that only have a short
