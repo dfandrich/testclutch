@@ -123,8 +123,7 @@ class Datastore:
         self.db.commit()
 
     def store_test_run(self, meta: TestMeta, testresults: TestCases):
-        index_time = (meta['runtriggertime'] if 'runtriggertime' in meta else
-                      meta['runstarttime'] if 'runstarttime' in meta else meta['runfinishtime'])
+        index_time = meta.get('runtriggertime', meta.get('runstarttime', meta['runfinishtime']))
         repo = meta['checkrepo']
         origin = meta['origin']
         # Sqlite3 doesn't enforce UNIQUE if this is None (a.k.a. NULL), only ''

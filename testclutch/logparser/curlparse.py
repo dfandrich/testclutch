@@ -528,7 +528,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             # source of this log. It is identical to the buildcode used internally on the
             # page https://curl.se/dev/builds.html
             if r.group(1) not in TESTCURLBUILDCODEIGNORED:
-                current_code = meta['buildcode'] if 'buildcode' in meta else 0
+                current_code = meta.get('buildcode', 0)
                 # Use ISO 8859/1 to avoid any kind of encoding error; it hashes just as well
                 # as anything else
                 meta['buildcode'] = zlib.crc32(l.strip().encode('ISO-8859-1'), current_code)

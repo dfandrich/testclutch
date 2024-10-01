@@ -277,8 +277,7 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
         print('</td>')
 
         # Finally, show results of PR
-        jobtime = (meta['runtriggertime'] if 'runtriggertime' in meta else
-                   meta['runstarttime'] if 'runstarttime' in meta else meta['runfinishtime'])
+        jobtime = meta.get('runtriggertime', meta.get('runstarttime', meta['runfinishtime']))
         # title must contain safe HTML as it will not be escaped
         # TODO: include commit ID in message
         title = datetime.datetime.fromtimestamp(
