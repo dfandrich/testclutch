@@ -222,7 +222,7 @@ class TestPytestParse(unittest.TestCase):
             'testresult': 'failure'
         }, meta)
         self.assertEqual([
-            SingleTestFinding('bar_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('bar/test.py::TestParameterized::ciphers[TLSv1.3 +TLSv1.2-True]', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('foo_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.FAIL, '', 0),
             SingleTestFinding('skip_test.py::TestUupcCvt::test_ex', pytestparse.TestResult.SKIP, '', 0)
         ], testcases)

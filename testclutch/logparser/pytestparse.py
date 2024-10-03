@@ -27,7 +27,7 @@ SUMMARY_PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*))?$')
 
 # pytest -v format
 SESSION_END_RE = re.compile(r'^={3,} (\d+) (\w+).* in ([0-9.]+)s ([()\d:]+)? *=')
-RESULTV_RE = re.compile(r'^(?P<name>\S+::\S+) (?P<result>\w+) +(\(.*\) +)?\[[ \d]+%\]$')
+RESULTV_RE = re.compile(r'^(?P<name>\S+::\S+(\[.+?\])?) (?P<result>\w+) +(\(.*\) +)?\[[ \d]+%\]$')
 VERBOSE_SENTINEL_RE = re.compile(r'^collecting \.\.\. collected ([0-9]+) items$')
 # This is for xdist since VERBOSE_SENTINEL_RE doesn't appear
 VERBOSE_SENTINEL2_RE = re.compile(r'^cachedir: ')

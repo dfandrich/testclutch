@@ -4,7 +4,7 @@ cachedir: .pytest_cache
 rootdir: /tmp/t
 collecting ... collected 9 items / 6 deselected / 3 selected
 
-bar_test.py::TestUupcCvt::test_ex PASSED                                 [ 33%]
+bar/test.py::TestParameterized::ciphers[TLSv1.3 +TLSv1.2-True] PASSED    [ 33%]
 foo_test.py::TestUupcCvt::test_ex FAILED                                 [ 66%]
 skip_test.py::TestUupcCvt::test_ex SKIPPED                               [100%]
 
