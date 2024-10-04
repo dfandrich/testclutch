@@ -45,11 +45,11 @@ Using these data types, where appropriate, will make analysis of data easier.
 
 ## Tests
 
-- Each test name for a project must refer to a single test, e.g. there may not
-  be two completely different tests named "1". This does not mean that the same
-  test may not be run under different conditions that test different things, in
-  which case there should be a way to differentiate the two conditions in the
-  metadata.
+- Each test name for a checkrepo must refer to a single test, e.g. there may
+  not be two completely different tests named "1". This does not mean that the
+  same test may not be run under different conditions that test different
+  things, in which case there should be a way to differentiate the two
+  conditions in the metadata.
 
 ## Mandatory
 
@@ -109,7 +109,8 @@ later commits). These are important points to consider in choosing a value:
 When the test run was requested to start running (in seconds since 1970).
 If this is not available, then runstarttime can be supplied instead.
 If this is not available, then runfinishtime can be supplied instead.
-One of those three is mandatory.
+One of those three is mandatory and is used as a broad selector for test runs
+(e.g. "all runs in the last 7 days").
 
 ## Recommended
 
