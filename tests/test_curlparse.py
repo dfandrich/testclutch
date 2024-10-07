@@ -265,6 +265,22 @@ class TestParseUname(unittest.TestCase):
         }, curlparse.parse_uname(
             'syllable syllable 7 0.6 i586 Syllable')
         )
+        self.assertDictEqual({
+            'systemos': 'NuttX',
+            'systemhost': '15cb41b',
+            'systemosver': '12.4.0',
+            'arch': 'risc-v'
+        }, curlparse.parse_uname(
+            'NuttX 12.4.0 15cb41b Jan 19 2024 10:25:11 risc-v rv-virt')
+        )
+        self.assertDictEqual({
+            'systemos': 'Zephyr',
+            'systemhost': 'zephyr',
+            'systemosver': '3.7.99',
+            'arch': 'x86'
+        }, curlparse.parse_uname(
+            'Zephyr zephyr 3.7.99 v3.7.0-4020-g9f73988be029 Oct  7 2024 21:13:21 x86 qemu_x86')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({

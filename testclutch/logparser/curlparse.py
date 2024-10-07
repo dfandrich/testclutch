@@ -167,7 +167,7 @@ def parse_uname(uname: str) -> TestMetaStr:
     # and Darwin because they can have an extra space before a date)
     sysparts = uname.split()
     # This one treats multiple spaces as separators of empty items (needed on
-    # FreeBSD because its hostname can be empty)
+    # FreeBSD at least because its hostname can be empty)
     syspartsblanks = uname.split(sep=' ')
 
     if syspartsblanks[0]:
@@ -245,6 +245,13 @@ def parse_uname(uname: str) -> TestMetaStr:
         # systemosver as set above is just the minor release number
         meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
         meta['arch'] = syspartsblanks[4]
+    elif meta['systemos'] == 'NuttX' and len(sysparts) == 9:
+        meta['arch'] = sysparts[7]
+        # This uname swaps the normal host and version fields
+        meta['systemhost'] = syspartsblanks[2]
+        meta['systemosver'] = syspartsblanks[1]
+    elif meta['systemos'] == 'Zephyr' and len(sysparts) == 10:
+        meta['arch'] = sysparts[8]
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 
