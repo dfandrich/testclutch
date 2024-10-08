@@ -132,7 +132,7 @@ class ResultsOverTimeByUniqueJob:
             return (f'https://sourceforge.net/p/{parse.quote(parts[2])}/code/ci/'
                     f'{parse.quote(commit_hash)}')
 
-        logging.warning('Repo source {canon_repo} is unknown')
+        logging.warning(f'Repo source {canon_repo} is unknown')
 
         return ''
 

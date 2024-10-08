@@ -24,7 +24,7 @@ def main():
                 print('Usage: dbutil deleteid <id>')
                 sys.exit(1)
             rec_id = int(sys.argv[2])
-            print('Deleting job record id {rec_id}')
+            print(f'Deleting job record id {rec_id}')
             ds.delete_test_run(rec_id)
 
         elif sys.argv[1] == 'commitchain':
