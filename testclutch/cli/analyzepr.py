@@ -831,7 +831,7 @@ class GatherPRAnalysis:
                         else:
                             text += dedentnonl("""
                                 which has NOT been flaky recently,
-                                so **there could be a real issue in the PR**.
+                                so **there could be a real issue in this PR**.
                                 """)
                     if count_failed[fail.testname] > 1:
                         text += dedentnonl(f"""
