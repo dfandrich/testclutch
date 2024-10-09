@@ -281,6 +281,14 @@ class TestParseUname(unittest.TestCase):
         }, curlparse.parse_uname(
             'Zephyr zephyr 3.7.99 v3.7.0-4020-g9f73988be029 Oct  7 2024 21:13:21 x86 qemu_x86')
         )
+        self.assertDictEqual({
+            'systemos': 'QNX',
+            'systemhost': 'localhost',
+            'systemosver': '6.5.0',
+            'arch': 'x86'
+        }, curlparse.parse_uname(
+            'QNX localhost 6.5.0 2010/07/09-14:42:57EDT x86pc x86')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({

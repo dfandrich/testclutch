@@ -252,6 +252,8 @@ def parse_uname(uname: str) -> TestMetaStr:
         meta['systemosver'] = syspartsblanks[1]
     elif meta['systemos'] == 'Zephyr' and len(sysparts) == 10:
         meta['arch'] = sysparts[8]
+    elif meta['systemos'] == 'QNX' and len(sysparts) == 6:
+        meta['arch'] = sysparts[5]
     else:
         logging.warning('Unexpected uname line: %s', escs(uname))
 
