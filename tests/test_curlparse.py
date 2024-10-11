@@ -173,6 +173,27 @@ class TestParseUname(unittest.TestCase):
             'GENERIC  amd64')
         )
         self.assertDictEqual({
+            'systemos': 'FreeBSD',
+            'systemhost': 'FreeSBIE.LiveCD',
+            'systemosver': '6.2-RELEASE',
+            'arch': 'i386'
+        }, curlparse.parse_uname(
+            'FreeBSD FreeSBIE.LiveCD 6.2-RELEASE FreeBSD 6.2-RELEASE #11: Wed Feb  7 16:52:42 '
+            'UTC 2007     root@kaiser.sig11.org:/usr/obj.gmv-i386/usr/src/sys/FREESBIE  i386')
+        )
+        self.assertDictEqual({
+            'systemos': 'FreeBSD',
+            'systemhost': 'cheribsd-morello-purecap',
+            'systemosver': '15.0-CURRENT',
+            'arch': 'arm64'
+        }, curlparse.parse_uname(
+            'FreeBSD cheribsd-morello-purecap 15.0-CURRENT FreeBSD 15.0-CURRENT #0 '
+            'main-b2ad856aac65: Fri Jul 19 19:54:25 UTC 2024     '
+            'jenkins@focal:/local/scratch/jenkins/workspace/CheriBSD-pipeline_main@2'
+            '/cheribsd-morello-purecap-build/local/scratch/jenkins/workspace'
+            '/CheriBSD-pipeline_main@2/cheribsd/arm64.aarch64c/sys/GENERIC-MORELLO-PURECAP arm64')
+        )
+        self.assertDictEqual({
             'systemos': 'OpenBSD',
             'systemhost': 'openbsd.my.domain',
             'systemosver': '7.5',
