@@ -499,7 +499,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
         print_func('Time spent running tests per day:', f'{total_run_time / 1000000 / days:.0f} sec./day '
                    f'({total_run_time / 1000000 / days / 24 / 3600:.1f} days/day)')
         # TODO: break this down by testformat
-        print_func('Time spent running per test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
+        print_func('Average time spent running each test:', f'{total_run_time / 1000000 / total_tests_run:.3f} sec./test')
     with contextlib.suppress(TypeError):
         # "runtestsduration" isn't mandatory and TypeError will be raised if missing
         # Store these data first, then display them like the ones below, prefixed
