@@ -194,9 +194,21 @@ class TestPytestParse(unittest.TestCase):
         with self.open_data('pytest_success.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
+            'buildsystem': 'automake',
+            'compiler': 'GNU_C',
+            'compilerversion': '12',
+            'configureargs': "'--enable-maintainer-mode'",
+            'hostarch': 'x86_64',
+            'hostos': 'linux-gnu',
+            'hosttriplet': 'x86_64-pc-linux-gnu',
+            'hostvendor': 'pc',
             'os': 'linux',
-            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'runtestsduration': '80000',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
             'testresult': 'success'
         }, meta)
@@ -274,11 +286,21 @@ class TestPytestParse(unittest.TestCase):
         with self.open_data('pytest_nonverbose.log') as f:
             meta, testcases = pytestparse.parse_log_file_summary(f)
         self.assertDictEqual({
+            'buildsystem': 'cmake/ninja',
+            'buildsystemver': '3.30.4',
+            'compiler': 'GNU',
+            'compilerversion': '12.3.0',
+            'configureargs': '-DBUILD_STATIC_LIBS="ON" -DCMAKE_C_COMPILER_TARGET="x86_64-pc-linux-gnu" -DCMAKE_UNITY_BUILD="ON" -DCURL_BROTLI="ON" -DCURL_CA_FALLBACK="ON" -DCURL_TEST_BUNDLES="ON" -DCURL_WERROR="ON" -DCURL_ZSTD="ON" -DENABLE_DEBUG="ON" -DHTTPD_NGHTTPX="/home/runner/nghttp2/build/bin/nghttpx" -DOPENSSL_ROOT_DIR="/home/runner/quiche/quiche/deps/boringssl/src" -DTEST_NGHTTPX="/home/runner/nghttp2/build/bin/nghttpx" -DUSE_QUICHE="ON"',
+            'hostarch': 'x86_64',
+            'hostos': 'Linux',
             'os': 'linux',
             'runtestsduration': '450000',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
-            'testresult': 'failure'
+            'testresult': 'failure',
+            'targetarch': 'x86_64',
+            'targetos': 'Linux',
+            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1'
         }, meta)
         self.assertEqual([
             SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_torture', pytestparse.TestResult.FAIL, 'AssertionError:...', 0),
@@ -311,12 +333,12 @@ class TestPytestParse(unittest.TestCase):
         with self.open_data('pytest_xdist.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
+            'arch': 'x86_64',
             'os': 'linux',
             'runtestsduration': '720000',
             'testdeps': 'Python 3.10.11, pytest-8.3.3, pluggy-1.5.0',
             'paralleljobs': '2',
             'pyplatform': 'Linux-6.6.43-desktop-1.mga9-x86_64-with-glibc2.36',
-            'arch': 'x86_64',
             'systemos': 'Linux',
             'systemosver': '6.6.43-desktop',
             'testformat': 'pytest',

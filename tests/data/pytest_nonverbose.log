@@ -1,5 +1,19 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
+buildinfo.configure.tool: cmake
+buildinfo.configure.command: /usr/local/bin/cmake
+buildinfo.configure.version: 3.30.4
+buildinfo.configure.args: -DBUILD_STATIC_LIBS="ON" -DCMAKE_C_COMPILER_TARGET="x86_64-pc-linux-gnu" -DCMAKE_UNITY_BUILD="ON" -DCURL_BROTLI="ON" -DCURL_CA_FALLBACK="ON" -DCURL_TEST_BUNDLES="ON" -DCURL_WERROR="ON" -DCURL_ZSTD="ON" -DENABLE_DEBUG="ON" -DHTTPD_NGHTTPX="/home/runner/nghttp2/build/bin/nghttpx" -DOPENSSL_ROOT_DIR="/home/runner/quiche/quiche/deps/boringssl/src" -DTEST_NGHTTPX="/home/runner/nghttp2/build/bin/nghttpx" -DUSE_QUICHE="ON"
+buildinfo.configure.generator: Ninja
+buildinfo.configure.make: /usr/bin/ninja
+buildinfo.host.cpu: x86_64
+buildinfo.host.os: Linux
+buildinfo.target.cpu: x86_64
+buildinfo.target.os: Linux
+buildinfo.target.flags: UNIX GCC
+buildinfo.compiler: GNU
+buildinfo.compiler.version: 12.3.0
+buildinfo.sysroot:
 rootdir: /home/user/testclutch
 collected 15 items
 

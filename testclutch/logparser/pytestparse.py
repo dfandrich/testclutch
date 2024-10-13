@@ -12,6 +12,7 @@ import re
 
 from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
+from testclutch.logparser import curlparse
 from testclutch.testcasedef import TestResult
 
 
@@ -120,6 +121,9 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
+                elif bimeta := curlparse.parse_buildinfo(l):
+                    # curl-specific buildinfo lines
+                    meta = {**meta, **bimeta}
                 elif VERBOSE_SENTINEL_RE.search(l) or VERBOSE_SENTINEL2_RE.search(l):  # noqa: R508
                     # If this is found, this is a verbose log so clear data and give up
                     logging.debug("Actually, it's a verbose log; give up")
@@ -205,6 +209,9 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
+                elif bimeta := curlparse.parse_buildinfo(l):
+                    # curl-specific buildinfo lines
+                    meta = {**meta, **bimeta}
                 elif (NONVERBOSE_SENTINEL_RE.search(l)  # noqa: R508
                       or NONVERBOSE_SENTINEL2_RE.search(l)):
                     # If this is found, this is not a verbose log so clear data and give up

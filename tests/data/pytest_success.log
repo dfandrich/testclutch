@@ -1,6 +1,18 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /usr/bin/python3
 cachedir: .pytest_cache
+buildinfo.configure.tool: configure
+buildinfo.configure.args:  '--enable-maintainer-mode'
+buildinfo.host: x86_64-pc-linux-gnu
+buildinfo.host.cpu: x86_64
+buildinfo.host.os: linux-gnu
+buildinfo.target: x86_64-pc-linux-gnu
+buildinfo.target.cpu: x86_64
+buildinfo.target.os: linux-gnu
+buildinfo.target.flags: UNIX GCC
+buildinfo.compiler: GNU_C
+buildinfo.compiler.version: 12
+buildinfo.sysroot:
 rootdir: /home/user/testclutch
 collecting ... collected 8 items
 
