@@ -3901,6 +3901,8 @@ class TestCurlParse(unittest.TestCase):
             'curldeps': 'libcurl/8.10.0-DEV OpenSSL/3.0.14 zlib/1.2.13 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.61.0 OpenLDAP/2.5.14',
             'features': 'alt-svc AsynchDNS Debug HSTS HTTP2 HTTPS-proxy IDN IPv6 Largefile libz NTLM PSL SSL threadsafe TLS-SRP UnixSockets',
             'host': 'localhost',
+            'hostarch': 'x86_64',
+            'hostos': 'Linux',
             'systemos': 'Linux',
             'systemhost': 'localhost',
             'systemosver': '6.6.43',

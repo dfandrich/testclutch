@@ -53,13 +53,13 @@ RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
 
 # Buildinfo fields in header, starting 2024-09-06
-# Some are duplicated and aren't store separately, namely:
-#   buildinfo.configure.os (same as RE_SYSTEM[2])
+# Some are duplicated by other runtests.pl lines, namely:
 #   buildinfo.target (same as RE_CURLVER[1])
 #   buildinfo.target.vendor (same as RE_CURLVER[1][-1])
 #   buildinfo.host.os (same as RE_OS)
 #   buildinfo.host.cpu (same as RE_BI_HOSTTRIPLET[0])
 #   buildinfo.host.vendor (same as RE_BI_HOSTTRIPLET[-1])
+# but since these can be used in non-runtests.pl contexts, some are parsed anyway.
 # TODO: Add the remaining fields:
 #   buildinfo.configure.command
 #   buildinfo.configure.make
@@ -75,9 +75,12 @@ RE_BI_GENERATOR = re.compile(r'^buildinfo\.configure\.generator: (.+)$')
 RE_BI_CONFIGURETOOL = re.compile(r'^buildinfo\.configure\.tool: (.+)$')
 RE_BI_CONFIGUREARGS = re.compile(r'^buildinfo\.configure\.args: (.+)$')
 RE_BI_CONFIGUREVER = re.compile(r'^buildinfo\.configure\.version: (\S+)')
+RE_BI_TARGETTRIPLET = re.compile(r'^buildinfo\.target: (\S+)$')
 RE_BI_TARGETCPU = re.compile(r'^buildinfo\.target\.cpu: (\S+)')
-RE_BI_TARGETOS = re.compile(r'^buildinfo\.target\.os: (\S+)')
+RE_BI_TARGETOS = re.compile(r'^buildinfo\.target\.os: (.+)')
 RE_BI_HOSTTRIPLET = re.compile(r'^buildinfo\.host: (\S+)$')
+RE_BI_HOSTOS = re.compile(r'^buildinfo\.host\.os: (.+)$')
+RE_BI_HOSTCPU = re.compile(r'^buildinfo\.host\.cpu: (\S+)$')
 
 # Test log results
 RE_STARTRESULTS = re.compile(r'^\*{41}')
@@ -297,6 +300,19 @@ def parse_buildinfo(l: str) -> TestMetaStr:
             meta['compilerversion'] = ver
         else:
             meta['compilerversioncode'] = ver
+    elif r := RE_BI_TARGETTRIPLET.search(l):
+        meta['targettriplet'] = r.group(1)
+        if rr := RE_TARGETTRIPLET.search(r.group(1)):
+            meta['targetarch'] = rr.group(1)
+            meta['targetvendor'] = rr.group(2)
+            # targetos will contain the "kernel" field when it exists (in a target
+            # quadruplet) AND the "os" field. This ends up being more consistent
+            # than trying to separate them into two fields when they exist, as
+            # "kernel" and "os" aren't always unique descriptors.
+            meta['targetos'] = rr.group(3)
+        else:
+            # Probably created by CMake, which doesn't use a triplet but just the OS
+            meta['targetos'] = r.group(1)
     elif r := RE_BI_TARGETCPU.search(l):
         meta['targetarch'] = r.group(1)
     elif r := RE_BI_TARGETOS.search(l):
@@ -314,6 +330,10 @@ def parse_buildinfo(l: str) -> TestMetaStr:
         else:
             # Probably created by CMake, which doesn't use a triplet but just the OS
             meta['hostos'] = r.group(1)
+    elif r := RE_BI_HOSTCPU.search(l):
+        meta['hostarch'] = r.group(1)
+    elif r := RE_BI_HOSTOS.search(l):
+        meta['hostos'] = r.group(1)
 
     return meta
 
