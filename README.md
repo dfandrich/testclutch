@@ -196,12 +196,21 @@ Show information about a specific ingested job based on specific
 
 ### tcdbutil
 
-Perform low-level manipulations of the database.
+Perform low-level manipulations of the database such as deleting a run or
+checking a commit chain.
 
 ### tclogparse
 
 Parse a single log file on disk from stdin and view the parsed data on the
-stdout.
+stdout using the configured log parsers.
+
+### testclutch.augment.curldailyinfo
+
+Read the specified curl daily tarball and dump its metadata.
+
+### testclutch.prdef
+
+Dump the raw form of the analyzepr PR status cache.
 
 ## Code Structure
 
