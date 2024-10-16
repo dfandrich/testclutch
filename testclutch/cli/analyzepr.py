@@ -87,6 +87,10 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
         '--rerun',
         action='store_true',
         help='Rerun step even if run before')
+    parser.add_argument(
+        '--return-pr-status',
+        action='store_true',
+        help='Program return status is nonzero on a failed PR (with --ci-status)')
     # Put these at end so they're easier for the user to see
     with nullcontext(parser.add_mutually_exclusive_group(required=True)) as output_mode:
         output_mode.add_argument(
@@ -899,7 +903,7 @@ def main():
         if status == PRStatus.ERROR:
             logging.error('A PR is in an unacceptable state')
         logging.warning(f'Overall status return code is {status.name}')
-        return status
+        return status if args.return_pr_status else PRStatus.READY
 
     # Generate CI job results report for PR
     if args.report and not args.origin:
