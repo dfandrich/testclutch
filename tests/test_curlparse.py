@@ -310,6 +310,30 @@ class TestParseUname(unittest.TestCase):
         }, curlparse.parse_uname(
             'QNX localhost 6.5.0 2010/07/09-14:42:57EDT x86pc x86')
         )
+        self.assertDictEqual({
+            'systemos': 'ELKS',
+            'systemhost': 'elks',
+            'systemosver': '0.7.0',
+            'arch': 'i8086'
+        }, curlparse.parse_uname(
+            'ELKS elks 0.7.0 commit d043b92d 03 Aug 2023 07:37:00 -0700 ibmpc i8086')
+        )
+        self.assertDictEqual({
+            'systemos': 'Sortix',
+            'systemhost': 'sortix',
+            'systemosver': '1.0',
+            'arch': 'i686'
+        }, curlparse.parse_uname(
+            'Sortix sortix 1.0 "Self-Hosting & Installable" Mar 28 2016 i686 i386 i386 Sortix')
+        )
+        self.assertDictEqual({
+            'systemos': 'Tilck',
+            'systemhost': 'tilck',
+            'systemosver': '0.1.4',
+            'arch': 'i686'
+        }, curlparse.parse_uname(
+            'Tilck tilck 0.1.4 4b1930d8 i686 GNU/Linux')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({
