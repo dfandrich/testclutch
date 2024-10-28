@@ -902,7 +902,7 @@ def main():
         status = max(prstates, key=lambda x: x[1])[1] if prstates else PRStatus.READY
         if status == PRStatus.ERROR:
             logging.error('A PR is in an unacceptable state')
-        logging.warning(f'Overall status return code is {status.name}')
+        logging.warning(f'Overall status is {status.name}')
         return status if args.return_pr_status else PRStatus.READY
 
     # Generate CI job results report for PR
