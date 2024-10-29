@@ -15,7 +15,7 @@ from testclutch import config
 from testclutch import db
 from testclutch import summarize
 from testclutch.gitdef import CommitInfo
-from testclutch.logdef import TestMeta
+from testclutch.logdef import TestMeta, TestMetaStr
 from testclutch.testcasedef import TestResult
 
 # Info on a single failed job result
@@ -532,9 +532,8 @@ class ResultsOverTimeByUniqueJob:
                     if current_failure_counts[failure] > min_fails]
         return []
 
-    def make_job_title(self, meta: TestMeta) -> str:
+    def make_job_title(self, meta: TestMetaStr) -> str:
         origin = meta['origin']
-        assert isinstance(origin, str)  # satisfy pytype that this isn't int
         ciname = meta.get('ciname', '')
         if origin.casefold() == ciname.casefold():
             # reduce duplication of information

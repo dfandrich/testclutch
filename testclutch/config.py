@@ -117,10 +117,11 @@ def config() -> ModuleType:
 
     configfn = os.path.join(config_dir(), CONFIG_FILE)
     # There is a race condition here, but if the race fails, the only impact is a messier message
-    if os.access(configfn, os.R_OK):
-        spec = importlib.util.spec_from_loader('testclutchrc', importlib.machinery.SourceFileLoader(
-            'testclutchrc', configfn))
-        assert spec  # satisfy pytype that this isn't None
+    if (os.access(configfn, os.R_OK)
+        and (spec := importlib.util.spec_from_loader(
+             'testclutchrc',
+             importlib.machinery.SourceFileLoader(
+                 'testclutchrc', configfn)))):
         config_module = importlib.util.module_from_spec(spec)
 
         # Don't write the imported config file bytecode file to eliminate caching problems

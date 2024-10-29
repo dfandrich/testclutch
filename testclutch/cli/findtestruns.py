@@ -47,7 +47,6 @@ class FindFailedRuns:
         testmatches.sort(key=lambda x: x[1], reverse=True)
         for testid, runtime, failtext in testmatches:
             meta = self.ds.collect_meta(testid)
-            assert isinstance(meta['origin'], str)  # satisfy pytype that this isn't int
             name = meta.get('cijob', meta['uniquejobname'])
             print('Job:', f'{meta["origin"].capitalize()}: {name}')
             print('Time:',
