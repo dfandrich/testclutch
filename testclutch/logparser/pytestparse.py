@@ -42,6 +42,10 @@ RESULTV_XDIST_RE = re.compile(r'^\[\w+\] \[ *\d+%\] (?P<result>\w+) (?P<name>\S+
 # pytest-astropy-header --astropy-header option
 ASTROPY_PLATFORM_RE = re.compile(r'Platform: (.*)$')
 
+# curl-specific test headers
+FEATURES_RE = re.compile(r'^ *curl: Features: (.*)$')
+PROTOCOLS_RE = re.compile(r'^ *curl: Protocols: (.*)$')
+
 # common lines
 SESSION_START_RE = re.compile(r'^={5,} test session starts =+$')
 
@@ -121,6 +125,10 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
+                elif r := FEATURES_RE.search(l):
+                    meta['features'] = r.group(1)
+                elif r := PROTOCOLS_RE.search(l):
+                    meta['curlprotocols'] = r.group(1)
                 elif bimeta := curlparse.parse_buildinfo(l):
                     # curl-specific buildinfo lines
                     meta = {**meta, **bimeta}
@@ -209,6 +217,10 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
+                elif r := FEATURES_RE.search(l):
+                    meta['features'] = r.group(1)
+                elif r := PROTOCOLS_RE.search(l):
+                    meta['curlprotocols'] = r.group(1)
                 elif bimeta := curlparse.parse_buildinfo(l):
                     # curl-specific buildinfo lines
                     meta = {**meta, **bimeta}

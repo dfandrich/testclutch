@@ -198,6 +198,8 @@ class TestPytestParse(unittest.TestCase):
             'compiler': 'GNU_C',
             'compilerversion': '12',
             'configureargs': "'--enable-maintainer-mode'",
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IPv6 Largefile libz NTLM PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd',
             'hostarch': 'x86_64',
             'hostos': 'linux-gnu',
             'hosttriplet': 'x86_64-pc-linux-gnu',

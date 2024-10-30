@@ -1,6 +1,12 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /usr/bin/python3
 cachedir: .pytest_cache
+Testing curl 8.11.0-DEV
+  curl: Features: alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IPv6 Largefile libz NTLM PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd
+  curl: Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp ws wss
+  httpd: 2.4.58, http:37763 https:60269
+  httpd-proxy: 2.4.58, http:33671 https:46493
+  VsFTPD: 3.0.5, ftp:32919, ftps:52125
 buildinfo.configure.tool: configure
 buildinfo.configure.args:  '--enable-maintainer-mode'
 buildinfo.host: x86_64-pc-linux-gnu
