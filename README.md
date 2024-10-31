@@ -115,9 +115,10 @@ machine and with permissions that do not allow other users to access it.
 
 Test Clutch has built-in support for these test log formats:
 
-* Pytest (short, verbose, and with xdist and pytest-astropy-header)
-* Gnu automake
 * curl runtests (specific to the curl project)
+* Gnu automake
+* Pytest (short, verbose, and with xdist and pytest-astropy-header)
+* Python unittest (with -v -b flags)
 
 The logs parsed are those that are displayed as the tests are being run.  If
 your test runner uses a different format for reporting on test results, you

@@ -1,0 +1,68 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.11, pytest-8.3.3, pluggy-1.5.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/user/src/testclutch
+configfile: pyproject.toml
+plugins: cov-4.1.0, astropy-header-0.2.2
+collecting ... collected 12 items
+
+tests/unittest_generate.py::TestGenerateLogs::test_expected_failure XFAIL [  8%]
+tests/unittest_generate.py::TestGenerateLogs::test_expected_failure_but_success FAILED [ 16%]
+tests/unittest_generate.py::TestGenerateLogs::test_failure FAILED        [ 25%]
+tests/unittest_generate.py::TestGenerateLogs::test_skipped SKIPPED (...) [ 33%]
+tests/unittest_generate.py::TestGenerateLogs::test_subtests_failure FAILED [ 41%]
+tests/unittest_generate.py::TestGenerateLogs::test_subtests_success PASSED [ 50%]
+tests/unittest_generate.py::TestGenerateLogs::test_success PASSED        [ 58%]
+tests/unittest_generate.py::TestGenerateLogs::test_unexpected_exception FAILED [ 66%]
+tests/unittest_generate.py::TestSkippedClass::test_failure_but_skipped SKIPPED [ 75%]
+tests/unittest_generate.py::TestSkippedClass::test_success_but_skipped SKIPPED [ 83%]
+tests/unittest_generate.py::TestFunctionSuccess::runTest PASSED          [ 91%]
+tests/unittest_generate.py::TestFunctionFailure::runTest FAILED          [100%]
+
+=================================== FAILURES ===================================
+______________ TestGenerateLogs.test_expected_failure_but_success ______________
+Unexpected success
+________________________ TestGenerateLogs.test_failure _________________________
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_failure>
+
+    def test_failure(self):
+>       self.assertEqual(1, 0)
+E       AssertionError: 1 != 0
+
+tests/unittest_generate.py:30: AssertionError
+____________________ TestGenerateLogs.test_subtests_failure ____________________
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_subtests_failure>
+
+    def test_subtests_failure(self):
+        for n in [0, 1, 2, 3, 4]:
+            with self.subTest(n=n):
+>               self.assertGreater(3, n)
+E               AssertionError: 3 not greater than 3
+
+tests/unittest_generate.py:40: AssertionError
+__________________ TestGenerateLogs.test_unexpected_exception __________________
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_unexpected_exception>
+
+    def test_unexpected_exception(self):
+>       raise RuntimeError('Exception was raised')
+E       RuntimeError: Exception was raised
+
+tests/unittest_generate.py:43: RuntimeError
+_________________________ TestFunctionFailure.runTest __________________________
+
+    def function_test_fails():
+>       assert not True, 'This test is designed to fail'
+E       AssertionError: This test is designed to fail
+E       assert not True
+
+tests/unittest_generate.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unittest_generate.py::TestGenerateLogs::test_expected_failure_but_success
+FAILED tests/unittest_generate.py::TestGenerateLogs::test_failure - Assertion...
+FAILED tests/unittest_generate.py::TestGenerateLogs::test_subtests_failure - ...
+FAILED tests/unittest_generate.py::TestGenerateLogs::test_unexpected_exception
+FAILED tests/unittest_generate.py::TestFunctionFailure::runTest - AssertionEr...
+============== 5 failed, 3 passed, 3 skipped, 1 xfailed in 0.10s ===============

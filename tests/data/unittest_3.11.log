@@ -1,0 +1,63 @@
+tests.unittest_generate.TestFunctionFailure (function_test_fails)
+A function test that fails ... FAIL
+tests.unittest_generate.TestFunctionSuccess (function_test_succeeds) ... ok
+test_expected_failure (tests.unittest_generate.TestGenerateLogs.test_expected_failure) ... expected failure
+test_expected_failure_but_success (tests.unittest_generate.TestGenerateLogs.test_expected_failure_but_success) ... unexpected success
+test_failure (tests.unittest_generate.TestGenerateLogs.test_failure) ... FAIL
+test_skipped (tests.unittest_generate.TestGenerateLogs.test_skipped) ... skipped 'skipped test'
+test_subtests_failure (tests.unittest_generate.TestGenerateLogs.test_subtests_failure) ... 
+  test_subtests_failure (tests.unittest_generate.TestGenerateLogs.test_subtests_failure) (n=3) ... FAIL
+  test_subtests_failure (tests.unittest_generate.TestGenerateLogs.test_subtests_failure) (n=4) ... FAIL
+test_subtests_success (tests.unittest_generate.TestGenerateLogs.test_subtests_success) ... ok
+test_success (tests.unittest_generate.TestGenerateLogs.test_success) ... ok
+test_unexpected_exception (tests.unittest_generate.TestGenerateLogs.test_unexpected_exception) ... ERROR
+test_failure_but_skipped (tests.unittest_generate.TestSkippedClass.test_failure_but_skipped) ... skipped 'skipped class'
+test_success_but_skipped (tests.unittest_generate.TestSkippedClass.test_success_but_skipped) ... skipped 'skipped class'
+
+======================================================================
+ERROR: test_unexpected_exception (tests.unittest_generate.TestGenerateLogs.test_unexpected_exception)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/src/tests/unittest_generate.py", line 43, in test_unexpected_exception
+    raise RuntimeError('Exception was raised')
+RuntimeError: Exception was raised
+
+======================================================================
+FAIL: tests.unittest_generate.TestFunctionFailure (function_test_fails)
+A function test that fails
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/src/tests/unittest_generate.py", line 20, in function_test_fails
+    assert not True, 'This test is designed to fail'
+AssertionError: This test is designed to fail
+
+======================================================================
+FAIL: test_failure (tests.unittest_generate.TestGenerateLogs.test_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/src/tests/unittest_generate.py", line 30, in test_failure
+    self.assertEqual(1, 0)
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_subtests_failure (tests.unittest_generate.TestGenerateLogs.test_subtests_failure) (n=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/src/tests/unittest_generate.py", line 40, in test_subtests_failure
+    self.assertGreater(3, n)
+AssertionError: 3 not greater than 3
+
+======================================================================
+FAIL: test_subtests_failure (tests.unittest_generate.TestGenerateLogs.test_subtests_failure) (n=4)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/src/tests/unittest_generate.py", line 40, in test_subtests_failure
+    self.assertGreater(3, n)
+AssertionError: 3 not greater than 4
+
+======================================================================
+UNEXPECTED SUCCESS: test_expected_failure_but_success (tests.unittest_generate.TestGenerateLogs.test_expected_failure_but_success)
+----------------------------------------------------------------------
+Ran 12 tests in 0.002s
+
+FAILED (failures=4, errors=1, skipped=3, expected failures=1, unexpected successes=1)

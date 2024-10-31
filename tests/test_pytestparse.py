@@ -297,12 +297,11 @@ class TestPytestParse(unittest.TestCase):
             'hostos': 'Linux',
             'os': 'linux',
             'runtestsduration': '450000',
-            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
-            'testformat': 'pytest',
-            'testresult': 'failure',
             'targetarch': 'x86_64',
             'targetos': 'Linux',
-            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1'
+            'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
+            'testformat': 'pytest',
+            'testresult': 'failure'
         }, meta)
         self.assertEqual([
             SingleTestFinding('tests/test_curlparse.py::TestCurlParse::test_torture', pytestparse.TestResult.FAIL, 'AssertionError:...', 0),
@@ -356,6 +355,43 @@ class TestPytestParse(unittest.TestCase):
             SingleTestFinding('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
             SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+        ], testcases)
+
+    def test_unittest(self):
+        with self.open_data('pytest_unittest.log') as f:
+            meta, testcases = pytestparse.parse_log_file(f)
+        self.assertDictEqual({
+            'os': 'linux',
+            'runtestsduration': '100000',
+            'testdeps': 'Python 3.10.11, pytest-8.3.3, pluggy-1.5.0',
+            'testformat': 'pytest',
+            'testresult': 'failure'
+        }, meta)
+        self.assertCountEqual([
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_expected_failure',
+                              pytestparse.TestResult.FAILIGNORE, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_expected_failure_but_success',
+                              pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_failure',
+                              pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_skipped',
+                              pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_subtests_failure',
+                              pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_subtests_success',
+                              pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_success',
+                              pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestGenerateLogs::test_unexpected_exception',
+                              pytestparse.TestResult.FAIL, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestSkippedClass::test_failure_but_skipped',
+                              pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestSkippedClass::test_success_but_skipped',
+                              pytestparse.TestResult.SKIP, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestFunctionSuccess::runTest',
+                              pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('tests/unittest_generate.py::TestFunctionFailure::runTest',
+                              pytestparse.TestResult.FAIL, '', 0),
         ], testcases)
 
     def test_xdist_summary(self):
