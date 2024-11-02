@@ -194,10 +194,12 @@ class TestPytestParse(unittest.TestCase):
         with self.open_data('pytest_success.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
+            'arch': 'x86_64',
             'buildsystem': 'automake',
             'compiler': 'GNU_C',
             'compilerversion': '12',
             'configureargs': "'--enable-maintainer-mode'",
+            'curldeps': 'libcurl/8.11.0-DEV LibreSSL/4.0.0 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libpsl/0.21.2 nghttp2/1.59.0 OpenLDAP/2.6.7',
             'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp ws wss',
             'features': 'alt-svc AsynchDNS brotli Debug HSTS HTTP2 HTTPS-proxy IPv6 Largefile libz NTLM PSL SSL threadsafe TLS-SRP TrackMemory UnixSockets zstd',
             'hostarch': 'x86_64',
@@ -205,13 +207,17 @@ class TestPytestParse(unittest.TestCase):
             'hosttriplet': 'x86_64-pc-linux-gnu',
             'hostvendor': 'pc',
             'os': 'linux',
+            'pyplatform': 'Linux-6.8.0-1015-azure-x86_64-with-glibc2.39',
             'runtestsduration': '80000',
+            'systemos': 'Linux',
+            'systemosver': '6.8.0-1015',
             'targetarch': 'x86_64',
             'targetos': 'linux-gnu',
             'targettriplet': 'x86_64-pc-linux-gnu',
             'targetvendor': 'pc',
             'testdeps': 'Python 3.8.14, pytest-6.1.2, py-1.9.0, pluggy-0.13.1',
             'testformat': 'pytest',
+            'testingver': '8.11.0-DEV',
             'testresult': 'success'
         }, meta)
         self.assertEqual([

@@ -43,8 +43,11 @@ RESULTV_XDIST_RE = re.compile(r'^\[\w+\] \[ *\d+%\] (?P<result>\w+) (?P<name>\S+
 ASTROPY_PLATFORM_RE = re.compile(r'Platform: (.*)$')
 
 # curl-specific test headers
-FEATURES_RE = re.compile(r'^ *curl: Features: (.*)$')
-PROTOCOLS_RE = re.compile(r'^ *curl: Protocols: (.*)$')
+# This provides the same information as ASTROPY_PLATFORM_RE
+CURL_PLATFORM_RE = re.compile(r'^ *platform: ([^ ]+)$')
+CURL_VERSION_RE = re.compile(r'^ *curl: Version: curl (?P<ver>[^ ]+) \([^)]+\)( (?P<deps>.*))?$')
+CURL_FEATURES_RE = re.compile(r'^ *curl: Features: (.*)$')
+CURL_PROTOCOLS_RE = re.compile(r'^ *curl: Protocols: (.*)$')
 
 # common lines
 SESSION_START_RE = re.compile(r'^={5,} test session starts =+$')
@@ -121,13 +124,16 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                 elif r := XDIST_WORKERS_RE.search(l):
                     # This shows up in short logs as well with xdist
                     meta['paralleljobs'] = r.group(1)
-                elif r := ASTROPY_PLATFORM_RE.search(l):
+                elif (r := ASTROPY_PLATFORM_RE.search(l)) or (r := CURL_PLATFORM_RE.search(l)):
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
-                elif r := FEATURES_RE.search(l):
+                elif r := CURL_VERSION_RE.search(l):
+                    meta['testingver'] = r.group('ver')
+                    meta['curldeps'] = r.group('deps')
+                elif r := CURL_FEATURES_RE.search(l):
                     meta['features'] = r.group(1)
-                elif r := PROTOCOLS_RE.search(l):
+                elif r := CURL_PROTOCOLS_RE.search(l):
                     meta['curlprotocols'] = r.group(1)
                 elif bimeta := curlparse.parse_buildinfo(l):
                     # curl-specific buildinfo lines
@@ -213,13 +219,16 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     meta['testdeps'] = r.group(3)
                 elif r := XDIST_WORKERS_RE.search(l):
                     meta['paralleljobs'] = r.group(1)
-                elif r := ASTROPY_PLATFORM_RE.search(l):
+                elif (r := ASTROPY_PLATFORM_RE.search(l)) or (r := CURL_PLATFORM_RE.search(l)):
                     meta['pyplatform'] = r.group(1)
                     platmeta = parse_platform(r.group(1))
                     meta = {**meta, **platmeta}
-                elif r := FEATURES_RE.search(l):
+                elif r := CURL_VERSION_RE.search(l):
+                    meta['testingver'] = r.group('ver')
+                    meta['curldeps'] = r.group('deps')
+                elif r := CURL_FEATURES_RE.search(l):
                     meta['features'] = r.group(1)
-                elif r := PROTOCOLS_RE.search(l):
+                elif r := CURL_PROTOCOLS_RE.search(l):
                     meta['curlprotocols'] = r.group(1)
                 elif bimeta := curlparse.parse_buildinfo(l):
                     # curl-specific buildinfo lines
