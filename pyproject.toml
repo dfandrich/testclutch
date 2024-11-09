@@ -27,20 +27,21 @@ classifiers = [
     "Topic :: Software Development :: Testing",
     "Typing :: Typed",
 ]
-requires-python = ">=3.9,<3.14"
+# These version dependencies are conservative and reflect versions that have
+# actually been tested
+requires-python = ">=3.9, <3.14"
 dependencies = [
     "requests >= 2.25.1, <= 2.32.3",
     "zstd >= 1.4.5.1, <= 1.5.5.1",
 ]
 
-# The version dependencies listed are conservative and reflect ones that have
-# actually been tested
+# These version dependencies are more broad as they are not required dependencies
 [project.optional-dependencies]
 test = [
-    "pytest >= 6.1.5, <= 8.3.3"
+    "pytest >= 6, < 9"
 ]
 dev = [
-    "flake8 >= 5.0.4, <= 7.1.1",
+    "flake8 >= 5, < 8",
     "flake8-assertive",
     "flake8-bugbear",
     "flake8-builtins",
@@ -67,7 +68,7 @@ dev = [
     "flake8-super",
     "flake8-warnings",
     "flake8-wot",
-    "pytype >= 2023.9.19, <= 2024.10.11"
+    "pytype >= 2023.9.19"
 ]
 
 [project.urls]
