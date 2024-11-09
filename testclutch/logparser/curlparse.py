@@ -9,6 +9,7 @@ from typing import Set  # noqa: F401
 from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
+from testclutch import uname
 
 # flake8: noqa: SIM114
 
@@ -128,9 +129,6 @@ TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 # autoconf target (or host) triplet (sometimes quadruplet)
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
-# Match a valid year since Linux was created, also 1970 in case of time issue
-LINUX_YEAR_RE = re.compile(r'^(20\d\d)|(199\d)|(1970)$')
-
 
 def escs(s: str) -> str:
     """Escape non-ascii characters in a string.
@@ -163,106 +161,6 @@ def check_found_result(testcases: TestCases):
         del testcases[-2]
     return
 
-
-def parse_uname(uname: str) -> TestMetaStr:
-    """Parse the output of 'uname -a' from many OSes for relevant data."""
-    meta = {}
-
-    # This one treats multiple spaces as one separator (needed on Linux, NetBSD
-    # and Darwin because they can have an extra space before a date)
-    sysparts = uname.split()
-    # This one treats multiple spaces as separators of empty items (needed on
-    # FreeBSD at least because its hostname can be empty)
-    syspartsblanks = uname.split(sep=' ')
-
-    if syspartsblanks[0]:
-        meta['systemos'] = syspartsblanks[0]
-    if len(syspartsblanks) < 3:
-        # This needs at least 3 parts to obtain any more details, which a real uname should provide
-        return meta
-
-    # hostname can be blank
-    if syspartsblanks[1]:
-        meta['systemhost'] = syspartsblanks[1]
-    meta['systemosver'] = syspartsblanks[2]
-
-    # We can get more info on some OSes
-    if meta['systemos'] == 'Linux' and len(syspartsblanks) >= 12:
-        for i in range(9, len(syspartsblanks) - 2):
-            if LINUX_YEAR_RE.match(syspartsblanks[i]):
-                # arch is found immediately after the kernel build year
-                meta['arch'] = syspartsblanks[i + 1]
-                break
-    elif meta['systemos'] == 'Darwin' and len(sysparts) == 15:
-        # macOS
-        meta['arch'] = sysparts[14]
-    elif meta['systemos'] == 'FreeBSD' and len(syspartsblanks) in {8, 15}:
-        meta['arch'] = syspartsblanks[-1]
-    elif meta['systemos'] == 'FreeBSD' and len(sysparts) in {8, 14, 15}:
-        meta['arch'] = sysparts[-1]
-    elif meta['systemos'] == 'NetBSD' and len(sysparts) == 15:
-        meta['arch'] = sysparts[14]
-    elif meta['systemos'] == 'NetBSD' and len(sysparts) == 14 and 'systemhost' not in meta:
-        # If the host field is blank, it shifts all the other parts down
-        # one. The other systems use syspartsblank to avoid this problem,
-        # but NetBSD embeds a date in its uname -a which can likely
-        # contain an extra space which would cause THAT workaround to
-        # fail.
-        meta['arch'] = sysparts[13]
-    elif meta['systemos'] == 'OpenBSD' and len(syspartsblanks) == 5:
-        meta['arch'] = syspartsblanks[4]
-    elif meta['systemos'] == 'SunOS' and len(syspartsblanks) in (8, 7):  # Solaris, OmniOS
-        meta['arch'] = syspartsblanks[5]
-    elif (meta['systemos'].startswith('MSYS_NT')
-          or meta['systemos'].startswith('MINGW32_NT')
-          or meta['systemos'].startswith('MINGW64_NT')
-          or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 8:
-        meta['arch'] = sysparts[6]
-    elif (meta['systemos'].startswith('MSYS_NT')
-          or meta['systemos'].startswith('MINGW32_NT')
-          or meta['systemos'].startswith('MINGW64_NT')
-          or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 7:
-        # This version is missing the time zone
-        meta['arch'] = sysparts[5]
-    elif meta['systemos'] == 'AIX' and len(sysparts) == 5:
-        # systemosver as set above is just the minor release number
-        meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
-    elif meta['systemos'] == 'Haiku' and len(syspartsblanks) == 11:
-        meta['arch'] = syspartsblanks[9]
-        # TODO: OS revision is in syspartsblanks[3], which perhaps should be appended to
-        # syspartsblanks[2] and go into meta['systemosver']. Take a look at how it presents
-        # itself once it comes out of beta.
-    elif meta['systemos'] == 'Minix' and len(syspartsblanks) == 7:
-        meta['arch'] = syspartsblanks[6]
-    elif meta['systemos'] == 'Fiwix' and len(syspartsblanks) == 11:
-        meta['arch'] = syspartsblanks[9]
-    elif meta['systemos'] == 'SerenityOS' and len(syspartsblanks) == 5:
-        meta['arch'] = syspartsblanks[4]
-    elif meta['systemos'] == 'Redox' and len(syspartsblanks) == 5:
-        meta['arch'] = syspartsblanks[4]
-    elif meta['systemos'] == 'syllable' and len(syspartsblanks) == 6:
-        # systemosver as set above is just the minor release number
-        meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
-        meta['arch'] = syspartsblanks[4]
-    elif meta['systemos'] == 'NuttX' and len(sysparts) == 9:
-        meta['arch'] = sysparts[7]
-        # This uname swaps the normal host and version fields
-        meta['systemhost'] = syspartsblanks[2]
-        meta['systemosver'] = syspartsblanks[1]
-    elif meta['systemos'] == 'Zephyr' and len(sysparts) == 10:
-        meta['arch'] = sysparts[8]
-    elif meta['systemos'] == 'QNX' and len(sysparts) == 6:
-        meta['arch'] = sysparts[5]
-    elif meta['systemos'] == 'ELKS' and len(sysparts) == 12:
-        meta['arch'] = sysparts[-1]
-    elif meta['systemos'] == 'Sortix' and len(sysparts) >= 11:
-        meta['arch'] = sysparts[-4]
-    elif meta['systemos'] == 'Tilck' and len(sysparts) == 6:
-        meta['arch'] = sysparts[4]
-    else:
-        logging.warning('Unexpected uname line: %s', escs(uname))
-
-    return meta
 
 def parse_buildinfo(l: str) -> TestMetaStr:
     """Parse a buildinfo line if found.
@@ -412,8 +310,11 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                     elif r := RE_SEED.search(l):
                         meta['randomseed'] = r.group(1)
                     elif r := RE_SYSTEM.search(l):
-                        unamemeta = parse_uname(r.group(1))
-                        meta = {**meta, **unamemeta}
+                        unamemeta = uname.parse_uname(r.group(1))
+                        if unamemeta:
+                            meta = {**meta, **unamemeta}
+                        else:
+                            logging.warning('Unexpected uname line: %s', escs(r.group(1)))
                     elif l.startswith('* ') and (bimeta := parse_buildinfo(l[2:])):
                         meta = {**meta, **bimeta}
                     elif RE_STARTRESULTS.search(l):
