@@ -103,8 +103,8 @@ include = [
 
 # flake8-pyproject must be installed for flake8 to use these settings
 [tool.flake8]
-ignore = ["W503", "E741", "E501", "D102", "D103", "D107", "B001", "NQA102", "PAR101", "PAR103",
-          "PIE803", "PLU002", "SFS301", "SIM115", "SIM904"]
+ignore = ["W503", "E741", "E501", "D102", "D103", "D107", "B001", "IFS001", "NQA102", "PAR101",
+          "PAR103", "PIE803", "PLU002", "SFS301", "SIM115", "SIM904"]
 max-line-length = 100
 max-complexity = 25
 docstring-convention = "google"

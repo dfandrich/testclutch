@@ -37,7 +37,7 @@ jobs:
       - name: Lint with flake8
         if: matrix.python-version != '3.13'
         run: |
-          flake8 . --count --statistics --show-source
+          flake8 --count --statistics --show-source --extend-exclude=build .
       - name: Type check with pytype
         if: matrix.python-version != '3.13'
         run: |

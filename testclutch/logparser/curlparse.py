@@ -4,14 +4,12 @@ import datetime
 import logging
 import re
 import zlib
-from typing import Set  # noqa: F401
 
+from testclutch import uname
 from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
-from testclutch import uname
 
-# flake8: noqa: SIM114
 
 # TODO: obsolete after 2024-09-10
 # NOTE: if lines are added below that match spaces at the start of a line,
@@ -169,9 +167,7 @@ def parse_buildinfo(l: str) -> TestMetaStr:
     """
     meta = {}
     if r := RE_BI_GENERATOR.search(l):
-        if r.group(1) == 'Unix Makefiles':
-            meta['buildsystem'] = 'cmake/make'
-        elif r.group(1) == 'MSYS Makefiles':
+        if r.group(1) in {'Unix Makefiles', 'MSYS Makefiles'}:
             meta['buildsystem'] = 'cmake/make'
         elif r.group(1) == 'Ninja':
             meta['buildsystem'] = 'cmake/ninja'
@@ -250,7 +246,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
     """
     meta = {}         # type: TestMeta
     testcases = []    # type: TestCases
-    toignore = set()  # type: Set[str]
+    toignore = set()  # type: set[str]
     got_first = False
     while l := f.readline():
         if not got_first:
@@ -491,9 +487,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             meta['buildsystem'] = 'cmake'
         elif r := RE_USINGCMAKEMSBUILD.search(l):
             meta['buildsystem'] = 'cmake/msbuild'
-        elif r := RE_USINGCMAKEMAKE.search(l):
-            meta['buildsystem'] = 'cmake/make'
-        elif r := RE_USINGCMAKERUNMAKE.search(l):
+        elif (r := RE_USINGCMAKEMAKE.search(l)) or (r := RE_USINGCMAKERUNMAKE.search(l)):
             meta['buildsystem'] = 'cmake/make'
         elif r := RE_USINGCMAKENINJA.search(l):
             meta['buildsystem'] = 'cmake/ninja'
