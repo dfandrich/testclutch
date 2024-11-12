@@ -109,9 +109,11 @@ choosing *fine-grained tokens*. Create a new token with these characteristics:
   - "Metadata" repository permissions (read)
   - "Pull requests" repository permissions (read and write)
 
-Alternately, a classic token works as well.  Copy the token contents from the
-web browser and store it in a file in a protected location on your local
-machine and with permissions that do not allow other users to access it.
+Alternately, a classic token works as well, with the `public_repo` scope
+enabled.  Copy the token contents from the web browser and store it in a file
+in a protected location on your local machine and with permissions that do not
+allow other users to access it. Tokens set up this way will work with public
+repositories.
 
 Test Clutch has built-in support for these test log formats:
 
