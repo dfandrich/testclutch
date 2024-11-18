@@ -98,5 +98,7 @@ def parse_uname(uname: str) -> TestMetaStr:
         meta['arch'] = sysparts[-4]
     elif meta['systemos'] == 'Tilck' and len(sysparts) == 6:
         meta['arch'] = sysparts[-2]
+    elif meta['systemos'] == 'AROS' and len(sysparts) == 9:
+        meta['arch'] = sysparts[-2]
 
     return meta

@@ -328,6 +328,14 @@ class TestParseUname(unittest.TestCase):
         }, uname.parse_uname(
             'Tilck tilck 0.1.4 4b1930d8 i686 GNU/Linux')
         )
+        self.assertDictEqual({
+            'systemos': 'AROS',
+            'systemhost': 'arosbox.arosnet',
+            'systemosver': '12.1',
+            'arch': 'i386'
+        }, uname.parse_uname(
+            'AROS arosbox.arosnet 12.1 41 Nov 26 2018 i386 AROS')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({
