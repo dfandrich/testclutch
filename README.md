@@ -195,7 +195,13 @@ These are additional entry points that can be useful for debugging.
 ### tcquerytests
 
 Show information about a specific ingested job based on specific
-[metadata](metadata.md).
+[metadata](metadata.md). This can output in text or OpenMetrics formats.
+A single query term may be given, which restricts output to those runs that
+match on the given metadata. A query term is of the format `field<op>value`
+where `<op>` is one of `=` `<>` `!=` `<=` `>=` `<` `>` `%` or `!%`. The
+operators have their expected meanings, except `%` and `!%` mean the SQL `LIKE`
+and `NOT LIKE` operators, respectively.
+
 
 ### tcdbutil
 
