@@ -9,7 +9,8 @@
 - Sometimes a CI service configures different jobs in different places, but
   this doesn't affect the classification
 - "time" refers to a specific date & time; "duration" refers to an amount of
-  time (a number of seconds)
+  time (a number of seconds). Field names ending in "time" or "duration" are
+  considered to contain such information about the test run.
 
 ## Data types
 
@@ -165,7 +166,8 @@ The job name.
 
 ### cistep
 
-The step name.
+If this job contains multiple steps, this is the step name that generated the
+log.
 
 ### url
 

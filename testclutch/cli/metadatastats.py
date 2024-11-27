@@ -81,11 +81,9 @@ AVG_TESTS_BY_TYPE_SQL = FUNCTION_TESTS_BY_TYPE_SQL.format(function='AVG')
 # Retrieve a few metadata values for tests matching a testid and result
 MOST_RECENT_TEST_STATUS_META_SQL = r'SELECT testrunmeta.value FROM testresults INNER JOIN testruns ON testruns.id = testresults.id INNER JOIN testrunmeta ON testrunmeta.id = testresults.id WHERE time >= ? AND repo = ? AND testid = ? AND result = ? AND testrunmeta.name = ? ORDER BY testruns.time DESC LIMIT ?;'
 
-IGNORED_NAMES = frozenset(('host', 'jobduration', 'jobfinishtime', 'jobid', 'jobstarttime',
-                           'runduration', 'runfinishtime', 'runid', 'runprocesstime',
-                           'runstarttime', 'runtestsduration', 'runtriggertime', 'runurl',
-                           'stepfinishtime', 'steprunduration', 'stepstarttime', 'systemhost',
-                           'url', 'workflowid'))
+# Fields whose contents are not listed
+IGNORED_NAMES = frozenset(('host', 'jobid', 'runid', 'runurl', 'systemhost', 'url', 'workflowid'))
+IGNORED_PATTERNS = re.compile(r'(duration|time)$')
 
 # Characters that are allowed in an HTML ID, except for " which is handled specially
 ID_TOKEN_RE = re.compile(r'[^-A-Za-z0-9_:."]')
@@ -332,7 +330,7 @@ class TestRunStats:
 def output_nv_summary_text(nv: Iterable, full_list: bool):
     for n, v in itertools.groupby(nv, key=lambda x: x[0]):
         print(n)
-        if not full_list and n in IGNORED_NAMES:
+        if not full_list and (n in IGNORED_NAMES or IGNORED_PATTERNS.search(n)):
             print('  (redacted)')
         else:
             for val in v:
@@ -357,7 +355,7 @@ def output_nv_summary_html(nv: Iterable, repo: str, hours: int, full_list: bool)
         """))
     for n, v in itertools.groupby(nv, key=lambda x: x[0]):
         print(f'<details><summary id="{escape(n)}">{escape(n)}</summary><ul>')
-        if not full_list and n in IGNORED_NAMES:
+        if not full_list and (n in IGNORED_NAMES or IGNORED_PATTERNS.search(n)):
             print('<li>(redacted)</li>')
         else:
             for val in v:
