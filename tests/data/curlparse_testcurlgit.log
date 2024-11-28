@@ -2247,6 +2247,7 @@ TESTDONE: 1 tests out of 1 reported OK: 100%
 gmake[1]: Leaving directory '/build-61186/tests'
 testcurl: tests were run
 testcurl: the tests were successful!
+testcurl: enddate = Sat Jul 29 18:46:00 2023 UTC
 testcurl: ending nicely
 testcurl: removing the build-61186 dir
 testcurl: removing the buildlog-61186 file

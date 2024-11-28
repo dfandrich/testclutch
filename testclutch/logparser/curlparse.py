@@ -117,6 +117,7 @@ RE_TESTCURLCOMMIT = re.compile(r'^testcurl:( ){1,3}'
 RE_TESTCURLDAILY = re.compile(r'^testcurl: curl-([\d.]+)-(\d{8})/? is verified to be '
                               r'a fine daily source dir')
 RE_TESTCURLDATE = re.compile(r'^testcurl: date = (.*)$')
+RE_TESTCURLENDDATE = re.compile(r'^testcurl: enddate = (.*)$')
 RE_TESTCURLVER = re.compile(r'^testcurl: version = (.*)$')
 RE_TESTCURLNAME = re.compile(r'testcurl: NAME = (.*)$')
 RE_TESTCURLDESC = re.compile(r'testcurl: DESC = (.*)$')
@@ -435,6 +436,13 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                                 meta['testresult'] = 'failure'
                             elif r := RE_TOIGNORE.search(l):
                                 toignore.add(r.group(1))
+                            elif r := RE_TESTCURLENDDATE.search(l):
+                                # Replace "UTC" with the numeric time zone, which strptime can
+                                # deal with
+                                datestr = r.group(1).replace(' UTC', '+0000')
+                                timestamp = datetime.datetime.strptime(datestr,
+                                                                       '%a %b %d %H:%M:%S %Y%z')
+                                meta['runfinishtime'] = int(timestamp.timestamp())
                             check_found_result(testcases)
 
         elif RE_TESTCURLCOMMITSTART.search(l):
@@ -455,7 +463,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             meta['ciname'] = r.group(1)
         elif r := RE_TESTCURLDESC.search(l):
             meta['cijob'] = r.group(1)
-        elif r := RE_TESTCURLDATE .search(l):
+        elif r := RE_TESTCURLDATE.search(l):
             # Replace "UTC" with the numeric time zone, which strptime can deal with
             datestr = r.group(1).replace(' UTC', '+0000')
             timestamp = datetime.datetime.strptime(datestr, '%a %b %d %H:%M:%S %Y%z')

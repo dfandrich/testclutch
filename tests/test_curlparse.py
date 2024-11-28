@@ -1754,6 +1754,7 @@ class TestCurlParse(unittest.TestCase):
             'os': 'linux',
             'randomseed': '225726',
             'paralleljobs': '42',
+            'runfinishtime': 1690656360,
             'runstarttime': 1690656341,
             'runtestsopts': '-a -p -r -j42 1',
             'runtestsduration': '1000000',
