@@ -42,14 +42,16 @@ RE_DEPS = re.compile(r'^\* (.+)$')
 RE_HOST = re.compile(r'^\* Host: (\S+)')
 RE_FEATURES = re.compile(r'^\* Features: (.*)$')
 RE_PROTOCOLS = re.compile(r'^\* Protocols: (.*)$')
-RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
-RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
 RE_OS = re.compile(r'^\* OS: (\S+)')
 RE_PERL = re.compile(r'^\* Perl: v([\d.]+\d)')
 RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
 RE_ARGS = re.compile(r'^\* Args: (.+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
+# These could all match on the same line
+RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
+RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
+RE_DUPHANDLE = re.compile(r'^\* Env:.*\btest-duphandle\b')
 
 # Buildinfo fields in header, starting 2024-09-06
 # Some are duplicated by other runtests.pl lines, namely:
@@ -258,8 +260,9 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             meta['testformat'] = 'curl'
             meta['testresult'] = 'truncated'  # will be overwritten if the real end is found
             meta['testmode'] = 'normal'       # will be overwritten if another mode is used
-            meta['withvalgrind'] = 'no'       # will be overwritten if Valgrind is enabled
+            meta['withduphandle'] = 'no'      # will be overwritten if test-duphandle is enabled
             meta['withevent'] = 'no'          # will be overwritten if event-based is enabled
+            meta['withvalgrind'] = 'no'       # will be overwritten if Valgrind is enabled
             # ********* System characteristics ********
             if not (l := f.readline()):
                 break
@@ -286,6 +289,14 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                 meta['curldeps'] = r.group(1)
                 while l := f.readline():
                     l = l.rstrip()
+                    # These checks could all match the same line
+                    if r := RE_VALGRIND.search(l):
+                        meta['withvalgrind'] = 'yes'
+                    if r := RE_EVENT.search(l):
+                        meta['withevent'] = 'yes'
+                    if r := RE_DUPHANDLE.search(l):
+                        meta['withduphandle'] = 'yes'
+                    # These checks are all mutually exclusive
                     if r := RE_HOST.search(l):
                         meta['host'] = r.group(1)
                     elif r := RE_FEATURES.search(l):
@@ -298,10 +309,6 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         meta['os'] = r.group(1)
                     elif r := RE_PERL.search(l):
                         meta['perlver'] = r.group(1)
-                    elif r := RE_VALGRIND.search(l):
-                        meta['withvalgrind'] = 'yes'
-                    elif r := RE_EVENT.search(l):
-                        meta['withevent'] = 'yes'
                     elif r := RE_JOBS.search(l):
                         meta['paralleljobs'] = r.group(1)
                     elif r := RE_SEED.search(l):

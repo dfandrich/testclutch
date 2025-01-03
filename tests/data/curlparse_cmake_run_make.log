@@ -123,7 +123,7 @@ Using curl: ../src/curl
 *
 *** DISABLES memory tracking when using threaded resolver
 *
-* Env: Valgrind 
+* Env: Valgrind test-duphandle
 * Seed: 249900
 * Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
 ***************************************** 
