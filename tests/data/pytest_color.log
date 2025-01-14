@@ -1,0 +1,68 @@
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.10.11, pytest-8.3.3, pluggy-1.5.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/user/testclutch
+configfile: pyproject.toml
+plugins: cov-4.1.0, astropy-header-0.2.2
+[1mcollecting ... [0mcollected 12 items
+
+tests/unittest_generate.py::TestGenerateLogs::test_expected_failure [33mXFAIL[0m[32m [  8%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_expected_failure_but_success [31mFAILED[0m[31m [ 16%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_failure [31mFAILED[0m[31m        [ 25%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_skipped [33mSKIPPED[0m (...)[31m [ 33%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_subtests_failure [31mFAILED[0m[31m [ 41%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_subtests_success [32mPASSED[0m[31m [ 50%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_success [32mPASSED[0m[31m        [ 58%][0m
+tests/unittest_generate.py::TestGenerateLogs::test_unexpected_exception [31mFAILED[0m[31m [ 66%][0m
+tests/unittest_generate.py::TestSkippedClass::test_failure_but_skipped [33mSKIPPED[0m[31m [ 75%][0m
+tests/unittest_generate.py::TestSkippedClass::test_success_but_skipped [33mSKIPPED[0m[31m [ 83%][0m
+tests/unittest_generate.py::TestFunctionSuccess::runTest [32mPASSED[0m[31m          [ 91%][0m
+tests/unittest_generate.py::TestFunctionFailure::runTest [31mFAILED[0m[31m          [100%][0m
+
+=================================== FAILURES ===================================
+[31m[1m______________ TestGenerateLogs.test_expected_failure_but_success ______________[0m
+[0mUnexpected success[90m[39;49;00m
+[31m[1m________________________ TestGenerateLogs.test_failure _________________________[0m
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_failure>
+
+    [0m[94mdef[39;49;00m [92mtest_failure[39;49;00m([96mself[39;49;00m):[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual([94m1[39;49;00m, [94m0[39;49;00m)[90m[39;49;00m
+[1m[31mE       AssertionError: 1 != 0[0m
+
+[1m[31mtests/unittest_generate.py[0m:30: AssertionError
+[31m[1m____________________ TestGenerateLogs.test_subtests_failure ____________________[0m
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_subtests_failure>
+
+    [0m[94mdef[39;49;00m [92mtest_subtests_failure[39;49;00m([96mself[39;49;00m):[90m[39;49;00m
+        [94mfor[39;49;00m n [95min[39;49;00m [[94m0[39;49;00m, [94m1[39;49;00m, [94m2[39;49;00m, [94m3[39;49;00m, [94m4[39;49;00m]:[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.subTest(n=n):[90m[39;49;00m
+>               [96mself[39;49;00m.assertGreater([94m3[39;49;00m, n)[90m[39;49;00m
+[1m[31mE               AssertionError: 3 not greater than 3[0m
+
+[1m[31mtests/unittest_generate.py[0m:40: AssertionError
+[31m[1m__________________ TestGenerateLogs.test_unexpected_exception __________________[0m
+
+self = <tests.unittest_generate.TestGenerateLogs testMethod=test_unexpected_exception>
+
+    [0m[94mdef[39;49;00m [92mtest_unexpected_exception[39;49;00m([96mself[39;49;00m):[90m[39;49;00m
+>       [94mraise[39;49;00m [96mRuntimeError[39;49;00m([33m'[39;49;00m[33mException was raised[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+[1m[31mE       RuntimeError: Exception was raised[0m
+
+[1m[31mtests/unittest_generate.py[0m:43: RuntimeError
+[31m[1m_________________________ TestFunctionFailure.runTest __________________________[0m
+
+    [0m[94mdef[39;49;00m [92mfunction_test_fails[39;49;00m():[90m[39;49;00m
+>       [94massert[39;49;00m [95mnot[39;49;00m [94mTrue[39;49;00m, [33m'[39;49;00m[33mThis test is designed to fail[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+[1m[31mE       AssertionError: This test is designed to fail[0m
+[1m[31mE       assert not True[0m
+
+[1m[31mtests/unittest_generate.py[0m:20: AssertionError
+[36m[1m=========================== short test summary info ============================[0m
+[31mFAILED[0m tests/unittest_generate.py::[1mTestGenerateLogs::test_expected_failure_but_success[0m - Failed: Unexpected success
+[31mFAILED[0m tests/unittest_generate.py::[1mTestGenerateLogs::test_failure[0m - AssertionError: 1 != 0
+[31mFAILED[0m tests/unittest_generate.py::[1mTestGenerateLogs::test_subtests_failure[0m - AssertionError: 3 not greater than 3
+[31mFAILED[0m tests/unittest_generate.py::[1mTestGenerateLogs::test_unexpected_exception[0m - RuntimeError: Exception was raised
+[31mFAILED[0m tests/unittest_generate.py::[1mTestFunctionFailure::runTest[0m - AssertionError: This test is designed to fail
+[31m============== [31m[1m5 failed[0m, [32m3 passed[0m, [33m3 skipped[0m, [33m1 xfailed[0m[31m in 0.17s[0m[31m ===============[0m
