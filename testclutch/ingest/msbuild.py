@@ -23,7 +23,7 @@ class MsBuildLog:
 
     def seek(self, offset: int, whence: int = 0):
         """Capture to seek to reset the state."""
-        if offset == 0 and whence < 16:
+        if whence == 0 and offset < 16:
             # Stream is starting again from (near) the beginning
             self.in_msbuild = False
         return self.file_obj.seek(offset, whence)
