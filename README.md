@@ -49,7 +49,9 @@ up in a relevant git repository, making queries by hash behave consistently.
 Once ingestion is complete, analysis of the runs can be performed. The main
 analysis currently available is a summary of the most recent test runs showing
 their overall success or failure, along with information on which tests have
-been flaky recently.
+been flaky recently.  Values collected from tests can also be exported in
+OpenMetrics format to be analyzed and graphed by tools such as Prometheus and
+Grafana.
 
 A tool is also available to query the database to search for matching tests or
 jobs manually.
