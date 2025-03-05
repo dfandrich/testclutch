@@ -1,5 +1,5 @@
 ============================= test session starts ==============================
-platform linux -- Python 3.10.11, pytest-8.3.3, pluggy-1.5.0
+platform linux -- Python 3.10.16[pypy-7.3.19-final], pytest-8.3.3, pluggy-1.5.0 -- /opt/hostedtoolcache/PyPy/3.10.16/x64/bin/python
 rootdir: /tmp/tst
 configfile: pyproject.toml
 plugins: cov-4.1.0, astropy-header-0.2.2, xdist-3.6.1

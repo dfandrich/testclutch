@@ -275,7 +275,7 @@ class TestPytestParse(unittest.TestCase):
         self.assertDictEqual({
             'os': 'linux',
             'runtestsduration': '730000',
-            'testdeps': 'Python 3.10.11, pytest-8.3.3, pluggy-1.5.0',
+            'testdeps': 'Python 3.10.16[pypy-7.3.19-final], pytest-8.3.3, pluggy-1.5.0 -- /opt/hostedtoolcache/PyPy/3.10.16/x64/bin/python',
             'paralleljobs': '2',
             'testformat': 'pytest',
             'testresult': 'failure'
