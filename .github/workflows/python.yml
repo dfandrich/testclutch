@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@9e62be81b28222addecf85e47571213eb7680449
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
