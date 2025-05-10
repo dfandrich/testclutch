@@ -233,51 +233,55 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
         # Next, show flaky main tests
         globaluniquejob = analyzer.make_global_unique_job(meta)
         flaky, first_failure = analyzer.prepare_uniquejob_analysis(globaluniquejob)
-        flakytitle = ''
-        if flaky:
-            # Some tests were found to be flaky
-            flaky.sort(key=lambda x: summarize.try_integer(x[0]))
-            flakytitle = 'This test is flaky already, even without this PR; link goes to example'
-            flakyfailurl = ''
-            for testname, ratio in flaky:
-                if not flakyfailurl:
-                    flakyfailurl = analyzer.recent_failed_link(testname)
-                flakytitle = flakytitle + f'\nTest {escape(testname)} fails {ratio * 100:.1f}%'
-
-        # Now, look at permafails in main tests
-        permafailtitle = ''
-        job_status = analyzer.all_jobs_status[0]
-        if job_status.test_result == 'success' and job_status.failed_tests:
-            permafailtitle = ('Some tests are failing but the test was marked as successful, '
-                              'so these test results were likely marked to be ignored. ')
-        current_failure_counts = first_failure[2]
-        permafails = analyzer.get_permafails(current_failure_counts)
-        # A test might be on the permafail list even if the job is successful if the test result
-        # was marked to be ignored. Don't consider that a failure worth reporting.
-        if permafails and job_status.test_result != 'success':
-            permafailtitle = permafailtitle + 'These tests are now consistently failing: '
-            permafails.sort(key=summarize.try_integer)
-            permafailtitle = permafailtitle + (
-                ', '.join([escape(testname) for testname in permafails]))
-
-        if flakytitle:
-            print('<td class="flaky">'
-                  f'<a href="{escape(flakyfailurl)}" title="{flakytitle}">flaky</a>')
-            if permafailtitle:
-                # TODO: get permafailurl
-                print(f'<span title="{escape(permafailtitle)}" class="flaky">Failures</span>')
+        if not analyzer.all_jobs_status:
+            logging.warning('No analysis available for uniquejob %s', globaluniquejob)
+            print('<td class="unknown">?')
         else:
-            if permafailtitle:
-                if job_status.test_result == 'success':
-                    failclass = 'ignoredfailures'
-                    failtext = '(Failures)'
-                else:
-                    failclass = 'flaky'
-                    failtext = 'Failures'
-                # TODO: get permafailurl
-                print(f'<td title="{escape(permafailtitle)}" class="{failclass}">{failtext}')
+            flakytitle = ''
+            if flaky:
+                # Some tests were found to be flaky
+                flaky.sort(key=lambda x: summarize.try_integer(x[0]))
+                flakytitle = 'This test is flaky already, even without this PR; link goes to example'
+                flakyfailurl = ''
+                for testname, ratio in flaky:
+                    if not flakyfailurl:
+                        flakyfailurl = analyzer.recent_failed_link(testname)
+                    flakytitle = flakytitle + f'\nTest {escape(testname)} fails {ratio * 100:.1f}%'
+
+            # Now, look at permafails in main tests
+            permafailtitle = ''
+            job_status = analyzer.all_jobs_status[0]
+            if job_status.test_result == 'success' and job_status.failed_tests:
+                permafailtitle = ('Some tests are failing but the test was marked as successful, '
+                                  'so these test results were likely marked to be ignored. ')
+            current_failure_counts = first_failure[2]
+            permafails = analyzer.get_permafails(current_failure_counts)
+            # A test might be on the permafail list even if the job is successful if the test result
+            # was marked to be ignored. Don't consider that a failure worth reporting.
+            if permafails and job_status.test_result != 'success':
+                permafailtitle = permafailtitle + 'These tests are now consistently failing: '
+                permafails.sort(key=summarize.try_integer)
+                permafailtitle = permafailtitle + (
+                    ', '.join([escape(testname) for testname in permafails]))
+
+            if flakytitle:
+                print('<td class="flaky">'
+                      f'<a href="{escape(flakyfailurl)}" title="{flakytitle}">flaky</a>')
+                if permafailtitle:
+                    # TODO: get permafailurl
+                    print(f'<span title="{escape(permafailtitle)}" class="flaky">Failures</span>')
             else:
-                print('<td title="not flaky">')
+                if permafailtitle:
+                    if job_status.test_result == 'success':
+                        failclass = 'ignoredfailures'
+                        failtext = '(Failures)'
+                    else:
+                        failclass = 'flaky'
+                        failtext = 'Failures'
+                    # TODO: get permafailurl
+                    print(f'<td title="{escape(permafailtitle)}" class="{failclass}">{failtext}')
+                else:
+                    print('<td title="not flaky">')
         print('</td>')
 
         # Finally, show results of PR
