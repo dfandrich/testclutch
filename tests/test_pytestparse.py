@@ -1,6 +1,7 @@
 """Test pytestparse."""
 
 import os
+import textwrap
 import unittest
 from typing import TextIO
 
@@ -10,6 +11,46 @@ from testclutch.logparser import pytestparse  # noqa: I100
 from testclutch.logdef import SingleTestFinding  # noqa: I100
 
 DATADIR = 'data'
+
+
+class TestStripAnsi(unittest.TestCase):
+    """Test pytestparse.strip_ansi."""
+
+    def setUp(self):
+        super().setUp()
+        self.maxDiff = 4000
+
+    def test_strip_ansi_ls(self):
+        self.assertEqual(
+            pytestparse.strip_ansi(textwrap.dedent(
+                """
+                COPYING    MANIFEST.in  pyproject.toml  \x1b[0m\x1b[01;34mtestclutch\x1b[0m/           \x1b[01;34mtests\x1b[0m/
+                \x1b[01;34mexamples\x1b[0m/  metadata.md  README.md       \x1b[01;35mtest-clutch-logo.svg\x1b[0m
+                """)),
+            textwrap.dedent(
+                """
+                COPYING    MANIFEST.in  pyproject.toml  testclutch/           tests/
+                examples/  metadata.md  README.md       test-clutch-logo.svg
+                """)
+        )
+
+    def test_strip_ansi_pytest(self):
+        self.assertEqual(
+            pytestparse.strip_ansi(textwrap.dedent(
+                """
+                \x1b[1mcollecting ... \x1b[0mcollected 12 items
+
+                tests/unittest_generate.py::TestGenerateLogs::test_expected_failure \x1b[33mXFAIL\x1b[0m\x1b[32m [  8%]\x1b[0m
+                    \x1b[0m\x1b[94mdef\x1b[39;49;00m \x1b[92mtest_subtests_failure\x1b[39;49;00m(\x1b[96mself\x1b[39;49;00m):\x1b[90m\x1b[39;49;00m
+                """)),
+            textwrap.dedent(
+                """
+                collecting ... collected 12 items
+
+                tests/unittest_generate.py::TestGenerateLogs::test_expected_failure XFAIL [  8%]
+                    def test_subtests_failure(self):
+                """)
+        )
 
 
 class TestPytestParse(unittest.TestCase):
