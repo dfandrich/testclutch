@@ -46,7 +46,7 @@ mantes_test.py::TestMantesCvt::test_message_1
 adddate_test.py::TestAdddateCvt::test_message_2 
 [gw1] [ 66%] PASSED mantes_test.py::TestMantesCvt::test_message_1 
 uupccvt_test.py::TestUupcCvt::test_message_1 
-[gw0] [ 77%] PASSED adddate_test.py::TestAdddateCvt::test_message_2 
+[gw0] [ 77%] PASSED adddate_test.py::TestAdddateCvt::test_message_2[A, B] 
 uupccvt_test.py::TestUupcCvt::test_message_2 
 [gw0] [ 88%] PASSED uupccvt_test.py::TestUupcCvt::test_message_2 
 [gw1] [100%] FAILED uupccvt_test.py::TestUupcCvt::test_message_1 

@@ -10,6 +10,9 @@ from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog
 
 
+FULL_TEST_OUTPUT = False
+
+
 def parse_log_file(f: TextIOReadline) -> ParsedLog:
     """Tries one or more methods to parse a log file and returns the first one that works.
 
@@ -46,6 +49,9 @@ def main():
     for n, v in meta.items():
         print(f'{n}={v}')
     summarize.show_totals(testcases, details=True)
+    if FULL_TEST_OUTPUT:
+        for test in testcases:
+            print(test.name)
 
 
 if __name__ == '__main__':

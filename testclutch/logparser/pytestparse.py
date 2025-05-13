@@ -21,8 +21,8 @@ from testclutch.testcasedef import TestResult
 # pytest -r A format
 SUMMARY_START_RE = re.compile(r'^={5,} short test summary info =+$')
 # uses SESSION_END_RE to end
-RESULT_RE = re.compile(r'^(\w+) (.*::\S*) *(- )?(.*)$')
-SKIPPED_RE = re.compile(r'^(\w+) \[\S*\] (\S*): (.*)$')
+RESULT_RE = re.compile(r'^(\w+) (.+?::.*?\S) +(- )?(.*?)$')
+SKIPPED_RE = re.compile(r'^(\w+) \[.+\] (.+?): (.*)$')
 NONVERBOSE_SENTINEL_RE = re.compile(r'^collected ([0-9]+) items$')
 # This is for xdist since NONVERBOSE_SENTINEL_RE doesn't appear
 NONVERBOSE_SENTINEL2_RE = re.compile(r'^[a-zA-Z.]* +\[100%\]$')
@@ -39,7 +39,7 @@ PLATFORM_RE = re.compile(r'^platform (\w+)( -- (.*) --)')
 # pytest -v format with xdist
 # This one shows up in the short output format as well
 XDIST_WORKERS_RE = re.compile(r'^([0-9]+) workers \[([0-9]+) items\]$')
-RESULTV_XDIST_RE = re.compile(r'^\[\w+\] \[ *\d+%\] (?P<result>\w+) (?P<name>\S+::\S+)$')
+RESULTV_XDIST_RE = re.compile(r'^\[\w+\] \[ *\d+%\] (?P<result>\w+) (?P<name>.+?::.*)$')
 
 # pytest-astropy-header --astropy-header option
 ASTROPY_PLATFORM_RE = re.compile(r'Platform: (.*)$')

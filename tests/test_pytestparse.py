@@ -185,7 +185,7 @@ class TestPytestParse(unittest.TestCase):
         }, meta)
         self.assertCountEqual([
             SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
-            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('adddate_test.py::TestAdddateCvt::test_message_2[A, B]', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
