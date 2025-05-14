@@ -73,7 +73,7 @@ def output_text(ds: db.Datastore, rows: db.TestRunRow, show_tests: bool):
         testcases = ds.select_test_results(row[0])
         summarize.show_totals(testcases)
         if show_tests:
-            testcases.sort(key=lambda x: summarize.try_integer(x[0]))
+            testcases.sort(key=lambda x: summarize.try_integer(x.name))
             for t in testcases:
                 print(t)
         print()
