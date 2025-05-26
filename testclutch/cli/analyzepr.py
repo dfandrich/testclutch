@@ -345,72 +345,10 @@ def analyze_pr(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Dat
     print()
 
 
-def appveyor_analyze_pr(args: argparse.Namespace, ds: Optional[db.Datastore],
-                        prs: list[int]) -> int:
-    account, project = urls.get_project_name(args)
-    av = prappveyor.AppveyorAnalyzeJob(account, project, args.checkrepo, ds, None)
-
+def ci_analyze_pr(analyzer, args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     for pr in prs:
         logging.info(f'Analyzing pull request {pr}')
-        results = av.gather_pr(pr)
-        results.sort(key=lambda x: x[0]['uniquejobname'])
-        if args.html:
-            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
-        else:
-            analyze_pr(args.checkrepo, pr, results, ds)
-    return PRStatus.READY
-
-
-def azure_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    owner, project = urls.get_project_name(args)
-    azure = prazure.AzureAnalyzer(owner, project, args.checkrepo, ds)
-
-    for pr in prs:
-        logging.info(f'Analyzing pull request {pr}')
-        results = azure.gather_pr(pr)
-        results.sort(key=lambda x: x[0]['uniquejobname'])
-        if args.html:
-            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
-        else:
-            analyze_pr(args.checkrepo, pr, results, ds)
-    return PRStatus.READY
-
-
-def circle_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    ci = prcircleci.CircleAnalyzer(args.checkrepo, ds)
-
-    for pr in prs:
-        logging.info(f'Analyzing pull request {pr}')
-        results = ci.gather_pr(pr)
-        results.sort(key=lambda x: x[0]['uniquejobname'])
-        if args.html:
-            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
-        else:
-            analyze_pr(args.checkrepo, pr, results, ds)
-    return PRStatus.READY
-
-
-def cirrus_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    cirrus = prcirrus.CirrusAnalyzer(args.checkrepo, ds, None)
-
-    for pr in prs:
-        logging.info(f'Analyzing pull request {pr}')
-        results = cirrus.gather_pr(pr)
-        results.sort(key=lambda x: x[0]['uniquejobname'])
-        if args.html:
-            analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
-        else:
-            analyze_pr(args.checkrepo, pr, results, ds)
-    return PRStatus.READY
-
-
-def gha_analyze_pr(args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
-    owner, project = urls.get_project_name(args)
-    ghi = prgha.GithubAnalyzeJob(owner, project, gha.read_token(args.authfile), ds)
-
-    for pr in prs:
-        logging.info(f'Analyzing pull request {pr}')
-        results = ghi.gather_pr(pr)
+        results = analyzer.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
             analyze_pr_html(args.checkrepo, pr, results, ds, args.html_fragment)
@@ -507,6 +445,29 @@ def dedentnonl(text: str) -> str:
     return textwrap.dedent(text).replace('\n', ' ')
 
 
+def get_analyzer(origin: str, args: argparse.Namespace, ds: db.Datastore):
+    """Create a job analyzer for the given origin."""
+    account, project = urls.get_project_name(args)
+
+    if origin == 'appveyor':
+        return prappveyor.AppveyorAnalyzeJob(
+            account, project, args.checkrepo, ds, None)
+
+    if origin == 'azure':
+        return prazure.AzureAnalyzer(account, project, args.checkrepo, ds)
+
+    if origin == 'circle':
+        return prcircleci.CircleAnalyzer(args.checkrepo, ds)
+
+    if origin == 'cirrus':
+        return prcirrus.CirrusAnalyzer(args.checkrepo, ds, None)
+
+    if origin == 'gha':
+        return prgha.GithubAnalyzeJob(account, project, gha.read_token(args.authfile), ds)
+
+    return None
+
+
 class GatherPRAnalysis:
     """Class for gathering data to analyze and comment on a PR."""
 
@@ -536,23 +497,12 @@ class GatherPRAnalysis:
     def gather_failed(self, origin: str, pr: int
                       ) -> tuple[Optional[list[prdef.FailedTest]], str]:
         logging.info(f'Gathering {origin} analysis for pull request {pr}')
-        if origin == 'appveyor':
-            return self.appveyor_gather_pr_failures(pr)
+        analyzer = get_analyzer(origin, self.args, self.ds)
+        if not analyzer:
+            logging.error(f'Unsupported origin {origin}')
+            return (None, '')
 
-        if origin == 'azure':
-            return self.azure_gather_pr_failures(pr)
-
-        if origin == 'circle':
-            return self.circle_gather_pr_failures(pr)
-
-        if origin == 'cirrus':
-            return self.cirrus_gather_pr_failures(pr)
-
-        if origin == 'gha':
-            return self.gha_gather_pr_failures(pr)
-
-        logging.error(f'Unsupported origin {origin}')
-        return (None, '')
+        return self.gather_pr_failures(analyzer, pr)
 
     def gather_analysis(self, prs: list[int]) -> int:
         """Gather information needed to analyze one or more PRs."""
@@ -625,52 +575,8 @@ class GatherPRAnalysis:
 
         return PRStatus.READY
 
-    def appveyor_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
-        account, project = urls.get_project_name(self.args)
-        av = prappveyor.AppveyorAnalyzeJob(account, project, self.args.checkrepo, self.ds, None)
-        results = av.gather_pr(pr)
-        commit = results[0][0]['commit'] if results else ''
-        assert isinstance(commit, str)  # satisfy pytype that this isn't int
-        if any(result[0]['commit'] != commit for result in results):
-            logging.error('PR results have been gathered for more than one commit, not just '
-                          f'{commit:.9}')
-        return (self.select_failures(results), commit)
-
-    def azure_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
-        owner, project = urls.get_project_name(self.args)
-        azure = prazure.AzureAnalyzer(owner, project, self.args.checkrepo, self.ds)
-        results = azure.gather_pr(pr)
-        commit = results[0][0]['commit'] if results else ''
-        assert isinstance(commit, str)  # satisfy pytype that this isn't int
-        if any(result[0]['commit'] != commit for result in results):
-            logging.error('PR results have been gathered for more than one commit, not just '
-                          f'{commit:.9}')
-        return (self.select_failures(results), commit)
-
-    def circle_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
-        ci = prcircleci.CircleAnalyzer(self.args.checkrepo, self.ds)
-        results = ci.gather_pr(pr)
-        commit = results[0][0]['commit'] if results else ''
-        assert isinstance(commit, str)  # satisfy pytype that this isn't int
-        if any(result[0]['commit'] != commit for result in results):
-            logging.error('PR results have been gathered for more than one commit, not just '
-                          f'{commit:.9}')
-        return (self.select_failures(results), commit)
-
-    def cirrus_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
-        cirrus = prcirrus.CirrusAnalyzer(self.args.checkrepo, self.ds, None)
-        results = cirrus.gather_pr(pr)
-        commit = results[0][0]['commit'] if results else ''
-        assert isinstance(commit, str)  # satisfy pytype that this isn't int
-        if any(result[0]['commit'] != commit for result in results):
-            logging.error('PR results have been gathered for more than one commit, not just '
-                          f'{commit:.9}')
-        return (self.select_failures(results), commit)
-
-    def gha_gather_pr_failures(self, pr: int) -> tuple[list[prdef.FailedTest], str]:
-        owner, project = urls.get_project_name(self.args)
-        ghi = prgha.GithubAnalyzeJob(owner, project, gha.read_token(self.args.authfile), self.ds)
-        results = ghi.gather_pr(pr)
+    def gather_pr_failures(self, analyzer, pr: int) -> tuple[list[prdef.FailedTest], str]:
+        results = analyzer.gather_pr(pr)
         commit = results[0][0]['commit'] if results else ''
         assert isinstance(commit, str)  # satisfy pytype that this isn't int
         if any(result[0]['commit'] != commit for result in results):
@@ -703,6 +609,10 @@ class GatherPRAnalysis:
             return set(argparsing.KNOWN_ORIGINS)
         return origins
 
+    def is_failed_run(self, failed: dict[str, list[prdef.FailedTest]]) -> bool:
+        """Returns True if the run is considered to have been a failure."""
+        return any(origin for origin in self.all_origins() if failed[origin])
+
     def comment(self, prs: list[int]) -> int:
         """Comment on a PR."""
         if not self.args.dry_run:
@@ -731,7 +641,7 @@ class GatherPRAnalysis:
                                 f'(missing {", ".join(remaining)}); skipping')
                 continue
 
-            if not any(origin for origin in origins if analysis.failed[origin]):
+            if not self.is_failed_run(analysis.failed):
                 logging.warning(f'PR #{pr} has no failed tests so no need to comment; skipping')
                 continue
 
@@ -929,23 +839,12 @@ def main():
 
         # must be --report
         # Analyze only one origin at a time because each one might have different login credentials
-        if args.origin == 'appveyor':
-            return appveyor_analyze_pr(args, ds, prs)
+        analyzer = get_analyzer(args.origin, args, ds)
+        if not analyzer:
+            logging.error(f'Unsupported origin {args.origin}')
+            return PRStatus.ERROR
 
-        if args.origin == 'azure':
-            return azure_analyze_pr(args, ds, prs)
-
-        if args.origin == 'circle':
-            return circle_analyze_pr(args, ds, prs)
-
-        if args.origin == 'cirrus':
-            return cirrus_analyze_pr(args, ds, prs)
-
-        if args.origin == 'gha':
-            return gha_analyze_pr(args, ds, prs)
-
-        logging.error(f'Unsupported origin {args.origin}')
-        return PRStatus.ERROR
+        return ci_analyze_pr(analyzer, args, ds, prs)
 
     return PRStatus.READY
 
