@@ -3,6 +3,7 @@
 This contains functions relating to source repositories but not CI services.
 """
 
+import argparse
 import contextlib
 import logging
 import urllib.parse
@@ -24,7 +25,7 @@ def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
     return tuple(path.split('/')[1:3])
 
 
-def get_project_name(args: Union[str, NamedTuple]) -> tuple[str, str]:
+def get_project_name(args: Union[str, NamedTuple, argparse.Namespace]) -> tuple[str, str]:
     """Return the source code owner and project to use for a CI system.
 
     This extracts them from the source repository URL, unless they are overridden by command-line
