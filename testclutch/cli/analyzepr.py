@@ -584,6 +584,10 @@ class GatherPRAnalysis:
                           f'{commit:.9}')
         return (self.select_failures(results), commit)
 
+    def get_failures(self, testcases: TestCases) -> TestCases:
+        """Return only the failed tests."""
+        return [tc for tc in testcases if tc.result in FAIL_TEST_RESULTS]
+
     def select_failures(self, results: list[ParsedLog]) -> list[prdef.FailedTest]:
         results.sort(key=lambda x: x[0]['uniquejobname'])
 
@@ -593,7 +597,7 @@ class GatherPRAnalysis:
             logging.debug(
                 f'Checking run {meta["runid"]}'
                 f'{"/" if "cijob" in meta else ""}{meta.get("cijob", "")} for failed tests')
-            failed = [tc for tc in testcases if tc.result in FAIL_TEST_RESULTS]
+            failed = self.get_failures(testcases)
             if failed:
                 globaluniquejob = analyzer.make_global_unique_job(meta)
                 logging.info(f'Found {len(failed)} failed tests in job {globaluniquejob}')
