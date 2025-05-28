@@ -1,0 +1,50 @@
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.14.1-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.14.1-DEV OpenSSL/3.0.15 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 librtmp/2.3 OpenLDAP/2.5.14
+* Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp ws wss
+* Features: alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL SSLS-EXPORT threadsafe TLS-SRP TrackMemory UnixSockets zstd
+* Disabled: win32-ca-searchpath, win32-ca-search-safe, override-dns
+* Host: localhost
+* System: Linux localhost 6.6.88 #1 SMP PREEMPT_DYNAMIC Sat Apr 26 22:17:20 UTC 2025 x86_64 GNU/Linux
+* OS: linux
+* Perl: v5.36.0 (/usr/bin/perl5.36.0)
+* diff: available
+* Args: -a -s -n --retry=10 100 500
+*
+*** DISABLES TrackMemory (memory tracking) when using threaded resolver
+*
+* Env: bundle 
+* Seed: 213961
+* buildinfo.configure.tool: configure
+* buildinfo.configure.args:  '--prefix=/tmp/c/install' '--enable-debug' '--enable-test-bundles' '--with-openssl' '--with-libssh' '--with-gssapi' '--enable-ldap' '--enable-ldaps' '--enable-rtsp' '--enable-websockets' '--enable-ssls-export' '--with-zsh-functions-dir' '--with-fish-functions-dir'
+* buildinfo.host: x86_64-pc-linux-gnu
+* buildinfo.host.cpu: x86_64
+* buildinfo.host.os: linux-gnu
+* buildinfo.target: x86_64-pc-linux-gnu
+* buildinfo.target.cpu: x86_64
+* buildinfo.target.os: linux-gnu
+* buildinfo.target.flags: UNIX UNIX GCC
+* buildinfo.compiler: GNU_C
+* buildinfo.compiler.version: 12
+* buildinfo.sysroot: 
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+Warning: integrated: cleardir(log) failed
+test 0100...OK (1   out of 2  , remaining: 00:01, took 1.122s, duration: 00:01)
+Warning: integrated: cleardir(log) failed
+test 0500... 500: exit FAILED
+Warning: integrated: cleardir(log) failed
+test 0500... 500: exit FAILED
+Warning: integrated: cleardir(log) failed
+test 0500... 500: exit FAILED
+Warning: integrated: cleardir(log) failed
+test 0500...OK (5   out of 2  , remaining: 00:59, took 0.103s, duration: 00:02)
+TESTDONE: 2 tests were considered during 3 seconds.
+::group::Failed Retried Test details
+FAIL-RETRIED 500: 'simple libcurl HTTP GET tool' HTTP, HTTP GET
+FAIL-RETRIED 500: 'simple libcurl HTTP GET tool' HTTP, HTTP GET
+FAIL-RETRIED 500: 'simple libcurl HTTP GET tool' HTTP, HTTP GET
+RETRIED: failed tests: 500 500 500
+::endgroup::
+TESTDONE: 2 tests out of 2 reported OK: 100%

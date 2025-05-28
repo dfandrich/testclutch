@@ -3521,7 +3521,8 @@ class TestCurlParse(unittest.TestCase):
             'withevent': 'no',
             'withvalgrind': 'no',
             'perlver': '5.36.0',
-            'curlprotocols': 'dict file ftp gopher http imap ipfs ipns ldap mqtt pop3 rtmp rtsp smtp telnet tftp',
+            'curlprotocols': 'dict file ftp gopher http imap ipfs ipns ldap mqtt pop3 rtmp rtsp '
+                             'smtp telnet tftp',
             'runtestsopts': '-a -p -n 1',
             'testingver': '8.10.2-DEV',
             'targettriplet': 'x86_64-pc-linux-gnu',
@@ -3627,5 +3628,118 @@ class TestCurlParse(unittest.TestCase):
             meta)
         self.assertEqual([
             SingleTestFinding('1', curlparse.TestResult.PASS, '', 1067000),
+        ],
+            testcases)
+
+    def test_rerun(self):
+        # Verbose log with test failures that are rerun with success
+        with self.open_data('curlparse_rerun.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'buildsystem': 'automake',
+            'curldeps': 'libcurl/8.14.1-DEV OpenSSL/3.0.15 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 '
+                        'libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 '
+                        'librtmp/2.3 OpenLDAP/2.5.14',
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns '
+                             'ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps '
+                             'telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Kerberos Largefile libz NTLM PSL SPNEGO SSL SSLS-EXPORT threadsafe '
+                        'TLS-SRP TrackMemory UnixSockets zstd',
+            'compiler': 'GNU_C',
+            'compilerversion': '12',
+            'configureargs': "'--prefix=/tmp/c/install' '--enable-debug' '--enable-test-bundles' "
+                             "'--with-openssl' '--with-libssh' '--with-gssapi' '--enable-ldap' "
+                             "'--enable-ldaps' '--enable-rtsp' '--enable-websockets' "
+                             "'--enable-ssls-export' '--with-zsh-functions-dir' "
+                             "'--with-fish-functions-dir'",
+            'host': 'localhost',
+            'hostarch': 'x86_64',
+            'hostos': 'linux-gnu',
+            'hosttriplet': 'x86_64-pc-linux-gnu',
+            'hostvendor': 'pc',
+            'os': 'linux',
+            'perlver': '5.36.0',
+            'randomseed': '213961',
+            'runtestsopts': '-a -n --retry=10 100 500',
+            'runtestsduration': '3000000',
+            'systemhost': 'localhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.88',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.14.1-DEV',
+            'testmode': 'normal',
+            'testresult': 'success',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        },
+            meta)
+        self.assertEqual([
+            SingleTestFinding('100', curlparse.TestResult.PASS, '', 1135000),
+            SingleTestFinding('500', curlparse.TestResult.FAIL, 'exit', 0),
+            SingleTestFinding('500', curlparse.TestResult.FAIL, 'exit', 0),
+            SingleTestFinding('500', curlparse.TestResult.FAIL, 'exit', 0),
+            SingleTestFinding('500', curlparse.TestResult.PASS, '', 121000)
+        ],
+            testcases)
+
+    def test_rerun_short(self):
+        # Short log with test failures that are rerun with success
+        with self.open_data('curlparse_rerun_short.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'buildsystem': 'automake',
+            'curldeps': 'libcurl/8.14.1-DEV OpenSSL/3.0.15 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 '
+                        'libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 '
+                        'librtmp/2.3 OpenLDAP/2.5.14',
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns '
+                             'ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps '
+                             'telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Kerberos Largefile libz NTLM PSL SPNEGO SSL SSLS-EXPORT threadsafe '
+                        'TLS-SRP TrackMemory UnixSockets zstd',
+            'compiler': 'GNU_C',
+            'compilerversion': '12',
+            'configureargs': "'--prefix=/tmp/c/install' '--enable-debug' '--enable-test-bundles' "
+                             "'--with-openssl' '--with-libssh' '--with-gssapi' '--enable-ldap' "
+                             "'--enable-ldaps' '--enable-rtsp' '--enable-websockets' "
+                             "'--enable-ssls-export' '--with-zsh-functions-dir' "
+                             "'--with-fish-functions-dir'",
+            'host': 'localhost',
+            'hostarch': 'x86_64',
+            'hostos': 'linux-gnu',
+            'hosttriplet': 'x86_64-pc-linux-gnu',
+            'hostvendor': 'pc',
+            'os': 'linux',
+            'perlver': '5.36.0',
+            'randomseed': '213961',
+            'runtestsopts': '-a -s -n --retry=10 100 500',
+            'runtestsduration': '3000000',
+            'systemhost': 'localhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.88',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.14.1-DEV',
+            'testmode': 'normal',
+            'testresult': 'success',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        },
+            meta)
+        self.assertEqual([
+            SingleTestFinding('100', curlparse.TestResult.PASS, '', 1122000),
+            SingleTestFinding('500', curlparse.TestResult.PASS, '', 103000)
         ],
             testcases)

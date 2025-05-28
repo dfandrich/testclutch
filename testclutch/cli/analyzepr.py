@@ -584,9 +584,25 @@ class GatherPRAnalysis:
                           f'{commit:.9}')
         return (self.select_failures(results), commit)
 
+    def last_result_failed(self, testcases: TestCases, testname: str) -> bool:
+        """Returns True if the last matching test result in the list was a failure."""
+        for tc in reversed(testcases):
+            if testname == tc.name:
+                return tc.result in FAIL_TEST_RESULTS
+        assert False, 'Test should have been in the list'  # noqa: B011
+        return True
+
     def get_failures(self, testcases: TestCases) -> TestCases:
         """Return only the failed tests."""
-        return [tc for tc in testcases if tc.result in FAIL_TEST_RESULTS]
+        failures = [tc for tc in testcases if tc.result in FAIL_TEST_RESULTS]
+        if not failures or not config.get('rerun_tests'):
+            # Return ALL the failures (if any)
+            return failures
+
+        # Strip away failures if the last result for each particular test is a success,
+        # which can happen if failed tests are re-run and succeed the next time.
+        # If a test is re-run and fails each time, all failures will be kept.
+        return [tc for tc in failures if self.last_result_failed(testcases, tc.name)]
 
     def select_failures(self, results: list[ParsedLog]) -> list[prdef.FailedTest]:
         results.sort(key=lambda x: x[0]['uniquejobname'])
@@ -608,10 +624,7 @@ class GatherPRAnalysis:
 
     def all_origins(self) -> set[str]:
         """Returns the set of all origins to check before commenting."""
-        origins = config.get('pr_comment_origins')
-        if not origins:
-            return set(argparsing.KNOWN_ORIGINS)
-        return origins
+        return config.get('pr_comment_origins') or set(argparsing.KNOWN_ORIGINS)
 
     def is_failed_run(self, failed: dict[str, list[prdef.FailedTest]]) -> bool:
         """Returns True if the run is considered to have been a failure."""
