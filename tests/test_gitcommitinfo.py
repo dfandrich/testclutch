@@ -20,13 +20,10 @@ class TestGitCommitInfo(unittest.TestCase):
         # Replace XDG_CONFIG_HOME to prevent the user's testclutchrc file from being loaded
         self.env_patcher = mock.patch.dict(os.environ, {'XDG_CONFIG_HOME': '/dev/null'})
         self.env_patcher.start()
+        self.addCleanup(self.env_patcher.stop)
         # Import the code to test only after XDG_CONFIG_HOME has been replaced
         global gitcommitinfo
         from testclutch.cli import gitcommitinfo
-
-    def tearDown(self):
-        self.env_patcher.stop()
-        super().tearDown()
 
     def data_file(self, fn: str) -> str:
         return os.path.join(os.path.dirname(__file__), DATADIR, fn)
