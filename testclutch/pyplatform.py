@@ -9,6 +9,9 @@ from testclutch.logdef import TestMetaStr  # noqa: F401
 PLAT_LINUX_RE = re.compile(r'^Linux-(?P<release>.+?)(-(?P<mach>[^-]+))?-(?P<proc>[^-]+)-with(-(?P<libcnamever>.+))?$')
 PLAT_WINDOWS_RE = re.compile(r'^Windows-(?P<release>\d+)-(?P<version>[0-9.]+)(-(?P<csd>[^-]+))?$')
 PLAT_JAVA_RE = re.compile(r'^Java-(.*?)-on-(.*)-(?P<proc>[^-]+)$')
+# Since Python 3.13 macOs includes "Mach-O" linkage, which contains a dash and which could
+# mess up parsing of other types if it's handled by default, so it's treated specially.
+PLAT_MACOS_RE = re.compile(r'^(?P<system>[^-]+)-(?P<release>.+?)(-(?P<mach>[^-]+))?-(?P<proc>[^-]+)-((?P<bits>1?\d\d)bit)(-(?P<linkage>[^-]+-[A-Z]))?$')
 PLAT_DEFAULT_RE = re.compile(r'^(?P<system>[^-]+)-(?P<release>.+?)(-(?P<mach>[^-]+))?-(?P<proc>[^-]+)-((?P<bits>1?\d\d)bit)(-(?P<linkage>[^-]+))?$')
 
 
@@ -42,7 +45,8 @@ def parse_platform(platform: str) -> TestMetaStr:
         # string and extracts the architecture out of it, which is fairly unambiguously obtained.
         meta['arch'] = r.group('proc')
 
-    elif r := PLAT_DEFAULT_RE.search(platform):
+    elif (platparts[0] == 'macOS' and (r := PLAT_MACOS_RE.search(platform))
+          or (r := PLAT_DEFAULT_RE.search(platform))):
         meta['systemosver'] = r.group('release')
         meta['arch'] = r.group('proc')
         meta['archbits'] = r.group('bits')
