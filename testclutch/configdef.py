@@ -117,7 +117,7 @@ matrix_meta_transforms = {}
 
 # Whether to look at only the last result of a test as its result if more than one result is found
 # in a run.  This should be done if failing tests are automatically rerun in case of flakiness.
-rerun_tests = True
+rerun_tests = False
 
 # Path to root of log cache directory
 # TODO:
