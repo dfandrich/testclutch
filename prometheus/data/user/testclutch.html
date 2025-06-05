@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Clutch Graphs</title>
+        <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+        <meta name="dcterms.rights" content="
+            This program is free software: you can redistribute it and/or modify
+            it under the terms of the GNU Affero General Public License as published by
+            the Free Software Foundation, either version 3 of the License, or
+            (at your option) any later version.
+        ">
+    </head>
+    <body>
+        <h1>Test Clutch Graphs</h1>
+
+        <p>
+        These are graphs relating to tests run on the main branch of the
+        project (i.e. not pull requests).  Many graphs are most useful after
+        clicking on one of the breakdown lines shown below each graph which
+        restricts the graph to show only matching points.
+        </p>
+
+        <h2>Test Durations</h2>
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_job_duration_seconds%5B24h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Test job duration</a>
+        <br>
+        Length of time taken for each run of each test job, which may do more than just testing (wall clock duration).
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_duration_seconds%5B24h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%2C+testformat%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Time taken to run tests, by test format</a>
+        <br>
+        Length of time taken to just run the tests of each test job (wall clock duration).
+        <br><br>
+
+        <h2>Test Counts</h2>
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%5B24h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%2C+testformat%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Number of tests run, by test format</a>
+        <br>
+        How many tests are being run by each test job, split out by test format.
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%5B24h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%2C+testformat%2C+result%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Tests run, by test format and test result</a>
+        <br>
+        How many tests are being run by each test job, split out by test format and by the test pass/fail status.
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%5B24h%5D%29%29+by+%28testformat%2C+result%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Test pass/fail results</a>
+        <br>
+        How many tests are passing, failing or have other statuses.
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%7Bresult%3D%22FAIL%22%7D%5B6h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Tests that have failed</a>
+        <br>
+        How many tests that have unexpectedly failed, by test job.
+        <br><br>
+
+        <a href="/query?g0.expr=sum%28last_over_time%28testclutch_tests_seconds_count%7Bresult%3D%22FAIL%22%7D%5B2h%5D%29%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Total tests that have failed</a>
+        <br>
+        Total number of tests that have unexpectedly failed.
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%7Bresult%21%3D%22SKIP%22%7D%5B24h%5D%29%29+by+%28origin%2C+account%2C+uniquejobname%2C+testformat%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Tests actually run, by format</a>
+        <br>
+        How many tests that are attempted (not skipped), by test job.
+        <br><br>
+
+        <a href="/query?g0.expr=max%28last_over_time%28testclutch_tests_seconds_count%7Bresult%21%3D%22SKIP%22%7D%5B24h%5D%29%29+by+%28testformat%29&amp;amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=30d&amp;g0.res_type=auto&amp;g0.res_density=high&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Maximum tests actually run, by format</a>
+        <br>
+        The maximum number of tests that are attempted (not skipped) in a single job, by test format.
+        <br><br>
+
+        <h1>Prometheus Graphs</h1>
+
+        <p>
+        These are graphs relating to Prometheus itself.
+        </p>
+
+        <a href="/query?g0.expr=rate%28prometheus_http_requests_total%7Bjob%3D%27prometheus%27%7D%5B5m%5D%29&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=1d&amp;g0.res_type=auto&amp;g0.res_density=medium&amp;g0.display_mode=stacked&amp;g0.show_exemplars=0">Query rate</a>
+        <br>
+        Rate of HTTP queries to Prometheus, in queries per second.
+        <br><br>
+
+        <a href="/query?g0.expr=process_resident_memory_bytes%7Bjob%3D%27prometheus%27%7D&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=1d&amp;g0.res_type=auto&amp;g0.res_density=medium&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">Memory usage</a>
+        <br>
+        Memory size of the Prometheus instance, in bytes.
+        <br><br>
+
+        <a href="/query?g0.expr=prometheus_tsdb_storage_blocks_bytes%7Bjob%3D%27prometheus%27%7D&amp;g0.show_tree=0&amp;g0.tab=graph&amp;g0.range_input=1d&amp;g0.res_type=auto&amp;g0.res_density=medium&amp;g0.display_mode=lines&amp;g0.show_exemplars=0">TSDB size</a>
+        <br>
+        Amount of space used by the Time Series DataBase, in bytes.
+        <br><br>
+
+</body>
+</html>

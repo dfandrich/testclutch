@@ -153,6 +153,29 @@ The file `examples/daily-update` is an example that you can use to create a
 custom periodic update script for your own use case. It can be installed as a
 cron job to generate up-to-date test reports.
 
+### Prometheus
+
+Test Clutch can export test times in OpenMetrics format which can be imported
+into Prometheus for analysis and graphing.  The file
+`prometheus/data/user/testclutch.html` is a static page containing links to
+some useful graphs that can be hosted on a Prometheus instance by providing
+the `--web.user-assets=user` option (when `prometheus/data/` is the Prometheus
+base directory). That page will be available at
+http://localhost:9090/user/testclutch.html (or whatever origin your instance
+is using).
+
+The default Prometheus retention time is quite short relative to the rate of
+Test Clutch data generated, which is generally most interesting when viewed
+over weeks rather than hours or even days.  To avoid data from being
+automatically deleted too early, supply an option like
+`--storage.tsdb.retention.time=26w` to keep half a year of data.
+
+You can import about one month's worth of data into Prometheus by running:
+```
+tcquerytests --since 720 --format openmetrics >metrics.om
+promtool tsdb create-blocks-from openmetrics metrics.om
+```
+
 ## Programs
 
 These are the main entry points to Test Clutch. Most of them access `--help` to
