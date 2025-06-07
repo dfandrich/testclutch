@@ -1,6 +1,7 @@
 """Functions to set up common argument parsers."""
 
 import argparse
+import ast
 import os
 from typing import Optional
 
@@ -68,6 +69,42 @@ class StoreMultipleConstAction(argparse.Action):
         setattr(namespace, self.dest, self.const)
         for attr in self.attrs:
             setattr(namespace, attr, self.const)
+
+
+class OverrideConfigAction(argparse.Action):
+    """argparsing action that adds a configuration override."""
+    def __init__(self,
+                 option_strings,
+                 dest: str,
+                 default=None,
+                 required: bool = False,
+                 help=None):     # noqa: A002
+        super().__init__(
+            option_strings=option_strings,
+            dest=dest,
+            nargs=1,
+            default=default,
+            required=required,
+            metavar='NAME=VALUE',
+            help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        for assignment in values:
+            try:
+                name, rawval = assignment.split('=', 1)
+            except ValueError as e:
+                raise argparse.ArgumentTypeError(f'Missing = in {assignment}') from e
+            # Let any exceptions through here since they provide detail about the problem
+            val = ast.literal_eval(rawval) if rawval else ''
+            config.add_override(name, val)
+
+
+def arguments_config(parser: argparse.ArgumentParser):
+    """Add arguments needed for manipulating the configuration."""
+    parser.add_argument(
+        '--set',
+        action=OverrideConfigAction,
+        help='Override a config value')
 
 
 def arguments_logging(parser: argparse.ArgumentParser):

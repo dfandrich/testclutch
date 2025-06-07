@@ -69,6 +69,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Replace short git hashes in the database with long ones')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),

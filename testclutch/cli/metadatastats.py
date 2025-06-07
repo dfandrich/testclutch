@@ -761,6 +761,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Summarize test metadata')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     parser.add_argument(
         '--html',
         action='store_true',

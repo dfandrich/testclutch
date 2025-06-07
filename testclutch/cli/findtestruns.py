@@ -66,6 +66,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Find test runs matching specific tests')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     with nullcontext(parser.add_argument_group(
                      'query arguments', 'Specifying test matches')) as query:
         query.add_argument(

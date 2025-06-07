@@ -27,6 +27,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Ingest test log files into the database')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     argparsing.arguments_ci(parser)
     parser.add_argument(
         '--branch',

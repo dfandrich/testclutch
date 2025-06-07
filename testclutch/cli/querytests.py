@@ -26,6 +26,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Query database of tests')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     parser.add_argument(
         '-t', '--show-tests',
         action='store_true',

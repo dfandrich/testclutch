@@ -56,6 +56,7 @@ def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     argparsing.arguments_ci(parser, required=False)
     parser.add_argument(
         '--html',

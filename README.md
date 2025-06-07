@@ -94,7 +94,11 @@ Create a file `~/.config/testclutchrc` in the same format as `configdef.py`
 (you can use the file `examples/testclutchrc` as a template).
 Most items have sane defaults, but `check_repo` must be set to a URL for the
 repository of your source code. This is used as an identifier in the database
-and can be used by augmentation jobs.
+and can be used by augmentation jobs.  Configuration options can be overridden
+on the command line by using `--set NAME=VALUE`. Note that values must be
+specified as in the configuration file, which, in particular, means that
+strings must be surrounded by quotation marks which will normally need to be
+escaped to get them through the shell.
 
 ### Ingestion Jobs
 

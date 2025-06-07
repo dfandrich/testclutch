@@ -18,6 +18,9 @@ config_module = None
 
 CONFIG_FILE = 'testclutchrc'
 
+# Config variables that override all others
+overrides = {}
+
 
 def config_dir() -> str:
     """Get the directory in which to store the configuration files."""
@@ -56,8 +59,7 @@ def environ() -> dict[str, str]:
 
     See https://wiki.archlinux.org/title/XDG_Base_Directory for some standard vars.
     """
-    env = {**os.environ, **configdef.__dict__}
-    env = {**env, **config().__dict__}
+    env = {**os.environ, **configdef.__dict__, **config().__dict__, **overrides}
     if 'XDG_DATA_HOME' not in env:
         env['XDG_DATA_HOME'] = persistent_dir()
     if 'XDG_CONFIG_HOME' not in env:
@@ -82,7 +84,7 @@ def expandstr(var: str) -> str:
 
 @functools.lru_cache(maxsize=None)
 def expand(var: str) -> str:
-    """Get a config variable and Expand it with environment variables."""
+    """Get a config variable and expand it with environment variables."""
     return expandstr(get(var))
 
 
@@ -132,3 +134,8 @@ def config() -> ModuleType:
         config_module = ModuleType('empty')
 
     return config_module  # noqa: R504
+
+
+def add_override(name: str, value: Any):
+    """Add a config variable that overrides all others."""
+    overrides[name] = value

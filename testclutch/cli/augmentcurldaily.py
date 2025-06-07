@@ -122,6 +122,7 @@ def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Augment test run metadata from daily builds with git commits')
     argparsing.arguments_logging(parser)
+    argparsing.arguments_config(parser)
     parser.add_argument(
         '--checkrepo',
         required=not config.expand('check_repo'),
