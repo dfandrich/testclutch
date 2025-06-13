@@ -31,8 +31,8 @@ classifiers = [
 # actually been tested
 requires-python = ">=3.9, <3.14"
 dependencies = [
-    "requests >= 2.25.1, <= 2.32.3",
-    "zstd >= 1.4.5.1, <= 1.5.7.0",
+    "requests >= 2.25.1, <= 2.32.4",
+    "zstd >= 1.4.5.1, <= 1.5.7.1",
 ]
 
 # These version dependencies are more broad as they are not required dependencies
