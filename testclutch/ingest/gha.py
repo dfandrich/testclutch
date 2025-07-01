@@ -37,6 +37,9 @@ STRIP_LOG_FN_RE = re.compile(r'[/]')
 # Example: 2024-05-25T21:43:17.7471243Z
 LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
 
+# Format of a log filename in a zip archive
+LOG_NAME_RE = re.compile(r'^([0-9]+)_(.*)\.txt$')
+
 
 MIME_EXT = {
     'application/zip': '.zip',
@@ -200,12 +203,13 @@ class GithubIngestor:
 
     def find_job_step(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
         assert jobs
-        job = self.find_job(jobs, meta)
-        ci_step_fn = meta['cistep']
-        for step in job['steps']:
-            step_fn = self.sanitize_log_fn(f'{step["number"]}_{step["name"]}.txt')
-            if ci_step_fn == step_fn:
-                return step
+        if 'cistep' in meta:
+            ci_step_fn = meta['cistep']
+            job = self.find_job(jobs, meta)
+            for step in job['steps']:
+                step_fn = self.sanitize_log_fn(f'{step["number"]}_{step["name"]}.txt')
+                if ci_step_fn == step_fn:
+                    return step
         return {}
 
     def find_job(self, jobs: dict[str, Any], meta: TestMeta) -> dict[str, Any]:
@@ -231,12 +235,13 @@ class GithubIngestor:
                 # empty directory entry
                 logging.debug('Ignoring directory placeholder %s', fileinfo.filename)
                 continue
-            if fileinfo.filename.find('/') < 0:
-                # GitHub stores the log entries in zip files twice--once as complete logs
-                # in the root, and once in separate steps in subdirectories. We don't need
-                # both, so ignore the root copies and just use the ones in the subdirectories.
-                logging.debug('Skipping %s', fileinfo.filename)
-                continue
+            # GHA stopped including the copies of logs in subdirectories about 2025-06-30
+            # if fileinfo.filename.find('/') < 0:
+            #     # GitHub stores the log entries in zip files twice--once as complete logs
+            #     # in the root, and once in separate steps in subdirectories. We don't need
+            #     # both, so ignore the root copies and just use the ones in the subdirectories.
+            #     logging.debug('Skipping %s', fileinfo.filename)
+            #     continue
             logging.debug('Processing member %s', fileinfo.filename)
 
             # If any bad characters are encountered while decoding using this charset (such as if a
@@ -250,8 +255,17 @@ class GithubIngestor:
             if meta:
                 # combine ci metadata with metadata from log file
                 meta = {**self.meta, **meta, **cimeta}
-                meta['cijob'] = posixpath.dirname(fileinfo.filename)
-                meta['cistep'] = posixpath.basename(fileinfo.filename)
+                # Before 2025-06-30 GHA included the job name as the directory name
+                if n := posixpath.dirname(fileinfo.filename):
+                    meta['cijob'] = posixpath.dirname(fileinfo.filename)
+                    meta['cistep'] = posixpath.basename(fileinfo.filename)
+                else:
+                    # A file name has the form NN_NAME.txt
+                    if r := LOG_NAME_RE.search(fileinfo.filename):
+                        meta['cijob'] = r.group(2)
+                    else:
+                        logging.warning('Unexpected log file format %s', fileinfo.filename)
+                        meta['cijob'] = fileinfo.filename
                 assert meta['cijob']  # true because we eliminate others above
                 if 'cidef' in meta:
                     # Unique CI job identifier
@@ -282,8 +296,8 @@ class GithubIngestor:
                     meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
                     step = self.find_job_step(jobs, meta)
                     if not step:
-                        logging.warning(
-                            f'Could not find step {meta["cistep"]}')
+                        logging.debug(
+                            f'Could not find step {meta.get("cistep", "")}')
                     else:
                         if step['conclusion']:
                             meta['cistepresult'] = step['conclusion']
