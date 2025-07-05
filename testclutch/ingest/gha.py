@@ -251,76 +251,76 @@ class GithubIngestor:
                 io.TextIOWrapper(log.open(fileinfo.filename), encoding=config.expand('log_charset'),
                                  errors='backslashreplace'),
                 regex=LOG_TIMESTAMP_RE))
-            meta, testcases = logparse.parse_log_file(readylog)
-            if meta:
-                # combine ci metadata with metadata from log file
-                meta = {**self.meta, **meta, **cimeta}
-                # Before 2025-06-30 GHA included the job name as the directory name
-                if n := posixpath.dirname(fileinfo.filename):
-                    meta['cijob'] = posixpath.dirname(fileinfo.filename)
-                    meta['cistep'] = posixpath.basename(fileinfo.filename)
-                else:
-                    # A file name has the form NN_NAME.txt
-                    if r := LOG_NAME_RE.search(fileinfo.filename):
-                        meta['cijob'] = r.group(2)
+            for meta, testcases in logparse.parse_log_files(readylog):
+                if meta:
+                    # combine ci metadata with metadata from log file
+                    meta = {**self.meta, **meta, **cimeta}
+                    # Before 2025-06-30 GHA included the job name as the directory name
+                    if n := posixpath.dirname(fileinfo.filename):
+                        meta['cijob'] = posixpath.dirname(fileinfo.filename)
+                        meta['cistep'] = posixpath.basename(fileinfo.filename)
                     else:
-                        logging.warning('Unexpected log file format %s', fileinfo.filename)
-                        meta['cijob'] = fileinfo.filename
-                assert meta['cijob']  # true because we eliminate others above
-                if 'cidef' in meta:
-                    # Unique CI job identifier
-                    # The // here makes the name impossible to collide with a new job definition
-                    # or name.
-                    meta['uniquejobname'] = (
-                        f'{meta["cidef"]}//{meta["cijob"]}//{meta["testformat"]}')
-                if 'ciname' in meta:
-                    # This might not be available if this was not called by this ingestor
-                    logging.info('Retrieved test for %s %s %s',
-                                 meta['origin'], meta['checkrepo'], meta['ciname'])
-                job = self.find_job(jobs, meta)
-                if not job:
-                    logging.warning(
-                        f'Could not find job {meta["cijob"]} in workflow {meta["ciname"]}')
-                else:
-                    if job['status'] != 'completed':
-                        # This should have been filtered out in ingest_all_logs and ingest_run,
-                        # but sometimes the status shows completed there but in_progress here.
-                        logging.warning('Run %d is (strangely) %s in jobs; skipping',
-                                        cimeta['runid'], job['status'])
-                        return
-                    meta['ciresult'] = job['conclusion']
-                    # Replace the generic job link; should be replaced again below
-                    meta['url'] = job['html_url']
-                    duration = (ghaapi.convert_time(job['completed_at'])
-                                - ghaapi.convert_time(job['started_at']))
-                    meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
-                    step = self.find_job_step(jobs, meta)
-                    if not step:
-                        logging.debug(
-                            f'Could not find step {meta.get("cistep", "")}')
-                    else:
-                        if step['conclusion']:
-                            meta['cistepresult'] = step['conclusion']
+                        # A file name has the form NN_NAME.txt
+                        if r := LOG_NAME_RE.search(fileinfo.filename):
+                            meta['cijob'] = r.group(2)
                         else:
-                            # If the step conclusion is None, reuse the job conclusion.
-                            # This happens in a timeout scenario, for example.
-                            meta['cistepresult'] = job['conclusion']
-                        if step['completed_at'] and step['started_at']:
-                            duration = (ghaapi.convert_time(step['completed_at'])
-                                        - ghaapi.convert_time(step['started_at']))
-                            meta['steprunduration'] = (duration.seconds * 1000000
-                                                       + duration.microseconds)
-                        # Make the URL directly open this step using an anchor.
-                        # This doesn't always work when first clicked on (probably due to delayed
-                        # loading), but at the very least it's a clue as to where the log is on the
-                        # page.
-                        meta['url'] = f'{meta["url"]}#check-step-{step["number"]}'
+                            logging.warning('Unexpected log file format %s', fileinfo.filename)
+                            meta['cijob'] = fileinfo.filename
+                    assert meta['cijob']  # true because we eliminate others above
+                    if 'cidef' in meta:
+                        # Unique CI job identifier
+                        # The // here makes the name impossible to collide with a new job definition
+                        # or name.
+                        meta['uniquejobname'] = (
+                            f'{meta["cidef"]}//{meta["cijob"]}//{meta["testformat"]}')
+                    if 'ciname' in meta:
+                        # This might not be available if this was not called by this ingestor
+                        logging.info('Retrieved test for %s %s %s',
+                                     meta['origin'], meta['checkrepo'], meta['ciname'])
+                    job = self.find_job(jobs, meta)
+                    if not job:
+                        logging.warning(
+                            f'Could not find job {meta["cijob"]} in workflow {meta["ciname"]}')
+                    else:
+                        if job['status'] != 'completed':
+                            # This should have been filtered out in ingest_all_logs and ingest_run,
+                            # but sometimes the status shows completed there but in_progress here.
+                            logging.warning('Run %d is (strangely) %s in jobs; skipping',
+                                            cimeta['runid'], job['status'])
+                            return
+                        meta['ciresult'] = job['conclusion']
+                        # Replace the generic job link; should be replaced again below
+                        meta['url'] = job['html_url']
+                        duration = (ghaapi.convert_time(job['completed_at'])
+                                    - ghaapi.convert_time(job['started_at']))
+                        meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
+                        step = self.find_job_step(jobs, meta)
+                        if not step:
+                            logging.debug(
+                                f'Could not find step {meta.get("cistep", "")}')
+                        else:
+                            if step['conclusion']:
+                                meta['cistepresult'] = step['conclusion']
+                            else:
+                                # If the step conclusion is None, reuse the job conclusion.
+                                # This happens in a timeout scenario, for example.
+                                meta['cistepresult'] = job['conclusion']
+                            if step['completed_at'] and step['started_at']:
+                                duration = (ghaapi.convert_time(step['completed_at'])
+                                            - ghaapi.convert_time(step['started_at']))
+                                meta['steprunduration'] = (duration.seconds * 1000000
+                                                           + duration.microseconds)
+                            # Make the URL directly open this step using an anchor.
+                            # This doesn't always work when first clicked on (probably due to
+                            # delayed loading), but at the very least it's a clue as to where the
+                            # log is on the page.
+                            meta['url'] = f'{meta["url"]}#check-step-{step["number"]}'
 
-                for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
-                summary = summarize.summarize_totals(testcases)
-                for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    for n, v in meta.items():
+                        logging.debug(f'{n}={v}')
+                    summary = summarize.summarize_totals(testcases)
+                    for l in summary:
+                        logging.debug('%s', l.strip())
+                    logging.debug('')
 
-                self.store_test_run(meta, testcases)
+                    self.store_test_run(meta, testcases)

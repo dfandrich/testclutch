@@ -199,41 +199,41 @@ def ingest_files(args: argparse.Namespace):
     extrameta = parse_meta(args)
 
     for file in args.files:
-        meta, testcases = logparse.parse_log_file(file)
-        meta['origin'] = args.origin
-        meta['checkrepo'] = args.checkrepo
-        absfn = os.path.abspath(file.name)
-        # We have nothing else to go on, so use the file name as the unique job name
-        # which means that you can't correlate between jobs stored in different files.
-        # The same goes for runid.
-        meta['uniquejobname'] = absfn
-        meta['runid'] = absfn
-        # We don't have anything better than this
-        meta['cijob'] = os.path.basename(file.name)
-        # TODO: catch exceptions
-        meta['runfinishtime'] = os.fstat(file.fileno())[stat.ST_MTIME]
-        meta['jobfinishtime'] = meta['runfinishtime']
+        for meta, testcases in logparse.parse_log_files(file):
+            meta['origin'] = args.origin
+            meta['checkrepo'] = args.checkrepo
+            absfn = os.path.abspath(file.name)
+            # We have nothing else to go on, so use the file name as the unique job name
+            # which means that you can't correlate between jobs stored in different files.
+            # The same goes for runid.
+            meta['uniquejobname'] = absfn
+            meta['runid'] = absfn
+            # We don't have anything better than this
+            meta['cijob'] = os.path.basename(file.name)
+            # TODO: catch exceptions
+            meta['runfinishtime'] = os.fstat(file.fileno())[stat.ST_MTIME]
+            meta['jobfinishtime'] = meta['runfinishtime']
 
-        # Any of the above can be overridden on the command-line
-        meta = {**meta, **extrameta}
+            # Any of the above can be overridden on the command-line
+            meta = {**meta, **extrameta}
 
-        if args.verbose:
-            for n, v in meta.items():
-                print(f'{n}={v}')
-            if args.debug:
-                for c in testcases:
-                    print(c)
-            summarize.show_totals(testcases)
-            print()
+            if args.verbose:
+                for n, v in meta.items():
+                    print(f'{n}={v}')
+                if args.debug:
+                    for c in testcases:
+                        print(c)
+                summarize.show_totals(testcases)
+                print()
 
-        logging.info('Retrieved test for %s %s %s',
-                     meta['origin'], meta['checkrepo'], file.name)
+            logging.info('Retrieved test for %s %s %s',
+                         meta['origin'], meta['checkrepo'], file.name)
 
-        if not args.dry_run:
-            try:
-                ds.store_test_run(meta, testcases)
-            except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+            if not args.dry_run:
+                try:
+                    ds.store_test_run(meta, testcases)
+                except db.IntegrityError:
+                    logging.info('Log file has already been ingested!')
 
     if not args.dry_run:
         ds.close()

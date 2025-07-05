@@ -26,6 +26,9 @@ log_parsers = [
     'testclutch.logparser.automakeparse.parse_log_file',
 ]
 
+# Whether to stop searching for more log files after the first one is found
+log_parse_single = True
+
 # Use this character set when reading logs. Any errors when reading cause the bad bytes to be
 # replaced with backslash escape sequences.
 log_charset = 'UTF-8'

@@ -122,29 +122,29 @@ class CurlAutoIngestor:
         logging.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = MassagedLog(logcache.open_cache_file(fn))
-        meta, testcases = logparse.parse_log_file(readylog)
-        if meta:
-            # combine ci metadata with metadata from log file
-            meta = {**self.meta, **meta, **cimeta}
+        for meta, testcases in logparse.parse_log_files(readylog):
+            if meta:
+                # combine ci metadata with metadata from log file
+                meta = {**self.meta, **meta, **cimeta}
 
-            # cijob is probably unique, but the buildcode really makes it so (just not in a
-            # cryptographically secure fashion, so a malicious user could easily cause
-            # duplicate codes).
-            meta['uniquejobname'] = f'{meta["cijob"]} {meta["buildcode"]}!{meta["testformat"]}'
-            meta['jobstarttime'] = meta['runstarttime']
-            run_info = LOG_FILE_RE.search(meta['runid'])
-            if run_info:
-                meta['url'] = LOG_URL.format(id=f'{run_info.group(1)}-{run_info.group(2)}')
+                # cijob is probably unique, but the buildcode really makes it so (just not in a
+                # cryptographically secure fashion, so a malicious user could easily cause
+                # duplicate codes).
+                meta['uniquejobname'] = f'{meta["cijob"]} {meta["buildcode"]}!{meta["testformat"]}'
+                meta['jobstarttime'] = meta['runstarttime']
+                run_info = LOG_FILE_RE.search(meta['runid'])
+                if run_info:
+                    meta['url'] = LOG_URL.format(id=f'{run_info.group(1)}-{run_info.group(2)}')
 
-            logging.info('Retrieved test for %s %s %s',
-                         meta['origin'], meta['checkrepo'], meta['cijob'])
-            for n, v in meta.items():
-                logging.debug(f'{n}={v}')
-            summary = summarize.summarize_totals(testcases)
-            for l in summary:
-                logging.debug('%s', l.strip())
-            logging.debug('')
-            self.store_test_run(meta, testcases)
+                logging.info('Retrieved test for %s %s %s',
+                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                for n, v in meta.items():
+                    logging.debug(f'{n}={v}')
+                summary = summarize.summarize_totals(testcases)
+                for l in summary:
+                    logging.debug('%s', l.strip())
+                logging.debug('')
+                self.store_test_run(meta, testcases)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
         """Store the data about one test.

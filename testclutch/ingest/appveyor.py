@@ -160,21 +160,21 @@ class AppveyorIngestor:
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = msbuild.MsBuildLog(
             logprefix.FixedPrefixedLog(logcache.open_cache_file(fn), prefixlen=11))
-        meta, testcases = logparse.parse_log_file(readylog)
-        if meta:
-            # combine ci metadata with metadata from log file
-            meta = {**self.meta, **meta, **cimeta}
-            meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
+        for meta, testcases in logparse.parse_log_files(readylog):
+            if meta:
+                # combine ci metadata with metadata from log file
+                meta = {**self.meta, **meta, **cimeta}
+                meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
 
-            logging.info('Retrieved test for %s %s %s',
-                         meta['origin'], meta['checkrepo'], meta['cijob'])
-            for n, v in meta.items():
-                logging.debug(f'{n}={v}')
-            summary = summarize.summarize_totals(testcases)
-            for l in summary:
-                logging.debug('%s', l.strip())
-            logging.debug('')
-            self.store_test_run(meta, testcases)
+                logging.info('Retrieved test for %s %s %s',
+                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                for n, v in meta.items():
+                    logging.debug(f'{n}={v}')
+                summary = summarize.summarize_totals(testcases)
+                for l in summary:
+                    logging.debug('%s', l.strip())
+                logging.debug('')
+                self.store_test_run(meta, testcases)
 
     def ingest_all_logs(self, branch: str, hours: int):
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)

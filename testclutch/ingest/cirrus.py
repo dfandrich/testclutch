@@ -181,25 +181,25 @@ class CirrusIngestor:
         logging.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = logcache.open_cache_file(fn)
-        meta, testcases = logparse.parse_log_file(readylog)
-        if meta:
-            # combine ci metadata with metadata from log file
-            meta = {**self.meta, **meta, **cimeta}
-            # Unique CI job identifier
-            # This is the human-specified name, which is probably possible to
-            # make duplicate, so this isn't ideal.
-            meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
+        for meta, testcases in logparse.parse_log_files(readylog):
+            if meta:
+                # combine ci metadata with metadata from log file
+                meta = {**self.meta, **meta, **cimeta}
+                # Unique CI job identifier
+                # This is the human-specified name, which is probably possible to
+                # make duplicate, so this isn't ideal.
+                meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
 
-            logging.info('Retrieved test for %s %s %s',
-                         meta['origin'], meta['checkrepo'], meta['cijob'])
-            for n, v in meta.items():
-                logging.debug(f'{n}={v}')
-            summary = summarize.summarize_totals(testcases)
-            for l in summary:
-                logging.debug('%s', l.strip())
-            logging.debug('')
+                logging.info('Retrieved test for %s %s %s',
+                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                for n, v in meta.items():
+                    logging.debug(f'{n}={v}')
+                summary = summarize.summarize_totals(testcases)
+                for l in summary:
+                    logging.debug('%s', l.strip())
+                logging.debug('')
 
-            self.store_test_run(meta, testcases)
+                self.store_test_run(meta, testcases)
 
     def ingest_log(self, run_id: int, task_id: int, commands: Iterable[str], cimeta: TestMeta):
         for command in commands:
