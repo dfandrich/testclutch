@@ -1,10 +1,9 @@
 """Test unittestparse."""
 
-import os
 import unittest
-from typing import TextIO
 
 from .context import testclutch  # noqa: F401
+from .util import open_data
 
 from testclutch.logparser import unittestparse  # noqa: I100
 from testclutch.logdef import SingleTestFinding  # noqa: I100
@@ -19,12 +18,9 @@ class TestUnittestParse(unittest.TestCase):
         super().setUp()
         self.maxDiff = 4000
 
-    def open_data(self, fn: str) -> TextIO:
-        return open(os.path.join(os.path.dirname(__file__), DATADIR, fn))
-
     # Log file was generated with Python 3.9 (3.10 is identical)
     def test_unittest(self):
-        with self.open_data('unittest.log') as f:
+        with open_data('unittest.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '1000',
@@ -62,7 +58,7 @@ class TestUnittestParse(unittest.TestCase):
     # Log file was generated with Python 3.11
     # The only difference in 3.12 and 3.13 is failing code in the traceback gets underlined
     def test_unittest_311(self):
-        with self.open_data('unittest_3.11.log') as f:
+        with open_data('unittest_3.11.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '2000',
@@ -98,7 +94,7 @@ class TestUnittestParse(unittest.TestCase):
 
     # Log file was generated with Python 3.9 (3.10 is identical)
     def test_unittest_success(self):
-        with self.open_data('unittest_success.log') as f:
+        with open_data('unittest_success.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '0',
@@ -112,7 +108,7 @@ class TestUnittestParse(unittest.TestCase):
 
     # Log file was generated with Python 3.11 (3.12 and 3.13 are identical)
     def test_unittest_success_311(self):
-        with self.open_data('unittest_success_3.11.log') as f:
+        with open_data('unittest_success_3.11.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '0',
@@ -126,7 +122,7 @@ class TestUnittestParse(unittest.TestCase):
 
     # Log file was generated with Python 3.9 (3.10 and 3.11 are identical)
     def test_unittest_none(self):
-        with self.open_data('unittest_none.log') as f:
+        with open_data('unittest_none.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '0',
@@ -138,7 +134,7 @@ class TestUnittestParse(unittest.TestCase):
 
     # Log file was generated with Python 3.12
     def test_unittest_none_312(self):
-        with self.open_data('unittest_none_3.12.log') as f:
+        with open_data('unittest_none_3.12.log') as f:
             meta, testcases = unittestparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsduration': '0',

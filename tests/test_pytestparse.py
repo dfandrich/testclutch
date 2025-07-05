@@ -1,11 +1,10 @@
 """Test pytestparse."""
 
-import os
 import textwrap
 import unittest
-from typing import TextIO
 
 from .context import testclutch  # noqa: F401
+from .util import open_data
 
 from testclutch.logparser import pytestparse  # noqa: I100
 from testclutch.logdef import SingleTestFinding  # noqa: I100
@@ -60,11 +59,8 @@ class TestPytestParse(unittest.TestCase):
         super().setUp()
         self.maxDiff = 4000
 
-    def open_data(self, fn: str) -> TextIO:
-        return open(os.path.join(os.path.dirname(__file__), DATADIR, fn))
-
     def test_success(self):
-        with self.open_data('pytest_success.log') as f:
+        with open_data('pytest_success.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -105,7 +101,7 @@ class TestPytestParse(unittest.TestCase):
         ], testcases)
 
     def test_verbose(self):
-        with self.open_data('pytest_verbose.log') as f:
+        with open_data('pytest_verbose.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -122,7 +118,7 @@ class TestPytestParse(unittest.TestCase):
 
     def test_truncated(self):
         # truncated log file
-        with self.open_data('pytest_truncated.log') as f:
+        with open_data('pytest_truncated.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -136,7 +132,7 @@ class TestPytestParse(unittest.TestCase):
 
     def test_faillogs(self):
         # several types of failures
-        with self.open_data('pytest_faillogs.log') as f:
+        with open_data('pytest_faillogs.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -164,7 +160,7 @@ class TestPytestParse(unittest.TestCase):
 
     def test_nonverbose(self):
         # several types of failures in a non-verbose log file
-        with self.open_data('pytest_nonverbose.log') as f:
+        with open_data('pytest_nonverbose.log') as f:
             meta, testcases = pytestparse.parse_log_file_summary(f)
         self.assertDictEqual({
             'buildsystem': 'cmake/ninja',
@@ -188,7 +184,7 @@ class TestPytestParse(unittest.TestCase):
 
     def test_longtime(self):
         # test takes over a minute, resulting in a slightly different summary line
-        with self.open_data('pytest_longtime.log') as f:
+        with open_data('pytest_longtime.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -210,7 +206,7 @@ class TestPytestParse(unittest.TestCase):
         ], testcases)
 
     def test_xdist(self):
-        with self.open_data('pytest_xdist.log') as f:
+        with open_data('pytest_xdist.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -237,7 +233,7 @@ class TestPytestParse(unittest.TestCase):
         ], testcases)
 
     def test_unittest(self):
-        with self.open_data('pytest_unittest.log') as f:
+        with open_data('pytest_unittest.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -274,7 +270,7 @@ class TestPytestParse(unittest.TestCase):
         ], testcases)
 
     def test_color(self):
-        with self.open_data('pytest_color.log') as f:
+        with open_data('pytest_color.log') as f:
             meta, testcases = pytestparse.parse_log_file(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -311,7 +307,7 @@ class TestPytestParse(unittest.TestCase):
         ], testcases)
 
     def test_xdist_summary(self):
-        with self.open_data('pytest_xdist_summary.log') as f:
+        with open_data('pytest_xdist_summary.log') as f:
             meta, testcases = pytestparse.parse_log_file_summary(f)
         self.assertDictEqual({
             'os': 'linux',
@@ -330,7 +326,7 @@ class TestPytestParse(unittest.TestCase):
         for fn in ['pytest_success.log', 'pytest_verbose.log', 'pytest_truncated.log',
                    'pytest_faillogs.log', 'pytest_longtime.log', 'pytest_xdist.log']:
             with self.subTest(fn):
-                with self.open_data(fn) as f:
+                with open_data(fn) as f:
                     meta, testcases = pytestparse.parse_log_file_summary(f)
                 self.assertDictEqual({}, meta)
                 self.assertEqual([], testcases)
@@ -339,7 +335,7 @@ class TestPytestParse(unittest.TestCase):
         # use the wrong parser on summary logs
         for fn in ['pytest_nonverbose.log', 'pytest_xdist_summary.log']:
             with self.subTest(fn):
-                with self.open_data(fn) as f:
+                with open_data(fn) as f:
                     meta, testcases = pytestparse.parse_log_file(f)
                 self.assertDictEqual({}, meta)
                 self.assertEqual([], testcases)

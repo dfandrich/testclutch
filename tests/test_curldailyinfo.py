@@ -1,10 +1,10 @@
 """Test curldailyinfo."""
 
 import datetime
-import os
 import unittest
 
 from .context import testclutch  # noqa: F401
+from .util import data_file
 
 from testclutch.augment import curldailyinfo  # noqa: I100
 
@@ -18,12 +18,9 @@ class TestCurlDailyInfo(unittest.TestCase):
         super().setUp()
         self.maxDiff = 4000
 
-    def data_file(self, fn: str) -> str:
-        return os.path.join(os.path.dirname(__file__), DATADIR, fn)
-
     def test_dailyinfo(self):
         day_code, daily_time, commit = curldailyinfo.get_daily_info(
-            self.data_file('curldailyinfo_commit.tar.xz'))
+            data_file('curldailyinfo_commit.tar.xz'))
         self.assertEqual('20240805', day_code)
         self.assertEqual(datetime.datetime(2024, 8, 5, 0, 31, 1, tzinfo=datetime.timezone.utc),
                          daily_time)
@@ -32,7 +29,7 @@ class TestCurlDailyInfo(unittest.TestCase):
     def test_dailyinfo_nocommit(self):
         # tar ball missing commit file
         day_code, daily_time, commit = curldailyinfo.get_daily_info(
-            self.data_file('curldailyinfo_basic.tar.xz'))
+            data_file('curldailyinfo_basic.tar.xz'))
         self.assertEqual('20230801', day_code)
         self.assertEqual(datetime.datetime(2023, 8, 1, 0, 30, 18, tzinfo=datetime.timezone.utc),
                          daily_time)

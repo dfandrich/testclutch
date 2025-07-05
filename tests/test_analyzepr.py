@@ -1,21 +1,13 @@
 """Test analyzepr."""
 
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from .context import testclutch  # noqa: F401
+from .util import patch_config_get
 
 from testclutch.cli import analyzepr  # noqa: I100
 from testclutch import logdef  # noqa: I100
-
-
-def patch_config_get(key: str, value):
-    """Mock config.get() to return a specific value for a given key.
-
-    All other values return None, so this should only be used when a single config.get() is
-    expected.
-    """
-    return patch('testclutch.config.get', side_effect=lambda k: value if k == key else None)
 
 
 class TestGatherPRAnalysis(unittest.TestCase):

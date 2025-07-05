@@ -1,10 +1,9 @@
 """Test curlparse."""
 
-import os
 import unittest
-from typing import TextIO
 
 from .context import testclutch  # noqa: F401
+from .util import open_data
 
 from testclutch.logparser import curlparse  # noqa: I100
 from testclutch.logdef import SingleTestFinding  # noqa: I100
@@ -19,12 +18,9 @@ class TestCurlParse(unittest.TestCase):
         super().setUp()
         self.maxDiff = 4000
 
-    def open_data(self, fn: str) -> TextIO:
-        return open(os.path.join(os.path.dirname(__file__), DATADIR, fn))
-
     def test_valgrind(self):
         # with valgrind enabled
-        with self.open_data('curlparse_valgrind.log') as f:
+        with open_data('curlparse_valgrind.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'automake',
@@ -128,7 +124,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_torture(self):
         # runtests.pl -t mode
-        with self.open_data('curlparse_torture.log') as f:
+        with open_data('curlparse_torture.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'automake',
@@ -172,7 +168,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_aborted(self):
         # Aborted cleanly by ^C
-        with self.open_data('curlparse_aborted.log') as f:
+        with open_data('curlparse_aborted.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'automake',
@@ -227,7 +223,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_truncated(self):
         # Aborted by Circle CI timeout (simulated log)
-        with self.open_data('curlparse_truncated.log') as f:
+        with open_data('curlparse_truncated.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'runtestsopts': '-a  -j3 ',
@@ -279,7 +275,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_short(self):
         # runtests.pl -s mode
-        with self.open_data('curlparse_short.log') as f:
+        with open_data('curlparse_short.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -319,7 +315,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_event(self):
         # -e mode
-        with self.open_data('curlparse_event.log') as f:
+        with open_data('curlparse_event.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -357,7 +353,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_daily(self):
         # built using testcurl.pl from a daily build
-        with self.open_data('curlparse_daily.log') as f:
+        with open_data('curlparse_daily.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -1697,7 +1693,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_daily2(self):
         # built using testcurl.pl from a daily build (newer curl, newer kernel)
-        with self.open_data('curlparse_daily2.log') as f:
+        with open_data('curlparse_daily2.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -1744,7 +1740,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_testcurlgit(self):
         # built using testcurl.pl using git
-        with self.open_data('curlparse_testcurlgit.log') as f:
+        with open_data('curlparse_testcurlgit.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -1787,7 +1783,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_faillogs(self):
         # many different ways for a test to fail
-        with self.open_data('curlparse_faillogs.log') as f:
+        with open_data('curlparse_faillogs.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -1840,7 +1836,7 @@ class TestCurlParse(unittest.TestCase):
     # Until then, only the parts that are parsed and understood by the curl parser are
     # tested here and test_mscmake_dedented() tests the massaged version.
     def test_mscmake(self):
-        with self.open_data('curlparse_mscmake.log') as f:
+        with open_data('curlparse_mscmake.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'cmake',
@@ -1853,7 +1849,7 @@ class TestCurlParse(unittest.TestCase):
     # TODO: this is the post-processed version of the log in test_mscmake (see
     # the notes there)
     def test_mscmake_dedented(self):
-        with self.open_data('curlparse_mscmake_dedented.log') as f:
+        with open_data('curlparse_mscmake_dedented.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -3320,7 +3316,7 @@ class TestCurlParse(unittest.TestCase):
     # Log created on Debian Bullseye with:
     # mkdir build && cmake -B build -DCURL_USE_OPENSSL=OFF . && cd build && make -j9 && TFLAGS='1 2 3' make -j9 test-quiet
     def test_cmake_make(self):
-        with self.open_data('curlparse_cmake_make.log') as f:
+        with open_data('curlparse_cmake_make.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -3355,7 +3351,7 @@ class TestCurlParse(unittest.TestCase):
     # Log created on Debian Bullseye with:
     # mkdir cmake -B /tmp/c -G Ninja -DCURL_USE_OPENSSL=OFF . && cd /tmp/c && ninja && TFLAGS='1 2 3' ninja test-quiet
     def test_cmake_ninja(self):
-        with self.open_data('curlparse_cmake_ninja.log') as f:
+        with open_data('curlparse_cmake_ninja.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -3389,7 +3385,7 @@ class TestCurlParse(unittest.TestCase):
         ], testcases)
 
     def test_cmake_run_make(self):
-        with self.open_data('curlparse_cmake_run_make.log') as f:
+        with open_data('curlparse_cmake_run_make.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -3431,7 +3427,7 @@ class TestCurlParse(unittest.TestCase):
 
     # Log created with: touch /tmp/curl/tests/libtest/sethostname.c && make test V=1 TFLAGS='500'
     def test_automake_compiler(self):
-        with self.open_data('curlparse_automake_compiler.log') as f:
+        with open_data('curlparse_automake_compiler.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'aarch64',
@@ -3466,7 +3462,7 @@ class TestCurlParse(unittest.TestCase):
     # Log created with: make test TEST_Q='-a -n 1117 1117 1117'
     # with stdout1117 being perturbed manually during the second test
     def test_multiple(self):
-        with self.open_data('curlparse_multiple.log') as f:
+        with open_data('curlparse_multiple.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'aarch64',
@@ -3507,7 +3503,7 @@ class TestCurlParse(unittest.TestCase):
     # mkdir /tmp/buildam && cd /tmp/buildam && ~/curl/configure --without-ssl && make -j9
     #   && cd tests && srcdir=~/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
     def test_automake_buildinfo(self):
-        with self.open_data('curlparse_automake_buildinfo.log') as f:
+        with open_data('curlparse_automake_buildinfo.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'automake',
@@ -3552,7 +3548,7 @@ class TestCurlParse(unittest.TestCase):
     # Log created like the previous one with the configureargs given (except for host_alias, which
     # is automatically created).
     def test_automake_cross_buildinfo(self):
-        with self.open_data('curlparse_automake_cross_buildinfo.log') as f:
+        with open_data('curlparse_automake_cross_buildinfo.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'automake',
@@ -3594,7 +3590,7 @@ class TestCurlParse(unittest.TestCase):
     # mkdir /tmp/buildcm && cd /tmp/buildcm && cmake -GNinja ~/curl -DENABLE_DEBUG=ON && ninja &&
     #   ninja testdeps && cd tests && srcdir=~/src/curl/tests ~/curl/tests/runtests.pl -a -p -n 1
     def test_cmake_buildinfo(self):
-        with self.open_data('curlparse_cmake_buildinfo.log') as f:
+        with open_data('curlparse_cmake_buildinfo.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'buildsystem': 'cmake/ninja',
@@ -3633,7 +3629,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_rerun(self):
         # Verbose log with test failures that are rerun with success
-        with self.open_data('curlparse_rerun.log') as f:
+        with open_data('curlparse_rerun.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',
@@ -3691,7 +3687,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_rerun_short(self):
         # Short log with test failures that are rerun with success
-        with self.open_data('curlparse_rerun_short.log') as f:
+        with open_data('curlparse_rerun_short.log') as f:
             meta, testcases = curlparse.parse_log_file(f)
         self.assertDictEqual({
             'arch': 'x86_64',

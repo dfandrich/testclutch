@@ -5,6 +5,7 @@ import unittest
 from unittest import mock
 
 from .context import testclutch  # noqa: F401
+from .util import data_file
 
 from testclutch import gitdef    # noqa: I100
 
@@ -25,12 +26,9 @@ class TestGitCommitInfo(unittest.TestCase):
         global gitcommitinfo
         from testclutch.cli import gitcommitinfo
 
-    def data_file(self, fn: str) -> str:
-        return os.path.join(os.path.dirname(__file__), DATADIR, fn)
-
     def test_gitcommitinfo(self):
         git = gitcommitinfo.GitCommitIngestor('https://git.example.com/ex', None)
-        results = git.extract_git_commit_info(self.data_file('test.git'),
+        results = git.extract_git_commit_info(data_file('test.git'),
                                               'master', '2023-08-01T00:00:00-0700')
         # There are three commits past the given time, but the last one is deliberately dropped
         self.assertEqual([

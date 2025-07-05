@@ -1,15 +1,12 @@
 """Test automakeparse."""
 
-import os
 import unittest
-from typing import TextIO
 
 from .context import testclutch  # noqa: F401
+from .util import open_data
 
 from testclutch.logparser import automakeparse   # noqa: I100
 from testclutch.logdef import SingleTestFinding   # noqa: I100
-
-DATADIR = 'data'
 
 
 class TestCurlParse(unittest.TestCase):
@@ -19,11 +16,8 @@ class TestCurlParse(unittest.TestCase):
         super().setUp()
         self.maxDiff = 4000
 
-    def open_data(self, fn: str) -> TextIO:
-        return open(os.path.join(os.path.dirname(__file__), DATADIR, fn))
-
     def test_success(self):
-        with self.open_data('automake_two.log') as f:
+        with open_data('automake_two.log') as f:
             meta, testcases = automakeparse.parse_log_file(f)
         self.assertDictEqual({
             'testformat': 'automake',
@@ -49,7 +43,7 @@ class TestCurlParse(unittest.TestCase):
         ], testcases)
 
     def test_two_logs_second_truncated(self):
-        with self.open_data('automake_twotrunc.log') as f:
+        with open_data('automake_twotrunc.log') as f:
             meta, testcases = automakeparse.parse_log_file(f)
         self.assertDictEqual({
             'testformat': 'automake',
@@ -112,7 +106,7 @@ class TestCurlParse(unittest.TestCase):
 
     def test_synthesized(self):
         # These tests have synthesized names that include spaces
-        with self.open_data('automake_synthesized.log') as f:
+        with open_data('automake_synthesized.log') as f:
             meta, testcases = automakeparse.parse_log_file(f)
         self.assertDictEqual({
             'testformat': 'automake',
