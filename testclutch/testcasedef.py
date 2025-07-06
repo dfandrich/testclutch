@@ -6,6 +6,7 @@ from enum import IntEnum
 # These are stored directly in the database
 class TestResult(IntEnum):
     """Enumeration of all possible results of a test."""
+    __test__ = False
 
     UNKNOWN = 0     # test result is not known
     PASS = 1        # test succeeded
