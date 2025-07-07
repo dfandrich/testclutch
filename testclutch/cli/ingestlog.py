@@ -239,74 +239,63 @@ def ingest_files(args: argparse.Namespace):
         ds.close()
 
 
-def main():
+def main() -> int:
     args = parse_args()
     log.setup(args, subprogram=args.origin)
 
     if not args.authfile and args.origin == 'gha':
         logging.error('--authfile is required with --origin=gha')
-        sys.exit(1)
+        return 1
 
     if args.runid:
         if args.meta:
             logging.error('Metadata fields cannot be added with --runid')
-            sys.exit(1)
+            return 1
 
-        if not args.dry_run:
-            ds = db.Datastore()
-            ds.connect()
-        else:
-            ds = None
+        with db.Datastore() if not args.dry_run else contextlib.nullcontext() as ds:
+            if args.origin == 'gha':
+                return gha_ingest_runs(args, ds)
+            if args.origin == 'circle':
+                return circle_ingest_runs(args, ds)
+            if args.origin == 'cirrus':
+                return cirrus_ingest_runs(args, ds)
+            if args.origin == 'appveyor':
+                return appveyor_ingest_runs(args, ds)
+            if args.origin == 'azure':
+                return azure_ingest_runs(args, ds)
+            if args.origin == 'curlauto':
+                return curlauto_ingest_runs(args, ds)
 
-        if args.origin == 'gha':
-            sys.exit(gha_ingest_runs(args, ds))
-        elif args.origin == 'circle':
-            sys.exit(circle_ingest_runs(args, ds))
-        elif args.origin == 'cirrus':
-            sys.exit(cirrus_ingest_runs(args, ds))
-        elif args.origin == 'appveyor':
-            sys.exit(appveyor_ingest_runs(args, ds))
-        elif args.origin == 'azure':
-            sys.exit(azure_ingest_runs(args, ds))
-        elif args.origin == 'curlauto':
-            sys.exit(curlauto_ingest_runs(args, ds))
-        else:
             logging.error('Origin %s is not supported with --runid', args.origin)
-            if ds:
-                ds.close()
-            sys.exit(1)
-
-        if ds:
-            ds.close()
+            return 1
 
     if args.howrecent:
         if args.meta:
             logging.error('Metadata fields cannot be added in search mode')
-            sys.exit(1)
+            return 1
 
         with db.Datastore() if not args.dry_run else contextlib.nullcontext() as ds:
             if args.origin == 'gha':
-                sys.exit(gha_ingest_recent_runs(args, ds))
-            elif args.origin == 'circle':
-                sys.exit(circle_ingest_recent_runs(args, ds))
-            elif args.origin == 'cirrus':
-                sys.exit(cirrus_ingest_recent_runs(args, ds))
-            elif args.origin == 'appveyor':
-                sys.exit(appveyor_ingest_recent_runs(args, ds))
-            elif args.origin == 'azure':
-                sys.exit(azure_ingest_recent_runs(args, ds))
-            elif args.origin == 'curlauto':
-                sys.exit(curlauto_ingest_recent_runs(args, ds))
-            else:
-                logging.error('Origin %s is not supported with --howrecent', args.origin)
-                if ds:
-                    ds.close()
-                sys.exit(1)
+                return gha_ingest_recent_runs(args, ds)
+            if args.origin == 'circle':
+                return circle_ingest_recent_runs(args, ds)
+            if args.origin == 'cirrus':
+                return cirrus_ingest_recent_runs(args, ds)
+            if args.origin == 'appveyor':
+                return appveyor_ingest_recent_runs(args, ds)
+            if args.origin == 'azure':
+                return azure_ingest_recent_runs(args, ds)
+            if args.origin == 'curlauto':
+                return curlauto_ingest_recent_runs(args, ds)
+
+            logging.error('Origin %s is not supported with --howrecent', args.origin)
+            return 1
 
     if args.origin != 'local':
         logging.warning(f"It's odd to be reading {args.origin} logs from files, but ok")
 
     ingest_files(args)
+    return 0
 
 
 if __name__ == '__main__':

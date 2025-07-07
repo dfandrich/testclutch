@@ -269,7 +269,7 @@ def output_openmetrics(ds: db.Datastore, rows: db.TestRunRow, instance: str):
     print('# EOF')
 
 
-def main():
+def main() -> int:
     args = parse_args()
     log.setup(args)
 
@@ -295,7 +295,7 @@ def main():
             val = NVO_RE.search(args.query)
             if not val:
                 logging.error('Invalid match query: %s', args.query)
-                sys.exit(1)
+                return 1
             op = operator_from_matcher(val.group(2))
             rows = ds.select_meta_test_runs(args.checkrepo, since,
                                             val.group(1), op, val.group(3))
@@ -315,6 +315,8 @@ def main():
 
     if args.format == 'text':
         print(f'{len(rows)} matching logs')
+
+    return 0
 
 
 if __name__ == '__main__':

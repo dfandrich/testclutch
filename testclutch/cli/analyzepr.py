@@ -798,7 +798,7 @@ class GatherPRAnalysis:
         return text
 
 
-def main():
+def main() -> int:
     args = parse_args()
     log.setup(args)
 

@@ -9,12 +9,12 @@ from testclutch import config
 from testclutch import db
 
 
-def main():
+def main() -> int:
     logging.basicConfig(level=logging.DEBUG, format='%(levelno)s %(filename)s: %(message)s',)
     if len(sys.argv) < 2:
         print('Usage: dbutil [command [args...]]')
         print('Commands available: deleteid commitchain commitchainrev checkcommitchain')
-        sys.exit(1)
+        return 1
 
     with db.Datastore() as ds:
         assert ds.cur  # satisfy pytype that this isn't None
@@ -22,7 +22,7 @@ def main():
         if sys.argv[1] == 'deleteid':
             if len(sys.argv) < 3:
                 print('Usage: dbutil deleteid <id>')
-                sys.exit(1)
+                return 1
             rec_id = int(sys.argv[2])
             print(f'Deleting job record id {rec_id}')
             ds.delete_test_run(rec_id)
@@ -30,7 +30,7 @@ def main():
         elif sys.argv[1] == 'commitchain':
             if len(sys.argv) not in (3, 5):
                 print('Usage: dbutil commitchain [<repo> <branch>] <commit>')
-                sys.exit(1)
+                return 1
             if len(sys.argv) == 5:
                 repo, branch, commit = sys.argv[2:6]
             else:
@@ -53,7 +53,7 @@ def main():
         elif sys.argv[1] == 'commitchainrev':
             if len(sys.argv) not in (3, 4, 5):
                 print('Usage: dbutil commitchainrev [<repo> <branch> [<commit>]]')
-                sys.exit(1)
+                return 1
             if len(sys.argv) == 5:
                 repo, branch, commit = sys.argv[2:6]
             elif len(sys.argv) == 4:
@@ -63,7 +63,7 @@ def main():
                     repo, branch, int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()), 1)
                 if not commits:
                     print('Error: no matching commits found in db')
-                    sys.exit(1)
+                    return 1
                 commit = commits[0][0]
             else:  # len(sys.argv) == 3
                 repo = config.expand('check_repo')
@@ -87,7 +87,7 @@ def main():
                 print('Usage: dbutil checkcommitchain [<repo> <branch>] <commit>')
                 print('Checks that the commit chain is unbroken. <commit> must be the')
                 print('oldest commit in the database.')
-                sys.exit(1)
+                return 1
             if len(sys.argv) == 5:
                 repo, branch, commit = sys.argv[2:6]
             else:
@@ -101,12 +101,14 @@ def main():
             if commits_in_db != len(commits):
                 print('Error: commit chain in db is incomplete')
                 print(f'database: {commits_in_db} chain length: {len(commits)}')
-                sys.exit(2)
-            else:
-                print(f'Commit chain matches database (length {commits_in_db})')
+                return 2
+
+            print(f'Commit chain matches database (length {commits_in_db})')
 
         else:
             print(f'Unknown command {sys.argv[1]}')
+
+    return 0
 
 
 if __name__ == '__main__':

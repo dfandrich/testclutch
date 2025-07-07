@@ -32,13 +32,13 @@ def parse_args(args=None) -> argparse.Namespace:
     return parser.parse_args(args=args)
 
 
-def main():
+def main() -> int:
     args = parse_args()
     log.setup(args)
 
     if args.uniquejob and args.html:
         print('--uniquejob and --html are not compatible', file=sys.stderr)
-        sys.exit(1)
+        return 1
 
     with db.Datastore() as ds:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds, args.checkrepo)
@@ -52,6 +52,8 @@ def main():
         else:
             logging.info('Analyzing all unique jobs')
             analyzer.analyze_all_by_unique_job(args.checkrepo)
+
+    return 0
 
 
 if __name__ == '__main__':

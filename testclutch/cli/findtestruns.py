@@ -100,7 +100,7 @@ def parse_args(args=None) -> argparse.Namespace:
     return parser.parse_args(args=args)
 
 
-def main():
+def main() -> int:
     args = parse_args()
     log.setup(args)
 
@@ -118,11 +118,11 @@ def main():
 
     if not args.succeeded and not args.failed and not args.resultcode:
         print('Must specify at least one of --failed, --succeeded or --resultcode')
-        return
+        return 1
 
     if not args.succeeded and not args.failed and not args.tests:
         print('Must specify tests with --failed, --succeeded or after --resultcode')
-        return
+        return 1
 
     with db.Datastore() as ds:
         ffr = FindFailedRuns(ds)
@@ -145,6 +145,8 @@ def main():
             testmatches = ffr.find_status_run(
                 args.checkrepo, since, testname, (TestResult[args.resultcode],))
             ffr.show_matches(testmatches)
+
+    return 0
 
 
 if __name__ == '__main__':
