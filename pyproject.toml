@@ -31,7 +31,7 @@ classifiers = [
 # actually been tested
 requires-python = ">=3.9, <3.14"
 dependencies = [
-    "requests >= 2.25.1, <= 2.32.4",
+    "requests >= 2.25.1, <= 2.32.6",
     "zstd >= 1.4.5.1, <= 1.5.7.2",
 ]
 
