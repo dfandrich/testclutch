@@ -46,7 +46,8 @@ class MassagedLog(TextIO):
         """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
-    def readline(self) -> str:
+    def readline(self, limit: int = -1) -> str:
+        assert limit == -1
         l = self.file_obj.readline()
         if (RE_FAILED.search(l) or RE_IGNORED.search(l) or RE_SKIPAFTERSTART_PART.search(l)
             or RE_EXITFAILED.search(l) or RE_TORTURESKIPPED.search(l)
@@ -78,7 +79,7 @@ class CurlAutoIngestor:
     def ingest_run(self, log_name: str):
         timestamp, ident = self._extract_run_info(log_name)
 
-        cimeta = {}
+        cimeta: TestMeta = {}
         cimeta['runid'] = log_name
         # This is the time the log file was processed on the curl server
         cimeta['runprocesstime'] = int(timestamp.timestamp())

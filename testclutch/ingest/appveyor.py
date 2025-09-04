@@ -121,7 +121,7 @@ class AppveyorIngestor:
     def _log_file_path(self, build_id: int, job_id: str) -> str:
         if not job_id.isalnum():
             # Should never happen, but do this to avoid filesystem attacks
-            job_id = hash(job_id)
+            job_id = str(hash(job_id))
         return f'{LOGSUBDIR}/appveyor-{self.account}-{self.project}-{build_id}-{job_id}{DEFAULT_EXT}'
 
     def download_log(self, build_id: int, job_id: str) -> str:

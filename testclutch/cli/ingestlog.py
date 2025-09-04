@@ -211,7 +211,7 @@ def ingest_files(args: argparse.Namespace):
             # We don't have anything better than this
             meta['cijob'] = os.path.basename(file.name)
             # TODO: catch exceptions
-            meta['runfinishtime'] = os.fstat(file.fileno())[stat.ST_MTIME]
+            meta['runfinishtime'] = int(os.fstat(file.fileno())[stat.ST_MTIME])
             meta['jobfinishtime'] = meta['runfinishtime']
 
             # Any of the above can be overridden on the command-line

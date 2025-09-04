@@ -1,7 +1,7 @@
 """Test urls."""
 
+import argparse
 import unittest
-from dataclasses import dataclass
 
 from .context import testclutch  # noqa: F401
 
@@ -30,11 +30,8 @@ class TestUrls(unittest.TestCase):
         self.assertEqual(('user', 'project'),
                          urls.get_project_name('https://github.com/user/project'))
 
-        @dataclass
-        class Args:
-            checkrepo: str
-            account: str
-            project: str
+        def Args(checkrepo: str, account: str, project: str):
+            return argparse.Namespace(checkrepo=checkrepo, account=account, project=project)
 
         args = Args('https://github.com/user/project', '', '')
         self.assertEqual(('user', 'project'),

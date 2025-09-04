@@ -94,7 +94,7 @@ class GithubApi:
         return headers
 
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
-                             params: Optional[dict[str, str]] = None
+                             params: Optional[dict[str, Union[str, int]]] = None
                              ) -> Union[dict[str, Any], list[Any]]:
         """Perform a paged HTTP get, combining all paged results in array.
 

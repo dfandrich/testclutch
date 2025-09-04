@@ -113,7 +113,7 @@ class CircleIngestor:
         logging.debug('Getting build %s', build_num)
         build = self.circle.get_run(build_num)
         build_num = build['build_num']
-        cimeta = {}
+        cimeta: TestMeta = {}
         cimeta['ciname'] = 'CircleCI'
         cimeta['runid'] = build_num
         cimeta['commit'] = build['vcs_revision']

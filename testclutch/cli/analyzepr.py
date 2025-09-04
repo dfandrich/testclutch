@@ -52,7 +52,7 @@ class PRStatus(enum.IntEnum):
     ERROR = 4    # invalid PR
 
 
-def parse_args(args: Optional[argparse.Namespace] = None) -> argparse.Namespace:
+def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Perform analysis of tests run on a pull request')
     argparsing.arguments_logging(parser)

@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from testclutch import netreq
 from testclutch import urls
@@ -293,7 +293,7 @@ fragment TaskNameChip_task on Task {
 class CirrusApi:
     """Retrieve logs from Cirrus CI runs."""
 
-    def __init__(self, checkurl: str, token: str):
+    def __init__(self, checkurl: str, token: Optional[str]):
         account, project = urls.get_project_name(checkurl)
         self.owner = account
         self.repo = project

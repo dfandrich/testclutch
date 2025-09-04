@@ -221,7 +221,7 @@ class Datastore:
 #        # TODO: COMPLETE THIS IF IT MAKES SENSE. Right now, writes are unconditional
 #        # and duplicate writes just raise IntegrityError which is ignored
 
-    def select_rec_id(self, meta: dict[str, str]) -> Optional[int]:
+    def select_rec_id(self, meta: TestMeta) -> Optional[int]:
         """Return the record ID matching a given test run."""
         repo = meta['checkrepo']
         origin = meta['origin']

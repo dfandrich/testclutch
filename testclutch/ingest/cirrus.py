@@ -112,7 +112,7 @@ class CirrusIngestor:
                 # A task can be SKIPPED even if the run is COMPLETED
                 logging.debug('Task %s was skipped', task_id)
                 continue
-            jobmeta = {}
+            jobmeta: TestMeta = {}
             jobmeta['jobid'] = task_id
             jobmeta['ciname'] = 'Cirrus'
             jobmeta['ciarch'] = task['instanceArchitecture'].lower()
