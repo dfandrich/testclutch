@@ -174,6 +174,8 @@ def parse_buildinfo(l: str) -> TestMetaStr:
             meta['buildsystem'] = 'cmake/make'
         elif r.group(1) == 'Ninja':
             meta['buildsystem'] = 'cmake/ninja'
+        elif r.group(1) == 'Ninja Multi-Config':
+            meta['buildsystem'] = 'cmake/ninja-multiconfig'
         elif r.group(1).startswith('Visual Studio'):
             meta['buildsystem'] = 'cmake/msbuild'
         else:
