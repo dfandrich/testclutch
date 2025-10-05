@@ -388,13 +388,13 @@ class GHAPRReady:
     def check_gha_pr_state(self, pr: int) -> PRStatus:
         pull = self.gh.get_pull(pr)
         if pull['state'] == 'closed':
-            logging.warning(f'PR is in state {pull["state"]}')
+            logging.warning(f'PR #{pr} is in state {pull["state"]}')
             return PRStatus.CLOSED
         if pull['state'] != 'open':
-            logging.warning(f'PR is in unknown state {pull["state"]}')
+            logging.warning(f'PR #{pr} is in unknown state {pull["state"]}')
             return PRStatus.ERROR
         if pull['locked']:
-            logging.warning('PR is locked; aborting')
+            logging.warning(f'PR #{pr} is locked; aborting')
             return PRStatus.ERROR
         commit = pull['head']['sha']
         logging.info(f'PR#{pr} commit {commit}')
