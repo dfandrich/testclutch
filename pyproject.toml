@@ -29,7 +29,7 @@ classifiers = [
 ]
 # These version dependencies are conservative and reflect versions that have
 # actually been tested
-requires-python = ">=3.9, <3.14"
+requires-python = ">=3.9, <3.15"
 dependencies = [
     "requests >= 2.25.1, <= 2.32.6",
     "zstd >= 1.4.5.1, <= 1.5.7.2",
@@ -38,7 +38,7 @@ dependencies = [
 # These version dependencies are more broad as they are not required dependencies
 [project.optional-dependencies]
 test = [
-    "pytest >= 6, < 9"
+    "pytest >= 6, < 10"
 ]
 dev = [
     "flake8 >= 5, < 8",
@@ -68,7 +68,9 @@ dev = [
     "flake8-super",
     "flake8-warnings",
     "flake8-wot",
-    "pytype >= 2023.9.19"
+    "pytype >= 2023.9.19",
+    "types-requests",
+    "types-zstd"
 ]
 
 [project.urls]
