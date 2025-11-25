@@ -173,6 +173,14 @@ class MetadataAdjuster:
         return [v for v in values if v]
 
 
+@dataclass
+class TestRunCounts:
+    """Metadata about test runs."""
+    attempted_tests: int = 0
+    failed_tests: int = 0
+    successful_tests: int = 0
+
+
 class FeatureMatrix:
     """Retrieve metadata to build a job feature matrix of recent jobs."""
 
@@ -184,11 +192,12 @@ class FeatureMatrix:
         self.from_time = int(since.timestamp())
         self.analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
         self.all_meta = []  # type: list[TestMetaStr]
+        self.all_attempted_counts = {}  # type: dict[str, TestRunCounts]
 
     def all_unique_jobs(self) -> list[str]:
         return self.analyzer.all_unique_jobs(self.repo, self.from_time)
 
-    def get_uniquejob_meta(self, globaluniquejob: str) -> TestMetaStr:
+    def get_uniquejob_meta(self, globaluniquejob: str) -> tuple[TestMetaStr, TestRunCounts]:
         to_time = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
         # Using disabled_job_hours instead of analysis_hours because we want only the most current
         # job run, and anything older than that is irrelevant
@@ -197,10 +206,22 @@ class FeatureMatrix:
         self.analyzer.load_unique_job(globaluniquejob, self.from_time, to_time)
         if not self.analyzer.all_jobs_status:
             logging.info('Nothing to analyze for %s', globaluniquejob)
-            return {}
+            return ({}, TestRunCounts())
         last_job_status = self.analyzer.all_jobs_status[0]
         testid = last_job_status.testid
-        return self.ds.collect_meta(testid)
+        return (self.ds.collect_meta(testid),
+                TestRunCounts(
+                    len(last_job_status.attempted_tests),
+                    len(last_job_status.failed_tests),
+                    len(last_job_status.successful_tests)))
+
+    def get_testrun_counts(self, globaluniquejob: str) -> TestRunCounts:
+        """Returns the number of attempted tests for this unique job.
+
+        This will return the count from one of the matching jobs read with load_all_meta().
+        """
+        assert globaluniquejob in self.all_attempted_counts, f'Job {globaluniquejob} not found'
+        return self.all_attempted_counts[globaluniquejob]
 
     def make_job_title(self, job: TestMetaStr) -> str:
         return self.analyzer.make_job_title(job)
@@ -208,10 +229,12 @@ class FeatureMatrix:
     def load_all_meta(self):
         """Read metadata for all jobs."""
         self.all_meta = []
+        self.all_attempted_counts = {}
         for job in self.all_unique_jobs():
-            meta = self.get_uniquejob_meta(job)
+            meta, runmeta = self.get_uniquejob_meta(job)
             assert meta, 'Each job must have metadata; edge condition on expiry?'
             self.all_meta.append(meta)
+            self.all_attempted_counts[job] = runmeta
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
     def build_features(self, metas: Sequence[str], adjuster: MetadataAdjuster
@@ -712,7 +735,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         count: int = 0
 
     featurecounts = [IntCounter() for _ in features]  # one counter per feature value
-    print('<thead><tr><th>Job</th>')
+    print('<thead><tr><th>Job</th><th title="Number of tests configured">Tests</th>')
     lastname = ''
     for title, name, _ in features:
         newsec = ' class="newsection"' if name != lastname else ''
@@ -727,6 +750,9 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                   '</a></td>')
         else:
             print(f'<tr><td>{escape(fm.make_job_title(meta))}</td>')
+        print(
+            f'<td>{fm.get_testrun_counts(fm.analyzer.make_global_unique_job(meta)).attempted_tests}'
+            '</td>')
         lastname = ''
         for (_, name, value), counter in zip(features, featurecounts):
             jobvalue = set(adjuster.adjust(name, meta.get(name, '')))
@@ -749,7 +775,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
 
     # Print totals of each feature
     total_count = len(fm.all_meta)
-    print(f'<tr><td>TOTALS: {total_count} (100%)</td>')
+    print(f'<tr><td>TOTALS: {total_count} (100%)</td><td></td>')
     for counter in featurecounts:
         pct = counter.count / total_count * 100
         print(f'<td>{counter.count} ' f'({pct:.{num_precision(pct, 1)}f}%)</td>')
