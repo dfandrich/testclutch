@@ -103,10 +103,10 @@ class ResultsOverTimeByUniqueJob:
     def make_global_unique_job(meta: TestMeta) -> str:
         """Create a unique job name from the available metadata.
 
-        This is the concatenation of: account,repo,origin,uniquejobname
+        This is the concatenation of: account,checkrepo,origin,uniquejobname
         It is used as a key to get info on a unique job name.
         """
-        return ','.join(meta.get(x, '') for x in ['account', 'repo', 'origin', 'uniquejobname'])
+        return ','.join(meta.get(x, '') for x in ['account', 'checkrepo', 'origin', 'uniquejobname'])
 
     def commit_url(self, commit_hash: str) -> str:
         """Return a URL for the given commit hash."""
