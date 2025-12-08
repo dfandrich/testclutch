@@ -115,9 +115,13 @@ class ResultsOverTimeByUniqueJob:
         if self.repo.startswith('https://github.com/'):
             return f'{canon_repo}/commit/{parse.quote(commit_hash)}'
 
-        if (self.repo.startswith('https://gitlab.com/')
-           or self.repo.startswith('https://invent.kde.org/')):
-            # Many public sites use gitlab.com software and will use this form
+        # Support a few popular public gitlab instances by hard-coding them
+        if (self.repo.startswith('https://')
+            and self.repo[8:(self.repo + '/').find('/', 8)] in frozenset({
+                'gitlab.com', 'invent.kde.org', 'gitlab.gnome.org', 'gitlab.matrix.org',
+                'gitlab.xiph.org', 'gitlab.inria.fr', 'gitlab.dkrz.de', 'gitlab.cern.ch',
+                'gitlab.haskell.org', 'gitlab.freedesktop.org', 'gitlab.xfce.org'})):
+            # Many public sites using gitlab.com software will use this form
             return f'{canon_repo}/-/commit/{parse.quote(commit_hash)}'
 
         if self.repo.startswith('https://pagure.io/'):
@@ -221,6 +225,9 @@ class ResultsOverTimeByUniqueJob:
             failed_tests = []
             attempted_tests = []
             success_tests = []
+            # TODO: perhaps UNKNOWN should be removed from this set, since it likely happens
+            # only if a test was run; the result is unknown, but by that point it wasn't skipped
+            # (but verify that first).
             skipped_statuses = frozenset((TestResult.UNKNOWN, TestResult.SKIP))
             for tc in testcases:
                 if tc.result == TestResult.PASS:
