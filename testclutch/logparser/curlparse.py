@@ -95,7 +95,11 @@ RE_EXITFAILED = re.compile(r'^ (exit) FAILED$')
 RE_TESTSTART = re.compile(r'^test (\d{4,5})\.\.\.\[')
 RE_SKIPAFTERSTART = re.compile(r'(^(CMD |RUN: |Warning: |postcheck |curl returned |Killed|'
                                r' (\d+) functions to make fail)|'
-                               r'functions found, but only fail|received SIGINT, exiting)|'
+                               r'functions found, but only fail|'
+                               r'did \d+ allocations, \d+ allowed|'
+                               r'allocated \d+ maximum, \d+ allowed|'
+                               r"Found '[^']+' confirmed to not exist\.|"
+                               r'received SIGINT, exiting)|'
                                r'(^\s?$)|( log/(\d+/)?std)|(^\S+ returned .* expecting (\d)+$)')
 RE_ABORTED = re.compile(r'Aborting tests$')
 # Should be just {11} after 2023-06-21
