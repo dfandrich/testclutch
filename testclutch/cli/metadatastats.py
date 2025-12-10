@@ -735,7 +735,8 @@ def output_feature_matrix_html(fm: FeatureMatrix):
         count: int = 0
 
     featurecounts = [IntCounter() for _ in features]  # one counter per feature value
-    print('<thead><tr><th>Job</th><th title="Number of tests configured">Tests</th>')
+    print('<thead><tr><th>Job</th><th class="newsection" title="Number of tests configured">'
+          'Tests</th>')
     lastname = ''
     for title, name, _ in features:
         newsec = ' class="newsection"' if name != lastname else ''
