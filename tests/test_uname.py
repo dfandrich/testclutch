@@ -122,6 +122,14 @@ class TestParseUname(unittest.TestCase):
             'MSYS_NT-10.0-20348 fv-az1105-175 3.5.3.x86_64 2024-06-03 06:22 UTC x86_64 Msys')
         )
         self.assertDictEqual({
+            'systemos': 'Windows_NT',
+            'systemhost': 'runnervmqyor9',
+            'systemosver': '10.0.20348',
+            'arch': 'x86_64'
+        }, uname.parse_uname(
+            'Windows_NT runnervmqyor9 10.0 20348 x86_64 MS/Windows')
+        )
+        self.assertDictEqual({
             'systemos': 'Darwin',
             'systemhost': 'Mac-1715788362745.local',
             'systemosver': '23.4.0',

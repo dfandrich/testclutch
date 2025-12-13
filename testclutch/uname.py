@@ -67,6 +67,10 @@ def parse_uname(uname: str) -> TestMetaStr:
           or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 7:
         # This version is missing the time zone
         meta['arch'] = sysparts[-2]
+    elif meta['systemos'] == 'Windows_NT' and len(syspartsblanks) == 6:
+        # systemosver as set above is just the major release number
+        meta['systemosver'] = f'{sysparts[2]}.{sysparts[3]}'
+        meta['arch'] = syspartsblanks[-2]
     elif meta['systemos'] == 'AIX' and len(sysparts) == 5:
         # systemosver as set above is just the minor release number
         meta['systemosver'] = f'{sysparts[3]}.{sysparts[2]}'
