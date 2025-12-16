@@ -3739,3 +3739,48 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('500', curlparse.TestResult.PASS, '', 103000)
         ],
             testcases)
+
+    def test_memory(self):
+        # Verbose log with different kinds of memory errors
+        with open_data('curlparse_memory.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'curldeps': 'libcurl/8.18.0-DEV OpenSSL/3.0.18 zlib/1.2.13 brotli/1.0.9 zstd/1.5.5 '
+                        'libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 '
+                        'librtmp/2.3 mit-krb5/1.20.1 OpenLDAP/2.5.14',
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns '
+                             'ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps '
+                             'telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Kerberos Largefile libz NTLM PSL SPNEGO SSL SSLS-EXPORT threadsafe '
+                        'TLS-SRP TrackMemory UnixSockets zstd',
+            'host': 'localhost',
+            'os': 'linux',
+            'perlver': '5.36.0',
+            'randomseed': '238442',
+            'runtestsopts': '-a -p -n 100 142 543 500',
+            'runtestsduration': '3000000',
+            'systemhost': 'localhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.105',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.18.0-DEV',
+            'testmode': 'normal',
+            'testresult': 'failure',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        },
+            meta)
+        self.assertEqual([
+            SingleTestFinding('100', curlparse.TestResult.PASS, '', 1122000),
+            SingleTestFinding('142', curlparse.TestResult.FAIL, 'allocs', 0),
+            SingleTestFinding('543', curlparse.TestResult.FAIL, 'memory', 0),
+            SingleTestFinding('500', curlparse.TestResult.FAIL, 'allocsize', 0)
+        ],
+            testcases)
