@@ -48,6 +48,7 @@ RE_JOBS = re.compile(r'^\* Jobs: (\d+)')
 RE_ARGS = re.compile(r'^\* Args: (.+)')
 RE_SYSTEM = re.compile(r'^\* System: (\S+ \S* \S+.*)$')
 RE_SEED = re.compile(r'^\* Seed: (\d+)')
+RE_MINTESTS = re.compile(r'^\* Min tests: (\d+)')
 # These could all match on the same line
 RE_VALGRIND = re.compile(r'^\* Env:.*\bValgrind\b')
 RE_EVENT = re.compile(r'^\* Env:.*\bevent-based\b')
@@ -308,7 +309,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         meta['withevent'] = 'yes'
                     if r := RE_DUPHANDLE.search(l):
                         meta['withduphandle'] = 'yes'
-                    # These checks are all mutually exclusive
+                    # These checks are all mutually exclusive on the same line
                     if r := RE_HOST.search(l):
                         meta['host'] = r.group(1)
                     elif r := RE_FEATURES.search(l):
@@ -325,6 +326,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         meta['paralleljobs'] = r.group(1)
                     elif r := RE_SEED.search(l):
                         meta['randomseed'] = r.group(1)
+                    elif r := RE_MINTESTS.search(l):
+                        meta['mintests'] = r.group(1)
                     elif r := RE_SYSTEM.search(l):
                         unamemeta = uname.parse_uname(r.group(1))
                         if unamemeta:

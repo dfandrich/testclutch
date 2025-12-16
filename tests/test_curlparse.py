@@ -3756,10 +3756,11 @@ class TestCurlParse(unittest.TestCase):
                         'Kerberos Largefile libz NTLM PSL SPNEGO SSL SSLS-EXPORT threadsafe '
                         'TLS-SRP TrackMemory UnixSockets zstd',
             'host': 'localhost',
+            'mintests': '4',
             'os': 'linux',
             'perlver': '5.36.0',
             'randomseed': '238442',
-            'runtestsopts': '-a -p -n 100 142 543 500',
+            'runtestsopts': '-a -p -n --min=4 100 142 543 500',
             'runtestsduration': '3000000',
             'systemhost': 'localhost',
             'systemos': 'Linux',
