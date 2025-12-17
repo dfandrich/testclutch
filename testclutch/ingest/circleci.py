@@ -268,7 +268,11 @@ class CircleIngestor:
 
             # Gather metadata about this run
             jobmeta = {}
-            jobmeta['cistep'] = action['name']
+            # Make sure this job has a valid name before setting it. It sometimes contains the
+            # entire command to run which isn't useful.
+            if (action['name'] and len(action['name']) < 80
+                    and action['name'] not in action.get('bash_command', '')):
+                jobmeta['cistep'] = action['name']
             jobmeta['cistepid'] = action['step']
             jobmeta['stepstarttime'] = int(self._convert_time(action['start_time']).timestamp())
             jobmeta['stepfinishtime'] = int(self._convert_time(action['end_time']).timestamp())
