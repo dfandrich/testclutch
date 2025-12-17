@@ -54,7 +54,7 @@ class TestMetaDataStats(unittest.TestCase):
             ['00012', '043', '0050', '000056', '77', '1234567890', 'notanint', 'x'])
 
     def test_MetadataAdjuster_split(self):
-        adj = metadatastats.MetadataAdjuster({'testkey': r'::+', 'ignorekey': r' '}, {})
+        adj = metadatastats.MetadataAdjuster({'testkey': r'::+', 'ignorekey': r' '}, {}, set({}))
         self.assertEqual(adj.split('testkey', 'Single:Value'), ['Single:Value'])
         self.assertEqual(adj.split('testkey', 'Just Two::Values'), ['Just Two', 'Values'])
         self.assertEqual(adj.split('testkey', 'Some::Values::::Skipped::Blanks::'),
@@ -69,7 +69,8 @@ class TestMetaDataStats(unittest.TestCase):
              'embedded': [(r'partial', 'practical'),
                           (r'act', 'play'),
                           (r'lay', 'place')],
-             'ignorekey': [(r'.', 'XXX')]})
+             'ignorekey': [(r'.', 'XXX')]},
+            set({}))
         self.assertEqual(adj.transform('testkey', 'unchanged'), 'unchanged')
         self.assertEqual(adj.transform('testkey', 'changeme'), 'ChangeMe')
         self.assertEqual(adj.transform('testkey', 'deleteme'), '')
@@ -82,7 +83,9 @@ class TestMetaDataStats(unittest.TestCase):
             {'testkey': r'[ ,]', 'ignorekey': r' '},
             {'testkey': [(r'^changeme$', 'ChangeMe'), (r'^deleteme$', ''),
                          (r'rename([0-9]+)', r'NewNamed\1:')],
-             'ignorekey': [(r'.', 'XXX')]})
+             'ignorekey': [(r'.', 'XXX')]},
+            set({})
+        )
         self.assertEqual(adj.adjust('testkey', 'a bunch,of values'), ['a', 'bunch', 'of', 'values'])
         self.assertEqual(adj.adjust('testkey', '  changeme deleteme,thenrename99me'),
                          ['ChangeMe', 'thenNewNamed99:me'])

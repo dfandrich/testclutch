@@ -11,7 +11,7 @@ import re
 import textwrap
 from dataclasses import dataclass
 from html import escape
-from typing import Callable, Iterable, Sequence, Union
+from typing import Callable, Collection, Iterable, Sequence, Union
 
 import testclutch
 from testclutch import analysis
@@ -129,15 +129,21 @@ class MetadataStats:
 class MetadataAdjuster:
     """Adjust metadata values by splitting them and transforming them with regular expressions."""
 
-    def __init__(self, splits: dict[str, str], transforms: dict[str, list[tuple[str, str]]]):
+    def __init__(self, splits: dict[str, str], transforms: dict[str, list[tuple[str, str]]],
+                 dump: Collection[str]):
         # Compile regular expressions so they're ready for use
         self.splits = {k: re.compile(v) for k, v in splits.items()}
         self.transforms = {k: [(re.compile(pat), repl) for pat, repl in l]
                            for k, l in transforms.items()}
+        self.dump = dump
 
     def has_split(self, metaname: str) -> bool:
         """Return True if this field would be split."""
         return metaname in self.splits
+
+    def just_dump(self, metaname: str) -> bool:
+        """Return True if this field's value should just be dumped."""
+        return metaname in self.dump
 
     def split(self, metaname: str, value: str) -> list[str]:
         """Transform a metadata value into multiple by splitting it on a regular expression.
@@ -248,15 +254,19 @@ class FeatureMatrix:
         """
         features = {}  # type: dict[str, set[str]]
         for metaname in metas:
-            for meta in self.all_meta:
-                if metaname in meta:
-                    values = adjuster.adjust(metaname, meta[metaname])
-                    feature = features.setdefault(metaname, set())
-                    feature.update(values)
+            if adjuster.just_dump(metaname):
+                feature = features.setdefault(metaname, set())
+                feature.update([''])
+            else:
+                for meta in self.all_meta:
+                    if metaname in meta:
+                        values = adjuster.adjust(metaname, meta[metaname])
+                        feature = features.setdefault(metaname, set())
+                        feature.update(values)
 
         # Remove any metadata fields that were requested but not actually found
         foundmetas = [name for name in metas if name in features]
-        return [(f'{name}: {value}', name, value) for name in foundmetas
+        return [(f'{name}' + (f': {value}' if value else ''), name, value) for name in foundmetas
                 for value in sorted(features[name], key=str.casefold)]
 
 
@@ -723,7 +733,8 @@ def output_feature_matrix_html(fm: FeatureMatrix):
 
     fm.load_all_meta()
     adjuster = MetadataAdjuster(config.get('matrix_meta_splits'),
-                                config.get('matrix_meta_transforms'))
+                                config.get('matrix_meta_transforms'),
+                                config.get('matrix_meta_dump'))
     features = fm.build_features(config.get('matrix_meta_fields'), adjuster)
     # count the number of used values per feature
     value_counts = collections.Counter()
@@ -764,13 +775,18 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                          else 'yes' if match
                          else 'no' if adjuster.has_split(name)
                          else 'not')
-            symbol = (MAYBE if maybe
-                      else YES if match
-                      else NO if adjuster.has_split(name)
-                      else NOT)
+            if adjuster.just_dump(name):
+                symbol = ' '.join(jobvalue) if jobvalue else NO
+                if jobvalue:
+                    counter.count += 1
+            else:
+                symbol = (MAYBE if maybe
+                          else YES if match
+                          else NO if adjuster.has_split(name)
+                          else NOT)
+                if match:
+                    counter.count += 1
             print(f'<td class="{classname}{newsec}">{symbol}</td>')
-            if match:
-                counter.count += 1
             lastname = name
         print('</tr>')
 

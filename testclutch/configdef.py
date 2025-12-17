@@ -118,6 +118,9 @@ matrix_meta_splits = {}
 # {'winarch': [(r'WIN([0-9]+)', r'Win\1')]}
 matrix_meta_transforms = {}
 
+# Metadata fields whose values should be simply displayed (after transformations)
+matrix_meta_dump = frozenset({})
+
 # Whether to look at only the last result of a test as its result if more than one result is found
 # in a run.  This should be done if failing tests are automatically rerun in case of flakiness.
 rerun_tests = False
