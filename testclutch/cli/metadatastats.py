@@ -786,7 +786,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
                           else NOT)
                 if match:
                     counter.count += 1
-            print(f'<td class="{classname}{newsec}">{symbol}</td>')
+            print(f'<td class="{classname}{newsec}">{escape(symbol)}</td>')
             lastname = name
         print('</tr>')
 
