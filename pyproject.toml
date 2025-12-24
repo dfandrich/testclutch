@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=42",
+    "setuptools>=65",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -10,16 +10,17 @@ description = "System to track and analyze regression test runs from CI services
 version = "0.1dev"
 readme = "README.md"
 authors = [{name = "Dan Fandrich", email = "dan@telarity.com"}]
-license = {text = "AGPLv3+"}
+license = "AGPL-3.0-or-later"
+license-files = ["COPYING"]
 classifiers = [
     "Programming Language :: Python",
-    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -90,7 +91,6 @@ tcmetadatastats = "testclutch.cli.metadatastats:main"
 tcquerytests = "testclutch.cli.querytests:main"
 
 [tool.setuptools]
-license-files = ["COPYING"]
 include-package-data = false
 
 [tool.setuptools.packages.find]
