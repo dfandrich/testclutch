@@ -128,9 +128,8 @@ class AzureIngestor:
             cimeta['commit'] = build['triggerInfo']['ci.sourceSha']
             cimeta['summary'] = build['triggerInfo']['ci.message']
             cimeta['branch'] = build['triggerInfo']['ci.sourceBranch']
-        # Use .removeprefix() in >=py3.9
-        if 'branch' in cimeta and cimeta['branch'].startswith('refs/heads/'):
-            cimeta['branch'] = cimeta['branch'][11:]
+        if 'branch' in cimeta:
+            cimeta['branch'] = cimeta['branch'].removeprefix('refs/heads/')
         cimeta['ciresult'] = build['result']
         cimeta['runurl'] = build['_links']['web']['href']
 

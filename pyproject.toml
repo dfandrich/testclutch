@@ -15,7 +15,6 @@ license-files = ["COPYING"]
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -30,7 +29,7 @@ classifiers = [
 ]
 # These version dependencies are conservative and reflect versions that have
 # actually been tested
-requires-python = ">=3.9, <3.15"
+requires-python = ">=3.10, <3.15"
 dependencies = [
     "requests >= 2.25.1, <= 2.32.6",
     "zstd >= 1.4.5.1, <= 1.5.7.2",
@@ -58,7 +57,7 @@ dev = [
     "flake8-noqa",
     "flake8-picky-parentheses",
     "flake8-pie",
-    #"flake8-plus",  # This isn't compatible with python 3.9
+    "flake8-plus",
     "flake8-pyproject",
     "flake8-quotes",
     "flake8-raise",
