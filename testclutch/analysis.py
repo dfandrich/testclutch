@@ -599,6 +599,7 @@ class ResultsOverTimeByUniqueJob:
 
         all_commits = iter(self.commits)
         first_run = True
+        missing_commit = False
         last_commit = CommitInfo()
         for job_status in self.all_jobs_status:
             # title must contain safe HTML as it will not be escaped
@@ -668,20 +669,22 @@ class ResultsOverTimeByUniqueJob:
                         # Fill in a column without a run
                         print(f'<td class="{cssclass}" title="(no run)">{NO_RUN}</td>')
                 except StopIteration:
-                    # When the iterator reaches the end, there is no more space needing filling,
-                    # but it also means that we have an unknown commit.
-                    msg = (f"Couldn't find commit {job_status.commit:.9} among known commits "
-                           f'for run of {job_title} at {jobtime}')
-                    margin = (job_status.jobtime
-                              - (datetime.datetime.now(tz=datetime.timezone.utc)
-                                 - datetime.timedelta(hours=config.get('analysis_hours'))
-                                 ).timestamp())
-                    if abs(margin) < END_MARGIN_SECS:
-                        logging.info(f"%s, but it's timed only about {margin / 3600:.1f} hours "
-                                     'from the end of the analysis so it probably simply just '
-                                     'missed the cutoff time', msg)
-                    else:
-                        logging.error('%s', msg)
+                    if not missing_commit:
+                        missing_commit = True
+                        # When the iterator reaches the end, there is no more space needing filling,
+                        # but it also means that we have an unknown commit.
+                        msg = (f"Couldn't find commit {job_status.commit:.9} among known commits "
+                               f'for run of {job_title} at {jobtime}')
+                        margin = (job_status.jobtime
+                                  - (datetime.datetime.now(tz=datetime.timezone.utc)
+                                     - datetime.timedelta(hours=config.get('analysis_hours'))
+                                     ).timestamp())
+                        if abs(margin) < END_MARGIN_SECS:
+                            logging.info(f"%s, but it's timed only about {margin / 3600:.1f} hours "
+                                         'from the end of the analysis so it probably simply just '
+                                         'missed the cutoff time', msg)
+                        else:
+                            logging.error('%s', msg)
                 print(f'<td class="{cssclass}" title="{title}">')
             else:
                 logging.warning(f'More than one run found for commit {job_status.commit:.9} '
