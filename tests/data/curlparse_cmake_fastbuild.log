@@ -1,0 +1,650 @@
+-- Using CMake version 4.2.1
+-- curl version=[8.18.1-DEV]
+-- The C compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- CMake platform flags: UNIX GCC
+-- Picky compiler options: -Werror-implicit-function-declaration -W -Wall -Wpedantic -Wbad-function-cast -Wconversion -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-long-long -Wno-multichar -Wpointer-arith -Wshadow -Wsign-compare -Wundef -Wunused -Wwrite-strings -Waddress -Wattributes -Wcast-align -Wcast-qual -Wdeclaration-after-statement -Wdiv-by-zero -Wempty-body -Wendif-labels -Wfloat-equal -Wformat-security -Wignored-qualifiers -Wmissing-field-initializers -Wmissing-noreturn -Wno-format-nonliteral -Wno-padded -Wno-sign-conversion -Wno-switch-default -Wno-switch-enum -Wno-system-headers -Wold-style-definition -Wredundant-decls -Wstrict-prototypes -Wtype-limits -Wunreachable-code -Wunused-parameter -Wvla -Wclobbered -Wmissing-parameter-type -Wold-style-declaration -Wpragmas -Wstrict-aliasing=3 -ftree-vrp -Wjump-misses-init -Wdouble-promotion -Wformat=2 -Wtrampolines -Warray-bounds=2 -Wno-format-signedness -Wduplicated-cond -Wnull-dereference -fdelete-null-pointer-checks -Wshift-negative-value -Wshift-overflow=2 -Wunused-const-variable -Walloc-zero -Wduplicated-branches -Wformat-truncation=2 -Wimplicit-fallthrough -Wrestrict -Warith-conversion -Wenum-conversion -Warray-compare -Wenum-int-mismatch -Wxor-used-as-pow -Wleading-whitespace=spaces -Wtrailing-whitespace=any -Wunterminated-string-initialization
+-- Found Perl: /usr/bin/perl (found version "5.40.1")
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Looking for connect in socket
+-- Looking for connect in socket - not found
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID - Success
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_ADDR
+-- Performing Test HAVE_SOCKADDR_IN6_SIN6_ADDR - Success
+-- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
+-- Could NOT find Brotli (missing: BROTLI_INCLUDE_DIR BROTLIDEC_LIBRARY BROTLICOMMON_LIBRARY) 
+-- Could NOT find Zstd (missing: ZSTD_INCLUDE_DIR ZSTD_LIBRARY) 
+-- Could NOT find NGHTTP2 (missing: NGHTTP2_INCLUDE_DIR NGHTTP2_LIBRARY) 
+-- Could NOT find LDAP (missing: LDAP_INCLUDE_DIR LDAP_LIBRARY LDAP_LBER_LIBRARY) 
+-- LDAP not found. CURL_DISABLE_LDAP set ON
+-- LDAP needs to be enabled to support LDAPS
+-- Could NOT find Libidn2 (missing: LIBIDN2_INCLUDE_DIR LIBIDN2_LIBRARY) 
+-- Could NOT find Libssh2 (missing: LIBSSH2_INCLUDE_DIR LIBSSH2_LIBRARY) 
+-- Performing Test USE_UNIX_SOCKETS
+-- Performing Test USE_UNIX_SOCKETS - Success
+-- Looking for sys/eventfd.h
+-- Looking for sys/eventfd.h - found
+-- Looking for sys/filio.h
+-- Looking for sys/filio.h - not found
+-- Looking for sys/ioctl.h
+-- Looking for sys/ioctl.h - found
+-- Looking for sys/param.h
+-- Looking for sys/param.h - found
+-- Looking for sys/poll.h
+-- Looking for sys/poll.h - found
+-- Looking for sys/resource.h
+-- Looking for sys/resource.h - found
+-- Looking for 3 include files sys/socket.h, ..., sys/select.h
+-- Looking for 3 include files sys/socket.h, ..., sys/select.h - found
+-- Looking for sys/sockio.h
+-- Looking for sys/sockio.h - not found
+-- Looking for 4 include files sys/socket.h, ..., sys/types.h
+-- Looking for 4 include files sys/socket.h, ..., sys/types.h - found
+-- Looking for sys/un.h
+-- Looking for sys/un.h - found
+-- Looking for 5 include files sys/socket.h, ..., sys/utime.h
+-- Looking for 5 include files sys/socket.h, ..., sys/utime.h - not found
+-- Looking for 5 include files sys/socket.h, ..., arpa/inet.h
+-- Looking for 5 include files sys/socket.h, ..., arpa/inet.h - found
+-- Looking for dirent.h
+-- Looking for dirent.h - found
+-- Looking for fcntl.h
+-- Looking for fcntl.h - found
+-- Looking for 6 include files sys/socket.h, ..., ifaddrs.h
+-- Looking for 6 include files sys/socket.h, ..., ifaddrs.h - found
+-- Looking for io.h
+-- Looking for io.h - not found
+-- Looking for 7 include files sys/socket.h, ..., libgen.h
+-- Looking for 7 include files sys/socket.h, ..., libgen.h - found
+-- Looking for linux/tcp.h
+-- Looking for linux/tcp.h - found
+-- Looking for locale.h
+-- Looking for locale.h - found
+-- Looking for 8 include files sys/socket.h, ..., net/if.h
+-- Looking for 8 include files sys/socket.h, ..., net/if.h - found
+-- Looking for 9 include files sys/socket.h, ..., netdb.h
+-- Looking for 9 include files sys/socket.h, ..., netdb.h - found
+-- Looking for 10 include files sys/socket.h, ..., netinet/in.h
+-- Looking for 10 include files sys/socket.h, ..., netinet/in.h - found
+-- Looking for netinet/in6.h
+-- Looking for netinet/in6.h - not found
+-- Looking for 11 include files sys/socket.h, ..., netinet/tcp.h
+-- Looking for 11 include files sys/socket.h, ..., netinet/tcp.h - found
+-- Looking for 12 include files sys/socket.h, ..., netinet/udp.h
+-- Looking for 12 include files sys/socket.h, ..., netinet/udp.h - found
+-- Looking for poll.h
+-- Looking for poll.h - found
+-- Looking for pwd.h
+-- Looking for pwd.h - found
+-- Looking for stdatomic.h
+-- Looking for stdatomic.h - found
+-- Looking for stdbool.h
+-- Looking for stdbool.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for strings.h
+-- Looking for strings.h - found
+-- Looking for stropts.h
+-- Looking for stropts.h - not found
+-- Looking for termio.h
+-- Looking for termio.h - not found
+-- Looking for termios.h
+-- Looking for termios.h - found
+-- Looking for 13 include files sys/socket.h, ..., unistd.h
+-- Looking for 13 include files sys/socket.h, ..., unistd.h - found
+-- Looking for utime.h
+-- Looking for utime.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of size_t
+-- Check size of size_t - done
+-- Check size of ssize_t
+-- Check size of ssize_t - done
+-- Check size of long
+-- Check size of long - done
+-- Check size of int
+-- Check size of int - done
+-- Check size of __int64
+-- Check size of __int64 - failed
+-- Check size of time_t
+-- Check size of time_t - done
+-- Check size of suseconds_t
+-- Check size of suseconds_t - done
+-- Looking for accept4
+-- Looking for accept4 - found
+-- Looking for fnmatch
+-- Looking for fnmatch - found
+-- Looking for basename
+-- Looking for basename - found
+-- Looking for opendir
+-- Looking for opendir - found
+-- Looking for poll
+-- Looking for poll - found
+-- Looking for socket
+-- Looking for socket - found
+-- Looking for socketpair
+-- Looking for socketpair - found
+-- Looking for recv
+-- Looking for recv - found
+-- Looking for send
+-- Looking for send - found
+-- Looking for sendmsg
+-- Looking for sendmsg - found
+-- Looking for sendmmsg
+-- Looking for sendmmsg - found
+-- Looking for select
+-- Looking for select - found
+-- Looking for strdup
+-- Looking for strdup - found
+-- Looking for memrchr
+-- Looking for memrchr - found
+-- Looking for alarm
+-- Looking for alarm - found
+-- Looking for fcntl
+-- Looking for fcntl - found
+-- Looking for getppid
+-- Looking for getppid - found
+-- Looking for utimes
+-- Looking for utimes - found
+-- Looking for gettimeofday
+-- Looking for gettimeofday - found
+-- Looking for closesocket
+-- Looking for closesocket - not found
+-- Looking for sigsetjmp
+-- Looking for sigsetjmp - found
+-- Looking for getpass_r
+-- Looking for getpass_r - not found
+-- Looking for getpwuid
+-- Looking for getpwuid - found
+-- Looking for getpwuid_r
+-- Looking for getpwuid_r - found
+-- Looking for geteuid
+-- Looking for geteuid - found
+-- Looking for utime
+-- Looking for utime - found
+-- Looking for gmtime_r
+-- Looking for gmtime_r - found
+-- Looking for localtime_r
+-- Looking for localtime_r - found
+-- Looking for gethostbyname_r
+-- Looking for gethostbyname_r - found
+-- Looking for gethostname
+-- Looking for gethostname - found
+-- Looking for signal
+-- Looking for signal - found
+-- Looking for strerror_r
+-- Looking for strerror_r - found
+-- Looking for sigaction
+-- Looking for sigaction - found
+-- Looking for siginterrupt
+-- Looking for siginterrupt - found
+-- Looking for getaddrinfo
+-- Looking for getaddrinfo - found
+-- Looking for getifaddrs
+-- Looking for getifaddrs - found
+-- Looking for freeaddrinfo
+-- Looking for freeaddrinfo - found
+-- Looking for pipe
+-- Looking for pipe - found
+-- Looking for pipe2
+-- Looking for pipe2 - found
+-- Looking for eventfd
+-- Looking for eventfd - found
+-- Looking for ftruncate
+-- Looking for ftruncate - found
+-- Looking for getpeername
+-- Looking for getpeername - found
+-- Looking for getsockname
+-- Looking for getsockname - found
+-- Looking for getrlimit
+-- Looking for getrlimit - found
+-- Looking for setlocale
+-- Looking for setlocale - found
+-- Looking for setrlimit
+-- Looking for setrlimit - found
+-- Looking for if_nametoindex
+-- Looking for if_nametoindex - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for sched_yield
+-- Looking for sched_yield - found
+-- Looking for strcasecmp
+-- Looking for strcasecmp - found
+-- Looking for stricmp
+-- Looking for stricmp - not found
+-- Looking for strcmpi
+-- Looking for strcmpi - not found
+-- Looking for setmode
+-- Looking for setmode - not found
+-- Looking for arc4random
+-- Looking for arc4random - found
+-- Looking for snprintf
+-- Looking for snprintf - found
+-- Looking for inet_ntop
+-- Looking for inet_ntop - found
+-- Looking for inet_pton
+-- Looking for inet_pton - found
+-- Looking for fsetxattr
+-- Looking for fsetxattr - found
+-- Performing Test HAVE_FSETXATTR_5
+-- Performing Test HAVE_FSETXATTR_5 - Success
+-- Performing Test HAVE_FSETXATTR_6
+-- Performing Test HAVE_FSETXATTR_6 - Failed
+-- Check size of sa_family_t
+-- Check size of sa_family_t - done
+-- Performing Test HAVE_FCNTL_O_NONBLOCK
+-- Performing Test HAVE_FCNTL_O_NONBLOCK - Success
+-- Performing Test HAVE_IOCTLSOCKET
+-- Performing Test HAVE_IOCTLSOCKET - Failed
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL - Failed
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL_FIONBIO
+-- Performing Test HAVE_IOCTLSOCKET_CAMEL_FIONBIO - Failed
+-- Performing Test HAVE_IOCTLSOCKET_FIONBIO
+-- Performing Test HAVE_IOCTLSOCKET_FIONBIO - Failed
+-- Performing Test HAVE_IOCTL_FIONBIO
+-- Performing Test HAVE_IOCTL_FIONBIO - Success
+-- Performing Test HAVE_IOCTL_SIOCGIFADDR
+-- Performing Test HAVE_IOCTL_SIOCGIFADDR - Success
+-- Performing Test HAVE_SETSOCKOPT_SO_NONBLOCK
+-- Performing Test HAVE_SETSOCKOPT_SO_NONBLOCK - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_3
+-- Performing Test HAVE_GETHOSTBYNAME_R_3 - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_5
+-- Performing Test HAVE_GETHOSTBYNAME_R_5 - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_6
+-- Performing Test HAVE_GETHOSTBYNAME_R_6 - Success
+-- Performing Test HAVE_BOOL_T
+-- Performing Test HAVE_BOOL_T - Success
+-- Performing Test STDC_HEADERS
+-- Performing Test STDC_HEADERS - Success
+-- Performing Test HAVE_ATOMIC
+-- Performing Test HAVE_ATOMIC - Success
+-- Performing Test HAVE_GETHOSTBYNAME_R_3_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_3_REENTRANT - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_5_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_5_REENTRANT - Failed
+-- Performing Test HAVE_GETHOSTBYNAME_R_6_REENTRANT
+-- Performing Test HAVE_GETHOSTBYNAME_R_6_REENTRANT - Success
+-- Performing Test HAVE_FILE_OFFSET_BITS
+-- Performing Test HAVE_FILE_OFFSET_BITS - Success
+-- Check size of off_t
+-- Check size of off_t - done
+-- Looking for fseeko
+-- Looking for fseeko - found
+-- Check size of curl_off_t
+-- Check size of curl_off_t - done
+-- Check size of curl_socket_t
+-- Check size of curl_socket_t - done
+-- Performing Test HAVE_WRITABLE_ARGV
+-- Performing Test HAVE_WRITABLE_ARGV - Success
+-- Performing Test HAVE_TIME_T_UNSIGNED
+-- Performing Test HAVE_TIME_T_UNSIGNED - Failed
+-- Performing Test HAVE_GLIBC_STRERROR_R
+-- Performing Test HAVE_GLIBC_STRERROR_R - Success
+-- Performing Test HAVE_POSIX_STRERROR_R
+-- Performing Test HAVE_POSIX_STRERROR_R - Failed
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC - Success
+-- Check size of struct sockaddr_storage
+-- Check size of struct sockaddr_storage - done
+-- Performing Test HAVE_MSG_NOSIGNAL
+-- Performing Test HAVE_MSG_NOSIGNAL - Success
+-- Performing Test HAVE_STRUCT_TIMEVAL
+-- Performing Test HAVE_STRUCT_TIMEVAL - Success
+-- Performing Test HAVE_H_ERRNO
+-- Performing Test HAVE_H_ERRNO - Success
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC_RAW
+-- Performing Test HAVE_CLOCK_GETTIME_MONOTONIC_RAW - Success
+-- Enabled examples with dependencies: threaded:HAVE_PTHREAD_H
+-- Protocols: dict file ftp gopher http imap ipfs ipns mqtt pop3 rtsp smtp telnet tftp ws
+-- Features: alt-svc AsynchDNS IPv6 Largefile threadsafe UnixSockets
+-- Enabled SSL backends: 
+-- Configuring done (19.9s)
+-- Generating done (0.6s)
+-- Build files have been written to: /tmp/curl/build
+1> Run: /tmp/curl/build/docs/cmdline-opts/curl.1.deps-checker
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/vtls_spack.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/wolfssl.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/x509asn1.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/vtls_scache.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/vtls.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/schannel_verify.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/schannel.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/rustls.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/openssl.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/mbedtls.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/keylog.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/hostcheck.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/gtls.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/cipher_suite.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vtls/apple.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vssh/vssh.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vssh/libssh2.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vssh/libssh.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/ws.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/version.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/urlapi.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/url.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/uint-table.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/uint-spbset.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/uint-hash.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/uint-bset.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/transfer.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/tftp.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/telnet.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/system_win32.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/strerror.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/strequal.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/strdup.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/strcase.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/splay.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/socks_sspi.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/socks_gssapi.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/socks.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/socketpair.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/smtp.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/smb.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/slist.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/sha256.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/setopt.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/sendf.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/select.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/rtsp.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/request.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/ratelimit.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/rand.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/psl.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/progress.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/pop3.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/pingpong.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/parsedate.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/openldap.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/noproxy.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/netrc.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/multi_ntfy.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/multi_ev.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/multi.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/mqtt.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/mprintf.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/mime.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/memdebug.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/md5.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/md4.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/macos.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/llist.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/ldap.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/imap.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/if2ip.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/idn.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/httpsrr.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_proxy.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_ntlm.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_negotiate.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_digest.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_chunks.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http_aws_sigv4.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http2.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http1.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/http.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hsts.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hostip6.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hostip4.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hostip.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hmac.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/headers.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/hash.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/gopher.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/getinfo.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/getenv.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/ftplistparser.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/ftp.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/formdata.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/fileinfo.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/file.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/fake_addrinfo.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/escape.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/easyoptions.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/easygetopt.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/easy.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/dynhds.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/doh.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/dict.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cw-pause.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cw-out.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_trc.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_threads.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_sspi.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_share.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_sha512_256.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_sasl.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_rtmp.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_range.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_ntlm_core.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_memrchr.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_gssapi.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_gethostname.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_get_line.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_fopen.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_fnmatch.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_endian.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curl_addrinfo.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cshutdn.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cookie.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/content_encoding.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/connect.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/conncache.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cfilters.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-socket.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-ip-happy.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-https-connect.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-haproxy.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-h2-proxy.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/cf-h1-proxy.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/bufref.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/bufq.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/asyn-thrdd.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/asyn-base.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/asyn-ares.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/amigaos.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/altsvc.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/winapi.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/warnless.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/wait.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/version_win32.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/timeval.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/timediff.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/strparse.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/strerr.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/strcopy.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/nonblock.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/multibyte.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/inet_pton.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/inet_ntop.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/fopen.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/dynbuf.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/curlx/base64.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vquic/vquic-tls.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vquic/vquic.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vquic/curl_quiche.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vquic/curl_osslq.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vquic/curl_ngtcp2.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/vauth.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/spnego_sspi.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/spnego_gssapi.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/oauth2.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/ntlm_sspi.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/ntlm.c.o
+5> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/krb5_sspi.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/krb5_gssapi.c.o
+2> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/gsasl.c.o
+1> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/digest_sspi.c.o
+6> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/digest.c.o
+3> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/cram.c.o
+4> Obj: /tmp/curl/build/lib/CMakeFiles/libcurl_shared.dir/vauth/cleartext.c.o
+2> Run: /tmp/curl/build/docs/cmdline-opts/curl.1
+5> Run: /tmp/curl/build/docs/libcurl/opts/CURLINFO_ACTIVESOCKET.3.deps-checker
+1> Run: /tmp/curl/build/docs/libcurl/curl_easy_cleanup.3.deps-checker
+3> Run: /tmp/curl/build/docs/libcurl/opts/CURLINFO_ACTIVESOCKET.3
+1> Run: /tmp/curl/build/docs/wcurl.1
+5> Run: /tmp/curl/build/docs/testcurl.1
+4> Run: /tmp/curl/build/docs/runtests.1
+5> Run: /tmp/curl/build/docs/mk-ca-bundle.1
+6> Run: /tmp/curl/build/docs/curl-config.1
+5> DLL: /tmp/curl/build/lib/libcurl.so.4.8.0
+5> Stamp: /tmp/curl/build/lib/libcurl.so.4.8.0
+2> Run: /tmp/curl/build/src/tool_hugehelp.c
+4> Run: /tmp/curl/build/docs/libcurl/libcurl-symbols.md
+5> Run: /tmp/curl/build/docs/libcurl/curl_easy_cleanup.3
+2> Warning: compression requested but Gzip is not available
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_hugehelp.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/dynbuf.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/base64.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/wait.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/fopen.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/version_win32.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/timeval.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/timediff.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/strparse.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/strerr.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/strcopy.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/nonblock.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/multibyte.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/winapi.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/__/lib/curlx/warnless.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/toolx/tool_time.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/var.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_xattr.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_writeout_json.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_writeout.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_vms.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_util.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_ssls.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_setopt.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_progress.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_parsecfg.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_paramhlp.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_operhlp.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_operate.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_msgs.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_main.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_listhelp.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_libinfo.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_ipfs.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_help.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/slist_wc.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/config2setopts.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_strdup.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_stderr.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_wrt.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_soc.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_see.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_rea.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_prg.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_hdr.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cb_dbg.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_bname.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_easysrc.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/terminal.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_doswin.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_helpers.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_dirhie.c.o
+4> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_findfile.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_getpass.c.o
+2> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_getparam.c.o
+5> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_formparse.c.o
+1> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_filetime.c.o
+3> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_cfgable.c.o
+6> Obj: /tmp/curl/build/src/CMakeFiles/curl.dir/tool_urlglob.c.o
+1> Exe: /tmp/curl/build/src/curl
+FBuild: OK: all
+Time: 8.738s
+********* System characteristics ********
+* curl 8.18.1-DEV (Linux)
+* libcurl/8.18.1-DEV
+* Protocols: dict file ftp gopher http imap ipfs ipns mqtt pop3 rtsp smtp telnet tftp ws
+* Features: alt-svc AsynchDNS IPv6 Largefile threadsafe UnixSockets
+* Disabled:
+* Host: 4419db862ab0
+* System: Linux 4419db862ab0 6.6.116 #1 SMP PREEMPT_DYNAMIC Mon Nov  3 15:35:03 UTC 2025 x86_64 GNU/Linux
+* OS: linux
+* Perl: v5.40.1 (/usr/bin/perl)
+* Args: -c /tmp/curl/build/src/curl --buildinfo
+* Seed: 254626
+* Servers:
+*****************************************
+test 0009 SKIPPED: curl lacks Mime support
+RUN: failed to start the HTTP server
+test 0001 SKIPPED: failed starting HTTP server (for http)
+test 0019...[attempt connect to non-listening socket]
+-------e--- OK (14  out of 1228, remaining: 08:11, took 0.023s, duration: 00:05)
+test 0020...[attempt connect to non-existing hostname]
+p-------e--- OK (15  out of 1228, remaining: 07:56, took 0.223s, duration: 00:05)
+test 0075...[HTTP, urlglob retrieval with bad range]
+ws------e--- OK (49  out of 1228, remaining: 02:22, took 0.024s, duration: 00:05)
+d
+open2: exec of ./server/servers sockfilt --ipv4 --port 0 --pidfile log/server/ftp_sockctrl.pid --portfile log/server/ftp_server.port --logfile log/ftp_sockctrl.log failed: No such file or directory at /tmp/curl/tests/ftpserver.pl line 416.
+^Cruntests.pl received SIGINT, exiting
+^Cruntests.pl received SIGINT, exiting
+^Cruntests.pl received SIGINT, exiting
+^Cruntests.pl received SIGINT, exiting
+RUN: failed to start the FTP server
+test 0100 SKIPPED: failed starting FTP server
+Aborting tests
+Waiting for 0 outstanding test(s) to finish...
+
+TESTDONE: 735 tests were considered during 7 seconds.
+TESTINFO: 732 tests were skipped due to these restraints:
+TESTINFO: "curl lacks proxy support" 160 times (5, 16, 43, 63, 79, 80, 82, 83, 84 and 151 more)
+TESTINFO: "curl lacks SSL support" 79 times (94, 300, 301, 302, 303, 305, 306, 309, 310 and 70 more)
+TESTINFO: "curl lacks Debug support" 68 times (356, 358, 359, 363, 412, 413, 437, 438, 439 and 59 more)
+TESTINFO: "curl lacks crypto support" 67 times (64, 65, 72, 88, 153, 154, 167, 168, 175 and 58 more)
+TESTINFO: "failed starting HTTP server (for http)" 54 times (1, 2, 3, 4, 7, 10, 11, 12, 13 and 45 more)
+TESTINFO: "curl lacks NTLM support" 52 times (67, 68, 69, 70, 76, 81, 89, 90, 91 and 43 more)
+TESTINFO: "curl lacks cookies support" 49 times (6, 8, 27, 31, 46, 53, 61, 62, 73 and 40 more)
+TESTINFO: "curl lacks Mime support" 48 times (9, 21, 39, 41, 44, 71, 158, 163, 166 and 39 more)
+TESTINFO: "curl lacks libz support" 19 times (220, 221, 222, 223, 224, 230, 232, 328, 387 and 10 more)
+TESTINFO: "curl lacks IDN support" 15 times (165, 763, 962, 963, 964, 965, 966, 967, 968 and 6 more)
+TESTINFO: "configured as DISABLED" 14 times (323, 594, 836, 882, 938, 1182, 1184, 1209, 1211 and 5 more)
+TESTINFO: "curl lacks HSTS support" 11 times (440, 441, 446, 493, 780, 781, 782, 783, 1660 and 2 more)
+TESTINFO: "curl lacks headers-api support" 10 times (764, 765, 1670, 1671, 1940, 1942, 1943, 1944, 1946 and 1 more)
+TESTINFO: "curl lacks form-api support" 9 times (516, 554, 587, 650, 651, 672, 673, 1308, 1545)
+TESTINFO: "curl lacks --libcurl support" 8 times (1400, 1402, 1403, 1405, 1406, 1407, 1420, 1465)
+TESTINFO: "curl lacks verbose-strings support" 6 times (1007, 1506, 1538, 1542, 1559, 1652)
+TESTINFO: "curl lacks h2c support" 5 times (1700, 1701, 1702, 1704, 1800)
+TESTINFO: "curl lacks http/2 support" 5 times (471, 2402, 2403, 2404, 2407)
+TESTINFO: "curl lacks GSS-API support" 4 times (2056, 2057, 2077, 2078)
+TESTINFO: "curl lacks sftp support" 4 times (632, 1459, 2604, 2605)
+TESTINFO: "curl lacks TLS-SRP support" 4 times (320, 321, 322, 324)
+TESTINFO: "curl lacks brotli support" 3 times (314, 315, 316)
+TESTINFO: "curl lacks DoH support" 3 times (1650, 1655, 1658)
+TESTINFO: "curl lacks http/3 support" 3 times (2500, 2502, 2503)
+TESTINFO: "curl lacks override-dns support" 3 times (2102, 2103, 2104)
+TESTINFO: "curl lacks TrackMemory support" 3 times (96, 558, 1330)
+TESTINFO: "curl lacks ECH support" 2 times (4000, 4001)
+TESTINFO: "curl lacks getrlimit support" 2 times (518, 537)
+TESTINFO: "curl lacks https support" 2 times (1560, 3101)
+TESTINFO: "curl lacks libssh2 support" 2 times (3021, 3022)
+TESTINFO: "curl lacks OpenSSL support" 2 times (307, 308)
+TESTINFO: "curl lacks wakeup support" 2 times (1564, 1565)
+TESTINFO: "curl lacks zstd support" 2 times (396, 397)
+TESTINFO: "curl has IPv6 support" 1 time (1454)
+TESTINFO: "curl has threaded-resolver support" 1 time (506)
+TESTINFO: "curl lacks large-size support" 1 time (1664)
+TESTINFO: "curl lacks ldap support" 1 time (445)
+TESTINFO: "curl lacks netrc support" 1 time (1304)
+TESTINFO: "curl lacks PSL support" 1 time (1136)
+TESTINFO: "curl lacks sha512-256 support" 1 time (1615)
+TESTINFO: "curl lacks shuffle-dns support" 1 time (1608)
+TESTINFO: "curl lacks smb support" 1 time (1451)
+TESTINFO: "curl lacks ssl-sessions support" 1 time (777)
+TESTINFO: "curl lacks Unicode support" 1 time (1703)
+TESTINFO: "failed starting FTP server" 1 time (100)
+TESTDONE: 3 tests out of 3 reported OK: 100%

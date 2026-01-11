@@ -3384,6 +3384,51 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('3', curlparse.TestResult.PASS, '', 32000),
         ], testcases)
 
+    # Log created on Debian experimental with fastbuild v1.18 with manual invocation of cmake,
+    # fbuild and runtests.  The tests were interrupted by the user with ^C and the user performed
+    # some manual typing that showed up in the log, corrupting some lines and preventing parsing.
+    # Some uninteresting lines were manually deleted from the log to reduce size.
+    def test_cmake_fastbuild(self):
+        with open_data('curlparse_cmake_fastbuild.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'buildsystem': 'cmake/fastbuild',
+            'compiler': 'GNU',
+            'compilerversion': '15.2.0',
+            'curldeps': 'libcurl/8.18.1-DEV',
+            'features': 'alt-svc AsynchDNS IPv6 Largefile threadsafe UnixSockets',
+            'host': '4419db862ab0',
+            'os': 'linux',
+            'perlver': '5.40.1',
+            'curlprotocols': 'dict file ftp gopher http imap ipfs ipns mqtt pop3 rtsp smtp telnet '
+                             'tftp ws',
+            'randomseed': '254626',
+            'runtestsduration': '7000000',
+            'runtestsopts': '-c /tmp/curl/build/src/curl --buildinfo',
+            'systemhost': '4419db862ab0',
+            'systemos': 'Linux',
+            'systemosver': '6.6.116',
+            'targetos': 'Linux',
+            'targettriplet': 'Linux',
+            'testformat': 'curl',
+            'testingver': '8.18.1-DEV',
+            'testmode': 'normal',
+            'testresult': 'success',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        }, meta)
+        self.assertEqual([
+            SingleTestFinding('9', curlparse.TestResult.SKIP, 'curl lacks Mime support', 0),
+            SingleTestFinding('1', curlparse.TestResult.SKIP,
+                              'failed starting HTTP server (for http)', 0),
+            SingleTestFinding('19', curlparse.TestResult.PASS, '', 23000),
+            SingleTestFinding('20', curlparse.TestResult.UNKNOWN, 'no test status line', 0),
+            SingleTestFinding('75', curlparse.TestResult.UNKNOWN, 'no test status line', 0),
+            SingleTestFinding('100', curlparse.TestResult.SKIP, 'failed starting FTP server', 0),
+        ], testcases)
+
     def test_cmake_run_make(self):
         with open_data('curlparse_cmake_run_make.log') as f:
             meta, testcases = curlparse.parse_log_file(f)

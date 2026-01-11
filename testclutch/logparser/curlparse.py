@@ -33,6 +33,7 @@ RE_USINGCMAKE = re.compile(r'^-- Using CMake version')
 RE_USINGCMAKEMSBUILD = re.compile(r'^(\d+>)?Checking Build System')
 RE_USINGCMAKEMAKE = re.compile(r'^\[ *\d+%] (Building C object|Built target)')
 RE_USINGCMAKENINJA = re.compile(r'^\[\d+/\d+\] (Building C object|Built target)')
+RE_USINGCMAKEFASTBUILD = re.compile(r'^FBuild: [A-Z]')
 RE_USINGCMAKERUNMAKE = re.compile(r'make  *-f CMakeFiles')  # used if we missed the configure stage
 
 # Test log header
@@ -189,6 +190,8 @@ def parse_buildinfo(l: str) -> TestMetaStr:
             meta['buildsystem'] = 'cmake/ninja-multiconfig'
         elif r.group(1).startswith('Visual Studio'):
             meta['buildsystem'] = 'cmake/msbuild'
+        elif r.group(1) == 'FASTBuild':
+            meta['buildsystem'] = 'cmake/fastbuild'
         else:
             logging.warning('Unknown cmake generator %s', r.group(1))
     elif r := RE_BI_CONFIGURETOOL.search(l):
@@ -523,6 +526,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             meta['buildsystem'] = 'cmake/make'
         elif r := RE_USINGCMAKENINJA.search(l):
             meta['buildsystem'] = 'cmake/ninja'
+        elif r := RE_USINGCMAKEFASTBUILD.search(l):
+            meta['buildsystem'] = 'cmake/fastbuild'
         elif r := RE_USINGAUTOMAKE.search(l):
             meta['buildsystem'] = 'automake'
         elif r := RE_COMPILERPATHAC.search(l):
