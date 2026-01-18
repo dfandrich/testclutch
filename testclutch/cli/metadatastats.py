@@ -179,7 +179,7 @@ class MetadataAdjuster:
         return [v for v in values if v]
 
 
-@dataclass
+@dataclass(slots=True)
 class TestRunCounts:
     """Metadata about test runs."""
     attempted_tests: int = 0
@@ -741,7 +741,7 @@ def output_feature_matrix_html(fm: FeatureMatrix):
     for _, name, _ in features:
         value_counts[name] += 1
 
-    @dataclass
+    @dataclass(slots=True)
     class IntCounter:
         count: int = 0
 

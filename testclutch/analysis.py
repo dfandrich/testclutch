@@ -52,7 +52,7 @@ END_MARGIN_SECS = 28 * 3600
 CANON_REPO_RE = re.compile(r'(\.git)?(/)*$')
 
 
-@dataclass
+@dataclass(slots=True)
 class TestJobInfo:
     """Information about a test job."""
 

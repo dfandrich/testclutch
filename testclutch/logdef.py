@@ -6,7 +6,7 @@ from typing import Union
 from testclutch.testcasedef import TestResult
 
 
-@dataclass
+@dataclass(slots=True)
 class SingleTestFinding:
     """Class to hold the result of a single run of a single test."""
 

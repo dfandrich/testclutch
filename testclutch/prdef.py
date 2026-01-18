@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from testclutch import config
 
 
+# Avoid slots for backword compatibility with older pickled data
 @dataclass
 class FailedTest:
     """Data about a failed test in a PR."""
@@ -18,6 +19,7 @@ class FailedTest:
     url: str        # URL to test logs
 
 
+# Avoid slots for backword compatibility with older pickled data
 @dataclass
 class FailingTest:
     """Data about a flaky test in a CI job."""
@@ -27,6 +29,7 @@ class FailingTest:
     rate: float      # ratio of failed to attempted runs (for flaky tests)
 
 
+# Avoid slots for backword compatibility with older pickled data
 @dataclass
 class PRAnalysis:
     """Analysis data for a PR.
