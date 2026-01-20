@@ -3479,6 +3479,8 @@ class TestCurlParse(unittest.TestCase):
             'buildsystem': 'automake',
             'compilerpath': '/usr/bin/aarch64-unknown-linux-gnu-gcc-12.1.0',
             'curldeps': 'libcurl/8.6.1-DEV zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.4 libpsl/0.21.2 nghttp2/1.58.0 librtmp/2.3 libgsasl/2.2.0 OpenLDAP/2.6.6',
+            'curlclisize': '1139360',
+            'curllibsize': '5414632',
             'features': 'alt-svc AsynchDNS brotli gsasl HTTP2 IDN IPv6 Largefile libz PSL threadsafe UnixSockets zstd',
             'host': 'localhost',
             'os': 'linux',

@@ -36,6 +36,15 @@ RE_USINGCMAKENINJA = re.compile(r'^\[\d+/\d+\] (Building C object|Built target)'
 RE_USINGCMAKEFASTBUILD = re.compile(r'^FBuild: [A-Z]')
 RE_USINGCMAKERUNMAKE = re.compile(r'make  *-f CMakeFiles')  # used if we missed the configure stage
 
+# pre-test headers from CI
+# These are logged in CI between building and running the tests.
+# Two patterns are defined for each: the preferred one and an alternate, in order to avoid storing
+# the size of a wrapper script, regardless of the order they appear in the log.
+RE_CURLCLISIZE = re.compile(r'^ *(\d+) bytes: .*/\.libs/curl(\.exe)?$')
+RE_CURLCLISIZEALT = re.compile(r'^ *(\d+) bytes: .*/curl(\.exe)?$')
+RE_CURLLIBSIZE = re.compile(r'^ *(\d+) bytes: .*/\.libs/(lib|msys-|cyg)curl(-[\da-z]+)?\.((so\.[\d.]+)|(dll)|([\d.]+\.dylib))$')
+RE_CURLLIBSIZEALT = re.compile(r'^ *(\d+) bytes: .*/(lib|msys-|cyg)curl(-[\da-z]+)?\.((so\.[\d.]+)|(dll)|([\d.]+\.dylib))$')
+
 # Test log header
 RE_START = re.compile(r'^\*{9} System characteristics \*')
 RE_CURLVER = re.compile(r'^\* curl (\S+) \(([^)]+)\)')
@@ -532,6 +541,12 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             meta['buildsystem'] = 'automake'
         elif r := RE_COMPILERPATHAC.search(l):
             meta['compilerpath'] = r.group(1)
+        elif ((r := RE_CURLCLISIZE.search(l))
+              or (r := RE_CURLCLISIZEALT.search(l)) and 'curlclisize' not in meta):
+            meta['curlclisize'] = r.group(1)
+        elif ((r := RE_CURLLIBSIZE.search(l))
+              or (r := RE_CURLLIBSIZEALT.search(l)) and 'curllibsize' not in meta):
+            meta['curllibsize'] = r.group(1)
 
     # Log major problems in parsing
     if 'testingver' not in meta:

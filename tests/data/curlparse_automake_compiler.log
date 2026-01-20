@@ -43,6 +43,11 @@ make[2]: Leaving directory '/tmp/curl-build/tests/http'
 make[2]: Entering directory '/tmp/curl-build/tests'
 make[2]: Nothing to be done for 'all-am'.
 make[2]: Leaving directory '/tmp/curl-build/tests'
+    5414632 bytes: ./bld/lib/.libs/libcurl.so.4.3.2
+   13496462 bytes: ./bld/lib/.libs/libcurlu.a
+    2482752 bytes: ./bld/src/.libs/libcurltool.a
+    1139360 bytes: ./bld/src/.libs/curl
+       6400 bytes: ./bld/src/curl
 srcdir=/tmp/curl/tests /usr/bin/perl -I/tmp/curl/tests /tmp/curl/tests/runtests.pl -a -s 500
 Using curl: ../src/curl
 ********* System characteristics ******** 
