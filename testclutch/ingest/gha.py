@@ -38,7 +38,7 @@ STRIP_LOG_FN_RE = re.compile(r'[/]')
 LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
 
 # Format of a log filename in a zip archive
-LOG_NAME_RE = re.compile(r'^([0-9]+)_(.*)\.txt$')
+LOG_NAME_RE = re.compile(r'^([0-9]+)_(.+)\.txt$')
 
 
 MIME_EXT = {
@@ -266,7 +266,7 @@ class GithubIngestor:
                         else:
                             logging.warning('Unexpected log file format %s', fileinfo.filename)
                             meta['cijob'] = fileinfo.filename
-                    assert meta['cijob']  # true because we eliminate others above
+                    assert meta['cijob'], f'from {fileinfo.filename}'  # others eliminated above
                     if 'cidef' in meta:
                         # Unique CI job identifier
                         # The // here makes the name impossible to collide with a new job definition
