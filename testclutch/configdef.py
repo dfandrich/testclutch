@@ -102,7 +102,9 @@ pr_comment_origins = frozenset()
 pr_comment_url = 'https://github.com/dfandrich/testclutch'
 
 # Regexes of metadata fields whose values are NOT dumped in the metadata_values report
-metadata_stats_ignored = [r'(^host|^jobid|^runid|^runurl|^systemhost|^url|^workflowid|duration|time)$']
+metadata_stats_ignored = [
+    r'(^host|^jobid|^runid|^runurl|^systemhost|^url|^workflowid|^curl[a-z]*size|duration|time)$'
+]
 
 # Metadata fields over which to create the features matrix
 matrix_meta_fields = []
