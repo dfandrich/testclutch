@@ -186,6 +186,12 @@ class GithubIngestor:
 
         This method may be overridden to do something other than storing.
         """
+        if meta['trigger'] != 'push':
+            # This should have been filtered out in ingest_all_logs; this is a secondary check
+            # since such runs occasionally slip through for some reason.
+            logging.warning(f"Log is due to {meta['trigger']}, not a push; skipping")
+            return
+
         if not self.dry_run:
             logging.info('Storing test result in database')
             try:
