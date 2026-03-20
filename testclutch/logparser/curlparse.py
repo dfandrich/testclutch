@@ -264,9 +264,9 @@ def parse_buildinfo(l: str) -> TestMetaStr:
         # architecture of the shell binaries, not the operating system's.
         if ('systemos' in meta
             and (meta['systemos'].startswith('MSYS_NT')
-                or meta['systemos'].startswith('MINGW32_NT')
-                or meta['systemos'].startswith('MINGW64_NT')
-                or meta['systemos'].startswith('CYGWIN_NT'))):
+                 or meta['systemos'].startswith('MINGW32_NT')
+                 or meta['systemos'].startswith('MINGW64_NT')
+                 or meta['systemos'].startswith('CYGWIN_NT'))):
             meta['arch'] = meta['hostarch']
     elif r := RE_BI_HOSTOS.search(l):
         meta['hostos'] = r.group(1)
