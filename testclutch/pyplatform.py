@@ -45,13 +45,14 @@ def parse_platform(platform: str) -> TestMetaStr:
         # string and extracts the architecture out of it, which is fairly unambiguously obtained.
         meta['arch'] = r.group('proc')
 
-    elif (platparts[0] == 'macOS' and (r := PLAT_MACOS_RE.search(platform))
-          or (r := PLAT_DEFAULT_RE.search(platform))):
+    elif platparts[0] == 'macOS' and (r := PLAT_MACOS_RE.search(platform)):
         meta['systemosver'] = r.group('release')
-        if platparts[0] == 'macOS':
-          meta['arch'] = r.group('mach')
-        else:
-          meta['arch'] = r.group('proc')
+        meta['arch'] = r.group('mach')
+        meta['archbits'] = r.group('bits')
+
+    elif (r := PLAT_DEFAULT_RE.search(platform)):
+        meta['systemosver'] = r.group('release')
+        meta['arch'] = r.group('proc')
         meta['archbits'] = r.group('bits')
 
     return meta
