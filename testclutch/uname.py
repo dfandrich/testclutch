@@ -60,12 +60,14 @@ def parse_uname(uname: str) -> TestMetaStr:
           or meta['systemos'].startswith('MINGW32_NT')
           or meta['systemos'].startswith('MINGW64_NT')
           or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 8:
+        # This reflects the architecture of the shell binaries, not the operating system's.
         meta['arch'] = sysparts[-2]
     elif (meta['systemos'].startswith('MSYS_NT')
           or meta['systemos'].startswith('MINGW32_NT')
           or meta['systemos'].startswith('MINGW64_NT')
           or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) == 7:
         # This version is missing the time zone
+        # This reflects the architecture of the shell binaries, not the operating system's.
         meta['arch'] = sysparts[-2]
     elif meta['systemos'] == 'Windows_NT' and len(syspartsblanks) == 6:
         # systemosver as set above is just the major release number
