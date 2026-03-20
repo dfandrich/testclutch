@@ -50,7 +50,7 @@ def parse_platform(platform: str) -> TestMetaStr:
         meta['arch'] = r.group('mach')
         meta['archbits'] = r.group('bits')
 
-    elif (r := PLAT_DEFAULT_RE.search(platform)):
+    elif r := PLAT_DEFAULT_RE.search(platform):
         meta['systemosver'] = r.group('release')
         meta['arch'] = r.group('proc')
         meta['archbits'] = r.group('bits')
