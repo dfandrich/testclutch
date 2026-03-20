@@ -48,7 +48,10 @@ def parse_platform(platform: str) -> TestMetaStr:
     elif (platparts[0] == 'macOS' and (r := PLAT_MACOS_RE.search(platform))
           or (r := PLAT_DEFAULT_RE.search(platform))):
         meta['systemosver'] = r.group('release')
-        meta['arch'] = r.group('mach')
+        if platparts[0] == 'macOS':
+          meta['arch'] = r.group('mach')
+        else:
+          meta['arch'] = r.group('proc')
         meta['archbits'] = r.group('bits')
 
     return meta
