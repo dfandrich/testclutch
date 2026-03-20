@@ -260,8 +260,8 @@ def parse_buildinfo(l: str) -> TestMetaStr:
             meta['hostos'] = r.group(1)
     elif r := RE_BI_HOSTCPU.search(l):
         meta['hostarch'] = r.group(1)
-        # Override host arch detected via the MSYS2/Cygwin shells. They reflect the
-        # architecture of the shell binaries, not the operating system's.
+        # Override host arch detected via the MSYS2/Cygwin shells. This reflects
+        # the architecture of the shell binaries, not the operating system's.
         if ('systemos' in meta
             and (meta['systemos'].startswith('MSYS_NT')
                  or meta['systemos'].startswith('MINGW32_NT')
