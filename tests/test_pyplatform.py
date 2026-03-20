@@ -150,20 +150,20 @@ class TestParsePlatform(unittest.TestCase):
         self.assertDictEqual({
             'systemos': 'macOS',
             'systemosver': '12.6',
-            'arch': 'arm',
+            'arch': 'arm64',
             'archbits': '64'
         }, pyplatform.parse_platform('macOS-12.6-arm64-arm-64bit'))
         self.assertDictEqual({
             'systemos': 'macOS',
             'systemosver': '10.15.6',
-            'arch': 'i386',
+            'arch': 'x86_64',
             'archbits': '64'
         }, pyplatform.parse_platform('macOS-10.15.6-x86_64-i386-64bit'))
         # This pyplatform comes from Python 3.13.3
         self.assertDictEqual({
             'systemos': 'macOS',
             'systemosver': '14.7.5',
-            'arch': 'arm',
+            'arch': 'arm64',
             'archbits': '64'
         }, pyplatform.parse_platform('macOS-14.7.5-arm64-arm-64bit-Mach-O'))
         # This case comes from Python 2.7
