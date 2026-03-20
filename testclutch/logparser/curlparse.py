@@ -262,7 +262,7 @@ def parse_buildinfo(l: str) -> TestMetaStr:
         meta['hostarch'] = r.group(1)
         # Override host detected via the MSYS2/Cygwin shells. They reflect the
         # architecture of the shell binaries, not the operating system's.
-        if ("systemos" in meta
+        if ('systemos' in meta
             and (meta['systemos'].startswith('MSYS_NT')
                 or meta['systemos'].startswith('MINGW32_NT')
                 or meta['systemos'].startswith('MINGW64_NT')
