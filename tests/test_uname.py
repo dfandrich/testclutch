@@ -344,6 +344,22 @@ class TestParseUname(unittest.TestCase):
         }, uname.parse_uname(
             'AROS arosbox.arosnet 12.1 41 Nov 26 2018 i386 AROS')
         )
+        self.assertDictEqual({
+            'systemos': 'MINGW64_NT-10.0-26100',
+            'systemhost': 'runnervmlbgkd',
+            'systemosver': '3.6.6-2369286a.x86_64',
+            'arch': 'x86_64'
+        }, uname.parse_uname(
+            'MINGW64_NT-10.0-26100 runnervmlbgkd 3.6.6-2369286a.x86_64 2026-01-14 12:29 UTC x86_64 Msys')
+        )
+        self.assertDictEqual({
+            'systemos': 'MINGW64_NT-10.0-26200-ARM64',
+            'systemhost': 'runnervmsa53x',
+            'systemosver': '3.6.5-0eeda3e1.x86_64',
+            'arch': 'ARM64'
+        }, uname.parse_uname(
+            'MINGW64_NT-10.0-26200-ARM64 runnervmsa53x 3.6.5-0eeda3e1.x86_64 2025-10-10 14:51 UTC x86_64 Msys')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({
