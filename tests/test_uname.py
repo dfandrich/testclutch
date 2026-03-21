@@ -360,6 +360,14 @@ class TestParseUname(unittest.TestCase):
         }, uname.parse_uname(
             'MINGW64_NT-10.0-26200-ARM64 runnervmsa53x 3.6.5-0eeda3e1.x86_64 2025-10-10 14:51 UTC x86_64 Msys')
         )
+        self.assertDictEqual({
+            'systemos': 'CYGWIN_NT-10.0-20348',
+            'systemhost': 'runnervmixnmc',
+            'systemosver': '3.6.7-1.x86_64',
+            'arch': 'x86_64'
+        }, uname.parse_uname(
+            'CYGWIN_NT-10.0-20348 runnervmixnmc 3.6.7-1.x86_64 2026-03-02 20:13 UTC x86_64 Cygwin')
+        )
 
     def test_bad_uname(self):
         self.assertDictEqual({
