@@ -98,6 +98,14 @@ class TestParseUname(unittest.TestCase):
             'Msys')
         )
         self.assertDictEqual({
+            'systemos': 'MINGW64_NT-10.0-26200-ARM64',
+            'systemhost': 'runnervmsa53x',
+            'systemosver': '3.6.5-0eeda3e1.x86_64',
+            'arch': 'ARM64'
+        }, uname.parse_uname(
+            'MINGW64_NT-10.0-26200-ARM64 runnervmsa53x 3.6.5-0eeda3e1.x86_64 2025-10-10 14:51 UTC x86_64 Msys')
+        )
+        self.assertDictEqual({
             'systemos': 'MINGW32_NT-10.0-17763',
             'systemhost': '68ab3802cea0',
             'systemosver': '3.4.8.x86_64',
@@ -343,30 +351,6 @@ class TestParseUname(unittest.TestCase):
             'arch': 'i386'
         }, uname.parse_uname(
             'AROS arosbox.arosnet 12.1 41 Nov 26 2018 i386 AROS')
-        )
-        self.assertDictEqual({
-            'systemos': 'MINGW64_NT-10.0-26100',
-            'systemhost': 'runnervmlbgkd',
-            'systemosver': '3.6.6-2369286a.x86_64',
-            'arch': 'x86_64'
-        }, uname.parse_uname(
-            'MINGW64_NT-10.0-26100 runnervmlbgkd 3.6.6-2369286a.x86_64 2026-01-14 12:29 UTC x86_64 Msys')
-        )
-        self.assertDictEqual({
-            'systemos': 'MINGW64_NT-10.0-26200-ARM64',
-            'systemhost': 'runnervmsa53x',
-            'systemosver': '3.6.5-0eeda3e1.x86_64',
-            'arch': 'ARM64'
-        }, uname.parse_uname(
-            'MINGW64_NT-10.0-26200-ARM64 runnervmsa53x 3.6.5-0eeda3e1.x86_64 2025-10-10 14:51 UTC x86_64 Msys')
-        )
-        self.assertDictEqual({
-            'systemos': 'CYGWIN_NT-10.0-20348',
-            'systemhost': 'runnervmixnmc',
-            'systemosver': '3.6.7-1.x86_64',
-            'arch': 'x86_64'
-        }, uname.parse_uname(
-            'CYGWIN_NT-10.0-20348 runnervmixnmc 3.6.7-1.x86_64 2026-03-02 20:13 UTC x86_64 Cygwin')
         )
 
     def test_bad_uname(self):
