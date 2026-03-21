@@ -60,11 +60,8 @@ def parse_uname(uname: str) -> TestMetaStr:
           or meta['systemos'].startswith('MINGW32_NT')
           or meta['systemos'].startswith('MINGW64_NT')
           or meta['systemos'].startswith('CYGWIN_NT')) and len(sysparts) in {7, 8}:
-        if meta['systemos'].endswith('-ARM64'):
-            meta['arch'] = 'ARM64'
-        else:
-            # This reflects the architecture of the shell binaries, not the operating system's.
-            meta['arch'] = sysparts[-2]
+        # sysparts[-2] reflects the architecture of the shell binaries, not the operating system's.
+        meta['arch'] = 'ARM64' if meta['systemos'].endswith('-ARM64') else sysparts[-2]
     elif meta['systemos'] == 'Windows_NT' and len(syspartsblanks) == 6:
         # systemosver as set above is just the major release number
         meta['systemosver'] = f'{sysparts[2]}.{sysparts[3]}'
