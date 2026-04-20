@@ -138,6 +138,9 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
                             elif r.group(1) == 'FAILED':
                                 testcases.append(SingleTestFinding(
                                     r.group(2), TestResult.FAIL, r.group(4), 0))
+                            elif r.group(1) == 'ERROR':
+                                testcases.append(SingleTestFinding(
+                                    r.group(2), TestResult.ERROR, r.group(4), 0))
                             elif r.group(1) == 'XPASS':
                                 # Treat this as a normal pass (it was expected to fail)
                                 testcases.append(SingleTestFinding(
@@ -222,6 +225,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                         testcases.append(SingleTestFinding(r.group('name'), TestResult.PASS, '', 0))
                     elif r.group('result') == 'FAILED':
                         testcases.append(SingleTestFinding(r.group('name'), TestResult.FAIL, '', 0))
+                    elif r.group('result') == 'ERROR':
+                        testcases.append(SingleTestFinding(r.group('name'), TestResult.ERROR, '', 0))
                     elif r.group('result') == 'SKIPPED':
                         testcases.append(SingleTestFinding(r.group('name'), TestResult.SKIP, '', 0))
                     elif r.group('result') == 'XPASS':

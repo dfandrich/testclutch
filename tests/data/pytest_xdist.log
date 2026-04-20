@@ -44,13 +44,29 @@ maillogcvt_test.py::TestMaillogCvt::test_message_2
 mantes_test.py::TestMantesCvt::test_message_1 
 [gw0] [ 55%] PASSED adddate_test.py::TestAdddateCvt::test_message_1 
 adddate_test.py::TestAdddateCvt::test_message_2 
-[gw1] [ 66%] PASSED mantes_test.py::TestMantesCvt::test_message_1 
+[gw1] [ 66%] ERROR mantes_test.py::TestMantesCvt::test_message_1 
 uupccvt_test.py::TestUupcCvt::test_message_1 
 [gw0] [ 77%] PASSED adddate_test.py::TestAdddateCvt::test_message_2[A, B] 
 uupccvt_test.py::TestUupcCvt::test_message_2 
 [gw0] [ 88%] PASSED uupccvt_test.py::TestUupcCvt::test_message_2 
 [gw1] [100%] FAILED uupccvt_test.py::TestUupcCvt::test_message_1 
 
+==================================== ERRORS ====================================
+_______ ERROR at setup of mantes_test.py::TestMantesCvt::test_message_1 ________
+[gw1] linux -- Python 3.10.12 /home/user/testing/.venv/bin/python3
+
+self = <test_40_socks.TestSocks object at 0x7f33b84f9ac0>
+env = <testenv.env.Env object at 0x7f33b8895d00>
+
+    @pytest.fixture(scope='class')
+    def danted(self, env: Env) -> Generator[Dante, None, None]:
+        danted = Dante(env=env)
+>       assert danted.initial_start()
+E       assert False
+E        +  where False = initial_start()
+E        +    where initial_start = <testenv.dante.Dante object at 0x7f33b86410d0>.initial_start
+
+mantes_test.py:44: AssertionError
 =================================== FAILURES ===================================
 __________________________ TestUupcCvt.test_message_1 __________________________
 [gw1] linux -- Python 3.10.11 /home/user/testing/.venv/bin/python3
