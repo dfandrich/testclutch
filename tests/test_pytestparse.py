@@ -227,7 +227,7 @@ class TestPytestParse(unittest.TestCase):
             SingleTestFinding('compuservecvt_test.py::TestCompuserveCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
             SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_1', pytestparse.TestResult.SKIP, '', 0),
             SingleTestFinding('maillogcvt_test.py::TestMaillogCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
-            SingleTestFinding('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.PASS, '', 0),
+            SingleTestFinding('mantes_test.py::TestMantesCvt::test_message_1', pytestparse.TestResult.ERROR, '', 0),
             SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_1', pytestparse.TestResult.FAIL, '', 0),
             SingleTestFinding('uupccvt_test.py::TestUupcCvt::test_message_2', pytestparse.TestResult.PASS, '', 0),
         ], testcases)
