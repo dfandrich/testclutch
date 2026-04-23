@@ -51,6 +51,7 @@ dev = [
     "flake8-deprecated",
     "flake8-docstrings",
     "flake8-get-chaining",
+    "flake8-if-statements",
     "flake8-import-order",
     "flake8-mutable",
     "flake8-no-pep420",
