@@ -32,6 +32,11 @@ TEST_RUNS_COUNT_SQL = r'SELECT COUNT(1) FROM testruns WHERE time >= ? AND repo =
 # Count of all test results by test and format
 TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
 
+# Count of all tests run to completion, by format (only those returning PASS, FAIL or FAILIGNORE)
+# TODO: allow the set of statuses to be user-defined
+# TODO: make sure this is sane even if testformat and/or url isn't available
+TESTS_RUN_SQL = r'SELECT testrunmeta.value, testresults.testid, MAX(testrunmeta2.value) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id INNER JOIN testrunmeta ON testruns.id = testrunmeta.id INNER JOIN testrunmeta AS testrunmeta2 ON testruns.id = testrunmeta2.id WHERE repo = ? AND time >= ? AND testresults.result IN (1, 2, 5) AND testrunmeta.name="testformat" AND testrunmeta2.name="url" GROUP BY testrunmeta.value, testresults.testid ORDER BY testrunmeta.value, testresults.testid;'
+
 # Subquery to select all recent test run IDs for a project
 RECENT_IDS_SQL = r"""SELECT id FROM testruns WHERE time >= ? AND repo = ?"""
 
@@ -97,7 +102,7 @@ NOT = '–'
 MAYBE = '?'
 
 
-def _try_integer(val: str) -> Union[int, str]:
+def _try_integer(val: str) -> str:
     """Try to convert the value to a low-value 0-prefixed integer in string form.
 
     Returns raw string if it cannot. Use as a sort key function to sort numeric test names by
@@ -357,6 +362,11 @@ class TestRunStats:
                        (self.oldest, self.repo, testname, status, 'url',
                         config.get('test_results_count_num_recent_urls')))
         return values.fetchall()
+
+    def get_tests_run(self) -> list[tuple[str, str, str]]:
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(TESTS_RUN_SQL, (self.repo, self.oldest))
+        return nvalues.fetchall()
 
 
 def output_nv_summary_text(nv: Iterable, full_list: bool):
@@ -657,6 +667,85 @@ def output_test_results_count_html(trstats: TestRunStats):
     print('</table></body></html>')
 
 
+def output_tests_run_count(trstats: TestRunStats, print_func: Callable):
+    print_func('Format', 'Test Name', 'Sample Log', title=True)
+
+    total_counts = trstats.get_tests_run()
+    logging.info('Found %d different tests', len(total_counts))
+    # Sort by format, then by increasing test number
+    total_counts.sort(key=lambda x: (x[0], _try_integer(x[1])))
+    for testformat, testname, url in total_counts:
+        print_func(testformat, testname, url)
+
+
+def output_tests_run_text(trstats: TestRunStats):
+    def print_text(testformat: str, testname: str, url: str, title: bool = False):
+        print(testformat, testname, url)
+        if title:
+            print('-----------------')
+    output_tests_run_count(trstats, print_text)
+
+
+def output_tests_run_html(trstats: TestRunStats):
+    now = datetime.datetime.now(datetime.timezone.utc)
+    days = (now - trstats.since).days
+    print(textwrap.dedent("""\
+        <!DOCTYPE html>
+        <html><head><title>Tests Recently Run</title>
+        <style type="text/css">
+        tr:nth-child(even) {background-color: #D6EEEE;}
+        .gap {background-color: orange;}
+        </style>
+        """ + f"""
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        </head>
+        <body>
+        <h1>Tests recently run to completion on {escape(trstats.repo)}</h1>
+        <p>
+        Report generated {escape(now.strftime(TIMEZ_FMT))}
+        covering runs over the past {days:.0f} days.
+        </p>
+        <p>
+        <span class="gap">NNN</span> numeric test sequence contains a gap
+        </p>
+        <p>
+        The sample log links to the results of an example run that contains a result for this test.
+        </p>
+        """))
+
+    lastformat = ''
+    urltitle = ''
+    lasttest = None
+
+    def print_html(testformat: str, testname: str, url: str, title: bool = False):
+        """Print a row of data."""
+        nonlocal urltitle
+        if title:
+            # We make our own titles later based on the testformat
+            urltitle = url
+            return
+
+        nonlocal lastformat
+        if testformat != lastformat:
+            if lastformat:
+                print('</table>')
+            print('<table>')
+            print(f'<tr><th>{escape(testformat)}</th><th>{urltitle}</th></tr>')
+            lastformat = testformat
+        gap = ''
+        if (testnameint := _try_integer(testname)) != testname:
+            # Test name is numeric; look for nonsequential jumps in numbers
+            testnameint = int(testnameint)
+            nonlocal lasttest
+            if lasttest is not None and lasttest + 1 != testnameint:
+                gap = ' class="gap"'
+            lasttest = testnameint
+        print(f'<tr><td{gap}>{escape(testname)}</td><td><a HREF="{escape(url)}">Log</a></td></tr>')
+
+    output_tests_run_count(trstats, print_html)
+    print('</table></body></html>')
+
+
 def output_feature_matrix_html(fm: FeatureMatrix):
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - fm.since).days
@@ -814,7 +903,8 @@ def parse_args(args=None) -> argparse.Namespace:
         help='List all value instead of redacting unintersting ones')
     parser.add_argument(
         '--report',
-        choices=['feature_matrix', 'metadata_values', 'test_run_stats', 'test_results_count'],
+        choices=['feature_matrix', 'metadata_values', 'test_run_stats', 'test_results_count',
+                 'tests_run'],
         required=True,
         help='Which type of report should be generated')
     parser.add_argument(
@@ -858,6 +948,13 @@ def main():
                 output_test_results_count_html(trstats)
             else:
                 output_test_results_count_text(trstats)
+
+        elif args.report == 'tests_run':
+            trstats = TestRunStats(ds, config.expand('check_repo'), since)
+            if args.html:
+                output_tests_run_html(trstats)
+            else:
+                output_tests_run_text(trstats)
 
         elif args.report == 'feature_matrix':
             # The default hours is different for this job, so set it again from scratch here

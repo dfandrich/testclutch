@@ -79,6 +79,9 @@ tcmetadatastats --html --report=test_run_stats >test-stats.html
 # Create an HTML report of recent tests that failed
 tcmetadatastats --html --report=test_results_count >results-count.html
 
+# Create an HTML report of recent tests that have been run to completion
+tcmetadatastats --html --report=tests_run >tests-run.html
+
 # Create an HTML table of features in each recent job
 tcmetadatastats --html --report=feature_matrix >feature-matrix.html
 
