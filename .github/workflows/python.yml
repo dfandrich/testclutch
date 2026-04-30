@@ -18,14 +18,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t", "pypy3.11"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t", "3.15", "pypy3.11"]
 
     env:
       dev: "${{ matrix.python-version <= 3.12 &&
             !startsWith(matrix.python-version, 'pypy') && 'true' || '' }}"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
