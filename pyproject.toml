@@ -29,7 +29,7 @@ classifiers = [
 ]
 # These version dependencies are conservative and reflect versions that have
 # actually been tested
-requires-python = ">=3.10, <3.15"
+requires-python = ">=3.10, <3.16"
 dependencies = [
     "requests >= 2.25.1, <= 2.34.2",
     "zstd >= 1.4.5.1, <= 1.5.7.3",
