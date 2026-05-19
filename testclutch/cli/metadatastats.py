@@ -733,7 +733,11 @@ def output_tests_run_html(trstats: TestRunStats):
                 print('</table>')
                 print(f'Total: {testcount} {escape(lastformat)} tests<br>')
             testcount = 0
-            print('<table>')
+            # The first letter of the ID must be a letter, which we don't enforce here.
+            # Also, replacing some characters with underscores could create two identical IDs which
+            # is not allowed. Both these scenarios are unlikely with any reasonable testformat
+            # names.
+            print(f'<table id="{re.sub(r"[^-_:.a-zA-Z0-9]", "_", testformat)}">')
             print(f'<tr><th>{escape(testformat)}</th><th>{urltitle}</th></tr>')
             lastformat = testformat
         gap = ''
