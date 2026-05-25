@@ -32,10 +32,18 @@ TEST_RUNS_COUNT_SQL = r'SELECT COUNT(1) FROM testruns WHERE time >= ? AND repo =
 # Count of all test results by test and format
 TEST_RESULTS_COUNT_BY_TEST_SQL = r'SELECT testid,result,COUNT(1) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id WHERE time >= ? AND repo = ? GROUP BY testid, result;'
 
-# Count of all tests run to completion, by format (only those returning PASS, FAIL or FAILIGNORE)
+# Tests run to completion, by format (only those returning PASS, FAIL or FAILIGNORE)
 # TODO: allow the set of statuses to be user-defined
 # TODO: make sure this is sane even if testformat and/or url isn't available
 TESTS_RUN_SQL = r'SELECT testrunmeta.value, testresults.testid, MAX(testrunmeta2.value) FROM testruns INNER JOIN testresults ON testruns.id = testresults.id INNER JOIN testrunmeta ON testruns.id = testrunmeta.id INNER JOIN testrunmeta AS testrunmeta2 ON testruns.id = testrunmeta2.id WHERE repo = ? AND time >= ? AND testresults.result IN (1, 2, 5) AND testrunmeta.name="testformat" AND testrunmeta2.name="url" GROUP BY testrunmeta.value, testresults.testid ORDER BY testrunmeta.value, testresults.testid;'
+
+# Tests run to completion, by format, without URL (subquery)
+TESTS_RUN_PART_SQL = r'SELECT testrunmeta.value, testresults.testid FROM testruns INNER JOIN testresults ON testruns.id = testresults.id INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE repo = ? AND time >= ? AND testresults.result IN (1, 2, 5) AND testrunmeta.name="testformat" GROUP BY testrunmeta.value, testresults.testid'
+
+# Tests previously ran to completion, by format, that have not recently
+# TODO: allow the set of statuses to be user-defined
+# TODO: make sure this is sane even if testformat and/or url isn't available
+TESTS_RUN_NOT_RECENT_SQL = f'{TESTS_RUN_PART_SQL} EXCEPT {TESTS_RUN_PART_SQL};'
 
 # Subquery to select all recent test run IDs for a project
 RECENT_IDS_SQL = r"""SELECT id FROM testruns WHERE time >= ? AND repo = ?"""
@@ -368,6 +376,11 @@ class TestRunStats:
         nvalues.execute(TESTS_RUN_SQL, (self.repo, self.oldest))
         return nvalues.fetchall()
 
+    def get_tests_run_not_recent(self, newer: int) -> list[tuple[str, str]]:
+        nvalues = self.ds.db.cursor()
+        nvalues.execute(TESTS_RUN_NOT_RECENT_SQL, (self.repo, self.oldest, self.repo, newer))
+        return nvalues.fetchall()
+
 
 def output_nv_summary_text(nv: Iterable, full_list: bool):
     for n, v in itertools.groupby(nv, key=lambda x: x[0]):
@@ -407,7 +420,7 @@ def output_nv_summary_html(nv: Iterable, repo: str, hours: int, full_list: bool)
 
 
 def output_test_run_stats_text(trstats: TestRunStats):
-    def print_text(label, content='', indent: int = 0):
+    def print_text(label: str, content: str = '', indent: int = 0):
         if indent:
             print('  ', end='')
         print(label, content)
@@ -667,23 +680,47 @@ def output_test_results_count_html(trstats: TestRunStats):
     print('</table></body></html>')
 
 
-def output_tests_run_count(trstats: TestRunStats, print_func: Callable):
-    print_func('Format', 'Test Name', 'Sample Log', title=True)
+def output_tests_run_count(trstats: TestRunStats, print_func: Callable,
+                           print_missing_func: Callable):
+    recent = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=config.get('old_job_hours'))
+    total_counts = trstats.get_tests_run_not_recent(int(recent.timestamp()))
+    # Sort by format, then by increasing test number
+    total_counts.sort(key=lambda x: (x[0], _try_integer(x[1])))
+    if total_counts:
+        # TODO: maybe integrate this into the next table
+        print_missing_func('Format', 'Test Name',
+                           f'Missing tests (have not been seen running in the past '
+                           f'{round(config.get("old_job_hours") / 24)} days)', title=True)
+        for testformat, testname in total_counts:
+            print_missing_func(testformat, testname, '')
+        print_missing_func('', '', '', title=True)
+    else:
+        print_missing_func('', '', 'No recent tests are missing', title=True)
 
+    print_func('Tests Recently Run', 'Format', 'Test Name', 'Sample Log', title=True)
     total_counts = trstats.get_tests_run()
     logging.info('Found %d different tests', len(total_counts))
     # Sort by format, then by increasing test number
     total_counts.sort(key=lambda x: (x[0], _try_integer(x[1])))
     for testformat, testname, url in total_counts:
-        print_func(testformat, testname, url)
+        print_func('', testformat, testname, url)
+    print_func('', '', '', '', title=True)
 
 
 def output_tests_run_text(trstats: TestRunStats):
-    def print_text(testformat: str, testname: str, url: str, title: bool = False):
+    def print_missing_text(testformat: str, testname: str, desc: str, title: bool = False):
+        if title and desc:
+            print(desc)
+            return
+        print(testformat, testname)
+
+    def print_text(desc: str, testformat: str, testname: str, url: str, title: bool = False):
+        if title:
+            print(desc)
         print(testformat, testname, url)
         if title:
-            print('-----------------')
-    output_tests_run_count(trstats, print_text)
+            print('---------------------------')
+    output_tests_run_count(trstats, print_text, print_missing_text)
 
 
 def output_tests_run_html(trstats: TestRunStats):
@@ -697,7 +734,7 @@ def output_tests_run_html(trstats: TestRunStats):
         .gap {background-color: orange;}
         </style>
         """ + f"""
-        <meta name="generator" content="Test Clutch {testclutch.__version__}">
+        <meta name="generator" content="Test Clutch {testclutch.__version__}" />
         </head>
         <body>
         <h1>Tests recently run to completion on {escape(trstats.repo)}</h1>
@@ -713,17 +750,34 @@ def output_tests_run_html(trstats: TestRunStats):
         </p>
         """))
 
+    def print_html_missing(testformat: str, testname: str, desc: str, title: bool = False):
+        """Print a row of data for missing tests."""
+        if title and testformat:
+            print(f'<h2>{escape(desc)}</h2>')
+            print('<table id="missing">')
+            print(f'<tr><th>{escape(testformat)}</th><th>{escape(testname)}</th></tr>')
+            return
+        if title:
+            print('</table><br />')
+            return
+
+        print(f'<tr><td>{escape(testformat)}</td><td>{escape(testname)}</td></tr>')
+
     lastformat = ''
     urltitle = ''
     lasttest = None
     testcount = 0
 
-    def print_html(testformat: str, testname: str, url: str, title: bool = False):
+    def print_html(desc: str, testformat: str, testname: str, url: str, title: bool = False):
         """Print a row of data."""
         nonlocal urltitle
-        if title:
+        if title and url:
             # We make our own titles later based on the testformat
             urltitle = url
+            print(f'<h2>{escape(desc)}</h2>')
+            return
+        if title:
+            print('</table>')
             return
 
         nonlocal lastformat
@@ -731,7 +785,7 @@ def output_tests_run_html(trstats: TestRunStats):
         if testformat != lastformat:
             if lastformat:
                 print('</table>')
-                print(f'Total: {testcount} {escape(lastformat)} tests<br>')
+                print(f'Total: {testcount} {escape(lastformat)} tests<br />')
             testcount = 0
             # The first letter of the ID must be a letter, which we don't enforce here.
             # Also, replacing some characters with underscores could create two identical IDs which
@@ -751,10 +805,9 @@ def output_tests_run_html(trstats: TestRunStats):
         print(f'<tr><td{gap}>{escape(testname)}</td><td><a HREF="{escape(url)}">Log</a></td></tr>')
         testcount += 1
 
-    output_tests_run_count(trstats, print_html)
-    print('</table>')
+    output_tests_run_count(trstats, print_html, print_html_missing)
     if lastformat:
-        print(f'Total: {testcount} {escape(lastformat)} tests<br>')
+        print(f'Total: {testcount} {escape(lastformat)} tests<br />')
     print('</body></html>')
 
 
