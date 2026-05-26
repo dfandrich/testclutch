@@ -777,8 +777,9 @@ class GatherPRAnalysis:
                     if len(flakyfailuniquejob) > 1:
                         text += dedentnonl(f"""
                             Note that this CI job has had a number of other flaky tests recently
-                            ({len(flakyfailuniquejob)}, to be exact) so it may be that this failure
-                            is rather a systemic issue with this job and not with this specific PR.
+                            ({len(flakyfailuniquejob)}, to be specific) so it may be that this
+                            failure is rather a systemic issue with this job and not with this
+                            specific PR.
                             """)
 
                     text = text.strip()
