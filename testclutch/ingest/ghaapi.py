@@ -144,7 +144,7 @@ class GithubApi:
 
             else:
                 logging.error(f'Unexpected return type {type(j)} from API')
-                raise RuntimeError('Bad JSON type from GHA')
+                raise TypeError('Bad JSON type from GHA')
 
             useparams['page'] += 1
 

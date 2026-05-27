@@ -87,15 +87,15 @@ class OpenMetricsBuilder:
     VALUE_RE = re.compile('["\n\\\\\ud800-\udfff]')
 
     # Metric name extensions for 'summary' metrics
-    SUMMARY_EXT = {'count', 'created', 'sum'}
+    SUMMARY_EXT = frozenset({'count', 'created', 'sum'})
 
     # Types of metrics if not 'gauge'
-    METRIC_TYPE = {
+    METRIC_TYPE = {  # noqa: RUF012
         'testclutch_tests_seconds': 'summary'
     }
 
     # Help for each metric
-    METRIC_HELP = {
+    METRIC_HELP = {  # noqa: RUF012
         'testclutch_job_duration_seconds': 'How long the entire job took to run.',
         'testclutch_job_finish_seconds': 'When the job completed running.',
         'testclutch_job_start_seconds': 'When the job started running.',

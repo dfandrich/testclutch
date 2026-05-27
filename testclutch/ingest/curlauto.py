@@ -77,7 +77,7 @@ class CurlAutoIngestor:
         return (d, int(run_info.group(2)))
 
     def ingest_run(self, log_name: str):
-        timestamp, ident = self._extract_run_info(log_name)
+        timestamp, _ident = self._extract_run_info(log_name)
 
         cimeta: TestMeta = {}
         cimeta['runid'] = log_name
@@ -98,7 +98,7 @@ class CurlAutoIngestor:
             logging.info('Skipping ingestion into database')
         logs = self.curlauto.get_runs()
         for log_name in logs:
-            timestamp, ident = self._extract_run_info(log_name)
+            timestamp, _ident = self._extract_run_info(log_name)
             if timestamp < since:
                 # Build is too old
                 skipped += 1

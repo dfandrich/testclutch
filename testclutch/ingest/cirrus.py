@@ -31,7 +31,7 @@ class CirrusIngestor:
     def __init__(self, repo: str, ds: Optional[db.Datastore], token: Optional[str],
                  overwrite: bool = False):
         # TODO: probably need account/project to be passed in, like Appveyor
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(repo)
+        _scheme, netloc, path, _query, _fragment = urllib.parse.urlsplit(repo)
         safe_path = sanitize_path(path)
         self.repo = f'{netloc}{safe_path}'
         self.cirrus = cirrusapi.CirrusApi(repo, token)

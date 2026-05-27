@@ -372,8 +372,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                                 l = l.rstrip()
                                 if rr := RE_TESTRESULTOK.search(l):
                                     duration = int(float(rr.group(1)) * 1000000)
-                                    if duration < 0:
-                                        duration = 0  # bug in the test harness
+                                    duration = max(duration, 0)  # bug in the test harness
                                     testno = strip0(r.group(1))
                                     testcases.append(
                                         SingleTestFinding(testno, TestResult.PASS, '', duration))
@@ -447,8 +446,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                             elif r := RE_TESTRESULTSHORT.search(l):
                                 assert r.group(2) == 'OK'  # I think this is true
                                 duration = int(float(r.group(3)) * 1000000)
-                                if duration < 0:
-                                    duration = 0  # bug in the test harness
+                                duration = max(duration, 0)  # bug in the test harness
                                 testno = str(int(r.group(1)))
                                 testcases.append(
                                     SingleTestFinding(testno, TestResult.PASS, '', duration))

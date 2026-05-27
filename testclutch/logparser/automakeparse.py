@@ -62,8 +62,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
 
         elif r := SUMMARY_START_RE.search(l):
             desc = r.group(1)
-            if desc.endswith(' -'):
-                desc = desc[:-2]
+            desc = desc.removesuffix(' -')
             meta['testtarget'] = desc
 
             # Summary section

@@ -128,7 +128,7 @@ class Datastore:
         origin = meta['origin']
         # Sqlite3 doesn't enforce UNIQUE if this is None (a.k.a. NULL), only ''
         # See https://sqlite.org/faq.html#q26
-        account = meta['account'] if 'account' in meta else ''
+        account = meta.get('account', '')
         runid = meta['runid']
         uniquejobname = meta['uniquejobname']
         self.cur.execute('INSERT INTO testruns (time, repo, origin, account, runid, uniquejobname, '
@@ -225,7 +225,7 @@ class Datastore:
         """Return the record ID matching a given test run."""
         repo = meta['checkrepo']
         origin = meta['origin']
-        account = meta['account'] if 'account' in meta else ''
+        account = meta.get('account', '')
         runid = meta['runid']
         uniquejobname = meta['uniquejobname']
         res = self.cur.execute(

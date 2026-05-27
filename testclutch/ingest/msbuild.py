@@ -30,7 +30,7 @@ class MsBuildLog:
 
     def readline(self, size: int = -1) -> str:
         l = self.file_obj.readline(size)
-        if l.startswith('Microsoft (R) Build Engine') or l.startswith('MSBuild version '):
+        if l.startswith(('Microsoft (R) Build Engine', 'MSBuild version ')):
             # Start of indented section
             self.in_msbuild = True
 

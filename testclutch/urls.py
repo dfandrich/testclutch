@@ -16,7 +16,7 @@ def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
     This extracts them only from the source repository URL.  This currently supports GitHub URLs and
     others with a similar format (like GitLab).
     """
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(checkrepo)
+    _scheme, _netloc, path, _query, _fragment = urllib.parse.urlsplit(checkrepo)
     parts = path.split('/')
     # Sanity check URL
     if len(parts) != 3:
@@ -68,7 +68,7 @@ def url_pr(url: str) -> int:
 
     Returns 0 in case of invalid URL or one not containing a PR number
     """
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
+    _scheme, netloc, path, _query, _fragment = urllib.parse.urlsplit(url)
     if netloc != 'github.com':
         logging.error('Cannot extract PR from URL %s', url)
         return 0

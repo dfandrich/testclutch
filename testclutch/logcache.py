@@ -77,7 +77,8 @@ def move_into_cache_compressed(from_file: str, to_file: str):
         move_into_cache(from_file, to_file)
         return
 
-    compressed = zstd.compress(open(from_file, 'rb').read())
+    with open(from_file, 'rb') as f:
+        compressed = zstd.compress(f.read())
     to_path = os.path.join(config.expand('log_cache_path'), to_file + COMPRESS_EXT)
     with open(to_path, 'wb') as out_file:
         out_file.write(compressed)

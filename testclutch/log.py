@@ -20,7 +20,7 @@ def logging_level_to_syslog(level: int) -> int:
     if level <= logging.INFO:
         return 6  # KERN_INFO
     # Nothing maps to syslog level 5 (KERN_NOTICE)
-    if level <= logging.WARN:
+    if level <= logging.WARNING:
         return 4  # KERN_WARNING
     if level <= logging.ERROR:
         return 3  # KERN_ERR

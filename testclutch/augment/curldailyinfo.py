@@ -39,37 +39,37 @@ def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
     much longer if the user takes his time to upload it. It is only an upper bound on the commit
     date.
     """
-    tar = tarfile.open(fn)
-    tar_files = tar.getmembers()
+    with tarfile.open(fn) as tar:
+        tar_files = tar.getmembers()
 
-    # Get the directory name
-    first = tar_files[0].name.split('/')[0]
-    logging.debug('Reading %s: %s/%s', fn, first, COMMIT_FILE)
-    # Extract the date from the directory name
-    r = DIR_NAME_RE.search(first)
-    if not r:
-        raise RuntimeError('Daily build contents is unexpected')
-    day_code = r.group(1)
-    build_day = datetime.datetime.strptime(day_code + BUILDER_TZ, '%Y%m%d%z').date()
-    # Get the date of the first generated file in the tarball
-    sentinel = tar.getmember(posixpath.join(first, SENTINEL_FILE))
-    generated_time = (datetime.datetime.fromtimestamp(sentinel.mtime, tz=datetime.timezone.utc)
-                      - datetime.timedelta(seconds=-PULL_TIME_LAG))
-    generated_date = generated_time.date()
+        # Get the directory name
+        first = tar_files[0].name.split('/')[0]
+        logging.debug('Reading %s: %s/%s', fn, first, COMMIT_FILE)
+        # Extract the date from the directory name
+        r = DIR_NAME_RE.search(first)
+        if not r:
+            raise RuntimeError('Daily build contents is unexpected')
+        day_code = r.group(1)
+        build_day = datetime.datetime.strptime(day_code + BUILDER_TZ, '%Y%m%d%z').date()
+        # Get the date of the first generated file in the tarball
+        sentinel = tar.getmember(posixpath.join(first, SENTINEL_FILE))
+        generated_time = (datetime.datetime.fromtimestamp(sentinel.mtime, tz=datetime.timezone.utc)
+                          - datetime.timedelta(seconds=-PULL_TIME_LAG))
+        generated_date = generated_time.date()
 
-    # Sanity check the dates
-    if generated_date != build_day:
-        logging.error('curl daily build date mismatch; %s is not %s', generated_date, build_day)
-        raise RuntimeError('curl daily build date mismatch')
+        # Sanity check the dates
+        if generated_date != build_day:
+            logging.error('curl daily build date mismatch; %s is not %s', generated_date, build_day)
+            raise RuntimeError('curl daily build date mismatch')
 
-    # Read the commit hash
-    try:
-        with io.TextIOWrapper(tar.extractfile(posixpath.join(first, COMMIT_FILE)),
-                              line_buffering=True, encoding=COMMIT_CHARMAP) as commitf:
-            commit = commitf.readline().strip()
-    except KeyError:
-        # COMMIT_FILE is not in archive
-        commit = ''
+        # Read the commit hash
+        try:
+            with io.TextIOWrapper(tar.extractfile(posixpath.join(first, COMMIT_FILE)),
+                                  line_buffering=True, encoding=COMMIT_CHARMAP) as commitf:
+                commit = commitf.readline().strip()
+        except KeyError:
+            # COMMIT_FILE is not in archive
+            commit = ''
 
     return (day_code, generated_time, commit)
 

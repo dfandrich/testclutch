@@ -82,13 +82,13 @@ def expandstr(var: str) -> str:
     return var.format(**environ())
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def expand(var: str) -> str:
     """Get a config variable and expand it with environment variables."""
     return expandstr(get(var))
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def get(var: str) -> Any:
     """Get a raw config variable."""
     return environ()[var]

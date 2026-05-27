@@ -72,7 +72,7 @@ class PRAnalysisState:
 
         # Open the file and obtain an appropriate lock
         try:
-            f = open(filename, 'r+b' if wrlock else 'rb')
+            f = open(filename, 'r+b' if wrlock else 'rb')  # noqa: SIM115
             if wrlock:
                 fcntl.lockf(f.fileno(), fcntl.LOCK_EX)
                 # keep file handle around to hold the lock
