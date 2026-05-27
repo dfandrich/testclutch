@@ -7,7 +7,6 @@ import re
 import textwrap
 from dataclasses import dataclass
 from html import escape
-from typing import Optional
 from urllib import parse
 
 import testclutch
@@ -157,7 +156,7 @@ class ResultsOverTimeByUniqueJob:
         # This is a generic method that should work anywhere
         return meta.get('testresult', '') == 'truncated'
 
-    def find_first_failing_job(self, testname: str, num_fails: int) -> Optional[TestJobInfo]:
+    def find_first_failing_job(self, testname: str, num_fails: int) -> TestJobInfo | None:
         """First test run that started failing.
 
         num_fails is the index into self.all_jobs_status of the entry prior to the

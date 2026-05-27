@@ -2,7 +2,6 @@
 
 import datetime
 import logging
-from typing import Optional
 
 from testclutch import config
 from testclutch.ingest import gha
@@ -32,7 +31,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                 and run['status'] == 'completed'
                 and run['head_sha'] == commit)
 
-    def _find_matching_runs(self, commit: str, since: Optional[datetime.datetime]) -> list[int]:
+    def _find_matching_runs(self, commit: str, since: datetime.datetime | None) -> list[int]:
         """Find all runs on PRs for a particular commit."""
         found = []
         for run in self.gh.get_runs(since=since)['workflow_runs']:

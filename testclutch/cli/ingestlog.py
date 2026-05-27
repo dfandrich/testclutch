@@ -6,7 +6,6 @@ import logging
 import os
 import stat
 import sys
-from typing import Optional
 
 from testclutch import argparsing
 from testclutch import config
@@ -53,7 +52,7 @@ def parse_args(args=None) -> argparse.Namespace:
     return parser.parse_args(args=args)
 
 
-def gha_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def gha_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     if urls.url_host(args.checkrepo) != 'github.com':
         # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
@@ -67,7 +66,7 @@ def gha_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int
     return 0
 
 
-def circle_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def circle_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     ci = circleci.CircleIngestor(args.checkrepo, ds, args.overwrite)
 
     for run in args.runid:
@@ -75,7 +74,7 @@ def circle_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> 
     return 0
 
 
-def cirrus_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def cirrus_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     ci = cirrus.CirrusIngestor(args.checkrepo, ds, None, args.overwrite)
 
     for run in args.runid:
@@ -83,7 +82,7 @@ def cirrus_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> 
     return 0
 
 
-def appveyor_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def appveyor_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     account, project = urls.get_project_name(args)
     av = appveyor.AppveyorIngestor(account, project, args.checkrepo, ds, None, args.overwrite)
 
@@ -92,7 +91,7 @@ def appveyor_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -
     return 0
 
 
-def azure_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def azure_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     account, project = urls.get_project_name(args)
     azurei = azure.AzureIngestor(account, project, args.checkrepo, ds, args.overwrite)
 
@@ -101,7 +100,7 @@ def azure_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> i
     return 0
 
 
-def curlauto_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def curlauto_ingest_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     if args.checkrepo != 'https://github.com/curl/curl':
         logging.error('Invalid GitHub repository URL for curlauto: %s', args.checkrepo)
         return 1
@@ -113,7 +112,7 @@ def curlauto_ingest_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -
     return 0
 
 
-def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def gha_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     if urls.url_host(args.checkrepo) != 'github.com':
         # This function only makes sense when source is hosted on GitHub
         logging.error('Invalid GitHub repository URL: %s', args.checkrepo)
@@ -127,7 +126,7 @@ def gha_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore])
     return 0
 
 
-def cirrus_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def cirrus_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     ci = cirrus.CirrusIngestor(args.checkrepo, ds, None, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} from Cirrus')
@@ -135,7 +134,7 @@ def cirrus_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastor
     return 0
 
 
-def circle_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def circle_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     circle = circleci.CircleIngestor(args.checkrepo, ds, args.overwrite)
 
     logging.info(f'Retrieving {args.howrecent} hours of logs for branch {args.branch} '
@@ -144,7 +143,7 @@ def circle_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastor
     return 0
 
 
-def appveyor_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def appveyor_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     account, project = urls.get_project_name(args)
     av = appveyor.AppveyorIngestor(account, project, args.checkrepo, ds, None, args.overwrite)
 
@@ -154,7 +153,7 @@ def appveyor_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datast
     return 0
 
 
-def azure_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def azure_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     account, project = urls.get_project_name(args)
     azurei = azure.AzureIngestor(account, project, args.checkrepo, ds, args.overwrite)
 
@@ -164,7 +163,7 @@ def azure_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore
     return 0
 
 
-def curlauto_ingest_recent_runs(args: argparse.Namespace, ds: Optional[db.Datastore]) -> int:
+def curlauto_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | None) -> int:
     if args.checkrepo != 'https://github.com/curl/curl':
         logging.error('Invalid GitHub repository URL for curlauto: %s', args.checkrepo)
         return 1

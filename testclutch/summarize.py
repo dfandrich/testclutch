@@ -2,7 +2,6 @@
 
 import contextlib
 import io
-from typing import Union
 
 from testclutch.logdef import TestCases
 from testclutch.testcasedef import TestResult
@@ -39,7 +38,7 @@ def summarize_totals(testcases: TestCases, details: bool = False) -> list[str]:
     return f.readlines()
 
 
-def try_integer(val: str) -> Union[int, str]:
+def try_integer(val: str) -> int | str:
     """Try to convert the value to an integer, but return string if it cannot.
 
     Use as a sort key function to sort numeric test names by numeric value and string

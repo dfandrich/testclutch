@@ -3,7 +3,7 @@
 import importlib
 import logging
 import sys
-from typing import Iterable
+from collections.abc import Iterable
 
 from testclutch import config
 from testclutch import summarize

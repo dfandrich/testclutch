@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Optional, TextIO
+from typing import TextIO
 
 from testclutch import db
 from testclutch import logcache
@@ -59,7 +59,7 @@ class MassagedLog(TextIO):
 class CurlAutoIngestor:
     """Ingest logs from curl's autobuild system."""
 
-    def __init__(self, repo: str, ds: Optional[db.Datastore], overwrite: bool = False):
+    def __init__(self, repo: str, ds: db.Datastore | None, overwrite: bool = False):
         self.repo = repo
         self.curlauto = curlautoapi.CurlAutoApi()
         self.ds = ds

@@ -2,8 +2,8 @@
 
 import argparse
 import datetime
+from collections.abc import Collection
 from contextlib import nullcontext
-from typing import Collection
 
 from testclutch import argparsing
 from testclutch import config

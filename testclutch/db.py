@@ -3,7 +3,7 @@
 import datetime
 import logging
 import sqlite3
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 from testclutch import config
 from testclutch.gitdef import CommitInfo
@@ -26,12 +26,12 @@ class Datastore:
     This class can be used as a context manager to open and close the DB connection.
     """
 
-    def __init__(self, filename: Optional[str] = None):
+    def __init__(self, filename: str | None = None):
         if not filename:
             filename = config.expand('database_path')
         self.filename = filename
-        self.db = None   # type: Optional[sqlite3.Connection]
-        self.cur = None  # type: Optional[sqlite3.Cursor]
+        self.db = None   # type: sqlite3.Connection | None
+        self.cur = None  # type: sqlite3.Cursor | None
 
     def __enter__(self):
         """Open the database connection and return the object itself."""
@@ -221,7 +221,7 @@ class Datastore:
 #        # TODO: COMPLETE THIS IF IT MAKES SENSE. Right now, writes are unconditional
 #        # and duplicate writes just raise IntegrityError which is ignored
 
-    def select_rec_id(self, meta: TestMeta) -> Optional[int]:
+    def select_rec_id(self, meta: TestMeta) -> int | None:
         """Return the record ID matching a given test run."""
         repo = meta['checkrepo']
         origin = meta['origin']

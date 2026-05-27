@@ -9,7 +9,7 @@ import datetime
 import json
 import logging
 import re
-from typing import Any, Optional, Union
+from typing import Any
 
 from testclutch import netreq
 
@@ -63,7 +63,7 @@ def convert_time(timestamp: str) -> datetime.datetime:
 class GithubApi:
     """Retrieve logs from GitHub Actions runs."""
 
-    def __init__(self, owner: str, repo: str, token: Optional[str]):
+    def __init__(self, owner: str, repo: str, token: str | None):
         self.owner = owner
         self.repo = repo
         self.token = token
@@ -94,8 +94,8 @@ class GithubApi:
         return headers
 
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
-                             params: Optional[dict[str, Union[str, int]]] = None
-                             ) -> Union[dict[str, Any], list[Any]]:
+                             params: dict[str, str | int] | None = None
+                             ) -> dict[str, Any] | list[Any]:
         """Perform a paged HTTP get, combining all paged results in array.
 
         The JSON response must have at least one array member if a dict, the last of which will be
@@ -151,7 +151,7 @@ class GithubApi:
         assert combined is not None  # since it hasn't raised an exception this must be true
         return combined
 
-    def get_runs(self, branch: Optional[str] = None, since: Optional[datetime.datetime] = None
+    def get_runs(self, branch: str | None = None, since: datetime.datetime | None = None
                  ) -> dict[str, Any]:
         """Returns info about all recent workflow runs on GitHub Actions."""
         url = BASE_URL.format(owner=self.owner, repo=self.repo, endpoint='runs')

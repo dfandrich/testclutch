@@ -6,11 +6,10 @@ import datetime
 import enum
 import logging
 import textwrap
-from collections.abc import Container
+from collections.abc import Container, Sequence
 from contextlib import nullcontext
 from email import utils
 from html import escape
-from typing import Optional, Sequence
 
 import testclutch
 from testclutch import analysis
@@ -496,7 +495,7 @@ class GatherPRAnalysis:
         del self.allpranalyses  # force user to read again in case file was updated outside
 
     def gather_failed(self, origin: str, pr: int
-                      ) -> tuple[Optional[list[prdef.FailedTest]], str]:
+                      ) -> tuple[list[prdef.FailedTest] | None, str]:
         logging.info(f'Gathering {origin} analysis for pull request {pr}')
         analyzer = get_analyzer(origin, self.args, self.ds)
         if not analyzer:

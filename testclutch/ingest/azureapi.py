@@ -3,7 +3,7 @@
 import datetime
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from testclutch import netreq
 
@@ -41,7 +41,7 @@ class AzureApi:
                 'User-Agent': netreq.USER_AGENT
                 }
 
-    def get_builds(self, branch: Optional[str], hours: int) -> dict[str, Any]:
+    def get_builds(self, branch: str | None, hours: int) -> dict[str, Any]:
         """Returns info about all recent builds."""
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
         url = LIST_BUILDS_URL.format(organization=self.organization, project=self.project)

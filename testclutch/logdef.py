@@ -1,7 +1,6 @@
 """Type definitions of parsed logs."""
 
 from dataclasses import dataclass
-from typing import Union
 
 from testclutch.testcasedef import TestResult
 
@@ -18,5 +17,5 @@ class SingleTestFinding:
 
 TestCases = list[SingleTestFinding]
 TestMetaStr = dict[str, str]  # raw data from DB
-TestMeta = dict[str, Union[str, int]]  # data to be stored into DB
+TestMeta = dict[str, str | int]  # data to be stored into DB
 ParsedLog = tuple[TestMeta, TestCases]

@@ -3,7 +3,6 @@
 import argparse
 import ast
 import os
-from typing import Optional
 
 from testclutch import config
 
@@ -50,7 +49,7 @@ class StoreMultipleConstAction(argparse.Action):
                  option_strings,
                  dest: str,
                  const: bool = True,
-                 attrs: Optional[list[str]] = None,
+                 attrs: list[str] | None = None,
                  default=None,
                  required: bool = False,
                  help=None,     # noqa: A002

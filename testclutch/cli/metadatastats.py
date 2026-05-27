@@ -9,9 +9,9 @@ import logging
 import math
 import re
 import textwrap
+from collections.abc import Callable, Collection, Iterable, Sequence
 from dataclasses import dataclass
 from html import escape
-from typing import Callable, Collection, Iterable, Sequence, Union
 
 import testclutch
 from testclutch import analysis
@@ -248,7 +248,7 @@ class FeatureMatrix:
         logging.info(f'Loaded {len(self.all_meta)} unique jobs')
 
     def build_features(self, metas: Sequence[str], adjuster: MetadataAdjuster
-                       ) -> list[tuple[str, str, Union[str, int]]]:
+                       ) -> list[tuple[str, str, str | int]]:
         """Build a list of convolved features available in the tests.
 
         load_all_meta() must have been called first.

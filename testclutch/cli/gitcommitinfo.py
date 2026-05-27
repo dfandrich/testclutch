@@ -4,7 +4,6 @@ import argparse
 import contextlib
 import logging
 import subprocess
-from typing import Optional
 
 from testclutch import argparsing
 from testclutch import config
@@ -16,7 +15,7 @@ from testclutch.gitdef import CommitInfo
 class GitCommitIngestor:
     """Ingest commit information from a git repository."""
 
-    def __init__(self, repo: str, ds: Optional[db.Datastore]):
+    def __init__(self, repo: str, ds: db.Datastore | None):
         self.repo = repo
         self.ds = ds
         self.dry_run = ds is None

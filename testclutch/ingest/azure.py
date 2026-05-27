@@ -3,7 +3,8 @@
 import datetime
 import logging
 import re
-from typing import Any, Iterable, Optional
+from collections.abc import Iterable
+from typing import Any
 
 from testclutch import db
 from testclutch import logcache
@@ -26,7 +27,7 @@ SYSTEM_TASKS_RE = re.compile(r'^Initialize job$|^Initialize containers$|^Stop Co
 class AzureIngestor:
     """Ingest logs from Azure."""
 
-    def __init__(self, organization: str, project: str, repo: str, ds: Optional[db.Datastore],
+    def __init__(self, organization: str, project: str, repo: str, ds: db.Datastore | None,
                  overwrite: bool = False):
         self.organization = organization
         self.project = project

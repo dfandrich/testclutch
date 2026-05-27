@@ -10,7 +10,8 @@ import json
 import logging
 import re
 import urllib
-from typing import Any, Iterable, Optional, TextIO
+from collections.abc import Iterable
+from typing import Any, TextIO
 
 from testclutch import db
 from testclutch import logcache
@@ -89,7 +90,7 @@ class MassagedLog(io.StringIO):
 class CircleIngestor:
     """Ingest logs from Circle CI."""
 
-    def __init__(self, repo: str, ds: Optional[db.Datastore], overwrite: bool = False):
+    def __init__(self, repo: str, ds: db.Datastore | None, overwrite: bool = False):
         _scheme, netloc, path, _query, _fragment = urllib.parse.urlsplit(repo)
         safe_path = sanitize_path(path)
         self.repo = f'{netloc}{safe_path}'

@@ -3,7 +3,7 @@
 import datetime
 import logging
 import re
-from typing import Any, Optional
+from typing import Any
 
 from testclutch import db
 from testclutch import logcache
@@ -24,8 +24,8 @@ AV_TIME_RE = re.compile(r'^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(\.\d{1,7})([-+]\d\d)
 class AppveyorIngestor:
     """Ingest logs from Appveyor."""
 
-    def __init__(self, account: str, project: str, repo: str, ds: Optional[db.Datastore],
-                 token: Optional[str], overwrite: bool = False):
+    def __init__(self, account: str, project: str, repo: str, ds: db.Datastore | None,
+                 token: str | None, overwrite: bool = False):
         self.account = account
         self.project = project
         self.repo = repo

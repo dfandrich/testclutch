@@ -9,7 +9,6 @@ test run times.
 
 import logging
 import re
-from typing import Optional
 
 from testclutch import pyplatform
 from testclutch.filedef import TextIOReadline
@@ -64,7 +63,7 @@ STRIP_ANSI_RE = re.compile(
 )
 
 
-def strip_ansi(s: Optional[str]) -> Optional[str]:
+def strip_ansi(s: str | None) -> str | None:
     """Strip ANSI X3.64 escape sequences from string.
 
     A None input is passed straight to the output.

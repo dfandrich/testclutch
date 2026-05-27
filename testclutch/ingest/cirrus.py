@@ -4,7 +4,8 @@ import datetime
 import logging
 import re
 import urllib.parse
-from typing import Any, Iterable, Optional
+from collections.abc import Iterable
+from typing import Any
 
 from testclutch import db
 from testclutch import logcache
@@ -28,7 +29,7 @@ def sanitize_path(path: str) -> str:
 class CirrusIngestor:
     """Ingest logs from Cirrus CI."""
 
-    def __init__(self, repo: str, ds: Optional[db.Datastore], token: Optional[str],
+    def __init__(self, repo: str, ds: db.Datastore | None, token: str | None,
                  overwrite: bool = False):
         # TODO: probably need account/project to be passed in, like Appveyor
         _scheme, netloc, path, _query, _fragment = urllib.parse.urlsplit(repo)
@@ -140,7 +141,7 @@ class CirrusIngestor:
                 logging.error('Could not download a log for run %d task %d', run_id, task_id)
 
     def download_log(self, run_id: int, task_id: int, task_commands: Iterable[str]
-                     ) -> Optional[str]:
+                     ) -> str | None:
         for command_name in task_commands:
             newfn = self._log_file_path(run_id, task_id, command_name)
             if logcache.in_cache(newfn):

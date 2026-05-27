@@ -9,7 +9,7 @@ import logging
 import posixpath
 import re
 import zipfile
-from typing import Any, Optional
+from typing import Any
 
 from testclutch import config
 from testclutch import db
@@ -51,7 +51,7 @@ def file_ext_from_type(content_type: str) -> str:
     return MIME_EXT.get(content_type, '.bin')
 
 
-def read_token(authfile: Optional[str]) -> Optional[str]:
+def read_token(authfile: str | None) -> str | None:
     """Read the authorization token supplied in the file."""
     if not authfile:
         return None
@@ -62,7 +62,7 @@ def read_token(authfile: Optional[str]) -> Optional[str]:
 class GithubIngestor:
     """Ingest logs from GitHub Actions."""
 
-    def __init__(self, owner: str, repo: str, token: str, ds: Optional[db.Datastore],
+    def __init__(self, owner: str, repo: str, token: str, ds: db.Datastore | None,
                  overwrite: bool = False):
         self.owner = owner
         self.repo = repo
@@ -145,7 +145,7 @@ class GithubIngestor:
     def _log_file_path(self, run_id: int) -> str:
         return f'{LOGSUBDIR}/gha-{self.owner}-{self.repo}-{run_id}-logs{DEFAULT_EXT}'
 
-    def download_log(self, run_id: int) -> Optional[str]:
+    def download_log(self, run_id: int) -> str | None:
         """Download the logs corresponding to this run.
 
         If the log file is already found in the cache directory, it is not downloaded.

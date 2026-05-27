@@ -5,7 +5,6 @@ import logging
 import os
 import shlex
 import sys
-from typing import Optional
 
 
 def calling_program() -> str:
@@ -42,7 +41,7 @@ class SyslogFormatter(logging.Formatter):
         return super().format(record)
 
 
-def setup(args: argparse.Namespace, program: Optional[str] = None, subprogram: str = ''):
+def setup(args: argparse.Namespace, program: str | None = None, subprogram: str = ''):
     """Set up the logging subsystem in a consistent way.
 
     program defaults to the program invoking this run.

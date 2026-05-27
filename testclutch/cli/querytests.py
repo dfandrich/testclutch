@@ -6,7 +6,6 @@ import datetime
 import logging
 import re
 import sys
-from typing import Optional
 
 from testclutch import argparsing
 from testclutch import config
@@ -134,7 +133,7 @@ class OpenMetricsBuilder:
         # newline is an exception to the escaping pattern
         return estring.replace('\n', 'n')
 
-    def metric(self, metric: str, value: float, more_labels: Optional[dict[str, str]] = None
+    def metric(self, metric: str, value: float, more_labels: dict[str, str] | None = None
                ) -> str:
         """Print one OpenMetric metric line."""
         if more_labels:

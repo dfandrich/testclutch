@@ -5,7 +5,7 @@ import logging
 import os
 import tempfile
 import time
-from typing import Callable, Optional, Type
+from collections.abc import Callable
 
 import requests
 from requests import adapters
@@ -22,7 +22,7 @@ USER_AGENT = f'testclutch/{testclutch.__version__}'
 CHUNK_SIZE = 0x10000
 
 
-def get(url: str, headers: Optional[dict[str, str]] = None, **args) -> requests.Response:
+def get(url: str, headers: dict[str, str] | None = None, **args) -> requests.Response:
     """Perform an HTTP request with standard request headers if none are supplied."""
     if not headers:
         headers = {'User-Agent': USER_AGENT}
@@ -33,8 +33,8 @@ class Session(requests.Session):
     """Set up a requests session with a standard configuration."""
 
     def __init__(self, total: int = 4, backoff_factor: int = 10,
-                 status_forcelist: Optional[list[int]] = None,
-                 allowed_methods: Optional[list[str]] = None):
+                 status_forcelist: list[int] | None = None,
+                 allowed_methods: list[str] | None = None):
         super().__init__()
         if not status_forcelist:
             status_forcelist = [429, 500, 502, 503, 504]
@@ -52,7 +52,7 @@ class Session(requests.Session):
 
 
 # This could be replaced by the tenacity or backoff packages for more features
-def retry_on_exception(func: Callable, exception: Type[Exception],
+def retry_on_exception(func: Callable, exception: type[Exception],
                        retries: int = 10, delay: float = 10):
     """Retry a function call on an exception, with fixed delay."""
     for attempt in range(retries):

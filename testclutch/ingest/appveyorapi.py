@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from testclutch import netreq
 
@@ -24,7 +24,7 @@ CHUNK_SIZE = 0x10000
 class AppveyorApi:
     """Retrieve logs from Appveyor runs."""
 
-    def __init__(self, account: str, project: str, token: Optional[str]):
+    def __init__(self, account: str, project: str, token: str | None):
         self.account = account
         self.project = project
         self.token = token
