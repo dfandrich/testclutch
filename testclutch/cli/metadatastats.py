@@ -750,17 +750,26 @@ def output_tests_run_html(trstats: TestRunStats):
         </p>
         """))
 
+    somemissing = False
+    header = ''
+
     def print_html_missing(testformat: str, testname: str, desc: str, title: bool = False):
         """Print a row of data for missing tests."""
-        if title and testformat:
-            print(f'<h2>{escape(desc)}</h2>')
-            print('<table id="missing">')
-            print(f'<tr><th>{escape(testformat)}</th><th>{escape(testname)}</th></tr>')
-            return
+        nonlocal somemissing
+        nonlocal header
         if title:
-            print('</table><br />')
+            if testformat:
+                print(f'<h2>{escape(desc)}</h2>')
+                # Store the header then only display it if the table ends up non-empty
+                header = ('<table id="missing">'
+                          f'<tr><th>{escape(testformat)}</th><th>{escape(testname)}</th></tr>')
+            elif somemissing:
+                print('</table><br />')
             return
 
+        if not somemissing:
+            somemissing = True
+            print(header)
         print(f'<tr><td>{escape(testformat)}</td><td>{escape(testname)}</td></tr>')
 
     lastformat = ''
