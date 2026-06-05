@@ -430,16 +430,17 @@ def output_test_run_stats_text(trstats: TestRunStats):
 def output_test_run_stats_html(trstats: TestRunStats):
     now = datetime.datetime.now(datetime.timezone.utc)
     days = (now - trstats.since).days
-    print(textwrap.dedent(f"""
+    print(textwrap.dedent("""
         <!DOCTYPE html>
         <html><head><title>Test run statistics</title>
-        <meta name="generator" content="Test Clutch {testclutch.__version__}">
         <style type="text/css">
-        ul {{
+        ul {
             margin-top: 0.2em;
             margin-bottom: 0.6em;
-        }}
+        }
         </style>
+        """ + f"""
+        <meta name="generator" content="Test Clutch {testclutch.__version__}">
         </head>
         <body>
         <h1>Test run statistics for test runs on {escape(trstats.repo)}</h1>
