@@ -6,8 +6,10 @@ GitHub API docs are at https://docs.github.com/en/rest?apiVersion=2022-11-28
 import datetime
 import io
 import logging
+import os
 import posixpath
 import re
+import time
 import zipfile
 from typing import Any
 
@@ -40,6 +42,11 @@ LOG_TIMESTAMP_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z ')
 # Format of a log filename in a zip archive
 LOG_NAME_RE = re.compile(r'^([0-9]+)_(.+)\.txt$')
 
+# Number of times to try to download a log file
+LOG_RETRIES = 5
+
+# Time to wait in seconds between log file download retries, increasing exponentially
+LOG_RETRIES_DELAY = 6
 
 MIME_EXT = {
     'application/zip': '.zip',
@@ -154,16 +161,29 @@ class GithubIngestor:
         if logcache.in_cache(newfn):
             logging.debug('Log file is in cache as %s', newfn)
         else:
-            try:
-                fn, ft = self.gh.get_logs(run_id)
-            except ghaapi.HTTPError as e:
-                # Not sure why GHA would ever have no logs ready when we ask for them, but it does
-                if e.response.status_code == 404:
-                    logging.error('Log for run %d reported by server as Not Found', run_id)
+            # Try several times to download a GHA log file because the downloaded log file is
+            # occasionally empty.
+            for retry in range(LOG_RETRIES):
+                try:
+                    fn, ft = self.gh.get_logs(run_id)
+                except ghaapi.HTTPError as e:
+                    # Not sure why GHA would ever have no logs ready when we ask for them,
+                    # but it does
+                    if e.response.status_code == 404:
+                        logging.error('Log for run %d reported by server as Not Found', run_id)
+                    else:
+                        logging.error(e.args[0])
+                        # Re-raise the exception for better visibility (for now)
+                        raise
                 else:
-                    logging.error(e.args[0])
-                    # Re-raise the exception for better visibility for now
-                    raise
+                    if os.stat(fn).st_size:
+                        # Got a non-empty log file: good
+                        break
+                    logging.warning('Log file for run %d was empty', run_id)
+
+                time.sleep(2**retry * LOG_RETRIES_DELAY)
+            else:
+                logging.error('Could not obtain valid log for run %d; aborting', run_id)
                 return None
 
             logging.debug(f'fn {fn} type {ft}')
