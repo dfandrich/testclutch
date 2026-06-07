@@ -690,7 +690,7 @@ def output_tests_run_count(trstats: TestRunStats, print_func: Callable,
     if total_counts:
         # TODO: maybe integrate this into the next table
         print_missing_func('Format', 'Test Name',
-                           f'Missing tests (have not been seen running in the past '
+                           f'Missing tests (have not been seen running for at least '
                            f'{round(config.get("old_job_hours") / 24)} days)', title=True)
         for testformat, testname in total_counts:
             print_missing_func(testformat, testname, '')
