@@ -9,7 +9,7 @@ import io
 import json
 import logging
 import re
-import urllib
+import urllib.parse
 from collections.abc import Iterable
 from typing import Any, TextIO
 

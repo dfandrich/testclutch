@@ -5,7 +5,7 @@ import html
 import html.parser
 import logging
 import re
-import urllib
+import urllib.parse
 
 from testclutch import netreq
 

@@ -48,6 +48,7 @@ def parse_args(args=None) -> argparse.Namespace:
         '--overwrite',
         action='store_true',
         help='Whether to overwrite an existing test log, if found')
+    # TODO: FileType is deprecated in Python 3.14
     parser.add_argument('files', nargs='*', type=argparse.FileType('r'), default=[sys.stdin])
     return parser.parse_args(args=args)
 

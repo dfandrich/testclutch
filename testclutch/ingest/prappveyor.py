@@ -17,12 +17,12 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
         super().__init__(*args)
         self.test_results = []  # type: list[ParsedLog]
 
-    def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
+    def store_test_run(self, meta: TestMeta, testcases: TestCases):
         """Store test results in a list.
 
         This overrides the method in the base class.
         """
-        self.test_results.append((logmeta, testcases))
+        self.test_results.append((meta, testcases))
 
     def _find_for_pr(self, pr: int) -> list[str]:
         """Find runs for the given PR made within the given number of hours.

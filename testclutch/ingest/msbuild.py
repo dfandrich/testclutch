@@ -21,14 +21,14 @@ class MsBuildLog:
         """Send everything else to the embedded file."""
         return getattr(self.file_obj, attr)
 
-    def seek(self, offset: int, whence: int = 0):
+    def seek(self, offset: int, whence: int = 0, /):
         """Capture to seek to reset the state."""
         if whence == 0 and offset < 16:
             # Stream is starting again from (near) the beginning
             self.in_msbuild = False
         return self.file_obj.seek(offset, whence)
 
-    def readline(self, size: int = -1) -> str:
+    def readline(self, size: int = -1, /) -> str:
         l = self.file_obj.readline(size)
         if l.startswith(('Microsoft (R) Build Engine', 'MSBuild version ')):
             # Start of indented section

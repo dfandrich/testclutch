@@ -19,7 +19,7 @@ class FixedPrefixedLog:
         """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
-    def readline(self, size: int = -1) -> str:
+    def readline(self, size: int = -1, /) -> str:
         l = self.file_obj.readline(size)
         if l:
             origl = l
@@ -30,7 +30,7 @@ class FixedPrefixedLog:
 
         return l
 
-    def seek(self, offset: int, whence: int = 0) -> int:
+    def seek(self, offset: int, whence: int = 0, /) -> int:
         """Satisfy pytype, even though the __getattr__ actually does the same thing."""
         return self.file_obj.seek(offset, whence)
 
@@ -48,7 +48,7 @@ class RegexPrefixedLog:
         """Pass any other references to the file object."""
         return getattr(self.file_obj, attr)
 
-    def readline(self, size: int = -1) -> str:
+    def readline(self, size: int = -1, /) -> str:
         l = self.file_obj.readline(size)
         if not l:
             return l
@@ -61,6 +61,6 @@ class RegexPrefixedLog:
         # those using cross-platform-actions/action), this isn't a big concern.
         return self.regex.sub('', l)
 
-    def seek(self, offset: int, whence: int = 0) -> int:
+    def seek(self, offset: int, whence: int = 0, /) -> int:
         """Satisfy pytype, even though the __getattr__ actually does the same thing."""
         return self.file_obj.seek(offset, whence)

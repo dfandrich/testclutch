@@ -66,12 +66,12 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         logging.debug('Found %d matching runs', len(found))
         return found
 
-    def store_test_run(self, logmeta: TestMeta, testcases: TestCases):
+    def store_test_run(self, meta: TestMeta, testcases: TestCases):
         """Store test results in a list.
 
         This overrides the method in the base class.
         """
-        meta = {**self.prmeta, **logmeta}
+        meta = {**self.prmeta, **meta}
         if meta['trigger'] != 'pull_request':
             logging.info(f"Log is due to {meta['trigger']}, not a pull request; skipping")
             return
