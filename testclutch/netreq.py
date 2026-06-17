@@ -83,6 +83,7 @@ def download_file_onetry(resp: requests.models.Response, url: str) -> tuple[str,
                 tmp.write(chunk)
         except:  # noqa: E722
             # Delete the temporary file on exception
+            tmp.close()
             os.unlink(tmp.name)
             raise
     content_type = resp.headers.get('Content-Type', 'application/octet-stream')
