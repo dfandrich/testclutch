@@ -179,7 +179,7 @@ class GithubIngestor:
                     if os.stat(fn).st_size:
                         # Got a non-empty log file: good
                         break
-                    logging.warning('Log file for run %d was empty', run_id)
+                    logging.warning('Log file for run %d was empty (retry %d)', run_id, retry)
 
                 time.sleep(2**retry * LOG_RETRIES_DELAY)
             else:
