@@ -69,8 +69,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty
     """
-    meta = {}       # type: TestMeta
-    testcases = []  # type: TestCases
+    meta: TestMeta = {}
+    testcases: TestCases = []
     with contextlib.suppress(LogEndExit):
         # Outer loop searching for the actual unittest log
         while l := f.readline():

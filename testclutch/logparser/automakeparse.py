@@ -42,8 +42,8 @@ def result_code(result: str) -> TestResult:
 
 def parse_log_file(f: TextIOReadline) -> ParsedLog:
     """Parses automake's test output."""
-    meta = {}       # type: TestMeta
-    testcases = []  # type: TestCases
+    meta: TestMeta = {}
+    testcases: TestCases = []
     while l := f.readline():
         if r := RESULT_RE.search(l):
             # Found a test result

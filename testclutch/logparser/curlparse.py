@@ -272,9 +272,9 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty
     """
-    meta = {}         # type: TestMeta
-    testcases = []    # type: TestCases
-    toignore = set()  # type: set[str]
+    meta: TestMeta = {}
+    testcases: TestCases = []
+    toignore: set[str] = set()
     got_first = False
     while l := f.readline():
         if not got_first:

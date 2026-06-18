@@ -209,8 +209,8 @@ class FeatureMatrix:
         self.since = since
         self.from_time = int(since.timestamp())
         self.analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
-        self.all_meta = []  # type: list[TestMetaStr]
-        self.all_attempted_counts = {}  # type: dict[str, TestRunCounts]
+        self.all_meta: list[TestMetaStr] = []
+        self.all_attempted_counts: dict[str, TestRunCounts] = {}
 
     def all_unique_jobs(self) -> list[str]:
         return self.analyzer.all_unique_jobs(self.repo, self.from_time)
@@ -264,7 +264,7 @@ class FeatureMatrix:
         Returns:
             list of tuples with feature title, metadata name and metadata value
         """
-        features = {}  # type: dict[str, set[str]]
+        features: dict[str, set[str]] = {}
         for metaname in metas:
             if adjuster.just_dump(metaname):
                 feature = features.setdefault(metaname, set())

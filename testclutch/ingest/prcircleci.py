@@ -15,7 +15,7 @@ class CircleAnalyzer(circleci.CircleIngestor):
     """
     def __init__(self, *args):
         super().__init__(*args)
-        self.test_results = []  # type: list[ParsedLog]
+        self.test_results: list[ParsedLog] = []
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
         """Store test results in a list.

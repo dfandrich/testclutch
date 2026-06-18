@@ -30,8 +30,8 @@ class Datastore:
         if not filename:
             filename = config.expand('database_path')
         self.filename = filename
-        self.db = None   # type: sqlite3.Connection | None
-        self.cur = None  # type: sqlite3.Cursor | None
+        self.db: sqlite3.Connection | None = None
+        self.cur: sqlite3.Cursor | None = None
 
     def __enter__(self):
         """Open the database connection and return the object itself."""

@@ -110,9 +110,9 @@ class OpenMetricsBuilder:
     }
 
     def __init__(self):
-        self.labels = {}  # type: dict[str, str]
+        self.labels: dict[str, str] = {}
         self.timestamp = 0
-        self.types = set()  # type: set[str]
+        self.types: set[str] = set()
 
     def set_labels(self, labels: dict[str, str]):
         """Set any additional labels to attach to metrics."""

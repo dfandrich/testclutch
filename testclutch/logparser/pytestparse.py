@@ -83,8 +83,8 @@ def parse_log_file_summary(f: TextIOReadline) -> ParsedLog:
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty
     """
-    meta = {}       # type: TestMeta
-    testcases = []  # type: TestCases
+    meta: TestMeta = {}
+    testcases: TestCases = []
     while l := strip_ansi(f.readline()):
         if SESSION_START_RE.search(l):
             logging.debug('Found the start of a pytest log')
@@ -175,8 +175,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
     Returns: tuple of dict with metadata, list of tests
       If the test could not be parsed, the dict will be empty
     """
-    meta = {}       # type: TestMeta
-    testcases = []  # type: TestCases
+    meta: TestMeta = {}
+    testcases: TestCases = []
     while l := strip_ansi(f.readline()):
         if SESSION_START_RE.search(l):
             logging.debug('Found the start of a pytest log')

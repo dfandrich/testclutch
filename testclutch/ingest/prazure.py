@@ -25,7 +25,7 @@ class AzureAnalyzer(azure.AzureIngestor):
         self.test_results.append((meta, testcases))
 
     def clear_test_results(self):
-        self.test_results = []  # type: list[ParsedLog]
+        self.test_results: list[ParsedLog] = []
 
     def _find_matching_runs(self, pr: int, hours: int) -> list[int]:
         """Find runs for the given PR made within the given number of hours.

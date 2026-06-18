@@ -95,8 +95,8 @@ class ResultsOverTimeByUniqueJob:
         assert ds.db and ds.cur  # satisfy pytype that this isn't None
         self.ds = ds
         self.repo = repo
-        self.all_jobs_status = []  # type: list[TestJobInfo]
-        self.commits = []          # type: list[CommitInfo]
+        self.all_jobs_status: list[TestJobInfo] = []
+        self.commits: list[CommitInfo] = []
 
     @staticmethod
     def make_global_unique_job(meta: TestMeta) -> str:

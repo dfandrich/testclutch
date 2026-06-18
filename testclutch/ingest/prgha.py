@@ -23,8 +23,8 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         self.clear_test_results()
 
     def clear_test_results(self):
-        self.test_results = []  # type: list[ParsedLog]
-        self.prmeta = {}        # type: TestMeta
+        self.test_results: list[ParsedLog] = []
+        self.prmeta: TestMeta = {}
 
     def _is_matching_run(self, run: TestMeta, commit: str) -> bool:
         return (run['event'] == PR_EVENT
