@@ -129,11 +129,11 @@ def config() -> ModuleType:
         # Don't write the imported config file bytecode file to eliminate caching problems
         with override_var(sys, 'dont_write_bytecode', True):
             spec.loader.exec_module(config_module)
-    else:
-        logging.info('Configuration file %s not found', configfn)
-        config_module = ModuleType('empty')
 
-    return config_module  # noqa: R504
+        return config_module
+
+    logging.info('Configuration file %s not found', configfn)
+    return ModuleType('empty')
 
 
 def add_override(name: str, value: Any):

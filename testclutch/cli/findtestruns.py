@@ -51,7 +51,7 @@ class FindFailedRuns:
             print('Job:', f'{meta["origin"].capitalize()}: {name}')
             print('Time:',
                   datetime.datetime.fromtimestamp(
-                      int(runtime), tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'),
+                      runtime, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'),
                   f'(run ID {meta["runid"]})')
             if failtext:
                 print(f'Failure reason: {failtext}')

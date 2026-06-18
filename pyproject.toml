@@ -111,3 +111,7 @@ max-line-length = 100
 max-complexity = 25
 docstring-convention = "google"
 blanks-before-imports = 1
+noqa-require-code = true
+
+[tool.ruff]
+lint.ignore = ["E741"]

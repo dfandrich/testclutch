@@ -2,7 +2,7 @@
 
 import unittest
 
-from testclutch.cli import querytests  # noqa: I100
+from testclutch.cli import querytests
 
 
 class TestOpenMetricsBuilder(unittest.TestCase):

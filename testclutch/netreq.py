@@ -81,7 +81,7 @@ def download_file_onetry(resp: requests.models.Response, url: str) -> tuple[str,
             #   requests.exceptions.ChunkedEncodingError: Response ended prematurely
             for chunk in resp.iter_content(chunk_size=CHUNK_SIZE):
                 tmp.write(chunk)
-        except:  # noqa: E722
+        except Exception:
             # Delete the temporary file on exception
             tmp.close()
             os.unlink(tmp.name)

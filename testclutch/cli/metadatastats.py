@@ -673,8 +673,8 @@ def output_test_results_count_html(trstats: TestRunStats):
             anchorshorttext = ''  # only the first tag should get this
         print(f'<{tag}>')
         if not title:
-            for i in urls:
-                print(f'<a href="{escape(str(i))}">Log</a>', end=' ')
+            for url in urls:
+                print(f'<a href="{escape(url)}">Log</a>', end=' ')
         print(f'</{tag}></tr>')
 
     output_test_results_count(trstats, print_html)

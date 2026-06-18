@@ -2,6 +2,7 @@
 
 import time
 import unittest
+from unittest.mock import Mock
 
 from .context import testclutch  # noqa: F401
 
@@ -30,13 +31,13 @@ class TestNetreq(unittest.TestCase):
 
         # call always raises exception
         with self.assertRaises(ZeroDivisionError):
-            result = netreq.retry_on_exception(lambda: 1 / 0, ZeroDivisionError,
-                                               retries=2, delay=0.1)
+            result = netreq.retry_on_exception(Mock(side_effect=ZeroDivisionError),
+                                               ZeroDivisionError, retries=2, delay=0.1)
 
         # call always raises the wrong exception
         with self.assertRaises(ZeroDivisionError):
-            result = netreq.retry_on_exception(lambda: 1 / 0, RuntimeError,
-                                               retries=2, delay=0.1)
+            result = netreq.retry_on_exception(Mock(side_effect=ZeroDivisionError),
+                                               RuntimeError, retries=2, delay=0.1)
 
         # raise a single exception, then succeed
         start = time.time()

@@ -2,7 +2,7 @@
 
 import unittest
 
-from testclutch import uname  # noqa: I100
+from testclutch import uname
 
 # flake8: noqa: PAR104
 
