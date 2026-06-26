@@ -142,7 +142,7 @@ class GithubIngestor:
                     count += 1
                     self.ingest_a_run(run_id)
                 else:
-                    logger.debug('Job %s is on wrong branch: %s or event: %s',
+                    logger.debug('Job %s is on wrong branch: %s, or event: %s',
                                  run['id'], run['head_branch'], run['event'])
                     skipped += 1
                     continue
