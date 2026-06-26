@@ -24,6 +24,8 @@ from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_EXT = '.zip'  # simplifying assumption, that all log files are of this type
 LOGSUBDIR = 'gha'
 EVENT = 'push'  # only look at logs of this event type
@@ -84,7 +86,7 @@ class GithubIngestor:
         logcache.create_dirs(LOGSUBDIR)
 
     def ingest_a_run(self, run_id: int):
-        logging.debug('Getting run %s', run_id)
+        logger.debug('Getting run %s', run_id)
         run = self.gh.get_run(run_id)
         self.ingest_run(run)
 
@@ -94,7 +96,7 @@ class GithubIngestor:
         if run['status'] != 'completed':
             # This should have been filtered out in ingest_all_logs; this is a secondary check
             # (the in after gh.get_jobs IS necessary, whereas this one might not be).
-            logging.warning('Run %d is (strangely) %s; skipping', run_id, run['status'])
+            logger.warning('Run %d is (strangely) %s; skipping', run_id, run['status'])
             return
 
         # Gather metadata about this run
@@ -122,13 +124,13 @@ class GithubIngestor:
         if self.download_log(run_id):
             self.process_log_file(self._log_file_path(run_id), cimeta)
         else:
-            logging.info('No logs available to ingest')
+            logger.info('No logs available to ingest')
 
     def ingest_all_logs(self, branch: str, hours: int):
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
         runs = self.gh.get_runs(
             branch=branch,
             since=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(hours=hours))
@@ -136,18 +138,18 @@ class GithubIngestor:
             for run in runs['workflow_runs']:
                 if run['head_branch'] == branch and run['event'] == EVENT:
                     run_id = run['id']
-                    logging.debug('%s #%s', run['name'], run_id)
+                    logger.debug('%s #%s', run['name'], run_id)
                     count += 1
                     self.ingest_a_run(run_id)
                 else:
-                    logging.debug('Job %s is on wrong branch: %s or event: %s',
-                                  run['id'], run['head_branch'], run['event'])
+                    logger.debug('Job %s is on wrong branch: %s or event: %s',
+                                 run['id'], run['head_branch'], run['event'])
                     skipped += 1
                     continue
         else:
-            logging.info(f'No runs found in the last {hours} hours')
+            logger.info(f'No runs found in the last {hours} hours')
 
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')
 
     def _log_file_path(self, run_id: int) -> str:
         return f'{LOGSUBDIR}/gha-{self.owner}-{self.repo}-{run_id}-logs{DEFAULT_EXT}'
@@ -159,7 +161,7 @@ class GithubIngestor:
         """
         newfn = self._log_file_path(run_id)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is in cache as %s', newfn)
+            logger.debug('Log file is in cache as %s', newfn)
         else:
             # Try several times to download a GHA log file because the downloaded log file is
             # occasionally empty.
@@ -170,26 +172,26 @@ class GithubIngestor:
                     # Not sure why GHA would ever have no logs ready when we ask for them,
                     # but it does
                     if e.response.status_code == 404:
-                        logging.error('Log for run %d reported by server as Not Found', run_id)
+                        logger.error('Log for run %d reported by server as Not Found', run_id)
                     else:
-                        logging.error(e.args[0])
+                        logger.error(e.args[0])
                         # Re-raise the exception for better visibility (for now)
                         raise
                 else:
                     if os.stat(fn).st_size:
                         # Got a non-empty log file: good
                         break
-                    logging.warning('Log file for run %d was empty (retry %d)', run_id, retry)
+                    logger.warning('Log file for run %d was empty (retry %d)', run_id, retry)
 
                 time.sleep(2**retry * LOG_RETRIES_DELAY)
             else:
-                logging.error('Could not obtain valid log for run %d; aborting', run_id)
+                logger.error('Could not obtain valid log for run %d; aborting', run_id)
                 return None
 
-            logging.debug(f'fn {fn} type {ft}')
+            logger.debug(f'fn {fn} type {ft}')
             assert file_ext_from_type(ft) == DEFAULT_EXT, 'assumption about log format is wrong'
 
-            logging.debug('Moving file to %s', newfn)
+            logger.debug('Moving file to %s', newfn)
             logcache.move_into_cache(fn, newfn)
         return newfn
 
@@ -197,8 +199,8 @@ class GithubIngestor:
         """Sanitize the log file name for storing in a zip file, like GHA does."""
         if not KNOWN_LOG_FN_RE.search(fn):
             # If this triggers, we might possibly need to to more sanitization
-            logging.error('Possible internal inconsistency: check what GHA does on '
-                          'file names like %s', fn)
+            logger.error('Possible internal inconsistency: check what GHA does on '
+                         'file names like %s', fn)
         return STRIP_LOG_FN_RE.sub('', fn)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
@@ -209,20 +211,20 @@ class GithubIngestor:
         if meta['trigger'] != 'push':
             # This should have been filtered out in ingest_all_logs; this is a secondary check
             # since such runs occasionally slip through for some reason.
-            logging.warning(f"Log is due to {meta['trigger']}, not a push; skipping")
+            logger.warning(f"Log is due to {meta['trigger']}, not a push; skipping")
             return
 
         if not self.dry_run:
-            logging.info('Storing test result in database')
+            logger.info('Storing test result in database')
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
@@ -252,23 +254,23 @@ class GithubIngestor:
         try:
             log = zipfile.ZipFile(logcache.open_cache_file(fn, 'rb'))
         except zipfile.BadZipFile:
-            logging.error(f'Zip file {fn} is corrupt; cannot process (delete it and try again)')
+            logger.error(f'Zip file {fn} is corrupt; cannot process (delete it and try again)')
             return
         jobs = self.gh.get_jobs(cimeta['runid'])
-        logging.debug('Processing all files from %s', fn)
+        logger.debug('Processing all files from %s', fn)
         for fileinfo in log.infolist():
             if fileinfo.is_dir():
                 # empty directory entry
-                logging.debug('Ignoring directory placeholder %s', fileinfo.filename)
+                logger.debug('Ignoring directory placeholder %s', fileinfo.filename)
                 continue
             # GHA stopped including the copies of logs in subdirectories about 2025-06-30
             # if fileinfo.filename.find('/') < 0:
             #     # GitHub stores the log entries in zip files twice--once as complete logs
             #     # in the root, and once in separate steps in subdirectories. We don't need
             #     # both, so ignore the root copies and just use the ones in the subdirectories.
-            #     logging.debug('Skipping %s', fileinfo.filename)
+            #     logger.debug('Skipping %s', fileinfo.filename)
             #     continue
-            logging.debug('Processing member %s', fileinfo.filename)
+            logger.debug('Processing member %s', fileinfo.filename)
 
             # If any bad characters are encountered while decoding using this charset (such as if a
             # binary file was displayed in a log dump), they will automatically be replaced with
@@ -290,7 +292,7 @@ class GithubIngestor:
                         if r := LOG_NAME_RE.search(fileinfo.filename):
                             meta['cijob'] = r.group(2)
                         else:
-                            logging.warning('Unexpected log file format %s', fileinfo.filename)
+                            logger.warning('Unexpected log file format %s', fileinfo.filename)
                             meta['cijob'] = fileinfo.filename
                     assert meta['cijob'], f'from {fileinfo.filename}'  # others eliminated above
                     if 'cidef' in meta:
@@ -301,18 +303,18 @@ class GithubIngestor:
                             f'{meta["cidef"]}//{meta["cijob"]}//{meta["testformat"]}')
                     if 'ciname' in meta:
                         # This might not be available if this was not called by this ingestor
-                        logging.info('Retrieved test for %s %s %s',
-                                     meta['origin'], meta['checkrepo'], meta['ciname'])
+                        logger.info('Retrieved test for %s %s %s',
+                                    meta['origin'], meta['checkrepo'], meta['ciname'])
                     job = self.find_job(jobs, meta)
                     if not job:
-                        logging.warning(
+                        logger.warning(
                             f'Could not find job {meta["cijob"]} in workflow {meta["ciname"]}')
                     else:
                         if job['status'] != 'completed':
                             # This should have been filtered out in ingest_all_logs and ingest_run,
                             # but sometimes the status shows completed there but in_progress here.
-                            logging.warning('Run %d is (strangely) %s in jobs; skipping',
-                                            cimeta['runid'], job['status'])
+                            logger.warning('Run %d is (strangely) %s in jobs; skipping',
+                                           cimeta['runid'], job['status'])
                             return
                         meta['ciresult'] = job['conclusion']
                         # Replace the generic job link; should be replaced again below
@@ -322,7 +324,7 @@ class GithubIngestor:
                         meta['jobduration'] = duration.seconds * 1000000 + duration.microseconds
                         step = self.find_job_step(jobs, meta)
                         if not step:
-                            logging.debug(
+                            logger.debug(
                                 f'Could not find step {meta.get("cistep", "")}')
                         else:
                             if step['conclusion']:
@@ -343,10 +345,10 @@ class GithubIngestor:
                             meta['url'] = f'{meta["url"]}#check-step-{step["number"]}'
 
                     for n, v in meta.items():
-                        logging.debug(f'{n}={v}')
+                        logger.debug(f'{n}={v}')
                     summary = summarize.summarize_totals(testcases)
                     for l in summary:
-                        logging.debug('%s', l.strip())
-                    logging.debug('')
+                        logger.debug('%s', l.strip())
+                    logger.debug('')
 
                     self.store_test_run(meta, testcases)

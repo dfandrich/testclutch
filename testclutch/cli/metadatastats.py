@@ -23,6 +23,8 @@ from testclutch.logdef import TestMetaStr
 from testclutch.testcasedef import TestResult
 
 
+logger = logging.getLogger(__name__)
+
 # Returns all unique name,value pairs since the given time
 NAME_VALUES_SQL = r'SELECT name, value FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? GROUP BY name, value;'
 
@@ -219,11 +221,11 @@ class FeatureMatrix:
         to_time = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
         # Using disabled_job_hours instead of analysis_hours because we want only the most current
         # job run, and anything older than that is irrelevant
-        logging.info(f'Getting runs since {self.since.ctime()} '
-                     f'of unique job {globaluniquejob}')
+        logger.info(f'Getting runs since {self.since.ctime()} '
+                    f'of unique job {globaluniquejob}')
         self.analyzer.load_unique_job(globaluniquejob, self.from_time, to_time)
         if not self.analyzer.all_jobs_status:
-            logging.info('Nothing to analyze for %s', globaluniquejob)
+            logger.info('Nothing to analyze for %s', globaluniquejob)
             return ({}, TestRunCounts())
         last_job_status = self.analyzer.all_jobs_status[0]
         testid = last_job_status.testid
@@ -253,7 +255,7 @@ class FeatureMatrix:
             assert meta, 'Each job must have metadata; edge condition on expiry?'
             self.all_meta.append(meta)
             self.all_attempted_counts[job] = runmeta
-        logging.info(f'Loaded {len(self.all_meta)} unique jobs')
+        logger.info(f'Loaded {len(self.all_meta)} unique jobs')
 
     def build_features(self, metas: Sequence[str], adjuster: MetadataAdjuster
                        ) -> list[tuple[str, str, str | int]]:
@@ -592,7 +594,7 @@ def output_test_results_count(trstats: TestRunStats,
     print_func('Test', 'Result', 'Count', ['Examples'], title=True)
 
     total_counts = trstats.get_test_results_count_by_test()
-    logging.info('Found %d different tests+results', len(total_counts))
+    logger.info('Found %d different tests+results', len(total_counts))
     # Sort by count descending, then by increasing test number
     total_counts.sort(key=lambda x: (-x[2], _try_integer(x[0])))
     num_shown = 0
@@ -700,7 +702,7 @@ def output_tests_run_count(trstats: TestRunStats, print_func: Callable,
 
     print_func('Tests Recently Run', 'Format', 'Test Name', 'Sample Log', title=True)
     total_counts = trstats.get_tests_run()
-    logging.info('Found %d different tests', len(total_counts))
+    logger.info('Found %d different tests', len(total_counts))
     # Sort by format, then by increasing test number
     total_counts.sort(key=lambda x: (x[0], _try_integer(x[1])))
     for testformat, testname, url in total_counts:
@@ -999,7 +1001,7 @@ def main():
     since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
 
     with db.Datastore() as ds:
-        logging.info(f'Creating report "{args.report}" since {since}')
+        logger.info(f'Creating report "{args.report}" since {since}')
 
         if args.report == 'metadata_values':
             mdstats = MetadataStats(ds, config.expand('check_repo'), since)
@@ -1041,10 +1043,10 @@ def main():
             if args.html:
                 output_feature_matrix_html(featurematrix)
             else:
-                logging.error(f'--html must be used with {args.report}')
+                logger.error(f'--html must be used with {args.report}')
 
         else:
-            logging.error(f'Unknown report "{args.report}"')
+            logger.error(f'Unknown report "{args.report}"')
 
 
 if __name__ == '__main__':

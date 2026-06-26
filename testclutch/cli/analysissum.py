@@ -11,6 +11,9 @@ from testclutch import db
 from testclutch import log
 
 
+logger = logging.getLogger(__name__)
+
+
 def parse_args(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='Analyze test results in the database')
@@ -44,13 +47,13 @@ def main() -> int:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds, args.checkrepo)
 
         if args.uniquejob:
-            logging.info(f'Analyzing job {args.uniquejob[0]}')
+            logger.info(f'Analyzing job {args.uniquejob[0]}')
             analyzer.analyze_by_unique_job(args.uniquejob[0])
         elif args.html:
-            logging.info('Analyzing all unique jobs and creating table')
+            logger.info('Analyzing all unique jobs and creating table')
             analyzer.show_job_failure_table(args.checkrepo)
         else:
-            logging.info('Analyzing all unique jobs')
+            logger.info('Analyzing all unique jobs')
             analyzer.analyze_all_by_unique_job(args.checkrepo)
 
     return 0

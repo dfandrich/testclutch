@@ -17,6 +17,9 @@ from testclutch.gitdef import CommitInfo
 from testclutch.logdef import TestMeta, TestMetaStr
 from testclutch.testcasedef import TestResult
 
+
+logger = logging.getLogger(__name__)
+
 # Info on a single failed job result
 # record_id, jobtime, {test: count}
 TestFailCount = tuple[int, int, collections.Counter[str]]
@@ -135,7 +138,7 @@ class ResultsOverTimeByUniqueJob:
             return (f'https://sourceforge.net/p/{parse.quote(parts[2])}/code/ci/'
                     f'{parse.quote(commit_hash)}')
 
-        logging.warning(f'Repo source {canon_repo} is unknown')
+        logger.warning(f'Repo source {canon_repo} is unknown')
 
         return ''
 
@@ -164,7 +167,7 @@ class ResultsOverTimeByUniqueJob:
         """
         assert num_fails < len(self.all_jobs_status)
         first_test_fail = self.all_jobs_status[num_fails - 1]
-        logging.debug('test %s commit #%s', testname, first_test_fail.testid)
+        logger.debug('test %s commit #%s', testname, first_test_fail.testid)
         # Keep searching backwards until we find a run that did succeed,
         # or we reach the end of the list. This gives the oldest possible
         # commit+1 that introduced the failure.
@@ -182,22 +185,22 @@ class ResultsOverTimeByUniqueJob:
         for run in range(num_fails, len(self.all_jobs_status)):
             last_job_status = self.all_jobs_status[run]
             if testname in last_job_status.successful_tests:
-                logging.debug('Found a success; last good test run #%d', run)
+                logger.debug('Found a success; last good test run #%d', run)
                 last_good = last_job_status
                 break
             if testname in last_job_status.attempted_tests:
-                logging.debug('Only attempted (not run) in run #%d', run)
+                logger.debug('Only attempted (not run) in run #%d', run)
             elif testname in last_job_status.failed_tests:
-                logging.debug('Hmmm...another failure run #%d', run)
+                logger.debug('Hmmm...another failure run #%d', run)
             else:
-                logging.debug('No sign of test in #%d', run)
+                logger.debug('No sign of test in #%d', run)
                 # TODO: maybe treat this the same as success; it will be in
                 # the case of a new test. If so, check to the end of the runs
                 # to make sure it never shows up again. Still, it's not
                 # always going to be correct
 
         else:
-            logging.info('None of the prior test runs attempted to run this test')
+            logger.info('None of the prior test runs attempted to run this test')
         return last_good
 
     def load_unique_job(self, unique: str, from_time: int, to_time: int):
@@ -251,7 +254,7 @@ class ResultsOverTimeByUniqueJob:
     def find_commit_range(self, last_good: TestJobInfo, first_fail: TestJobInfo
                           ) -> tuple[CommitInfo, int]:
         """Walk the commit chain to find all the commits in a range."""
-        logging.debug('Looking up commits before %s', last_good.commit)
+        logger.debug('Looking up commits before %s', last_good.commit)
         branch = config.expand('branch')
         commits = self.ds.select_all_commit_after_commit(
             last_good.checkrepo, branch, last_good.commit)
@@ -312,7 +315,7 @@ class ResultsOverTimeByUniqueJob:
         """
         print(f'Analyzing unique job {globaluniquejob}')
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
-        logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
+        logger.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
         if flaky:
             print('These tests were found to be flaky:')
             flaky.sort(key=lambda x: summarize.try_integer(x[0]))
@@ -496,8 +499,8 @@ class ResultsOverTimeByUniqueJob:
         to_time = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
         from_time = int((datetime.datetime.now(tz=datetime.timezone.utc)
                          - datetime.timedelta(hours=config.get('analysis_hours'))).timestamp())
-        logging.info(f'Starting new analysis over last {config.get("analysis_hours")}h '
-                     f'of unique job {globaluniquejob}')
+        logger.info(f'Starting new analysis over last {config.get("analysis_hours")}h '
+                    f'of unique job {globaluniquejob}')
         self.load_unique_job(globaluniquejob, from_time, to_time)
 
         # print('Failures over time:')
@@ -553,9 +556,9 @@ class ResultsOverTimeByUniqueJob:
     def show_unique_job_failures_table(self, globaluniquejob: str):
         flaky, first_failure = self.prepare_uniquejob_analysis(globaluniquejob)
         if not self.all_jobs_status:
-            logging.info('Nothing to analyze for %s', globaluniquejob)
+            logger.info('Nothing to analyze for %s', globaluniquejob)
             return
-        logging.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
+        logger.debug(f'{len(self.all_jobs_status)} job runs found for {globaluniquejob}')
 
         oldjobtimestamp = (datetime.datetime.now(tz=datetime.timezone.utc)
                            - datetime.timedelta(hours=config.get('old_job_hours'))).timestamp()
@@ -639,7 +642,7 @@ class ResultsOverTimeByUniqueJob:
                     prefix_char = '*'
             else:
                 # Not sure what this is
-                logging.error('Internal error determining job status for %s', globaluniquejob)
+                logger.error('Internal error determining job status for %s', globaluniquejob)
                 cssclass = 'failure'
                 num = len(job_status.failed_tests)
                 prefix_char = '*'
@@ -679,15 +682,15 @@ class ResultsOverTimeByUniqueJob:
                                      - datetime.timedelta(hours=config.get('analysis_hours'))
                                      ).timestamp())
                         if abs(margin) < END_MARGIN_SECS:
-                            logging.info(f"%s, but it's timed only about {margin / 3600:.1f} hours "
-                                         'from the end of the analysis so it probably simply just '
-                                         'missed the cutoff time', msg)
+                            logger.info(f"%s, but it's timed only about {margin / 3600:.1f} hours "
+                                        'from the end of the analysis so it probably simply just '
+                                        'missed the cutoff time', msg)
                         else:
-                            logging.error('%s', msg)
+                            logger.error('%s', msg)
                 print(f'<td class="{cssclass}" title="{title}">')
             else:
-                logging.warning(f'More than one run found for commit {job_status.commit:.9} '
-                                f'among known commits for run of {job_title} at {jobtime}')
+                logger.warning(f'More than one run found for commit {job_status.commit:.9} '
+                               f'among known commits for run of {job_title} at {jobtime}')
 
             print(f'<a href="{escape(job_status.url)}">{prefix_char}{num}</a>')
             first_run = False
@@ -766,7 +769,7 @@ class ResultsOverTimeByUniqueJob:
                            successes: set[str]) -> list[tuple[str, float]]:
         """Detect flaky tests in all the builds for one unique job."""
         if len(unique_failures) < config.get('flaky_builds_min'):
-            logging.info('Not enough data to perform flakiness analysis')
+            logger.info('Not enough data to perform flakiness analysis')
             return []
 
         # Set of all test names that had at least one failure in this unique job

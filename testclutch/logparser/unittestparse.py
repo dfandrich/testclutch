@@ -12,6 +12,8 @@ from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta,
 from testclutch.testcasedef import TestResult
 
 
+logger = logging.getLogger(__name__)
+
 # Test result line
 # This can sometimes be split into two lines, such as for a FunctionTestCase that has a description,
 # which is continued with TEST_CONT_RE
@@ -80,7 +82,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
             if not TEST_RE.search(l) and not COUNT_RE.search(l):
                 continue
 
-            logging.debug('Found the start of a unittest log')
+            logger.debug('Found the start of a unittest log')
             meta = {
                 'testformat': 'unittest',
                 'testresult': 'truncated',  # will be overwritten if the real end is found
@@ -96,7 +98,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     elif r.group(1) in {'OK', 'NO TESTS RAN'}:
                         meta['testresult'] = 'success'
                     else:
-                        logging.warning('Unexpected end result of unittest: %s', r.group(1))
+                        logger.warning('Unexpected end result of unittest: %s', r.group(1))
                     # End of test log.
                     # This exception causes an exit from both nested while statements, ensuring that
                     # no more log parsing is performed.
@@ -116,8 +118,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                                     make_testname(r.group('module'), r.group('method')),
                                     result_code, reason, 0))
                         else:
-                            logging.error('Unknown unittest test result: %s',
-                                          rr.group('result'))
+                            logger.error('Unknown unittest test result: %s',
+                                         rr.group('result'))
                     else:
                         # We have a split test line; get the second half
                         if not (l := f.readline()):
@@ -134,10 +136,10 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                                         make_testname(r.group('module'), r.group('method')),
                                         result_code, reason, 0))
                             else:
-                                logging.warning(f"Unknown result code {rr.group('result')}")
+                                logger.warning(f"Unknown result code {rr.group('result')}")
 
                         else:
-                            logging.warning(
+                            logger.warning(
                                 'Missing continuation line for '
                                 f"{make_testname(r.group('module'), r.group('method'))}")
                             # Process the current line in case it's for a new test
@@ -146,7 +148,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                 l = f.readline()
 
     if not testcases:
-        logging.debug('No unittest verbose logs could be found in the file')
+        logger.debug('No unittest verbose logs could be found in the file')
 
     # Remove duplicate tests in the list
     # This can happen for subtests, where we treat all subtests as one test case
@@ -154,7 +156,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
     uniquetests = []
     for test in testcases:
         if test.name in alltests:
-            logging.debug(f'Test {test.name} appears more than once')
+            logger.debug(f'Test {test.name} appears more than once')
             continue
         alltests.add(test.name)
         uniquetests.append(test)

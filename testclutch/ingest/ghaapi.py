@@ -14,6 +14,8 @@ from typing import Any
 from testclutch import netreq
 
 
+logger = logging.getLogger(__name__)
+
 HTTPError = netreq.HTTPError
 
 # See https://docs.github.com/en/rest?apiVersion=2022-11-28
@@ -90,7 +92,7 @@ class GithubApi:
             if self.token:
                 headers['Authorization'] = 'Bearer ' + self.token
             else:
-                logging.warning('Auth requested but no token available: %s', type(self.token))
+                logger.warning('Auth requested but no token available: %s', type(self.token))
         return headers
 
     def _http_get_paged_json(self, url: str, headers: dict[str, str],
@@ -131,8 +133,8 @@ class GithubApi:
                             # If a item occurs in more than one page, it should have the same
                             # value each time. But, just in case a newer value is returned by the
                             # end, use that value in the response and continue.
-                            logging.warning(f'Inconsistent value over pages for {k} '
-                                            f'(was {combined[k]}, now {v})')
+                            logger.warning(f'Inconsistent value over pages for {k} '
+                                           f'(was {combined[k]}, now {v})')
                         combined[k] = v
 
             elif isinstance(j, list):
@@ -143,7 +145,7 @@ class GithubApi:
                 combined.extend(j)
 
             else:
-                logging.error(f'Unexpected return type {type(j)} from API')
+                logger.error(f'Unexpected return type {type(j)} from API')
                 raise TypeError('Bad JSON type from GHA')
 
             useparams['page'] += 1

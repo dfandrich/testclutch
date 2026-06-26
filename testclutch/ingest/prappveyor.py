@@ -7,6 +7,9 @@ from testclutch.ingest import appveyor
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
+logger = logging.getLogger(__name__)
+
+
 class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
     """Appveyor PR log analyzer.
 
@@ -43,8 +46,8 @@ class AppveyorAnalyzeJob(appveyor.AppveyorIngestor):
         self.test_results = []
         buildvers = self._find_for_pr(pr)
         if not buildvers:
-            logging.error('No Appveyor runs found for PR#%d', pr)
-        logging.info(f'Found {len(buildvers)} runs; only looking at the most recent one')
+            logger.error('No Appveyor runs found for PR#%d', pr)
+        logger.info(f'Found {len(buildvers)} runs; only looking at the most recent one')
         if buildvers:
             # Only look at the first (most recent) build found
             self.ingest_a_run_by_buildver(buildvers[0])

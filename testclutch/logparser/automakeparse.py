@@ -13,6 +13,8 @@ from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta 
 from testclutch.testcasedef import TestResult
 
 
+logger = logging.getLogger(__name__)
+
 # Pass/fail status for a test
 RESULT_RE = re.compile(r'^(PASS|FAIL|SKIP|XFAIL|XPASS|ERROR):\s(.+?)(( - )(.*))?$')
 
@@ -79,12 +81,12 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:
                     break
 
     if testcases:
-        logging.debug('Found an automake test log')
+        logger.debug('Found an automake test log')
         meta['testformat'] = 'automake'
         if 'testresult' not in meta:
             meta['testresult'] = 'truncated'
     else:
-        logging.debug('No automake test log could be found in the file')
+        logger.debug('No automake test log could be found in the file')
         # In case we found something that looks like a summary, but no actual test results
         meta = {}
     return meta, testcases

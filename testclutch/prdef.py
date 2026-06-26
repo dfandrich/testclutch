@@ -9,6 +9,9 @@ from dataclasses import dataclass
 from testclutch import config
 
 
+logger = logging.getLogger(__name__)
+
+
 # Avoid slots for backword compatibility with older pickled data
 @dataclass
 class FailedTest:
@@ -80,7 +83,7 @@ class PRAnalysisState:
             else:
                 fcntl.lockf(f.fileno(), fcntl.LOCK_SH)
         except FileNotFoundError:
-            logging.error('pr_gather_path file not found; creating an empty one')
+            logger.error('pr_gather_path file not found; creating an empty one')
 
             # We need a file lock so we need a file. Create an empty one.
             # If there was a race condition and another program tried to create a file at the same
@@ -99,15 +102,15 @@ class PRAnalysisState:
             pranalyses = pickle.load(f)
         except EOFError:
             # This will happen when reading an empty file, such as is created on the first run.
-            logging.error('Empty pr_gather_path file; starting fresh')
+            logger.error('Empty pr_gather_path file; starting fresh')
         except AttributeError:
             # This can happen when reading a file written with an older program using an older,
             # incompatible schema. THIS WILL CAUSE DATA LOSS!
-            logging.error('Incompatible pr_gather_path found; starting fresh')
+            logger.error('Incompatible pr_gather_path found; starting fresh')
         except pickle.UnpicklingError:
             # This can happen with an invalid file or possibly a truncated one
             # THIS WILL CAUSE DATA LOSS!
-            logging.error('Incompatible pr_gather_path file found; starting fresh')
+            logger.error('Incompatible pr_gather_path file found; starting fresh')
 
         # Release a read lock here, but keep a write lock
         if not wrlock:

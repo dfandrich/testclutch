@@ -11,6 +11,8 @@ from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta,
 from testclutch.testcasedef import TestResult
 
 
+logger = logging.getLogger(__name__)
+
 # TODO: obsolete after 2024-09-10
 # NOTE: if lines are added below that match spaces at the start of a line,
 # update ingest/curlauto.py at the same time
@@ -202,7 +204,7 @@ def parse_buildinfo(l: str) -> TestMetaStr:
         elif r.group(1) == 'FASTBuild':
             meta['buildsystem'] = 'cmake/fastbuild'
         else:
-            logging.warning('Unknown cmake generator %s', r.group(1))
+            logger.warning('Unknown cmake generator %s', r.group(1))
     elif r := RE_BI_CONFIGURETOOL.search(l):
         if r.group(1) == 'configure':
             meta['buildsystem'] = 'automake'
@@ -210,7 +212,7 @@ def parse_buildinfo(l: str) -> TestMetaStr:
             # This should be made more specific momentarily on the generator line
             meta['buildsystem'] = 'cmake'
         else:
-            logging.warning('Unknown configure program %s', r.group(1))
+            logger.warning('Unknown configure program %s', r.group(1))
     elif r := RE_BI_CONFIGUREARGS.search(l):
         meta['configureargs'] = r.group(1).strip()
     elif r := RE_BI_CONFIGUREVER.search(l):
@@ -278,10 +280,10 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
     got_first = False
     while l := f.readline():
         if not got_first:
-            logging.debug('First log line: %s', escs(l))
+            logger.debug('First log line: %s', escs(l))
             got_first = True
         if RE_START.search(l):
-            logging.debug('Found the start of a curl test log')
+            logger.debug('Found the start of a curl test log')
             meta['testformat'] = 'curl'
             meta['testresult'] = 'truncated'  # will be overwritten if the real end is found
             meta['testmode'] = 'normal'       # will be overwritten if another mode is used
@@ -345,7 +347,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                         if unamemeta:
                             meta = {**meta, **unamemeta}
                         else:
-                            logging.warning('Unexpected uname line: %s', escs(r.group(1)))
+                            logger.warning('Unexpected uname line: %s', escs(r.group(1)))
                     elif l.startswith('* ') and (bimeta := parse_buildinfo(l[2:])):
                         meta = {**meta, **bimeta}
                     elif RE_STARTRESULTS.search(l):
@@ -419,7 +421,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                                         SingleTestFinding(testno, TestResult.SKIP, r.group(1), 0))
                                     meta['testmode'] = 'torture'
                                 else:
-                                    logging.warning('Expecting test status line, got: %s', escs(l))
+                                    logger.warning('Expecting test status line, got: %s', escs(l))
                                     testno = strip0(r.group(1))
                                     testcases.append(SingleTestFinding(
                                         testno, TestResult.UNKNOWN, 'no test status line', 0))
@@ -548,10 +550,10 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
 
     # Log major problems in parsing
     if 'testingver' not in meta:
-        logging.debug('The file does not appear to be a curl test log')
+        logger.debug('The file does not appear to be a curl test log')
 
     if not testcases:
-        logging.debug('No curl tests could be found in the file')
+        logger.debug('No curl tests could be found in the file')
 
     # Look for duplicate tests in the list
     alltests = set()
@@ -560,8 +562,8 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             # If this happens, then the parser above may need to be fixed so that each test
             # result is extracted a single time.
             # It might simply be that --repeat=N was used to run tests multiple times.
-            logging.info(f'Tests appear more than once ({test.name} is the first); '
-                         'Was the test run multiple times? Is there a parser problem?')
+            logger.info(f'Tests appear more than once ({test.name} is the first); '
+                        'Was the test run multiple times? Is there a parser problem?')
             break
         alltests.add(test.name)
 

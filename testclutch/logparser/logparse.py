@@ -11,6 +11,8 @@ from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog
 
 
+logger = logging.getLogger(__name__)
+
 FULL_TEST_OUTPUT = False
 
 
@@ -25,12 +27,12 @@ def parse_log_files(f: TextIOReadline) -> Iterable[ParsedLog]:
     errors = [m[0] for m in module_functions if len(m) != 2]
     if errors:
         for err in errors:
-            logging.error('Invalid log_parsers entry %s; must have at least one dot', err)
+            logger.error('Invalid log_parsers entry %s; must have at least one dot', err)
 
     # Try all functions in order until (at least) one returns a result
     found = False
     for mod, func in module_functions:
-        logging.debug('Calling %s.%s()', mod, func)
+        logger.debug('Calling %s.%s()', mod, func)
         module = importlib.import_module(mod)
         meta, testcases = module.__dict__.get(func)(f)
         if testcases:
@@ -43,7 +45,7 @@ def parse_log_files(f: TextIOReadline) -> Iterable[ParsedLog]:
         f.seek(0)
 
     if not found:
-        logging.debug('No tests could be found in the log file')
+        logger.debug('No tests could be found in the log file')
 
 
 # Debug interface

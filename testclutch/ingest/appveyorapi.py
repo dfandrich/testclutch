@@ -7,6 +7,8 @@ from typing import Any
 from testclutch import netreq
 
 
+logger = logging.getLogger(__name__)
+
 # See https://www.appveyor.com/docs/api/
 BASE_URL = 'https://ci.appveyor.com/api'
 BASE_PROJECT_URL = BASE_URL + '/projects/{account}/{project}'
@@ -51,7 +53,7 @@ class AppveyorApi:
                       }
             if 'project' in combined_resp:
                 params['startBuildId'] = last_resp['builds'][-1]['buildId']
-            logging.debug('Retrieving runs from %s', url)
+            logger.debug('Retrieving runs from %s', url)
             with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
                 resp.raise_for_status()
                 last_resp = json.loads(resp.text)
@@ -69,7 +71,7 @@ class AppveyorApi:
             'startBuildId': build_id + 1,
             'recordsNumber': 1,
         }
-        logging.debug('Retrieving run from %s', url)
+        logger.debug('Retrieving run from %s', url)
         with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
             resp.raise_for_status()
             run_search = json.loads(resp.text)
@@ -89,7 +91,7 @@ class AppveyorApi:
         """
         url = RUN_BY_VERSION_URL.format(account=self.account, project=self.project,
                                         build_ver=build_ver)
-        logging.debug('Retrieving run by version from %s', url)
+        logger.debug('Retrieving run by version from %s', url)
         with self.http.get(url, headers=self._standard_headers()) as resp:
             resp.raise_for_status()
             return json.loads(resp.text)
@@ -99,7 +101,7 @@ class AppveyorApi:
         url = LOG_URL.format(job_id=job_id)
         params = {'fullLog': 'true'
                   }
-        logging.debug('Retrieving log from %s', url)
+        logger.debug('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), params=params, stream=True
                            ) as resp:
             return netreq.download_file(resp, url)

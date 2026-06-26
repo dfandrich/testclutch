@@ -13,6 +13,8 @@ from typing import Any
 from testclutch import configdef
 
 
+logger = logging.getLogger(__name__)
+
 # Cache configuration module here
 config_module = None
 
@@ -132,7 +134,7 @@ def config() -> ModuleType:
 
         return config_module
 
-    logging.info('Configuration file %s not found', configfn)
+    logger.info('Configuration file %s not found', configfn)
     return ModuleType('empty')
 
 

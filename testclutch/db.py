@@ -10,6 +10,8 @@ from testclutch.gitdef import CommitInfo
 from testclutch.logdef import SingleTestFinding, TestCases, TestMeta, TestMetaStr
 
 
+logger = logging.getLogger(__name__)
+
 # Timeout for database writes. Needed to turn a concurrent write error into a retry.
 DB_TIMEOUT = 600
 
@@ -49,7 +51,7 @@ class Datastore:
             self.db = sqlite3.connect(self.filename,
                                       timeout=DB_TIMEOUT, isolation_level='IMMEDIATE')
         except sqlite3.OperationalError:
-            logging.error(f'Cannot open or create database (permission? missing dir?): {self.filename}')
+            logger.error(f'Cannot open or create database (permission? missing dir?): {self.filename}')
             raise
 
         self.cur = self.db.cursor()
@@ -62,12 +64,12 @@ class Datastore:
         # Use WAL mode to allow multiple concurrent readers/writers
         self.cur.execute('PRAGMA journal_mode=WAL')
         if self.cur.fetchone()[0] != 'wal':
-            logging.warning('Could not put DB into WAL mode')
+            logger.warning('Could not put DB into WAL mode')
         try:
             # See if table exists
             self.cur.execute('SELECT 1 FROM testruns LIMIT 1')
         except sqlite3.OperationalError:
-            logging.warning('Creating new DB')
+            logger.warning('Creating new DB')
             self.create_new_db()
         self.cur.execute('PRAGMA foreign_keys = ON')
         self.cur.fetchall()
@@ -81,7 +83,7 @@ class Datastore:
             self.db.close()
 
     def create_new_db(self):
-        logging.info('Creating new database')
+        logger.info('Creating new database')
         # One per test run
         self.cur.execute('CREATE TABLE testruns (id INTEGER PRIMARY KEY AUTOINCREMENT, '
                          'time INTEGER, repo TEXT NOT NULL, origin TEXT NOT NULL, '
@@ -182,9 +184,9 @@ class Datastore:
                                      'not like', 'NOT LIKE'))
         if op not in VALID_OPERATORS:
             # Safety check
-            logging.error('Invalid operator %s', op)
+            logger.error('Invalid operator %s', op)
             return []
-        logging.debug('testrunmeta.name = %s AND value %s %s', name, op, value)
+        logger.debug('testrunmeta.name = %s AND value %s %s', name, op, value)
         runs = self.cur.execute('SELECT testruns.id, time FROM testrunmeta '
                                 'INNER JOIN testruns ON testruns.id=testrunmeta.id '
                                 'WHERE testruns.repo = ? AND testruns.time >= ? '
@@ -274,7 +276,7 @@ class Datastore:
             (repo, branch, commit))
         data = res.fetchone()
         if not data:
-            logging.warning('Could not find commit %s in database', commit)
+            logger.warning('Could not find commit %s in database', commit)
         else:
             results.insert(0, CommitInfo(
                 commit_time=data[2],
@@ -317,7 +319,7 @@ class Datastore:
             (repo, branch, commit))
         data = res.fetchone()
         if not data:
-            logging.warning('Could not find commit %s in database', commit)
+            logger.warning('Could not find commit %s in database', commit)
         else:
             results.append(CommitInfo(
                 commit_time=data[2],
@@ -329,7 +331,7 @@ class Datastore:
             ))
             prev_commit = data[1]
             while prev_commit:
-                logging.debug(prev_commit)
+                logger.debug(prev_commit)
                 # Search forwards (towards HEAD) by searching for commit_hash
                 res = self.cur.execute(
                     'SELECT commithash, prevhash, committime, title, committeremail, authoremail '

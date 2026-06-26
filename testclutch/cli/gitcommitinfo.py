@@ -12,6 +12,9 @@ from testclutch import log
 from testclutch.gitdef import CommitInfo
 
 
+logger = logging.getLogger(__name__)
+
+
 class GitCommitIngestor:
     """Ingest commit information from a git repository."""
 
@@ -28,7 +31,7 @@ class GitCommitIngestor:
             commands = ['env', f'GIT_DIR={repo}', 'git', 'log',
                         '--pretty=format:%ct%n%H%n%cn%n%ce%n%an%n%ae%n%s%n',
                         '--since', since, branch]
-            logging.debug('Running: %s', ' '.join(commands))
+            logger.debug('Running: %s', ' '.join(commands))
             with subprocess.Popen(commands,
                                   stdout=subprocess.PIPE, text=True,
                                   encoding=config.get('git_comment_encoding')) as p:
@@ -47,10 +50,10 @@ class GitCommitIngestor:
                     if not (l := p.stdout.readline()):
                         break
                     if l.strip():
-                        logging.error('Inconsistency in git log output')
+                        logger.error('Inconsistency in git log output')
                         break
         except FileNotFoundError:
-            logging.exception('Could not extract git commit info')
+            logger.exception('Could not extract git commit info')
             return []
 
         # Now go through them all (except the last) to add the prev_hash field
@@ -66,14 +69,14 @@ class GitCommitIngestor:
     def ingest_commit_info(self, local_repo: str, branch: str, since: str):
         infolist = self.extract_git_commit_info(local_repo, branch, since)
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
-        logging.info('%d commits extracted', len(infolist))
+            logger.info('Skipping ingestion into database')
+        logger.info('%d commits extracted', len(infolist))
         for info in infolist:
             if self.ds:
                 try:
                     self.ds.store_commit_info(self.repo, branch, info)
                 except db.IntegrityError:
-                    logging.debug('Commit %s has already been ingested!', info.commit_hash[:8])
+                    logger.debug('Commit %s has already been ingested!', info.commit_hash[:8])
 
 
 def ingest_commits(args):
@@ -110,7 +113,7 @@ def main():
     log.setup(args)
 
     if not args.checkrepo.startswith('https://github.com/'):
-        logging.error('--checkrepo value seems wrong; using anyway')
+        logger.error('--checkrepo value seems wrong; using anyway')
 
     ingest_commits(args)
 

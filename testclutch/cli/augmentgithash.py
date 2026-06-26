@@ -12,6 +12,8 @@ from testclutch import db
 from testclutch import log
 
 
+logger = logging.getLogger(__name__)
+
 # Select records with short hashes
 SHORT_HASHES_SQL = r"SELECT testrunmeta.id, testrunmeta.value AS shorthash FROM testrunmeta WHERE name = 'commit' AND length(value) < 40"
 
@@ -42,18 +44,18 @@ class GitHashAugmenter:
         # TODO: optionally limit check to last X hours
         res = self.ds.cur.execute(SHORT_HASHES_REPO_SQL, (self.repo, ))
         shorts = res.fetchall()
-        logging.info('%d records with short hashes', len(shorts))
+        logger.info('%d records with short hashes', len(shorts))
         for recid, shorthash in shorts:
-            logging.info('Looking up hash %s', shorthash)
+            logger.info('Looking up hash %s', shorthash)
             res = self.ds.cur.execute(SHORT_HASH_SQL, (len(shorthash), shorthash))
             long = res.fetchall()
             if not long:
-                logging.warning('Cannot find long hash for %s', shorthash)
+                logger.warning('Cannot find long hash for %s', shorthash)
             elif len(long) > 1:
-                logging.warning('More than one commit hash matches for %s; skipping', shorthash)
+                logger.warning('More than one commit hash matches for %s; skipping', shorthash)
             else:
                 longhash = long[0][0]
-                logging.debug('Replacing %s with %s', shorthash, longhash)
+                logger.debug('Replacing %s with %s', shorthash, longhash)
                 if not self.dry_run:
                     res = self.ds.cur.execute(UPDATE_HASH_SQL, (longhash, recid, shorthash))
                     self.ds.db.commit()
@@ -84,7 +86,7 @@ def main():
     log.setup(args)
 
     if not args.checkrepo.startswith('https://github.com/'):
-        logging.error('--checkrepo value seems wrong; using anyway')
+        logger.error('--checkrepo value seems wrong; using anyway')
 
     augment_short_hashes(args)
 

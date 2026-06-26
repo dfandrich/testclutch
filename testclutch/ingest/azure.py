@@ -14,6 +14,9 @@ from testclutch.ingest import logprefix
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
+
+logger = logging.getLogger(__name__)
+
 DEFAULT_EXT = '.log'
 LOGSUBDIR = 'azure'
 
@@ -50,7 +53,7 @@ class AzureIngestor:
         """
         t = AV_TIME_RE.search(timestamp)
         if not t:
-            logging.error('Cannot parse date: %s', timestamp)
+            logger.error('Cannot parse date: %s', timestamp)
             return datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
         microsec = t.group(2)[:7] if t.group(2) else '.0'
         return datetime.datetime.strptime(t.group(1) + microsec + 'Z+0000',
@@ -60,7 +63,7 @@ class AzureIngestor:
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
 
         full_branch = f'refs/heads/{branch}'
         builds = self.azure.get_builds(full_branch, hours)
@@ -69,33 +72,33 @@ class AzureIngestor:
                 # Run is not complete; ignore it
                 skipped += 1
                 # Warning because the statusFilter should have excluded this
-                logging.warning('Build %s status is %d', build['id'], build['status'])
+                logger.warning('Build %s status is %d', build['id'], build['status'])
                 continue
             if 'pr.sourceSha' in build['triggerInfo']:
                 # Not a normal run on a branch (probably a pull request); ignore it
                 skipped += 1
-                logging.debug('Build %s is a pull request #%d',
-                              build['id'], build['triggerInfo']['pr.number'])
+                logger.debug('Build %s is a pull request #%d',
+                             build['id'], build['triggerInfo']['pr.number'])
                 continue
             if 'ci.sourceBranch' not in build['triggerInfo']:
                 skipped += 1
-                logging.debug('Build %s is not a CI build', build['id'])
+                logger.debug('Build %s is not a CI build', build['id'])
                 continue
             if build['triggerInfo']['ci.sourceBranch'] != full_branch:
                 skipped += 1
                 # Warning, because we shouldn't have gotten this build given to
                 # use in the search results due to the query parameters there
-                logging.warning('Build %s is on the wrong branch %s, not %s',
-                                build['id'], build['triggerInfo']['ci.sourceBranch'], branch)
+                logger.warning('Build %s is on the wrong branch %s, not %s',
+                               build['id'], build['triggerInfo']['ci.sourceBranch'], branch)
                 continue
 
             count += 1
             self.ingest_a_run(build['id'])
 
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')
 
     def ingest_a_run(self, build_id: int):
-        logging.debug('Getting build %s', build_id)
+        logger.debug('Getting build %s', build_id)
         build = self.azure.get_build(build_id)
         self.ingest_run(build)
 
@@ -149,33 +152,33 @@ class AzureIngestor:
 
         # Depth-first tree traversal to get to tasks & logs
         for stage in stages:
-            logging.debug('Processing stage %s: %s (%s)',
-                          stage, event_nodes[stage]['name'], event_nodes[stage]['type'])
+            logger.debug('Processing stage %s: %s (%s)',
+                         stage, event_nodes[stage]['name'], event_nodes[stage]['type'])
             if event_nodes[stage]['type'] != 'Stage':
-                logging.error('Unexpected node: %s, not Stage', event_nodes[stage]['type'])
+                logger.error('Unexpected node: %s, not Stage', event_nodes[stage]['type'])
             if event_nodes[stage]['state'] != 'completed':
-                logging.info('Skipping stage in progress: %', stage)
+                logger.info('Skipping stage in progress: %', stage)
                 continue
 
             for phase in parents[stage]:
-                logging.debug('  Processing phase %s: %s (%s)',
-                              phase, event_nodes[phase]['name'], event_nodes[phase]['type'])
+                logger.debug('  Processing phase %s: %s (%s)',
+                             phase, event_nodes[phase]['name'], event_nodes[phase]['type'])
                 if event_nodes[phase]['type'] == 'Checkpoint':
                     # Uninteresting node
                     continue
                 if event_nodes[phase]['type'] != 'Phase':
-                    logging.error('Unexpected node: %s, not Phase', event_nodes[phase]['type'])
+                    logger.error('Unexpected node: %s, not Phase', event_nodes[phase]['type'])
                 if phase not in parents:
-                    logging.warning('Phase without children: %s', phase)
+                    logger.warning('Phase without children: %s', phase)
                     continue
 
                 for job in parents[phase]:
-                    logging.debug('    Processing job %s: %s (%s)',
-                                  job, event_nodes[job]['name'], event_nodes[job]['type'])
+                    logger.debug('    Processing job %s: %s (%s)',
+                                 job, event_nodes[job]['name'], event_nodes[job]['type'])
                     if event_nodes[job]['type'] != 'Job':
-                        logging.error('Unexpected node: %s, not Job', event_nodes[job]['type'])
+                        logger.error('Unexpected node: %s, not Job', event_nodes[job]['type'])
                     if job not in parents:
-                        logging.warning('Job without children: %s', job)
+                        logger.warning('Job without children: %s', job)
                         continue
                     jobmeta = {}
                     jobmeta['cijob'] = event_nodes[job]['name']
@@ -187,18 +190,18 @@ class AzureIngestor:
                     logs_tasks = []
                     for task in parents[job]:
                         task_info = event_nodes[task]
-                        logging.debug('      Processing task %s: %s (%s)',
-                                      task, task_info['name'], task_info['type'])
+                        logger.debug('      Processing task %s: %s (%s)',
+                                     task, task_info['name'], task_info['type'])
                         if task_info['type'] != 'Task':
-                            logging.error('Unexpected node: %s, not Task', task_info['type'])
+                            logger.error('Unexpected node: %s, not Task', task_info['type'])
                         if task in parents:
-                            logging.warning('Task with children: %s', task)
+                            logger.warning('Task with children: %s', task)
                         if SYSTEM_TASKS_RE.search(task_info['name']):
-                            logging.debug('Skipping system task %s', task_info['name'])
+                            logger.debug('Skipping system task %s', task_info['name'])
                             continue
 
                         if task_info['log']:
-                            logging.debug('        Need log %d', task_info['log']['id'])
+                            logger.debug('        Need log %d', task_info['log']['id'])
                             logs_tasks.append(task_info)
 
                     if logs_tasks:
@@ -211,11 +214,11 @@ class AzureIngestor:
             log_id = task['log']['id']
             newfn = self._log_file_path(build_id, log_id)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is in cache as %s', newfn)
+                logger.debug('Log file is in cache as %s', newfn)
             else:
                 fn, ft = self.azure.get_logs(build_id, log_id)
-                logging.debug(f'fn {fn} type {ft}')
-                logging.debug('Moving file to %s', newfn)
+                logger.debug(f'fn {fn} type {ft}')
+                logger.debug('Moving file to %s', newfn)
                 logcache.move_into_cache_compressed(fn, newfn)
         return newfn
 
@@ -228,18 +231,18 @@ class AzureIngestor:
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
     def ingest_log_file(self, fn: str, cimeta: TestMeta):
-        logging.debug('Ingesting file %s', fn)
+        logger.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = logprefix.FixedPrefixedLog(logcache.open_cache_file(fn), prefixlen=29)
         for meta, testcases in logparse.parse_log_files(readylog):
@@ -250,14 +253,14 @@ class AzureIngestor:
                 meta['uniquejobname'] = (
                     meta['ciname'] + '!' + meta['cijob'] + '!' + meta['testformat'])
 
-                logging.info('Retrieved test for %s %s %s',
-                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                logger.info('Retrieved test for %s %s %s',
+                            meta['origin'], meta['checkrepo'], meta['cijob'])
                 for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
+                    logger.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    logger.debug('%s', l.strip())
+                logger.debug('')
 
                 self.store_test_run(meta, testcases)
 

@@ -30,6 +30,9 @@ from testclutch.ingest import prgha
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 from testclutch.testcasedef import TestResult
 
+
+logger = logging.getLogger(__name__)
+
 # Test states that are considered to be failed tests
 # TestResult.UNKNOWN is left out because parsing errors can cause it (due to e.g. Python errors in
 # test servers)
@@ -143,7 +146,7 @@ def success_fail_count(meta: TestMeta, testcases: TestCases, is_aborted: bool) -
             prefix_char = '*'
     else:
         # Not sure what this is
-        logging.error('Internal error determining job status for %s', meta['cijob'])
+        logger.error('Internal error determining job status for %s', meta['cijob'])
         cssclass = 'failure'
         num = len([1 for x in testcases if x.result == TestResult.FAIL])
         prefix_char = '*'
@@ -186,7 +189,7 @@ def print_html_footer():
 
 def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore,
                     fragment: bool):
-    logging.info('Analyzing %d test results', len(test_results))
+    logger.info('Analyzing %d test results', len(test_results))
     if not fragment:
         print_html_header(pr)
         now = datetime.datetime.now(datetime.timezone.utc)
@@ -234,7 +237,7 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
         globaluniquejob = analyzer.make_global_unique_job(meta)
         flaky, first_failure = analyzer.prepare_uniquejob_analysis(globaluniquejob)
         if not analyzer.all_jobs_status:
-            logging.warning('No analysis available for uniquejob %s', globaluniquejob)
+            logger.warning('No analysis available for uniquejob %s', globaluniquejob)
             print('<td class="unknown">?')
         else:
             flakytitle = ''
@@ -312,13 +315,13 @@ def analyze_pr_html(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: d
 
 def analyze_pr(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Datastore):
     print(f'Analyzing pull request {pr}')
-    logging.info('Analyzing %d test results', len(test_results))
+    logger.info('Analyzing %d test results', len(test_results))
     for testmeta, testcases in test_results:
         analyzer = analysis.ResultsOverTimeByUniqueJob(ds, repo)
         print(f'Test [{testmeta["origin"]}] {testmeta["ciname"]} / {testmeta["cijob"]} ({testmeta["testformat"]})')
         failed = [x for x in testcases if x.result == TestResult.FAIL]
         if not failed:
-            logging.debug('All tests succeeded; no failures to analyze')
+            logger.debug('All tests succeeded; no failures to analyze')
             if analyzer.check_aborted(testmeta):
                 print('Test run seems to have aborted, probably due to timeout')
             else:
@@ -347,7 +350,7 @@ def analyze_pr(repo: str, pr: int, test_results: Sequence[ParsedLog], ds: db.Dat
 
 def ci_analyze_pr(analyzer, args: argparse.Namespace, ds: db.Datastore, prs: list[int]) -> int:
     for pr in prs:
-        logging.info(f'Analyzing pull request {pr}')
+        logger.info(f'Analyzing pull request {pr}')
         results = analyzer.gather_pr(pr)
         results.sort(key=lambda x: x[0]['uniquejobname'])
         if args.html:
@@ -377,31 +380,31 @@ class GHAPRReady:
         recent_prs = [pr['number'] for pr in pulls
                       if (ghaapi.convert_time(pr['created_at']) > recent
                           and (not authors or pr['user']['login'] in authors))]
-        logging.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
-                     f'{pr_recency} hours)%s', ' and matching allowed authors' if authors else '')
+        logger.info(f'{len(pulls)} open PRs of which {len(recent_prs)} are recent ones (within '
+                    f'{pr_recency} hours)%s', ' and matching allowed authors' if authors else '')
 
         for prnum in recent_prs:
-            logging.info(f'PR#{prnum} is eligible to be analyzed')
+            logger.info(f'PR#{prnum} is eligible to be analyzed')
         return recent_prs
 
     def check_gha_pr_state(self, pr: int) -> PRStatus:
         pull = self.gh.get_pull(pr)
         if pull['state'] == 'closed':
-            logging.warning(f'PR #{pr} is in state {pull["state"]}')
+            logger.warning(f'PR #{pr} is in state {pull["state"]}')
             return PRStatus.CLOSED
         if pull['state'] != 'open':
-            logging.warning(f'PR #{pr} is in unknown state {pull["state"]}')
+            logger.warning(f'PR #{pr} is in unknown state {pull["state"]}')
             return PRStatus.ERROR
         if pull['locked']:
-            logging.warning(f'PR #{pr} is locked; aborting')
+            logger.warning(f'PR #{pr} is locked; aborting')
             return PRStatus.ERROR
         commit = pull['head']['sha']
-        logging.info(f'PR#{pr} commit {commit}')
+        logger.info(f'PR#{pr} commit {commit}')
 
         # CI status are spread over commit statuses and check-runs, so check them both
         status = self.gh.get_commit_status(commit)
-        logging.debug(f'{len(status["statuses"])} commit statuses')
-        logging.debug(f'Overall commit status state: {status["state"]}')
+        logger.debug(f'{len(status["statuses"])} commit statuses')
+        logger.debug(f'Overall commit status state: {status["state"]}')
         jobcount = len(status['statuses'])
         pending = 0
         ret = PRStatus.READY
@@ -411,25 +414,25 @@ class GHAPRReady:
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
             elif stat['state'] != 'success':
-                logging.debug(f'failed with state {stat["state"]}')
+                logger.debug(f'failed with state {stat["state"]}')
                 ret = max(PRStatus.FAILURE, ret)
 
         checkruns = self.gh.get_check_runs(commit)
-        logging.debug(f'{len(checkruns["check_runs"])} check runs')
+        logger.debug(f'{len(checkruns["check_runs"])} check runs')
         jobcount += len(checkruns['check_runs'])
         for run in checkruns['check_runs']:
             # (queued, in_progress, completed)
             if run['status'] != 'completed':
-                logging.debug(f'check run {run["id"]} is in state {run["status"]}')
+                logger.debug(f'check run {run["id"]} is in state {run["status"]}')
                 ret = max(PRStatus.PENDING, ret)
                 pending += 1
             # (success, neutral, failure)
             elif run['conclusion'] == 'failure':
-                logging.debug(f'check run {run["id"]} concluded with {run["conclusion"]}')
+                logger.debug(f'check run {run["id"]} concluded with {run["conclusion"]}')
                 ret = max(PRStatus.FAILURE, ret)
 
-        logging.info(f'PR#{pr} has ready state {ret.name} '
-                     f'with {pending} jobs out of {jobcount} still pending')
+        logger.info(f'PR#{pr} has ready state {ret.name} '
+                    f'with {pending} jobs out of {jobcount} still pending')
         return ret
 
     def check_gha_pr_states(self, prs: list[int]) -> list[tuple[int, PRStatus]]:
@@ -496,10 +499,10 @@ class GatherPRAnalysis:
 
     def gather_failed(self, origin: str, pr: int
                       ) -> tuple[list[prdef.FailedTest] | None, str]:
-        logging.info(f'Gathering {origin} analysis for pull request {pr}')
+        logger.info(f'Gathering {origin} analysis for pull request {pr}')
         analyzer = get_analyzer(origin, self.args, self.ds)
         if not analyzer:
-            logging.error(f'Unsupported origin {origin}')
+            logger.error(f'Unsupported origin {origin}')
             return (None, '')
 
         return self.gather_pr_failures(analyzer, pr)
@@ -516,12 +519,12 @@ class GatherPRAnalysis:
         # Make a list of the keys to fix them because we might be deleting them from the dict
         for pr in list(pranalyses.keys()):
             if pranalyses[pr].start < oldest:
-                logging.debug(f'Aging out PR#{pr} from cache (time {pranalyses[pr].start})')
+                logger.debug(f'Aging out PR#{pr} from cache (time {pranalyses[pr].start})')
                 del pranalyses[pr]
 
         for pr in prs:
             if pr not in pranalyses or self.args.rerun:
-                logging.info(f'Starting new analysis of PR #{pr}')
+                logger.info(f'Starting new analysis of PR #{pr}')
                 thispr = prdef.PRAnalysis(
                     pr, self.args.checkrepo,
                     int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()),
@@ -537,7 +540,7 @@ class GatherPRAnalysis:
                     thispr.failed[origin] = failed
                     thispr.commit[origin] = commit
             else:
-                logging.debug(f'Already have failed list for PR#{pr} from {origin}')
+                logger.debug(f'Already have failed list for PR#{pr} from {origin}')
 
             # Now, analyze flakiness & permafails for this origin ONLY if there is at least one
             # failed test. No need to check both flaky AND permafails as they are set at once.
@@ -569,7 +572,7 @@ class GatherPRAnalysis:
                 thispr.permafail[origin] = permafail
 
             else:
-                logging.debug(f"Don't need to get flaky list for PR#{pr} from {origin}")
+                logger.debug(f"Don't need to get flaky list for PR#{pr} from {origin}")
 
         self.write_analyses()
 
@@ -580,8 +583,8 @@ class GatherPRAnalysis:
         commit = results[0][0]['commit'] if results else ''
         assert isinstance(commit, str)  # satisfy pytype that this isn't int
         if any(result[0]['commit'] != commit for result in results):
-            logging.error('PR results have been gathered for more than one commit, not just '
-                          f'{commit:.9}')
+            logger.error('PR results have been gathered for more than one commit, not just '
+                         f'{commit:.9}')
         return (self.select_failures(results), commit)
 
     def last_result_failed(self, testcases: TestCases, testname: str) -> bool:
@@ -610,13 +613,13 @@ class GatherPRAnalysis:
         analyzer = analysis.ResultsOverTimeByUniqueJob(self.ds, self.args.checkrepo)
         failed_tests = []
         for meta, testcases in results:
-            logging.debug(
+            logger.debug(
                 f'Checking run {meta["runid"]}'
                 f'{"/" if "cijob" in meta else ""}{meta.get("cijob", "")} for failed tests')
             failed = self.get_failures(testcases)
             if failed:
                 globaluniquejob = analyzer.make_global_unique_job(meta)
-                logging.info(f'Found {len(failed)} failed tests in job {globaluniquejob}')
+                logger.info(f'Found {len(failed)} failed tests in job {globaluniquejob}')
                 failed_tests.extend(prdef.FailedTest(
                     globaluniquejob, fail.name, meta.get('url', '')) for fail in failed)
 
@@ -640,46 +643,46 @@ class GatherPRAnalysis:
         for pr in prs:
             # Check that we're ready to comment
             if pr not in pranalyses:
-                logging.warning(f'PR #{pr} has not started analysis yet; skipping')
+                logger.warning(f'PR #{pr} has not started analysis yet; skipping')
                 continue
             analysis = pranalyses[pr]
 
-            logging.info(f'Data for PR#{pr}: '
-                         f'{len(analysis.failed)} origins checked, '
-                         f'{sum(len(t) for t in analysis.failed.values())} failed tests, '
-                         f'{sum(len(t) for t in analysis.flaky.values())} flaky tests, '
-                         f'{sum(len(t) for t in analysis.permafail.values())} permafailing tests')
+            logger.info(f'Data for PR#{pr}: '
+                        f'{len(analysis.failed)} origins checked, '
+                        f'{sum(len(t) for t in analysis.failed.values())} failed tests, '
+                        f'{sum(len(t) for t in analysis.flaky.values())} flaky tests, '
+                        f'{sum(len(t) for t in analysis.permafail.values())} permafailing tests')
 
             # These are the origins that must have already been checked before commenting
             origins = self.all_origins()
             remaining = origins - frozenset(analysis.failed)
             if remaining:
-                logging.warning(f'PR #{pr} has not completed failure checking yet '
-                                f'(missing {", ".join(remaining)}); skipping')
+                logger.warning(f'PR #{pr} has not completed failure checking yet '
+                               f'(missing {", ".join(remaining)}); skipping')
                 continue
 
             if not self.is_failed_run(analysis.failed):
-                logging.warning(f'PR #{pr} has no failed tests so no need to comment; skipping')
+                logger.warning(f'PR #{pr} has no failed tests so no need to comment; skipping')
                 continue
 
             flakyremaining = (frozenset(k for k, v in analysis.failed.items() if v)
                               - frozenset(analysis.flaky))
             if flakyremaining:
-                logging.warning(f'PR #{pr} has not completed flaky analysis yet '
-                                f'(missing {", ".join(flakyremaining)}); skipping')
+                logger.warning(f'PR #{pr} has not completed flaky analysis yet '
+                               f'(missing {", ".join(flakyremaining)}); skipping')
                 continue
 
             if analysis.commented and not self.args.dry_run:
                 date = utils.format_datetime(
                     datetime.datetime.fromtimestamp(analysis.commented, tz=datetime.timezone.utc))
-                logging.warning(f"Already commented on PR#{pr} on {date}; won't comment again")
+                logger.warning(f"Already commented on PR#{pr} on {date}; won't comment again")
             else:
                 message = self.compose_text(analysis)
-                logging.info(f'PR #{pr} message: {message}')
+                logger.info(f'PR #{pr} message: {message}')
                 if self.args.dry_run:
-                    logging.info('Skipping actual commenting in dry-run mode')
+                    logger.info('Skipping actual commenting in dry-run mode')
                 else:
-                    logging.info(f'Adding as comment on PR#{pr}')
+                    logger.info(f'Adding as comment on PR#{pr}')
 
                     # Write the comment to the PR thread
                     gh.create_comment(pr, message)
@@ -728,7 +731,7 @@ class GatherPRAnalysis:
                 'commits from this PR on different CI services\n')
         else:
             # This should never happen
-            logging.error('No commits found in PR#%d analysis', pranalysis.num)
+            logger.error('No commits found in PR#%d analysis', pranalysis.num)
 
         text = f'Analysis of PR #{pranalysis.num}{committext}:\n\n'
         # Count of all tests that failed for this PR, by testname
@@ -739,7 +742,7 @@ class GatherPRAnalysis:
             nummentioned = 0
             for fail in pranalysis.failed[origin]:
                 if fail.testname not in mentioned:
-                    logging.debug(f'test {fail.testname} on uniquejob {fail.uniquejob}')
+                    logger.debug(f'test {fail.testname} on uniquejob {fail.uniquejob}')
                     # TODO: display "cijob" or similar; maybe create function from
                     # "First, show job name" code and use that; can you make it a tooltip in
                     # markdown instead?
@@ -803,11 +806,11 @@ def main() -> int:
     log.setup(args)
 
     if args.comment and not args.authfile and not args.dry_run:
-        logging.error('--authfile is required with --comment')
+        logger.error('--authfile is required with --comment')
         return 1
 
     if args.only_failed_prs and (not args.authfile or (args.origin and args.origin != 'gha')):
-        logging.warning(
+        logger.warning(
             '--only-failed-prs without GHA --authfile may fail due to insufficient quota')
 
     prready = GHAPRReady(args)
@@ -824,7 +827,7 @@ def main() -> int:
     # Check CI job status for PR
     if args.ci_status:
         if args.html:
-            logging.warning('--html is ignored with --ci-status')
+            logger.warning('--html is ignored with --ci-status')
         print(' '.join(str(pr) for pr in prs))
 
         if prstates is None:
@@ -833,17 +836,17 @@ def main() -> int:
         # The highest value for PRStatus wins as the result code for the batch
         status = max(prstates, key=lambda x: x[1])[1] if prstates else PRStatus.READY
         if status == PRStatus.ERROR:
-            logging.error('A PR is in an unacceptable state')
-        logging.warning(f'Overall status is {status.name}')
+            logger.error('A PR is in an unacceptable state')
+        logger.warning(f'Overall status is {status.name}')
         return status if args.return_pr_status else PRStatus.READY
 
     # Generate CI job results report for PR
     if args.report and not args.origin:
-        logging.error('--origin is required with --report')
+        logger.error('--origin is required with --report')
         return PRStatus.ERROR
 
     if args.origin == 'gha' and not args.authfile:
-        logging.error('--authfile is required with gha')
+        logger.error('--authfile is required with gha')
         return PRStatus.ERROR
 
     with db.Datastore() as ds:
@@ -859,7 +862,7 @@ def main() -> int:
         # Analyze only one origin at a time because each one might have different login credentials
         analyzer = get_analyzer(args.origin, args, ds)
         if not analyzer:
-            logging.error(f'Unsupported origin {args.origin}')
+            logger.error(f'Unsupported origin {args.origin}')
             return PRStatus.ERROR
 
         return ci_analyze_pr(analyzer, args, ds, prs)

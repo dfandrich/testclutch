@@ -21,6 +21,9 @@ from testclutch.ingest import circleciapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
+
+logger = logging.getLogger(__name__)
+
 # Choose whether to use the private API to get the full log or the documented API that truncates it
 GET_FULL_LOG = True
 
@@ -82,7 +85,7 @@ class MassagedLog(io.StringIO):
         for log in log_content:
             content += log['message']
             if log.get('truncated'):
-                logging.warning('Log was truncated by server')
+                logger.warning('Log was truncated by server')
                 # Truncation will also be detected by the log parser
         super().__init__(content)
 
@@ -111,7 +114,7 @@ class CircleIngestor:
 
     def ingest_a_run(self, build_num: int):
         """Ingests not one log, but logs for one job."""
-        logging.debug('Getting build %s', build_num)
+        logger.debug('Getting build %s', build_num)
         build = self.circle.get_run(build_num)
         build_num = build['build_num']
         cimeta: TestMeta = {}
@@ -162,7 +165,7 @@ class CircleIngestor:
             step_id = action['step']
             newfn = self._log_file_path(build_run, step_id)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is in cache as %s', newfn)
+                logger.debug('Log file is in cache as %s', newfn)
             else:
                 if GET_FULL_LOG:
                     # Full log using private API (raw log)
@@ -171,8 +174,8 @@ class CircleIngestor:
                     # Truncated log using public API (log wrapped in JSON)
                     log_url = action['output_url']
                 fn, ft = self.circle.get_logs(log_url)
-                logging.debug(f'fn {fn} type {ft}')
-                logging.debug('Moving file to %s', newfn)
+                logger.debug(f'fn {fn} type {ft}')
+                logger.debug('Moving file to %s', newfn)
                 logcache.move_into_cache_compressed(fn, newfn)
         return newfn
 
@@ -184,7 +187,7 @@ class CircleIngestor:
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
         runs = self.circle.get_runs()
 
         for run in runs:
@@ -192,13 +195,13 @@ class CircleIngestor:
             if run['lifecycle'] != 'finished':
                 # Run is not complete; ignore it
                 skipped += 1
-                logging.debug('Run %d status is %d', build_num, run['lifecycle'])
+                logger.debug('Run %d status is %d', build_num, run['lifecycle'])
                 continue
             if run['branch'] != branch:
                 # Wrong branch
                 skipped += 1
-                logging.debug('Run %d is on the wrong branch %s, not %s',
-                              build_num, run['branch'], branch)
+                logger.debug('Run %d is on the wrong branch %s, not %s',
+                             build_num, run['branch'], branch)
                 continue
             # TODO: skip pull requests here. CircleCI seems to not run on PR in the
             # curl project right now so I don't know how this is specified
@@ -210,11 +213,11 @@ class CircleIngestor:
             if self._convert_time(run['queued_at']) < since:
                 # Build is too old
                 skipped += 1
-                logging.debug('Run %d is too old', build_num)
+                logger.debug('Run %d is too old', build_num)
                 continue
             count += 1
             self.ingest_a_run(build_num)
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
         """Store the data about one test.
@@ -225,18 +228,18 @@ class CircleIngestor:
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
     def process_log_file(self, fn: str, cimeta: TestMeta):
-        logging.debug('Ingesting file %s', fn)
+        logger.debug('Ingesting file %s', fn)
         if GET_FULL_LOG:
             readylog = logcache.open_cache_file(fn)
         else:
@@ -252,14 +255,14 @@ class CircleIngestor:
                 # make duplicate, so this isn't ideal.
                 meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
 
-                logging.info('Retrieved test for %s %s %s',
-                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                logger.info('Retrieved test for %s %s %s',
+                            meta['origin'], meta['checkrepo'], meta['cijob'])
                 for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
+                    logger.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    logger.debug('%s', l.strip())
+                logger.debug('')
                 self.store_test_run(meta, testcases)
 
     def process_log(self, build_run: int, steps: Iterable[dict[str, Any]], cimeta: TestMeta):

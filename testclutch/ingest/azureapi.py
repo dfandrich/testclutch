@@ -8,6 +8,8 @@ from typing import Any
 from testclutch import netreq
 
 
+logger = logging.getLogger(__name__)
+
 # https://learn.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-7.1
 API_VERSION_A = '7.1-preview.7'
 API_VERSION_B = '7.1-preview.2'
@@ -45,7 +47,7 @@ class AzureApi:
         """Returns info about all recent builds."""
         since = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours)
         url = LIST_BUILDS_URL.format(organization=self.organization, project=self.project)
-        logging.debug('Retrieving builds from %s', url)
+        logger.debug('Retrieving builds from %s', url)
         # TODO: there are a few more filters that are probably useful (e.g.
         # repositoryId, which seems to be a UUID), reasonFilter
         params = {'$top': MAX_RETRIEVED,
@@ -64,7 +66,7 @@ class AzureApi:
         """Returns info about a build."""
         url = GET_BUILD_URL.format(organization=self.organization, project=self.project,
                                    build_id=build_id)
-        logging.debug('Retrieving build from %s', url)
+        logger.debug('Retrieving build from %s', url)
         params = {'api-version': API_VERSION_A,
                   'propertyFilters': 'Build'
                   }
@@ -80,7 +82,7 @@ class AzureApi:
         """Returns timeline for a build."""
         url = GET_BUILD_TIMELINES_URL.format(organization=self.organization, project=self.project,
                                              build_id=build_id)
-        logging.debug('Retrieving build timeline from %s', url)
+        logger.debug('Retrieving build timeline from %s', url)
         params = {'api-version': API_VERSION_B,
                   'propertyFilters': 'Build'
                   }
@@ -91,7 +93,7 @@ class AzureApi:
     def get_logs(self, build_id: int, log_id: int) -> tuple[str, str]:
         url = LOGS_URL.format(organization=self.organization, project=self.project,
                               build_id=build_id, log_id=log_id)
-        logging.info('Retrieving log from %s', url)
+        logger.info('Retrieving log from %s', url)
         with self.http.get(url, stream=True) as resp:
             return netreq.download_file(resp, url)
 

@@ -8,6 +8,8 @@ from testclutch import netreq
 from testclutch import urls
 
 
+logger = logging.getLogger(__name__)
+
 HTTPError = netreq.HTTPError
 
 # See https://cirrus-ci.org/api/
@@ -338,6 +340,6 @@ class CirrusApi:
 
     def get_logs(self, task_id: int, command_name: str) -> tuple[str, str]:
         url = LOGS_URL.format(task_id=task_id, command_name=command_name)
-        logging.info('Retrieving log from %s', url)
+        logger.info('Retrieving log from %s', url)
         with self.http.get(url, headers=self._standard_headers(), stream=True) as resp:
             return netreq.download_file(resp, url)

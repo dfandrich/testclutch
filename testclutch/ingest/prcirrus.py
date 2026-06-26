@@ -6,6 +6,9 @@ from testclutch.ingest import cirrus
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
+logger = logging.getLogger(__name__)
+
+
 class CirrusAnalyzer(cirrus.CirrusIngestor):
     """Cirrus log analyzer.
 
@@ -44,7 +47,7 @@ class CirrusAnalyzer(cirrus.CirrusIngestor):
     def gather_pr(self, pr: int) -> list[ParsedLog]:
         self.clear_test_results()
         found = self._find_matching_runs(pr, '')
-        logging.info(f'Found {len(found)} runs; only looking at the most recent one')
+        logger.info(f'Found {len(found)} runs; only looking at the most recent one')
         if found:
             # Only look at the first (most recent) build
             self.ingest_a_run(found[0])

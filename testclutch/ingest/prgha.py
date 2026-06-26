@@ -8,6 +8,8 @@ from testclutch.ingest import gha
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
+logger = logging.getLogger(__name__)
+
 # We're only interested in pull requests here
 PR_EVENT = 'pull_request'
 
@@ -38,7 +40,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
             if self._is_matching_run(run, commit):
                 # Found a matching run
                 found.append(run['id'])
-                logging.debug('Found run %s from %s, %s', run['id'], run['created_at'], run['name'])
+                logger.debug('Found run %s from %s, %s', run['id'], run['created_at'], run['name'])
         return found
 
     def _find_for_pr(self, pr: int) -> list[int]:
@@ -48,7 +50,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         """
         pr_info = self.gh.get_pull(pr)
         commit = pr_info['head']['sha']
-        logging.debug(f'PR#{pr} is about commit {commit:.9}')
+        logger.debug(f'PR#{pr} is about commit {commit:.9}')
 
         found = self._find_matching_runs(
             commit,
@@ -56,14 +58,14 @@ class GithubAnalyzeJob(gha.GithubIngestor):
                 hours=config.get('pr_age_hours_default'))
         )
         if not found:
-            logging.info(f'No PR#{pr} runs found in the last {config.get("pr_age_hours_default")} '
-                         f'hours; trying again for {config.get("pr_age_hours_max")} hours')
+            logger.info(f'No PR#{pr} runs found in the last {config.get("pr_age_hours_default")} '
+                        f'hours; trying again for {config.get("pr_age_hours_max")} hours')
             found = self._find_matching_runs(
                 commit,
                 since=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
                     hours=config.get('pr_age_hours_max'))
             )
-        logging.debug('Found %d matching runs', len(found))
+        logger.debug('Found %d matching runs', len(found))
         return found
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
@@ -73,7 +75,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         """
         meta = {**self.prmeta, **meta}
         if meta['trigger'] != 'pull_request':
-            logging.info(f"Log is due to {meta['trigger']}, not a pull request; skipping")
+            logger.info(f"Log is due to {meta['trigger']}, not a pull request; skipping")
             return
 
         self.test_results.append((meta, testcases))
@@ -83,7 +85,7 @@ class GithubAnalyzeJob(gha.GithubIngestor):
         self.clear_test_results()
         runs = self._find_for_pr(pr)
         if not runs:
-            logging.error('No GHA run found for PR#%d', pr)
+            logger.error('No GHA run found for PR#%d', pr)
         # Look at all jobs in the most recent run
         for run_id in runs:
             self.prmeta = {'pullrequest': pr}

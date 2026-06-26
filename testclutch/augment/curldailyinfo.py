@@ -8,6 +8,8 @@ import re
 import tarfile
 
 
+logger = logging.getLogger(__name__)
+
 # Extract the date from the directory name
 DIR_NAME_RE = re.compile(r'^.*-(\d{8})$')
 
@@ -44,7 +46,7 @@ def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
 
         # Get the directory name
         first = tar_files[0].name.split('/')[0]
-        logging.debug('Reading %s: %s/%s', fn, first, COMMIT_FILE)
+        logger.debug('Reading %s: %s/%s', fn, first, COMMIT_FILE)
         # Extract the date from the directory name
         r = DIR_NAME_RE.search(first)
         if not r:
@@ -59,7 +61,7 @@ def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
 
         # Sanity check the dates
         if generated_date != build_day:
-            logging.error('curl daily build date mismatch; %s is not %s', generated_date, build_day)
+            logger.error('curl daily build date mismatch; %s is not %s', generated_date, build_day)
             raise RuntimeError('curl daily build date mismatch')
 
         # Read the commit hash

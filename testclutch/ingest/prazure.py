@@ -7,6 +7,9 @@ from testclutch.ingest import azure
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
 
+logger = logging.getLogger(__name__)
+
+
 class AzureAnalyzer(azure.AzureIngestor):
     """Azure PR log analyzer.
 
@@ -49,7 +52,7 @@ class AzureAnalyzer(azure.AzureIngestor):
             # Nothing found recently; expand the search much longer
             found = self._find_matching_runs(pr, config.get('pr_age_hours_max'))
 
-        logging.info(f'Found {len(found)} runs; only looking at the most recent one')
+        logger.info(f'Found {len(found)} runs; only looking at the most recent one')
         if found:
             # Only look at the first (most recent) build found
             self.ingest_a_run(found[0])

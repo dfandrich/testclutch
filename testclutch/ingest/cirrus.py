@@ -15,6 +15,8 @@ from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_EXT = '.log'
 LOGSUBDIR = 'cirrus'
 
@@ -54,7 +56,7 @@ class CirrusIngestor:
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
         # TODO: try to figure out how to filter by hours in GraphQL instead of filtering here.
         # GraphQL schema which "fetching only nodes after this node (exclusive): after:"
         rsp = self.cirrus.get_runs(branch)
@@ -63,25 +65,25 @@ class CirrusIngestor:
             if node['status'] not in frozenset(('ABORTED', 'FAILED', 'COMPLETED')):
                 # Run is not complete; ignore it
                 skipped += 1
-                logging.debug('Run %s status is %s', node['id'], node['status'])
+                logger.debug('Run %s status is %s', node['id'], node['status'])
                 continue
             if node['pullRequest']:
                 # Not a normal run on a branch; ignore it
                 skipped += 1
-                logging.debug('Run %s is a pull request #%d', node['id'], node['pullRequest'])
+                logger.debug('Run %s is a pull request #%d', node['id'], node['pullRequest'])
                 continue
             if datetime.datetime.fromtimestamp(node['buildCreatedTimestamp'] / 1000,
                                                tz=datetime.timezone.utc) < since:
                 # Build is too old
                 skipped += 1
-                logging.debug('Run %s is too old', node['id'])
+                logger.debug('Run %s is too old', node['id'])
                 continue
             count += 1
             self.ingest_a_run(node['id'])
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')
 
     def ingest_a_run(self, run_id: int):
-        logging.debug('Getting run %s', run_id)
+        logger.debug('Getting run %s', run_id)
         run = self.cirrus.get_run(run_id)
         self.ingest_run(run)
 
@@ -111,7 +113,7 @@ class CirrusIngestor:
             task_id = int(task['id'])
             if task['status'] == 'SKIPPED':
                 # A task can be SKIPPED even if the run is COMPLETED
-                logging.debug('Task %s was skipped', task_id)
+                logger.debug('Task %s was skipped', task_id)
                 continue
             jobmeta: TestMeta = {}
             jobmeta['jobid'] = task_id
@@ -121,8 +123,8 @@ class CirrusIngestor:
             jobmeta['cijob'] = task['name']
             if jobmeta['cijob'] in found_jobs:
                 # User needs to modify the CI job configuration to avoid duplicate job names
-                logging.error('Job name %s is not unique; skipping further duplicate instances',
-                              jobmeta['cijob'])
+                logger.error('Job name %s is not unique; skipping further duplicate instances',
+                             jobmeta['cijob'])
                 continue
             if task['executingTimestamp']:
                 jobmeta['jobstarttime'] = int(task['executingTimestamp'] / 1000)
@@ -138,24 +140,24 @@ class CirrusIngestor:
                 meta = {**cimeta, **jobmeta}
                 self.ingest_log(run_id, task_id, commands, meta)
             else:
-                logging.error('Could not download a log for run %d task %d', run_id, task_id)
+                logger.error('Could not download a log for run %d task %d', run_id, task_id)
 
     def download_log(self, run_id: int, task_id: int, task_commands: Iterable[str]
                      ) -> str | None:
         for command_name in task_commands:
             newfn = self._log_file_path(run_id, task_id, command_name)
             if logcache.in_cache(newfn):
-                logging.debug('Log file is in cache as %s', newfn)
+                logger.debug('Log file is in cache as %s', newfn)
             else:
                 try:
                     fn, ft = self.cirrus.get_logs(task_id, command_name)
                 except cirrusapi.HTTPError as e:
-                    logging.error(e.args[0])
+                    logger.error(e.args[0])
                     if e.response.status_code == 404:
                         return 'Log not found on server error'
                     return 'Unknown error downloading log'
-                logging.debug(f'fn {fn} type {ft}')
-                logging.debug('Moving file to %s', newfn)
+                logger.debug(f'fn {fn} type {ft}')
+                logger.debug('Moving file to %s', newfn)
                 logcache.move_into_cache_compressed(fn, newfn)
         return None
 
@@ -168,18 +170,18 @@ class CirrusIngestor:
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
     def ingest_log_file(self, fn: str, cimeta: TestMeta):
-        logging.debug('Ingesting file %s', fn)
+        logger.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = logcache.open_cache_file(fn)
         for meta, testcases in logparse.parse_log_files(readylog):
@@ -191,14 +193,14 @@ class CirrusIngestor:
                 # make duplicate, so this isn't ideal.
                 meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
 
-                logging.info('Retrieved test for %s %s %s',
-                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                logger.info('Retrieved test for %s %s %s',
+                            meta['origin'], meta['checkrepo'], meta['cijob'])
                 for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
+                    logger.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    logger.debug('%s', l.strip())
+                logger.debug('')
 
                 self.store_test_run(meta, testcases)
 

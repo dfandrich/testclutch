@@ -10,6 +10,8 @@ import urllib.parse
 from testclutch import netreq
 
 
+logger = logging.getLogger(__name__)
+
 BASE_URL = 'https://curl.se/dev/inbox/'
 DATA_TYPE = 'text/html,text/plain'
 
@@ -41,7 +43,7 @@ class HTMLDirParser(html.parser.HTMLParser):
         self.links = []
 
     def error(self, message: str):
-        logging.warning('%s', message)
+        logger.warning('%s', message)
 
     def handle_starttag(self, tag: str, attrs: list[tuple]):
         if tag == 'th':
@@ -77,7 +79,7 @@ class CurlAutoApi:
     def get_runs(self) -> list[str]:
         """Returns info about all recent workflow runs."""
         url = BASE_URL
-        logging.debug('Retrieving index from %s', url)
+        logger.debug('Retrieving index from %s', url)
         with self.http.get(url, headers=self._standard_headers()) as resp:
             resp.raise_for_status()
             htmlp = HTMLDirParser()
@@ -89,6 +91,6 @@ class CurlAutoApi:
 
     def get_logs(self, log_name: str) -> tuple[str, str]:
         url = BASE_URL + log_name
-        logging.debug('Retrieving log from %s', url)
+        logger.debug('Retrieving log from %s', url)
         with netreq.get(url, stream=True) as resp:
             return netreq.download_file(resp, url)

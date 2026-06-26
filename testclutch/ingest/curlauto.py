@@ -13,6 +13,8 @@ from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
 
+logger = logging.getLogger(__name__)
+
 LOGSUBDIR = 'curlauto'
 LOG_URL = 'https://curl.se/dev/log.cgi?id={id}'
 
@@ -95,32 +97,32 @@ class CurlAutoIngestor:
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
         logs = self.curlauto.get_runs()
         for log_name in logs:
             timestamp, _ident = self._extract_run_info(log_name)
             if timestamp < since:
                 # Build is too old
                 skipped += 1
-                logging.debug('Log %s is too old', log_name)
+                logger.debug('Log %s is too old', log_name)
                 continue
             count += 1
             self.ingest_run(log_name)
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')
 
     def download_log(self, log_name: str) -> str:
         newfn = self._log_file_path(log_name)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is in cache as %s', newfn)
+            logger.debug('Log file is in cache as %s', newfn)
         else:
             fn, ft = self.curlauto.get_logs(log_name)
-            logging.debug(f'fn {fn} type {ft}')
-            logging.debug('Moving file to %s', newfn)
+            logger.debug(f'fn {fn} type {ft}')
+            logger.debug('Moving file to %s', newfn)
             logcache.move_into_cache_compressed(fn, newfn)
         return newfn
 
     def ingest_log_file(self, fn: str, cimeta: TestMeta):
-        logging.debug('Ingesting file %s', fn)
+        logger.debug('Ingesting file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = MassagedLog(logcache.open_cache_file(fn))
         for meta, testcases in logparse.parse_log_files(readylog):
@@ -137,14 +139,14 @@ class CurlAutoIngestor:
                 if run_info:
                     meta['url'] = LOG_URL.format(id=f'{run_info.group(1)}-{run_info.group(2)}')
 
-                logging.info('Retrieved test for %s %s %s',
-                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                logger.info('Retrieved test for %s %s %s',
+                            meta['origin'], meta['checkrepo'], meta['cijob'])
                 for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
+                    logger.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    logger.debug('%s', l.strip())
+                logger.debug('')
                 self.store_test_run(meta, testcases)
 
     def store_test_run(self, meta: TestMeta, testcases: TestCases):
@@ -153,16 +155,16 @@ class CurlAutoIngestor:
         This method may be overridden to do something other than storing.
         """
         if not self.dry_run:
-            logging.info('Storing test result in database')
+            logger.info('Storing test result in database')
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)

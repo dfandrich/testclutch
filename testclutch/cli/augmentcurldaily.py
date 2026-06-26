@@ -2,6 +2,7 @@
 
 The git commit at which daily builds are snapshotted is not available from the build logs.
 This extracts what information is available from a daily snapshot file and augments existing
+
 ingested tests with the information about the last commit.
 """
 
@@ -15,6 +16,8 @@ from testclutch import db
 from testclutch import log
 from testclutch.augment import curldailyinfo
 
+
+logger = logging.getLogger(__name__)
 
 # Select records for curlauto builds
 CURLAUTO_BUILDS_SQL = r"SELECT testruns.id FROM testruns INNER JOIN testrunmeta ON testruns.id = testrunmeta.id WHERE time >= ? AND repo = ? AND name = 'origin' AND value = 'curlauto'"
@@ -41,15 +44,15 @@ class CurlDailyAugmenter:
 
     def get_all_daily_info(self, fn: str) -> tuple[str, str, str]:
         day_code, daily_time, commithash = curldailyinfo.get_daily_info(fn)
-        logging.debug(f'Daily snapshot from {day_code} at {daily_time.ctime()} '
-                      f'with hash {commithash}')
+        logger.debug(f'Daily snapshot from {day_code} at {daily_time.ctime()} '
+                     f'with hash {commithash}')
         if day_code != daily_time.astimezone(datetime.timezone.utc).strftime('%Y%m%d'):
-            logging.error('Date mismatch: %s vs %s',
-                          day_code, daily_time.astimezone(datetime.timezone.utc))
+            logger.error('Date mismatch: %s vs %s',
+                         day_code, daily_time.astimezone(datetime.timezone.utc))
             return '', '', ''
 
         if not commithash:
-            logging.warning('No hash found in daily snapshot')
+            logger.warning('No hash found in daily snapshot')
             return day_code, '', ''
 
         branch = config.expand('branch')
@@ -58,13 +61,13 @@ class CurlDailyAugmenter:
         candidates = self.ds.select_all_commit_after_commit(self.repo, branch, commithash)
 
         if not candidates:
-            logging.error(f'Commit {commithash} for {daily_time} snapshot not found in commit DB')
+            logger.error(f'Commit {commithash} for {daily_time} snapshot not found in commit DB')
             return day_code, commithash, ''
 
         candidate = candidates[-1]
-        logging.debug(f'Found commit {candidate.commit_hash:.9} "{candidate.title}"')
+        logger.debug(f'Found commit {candidate.commit_hash:.9} "{candidate.title}"')
         if commithash != candidate.commit_hash:
-            logging.error(f'Expecting hash {commithash}, got {candidate.commit_hash}')
+            logger.error(f'Expecting hash {commithash}, got {candidate.commit_hash}')
             return day_code, commithash, ''
 
         return day_code, commithash, candidate.title
@@ -72,17 +75,17 @@ class CurlDailyAugmenter:
     def augment_daily(self, fn: str, howrecent: int):
         # Get info from daily build tarball
         day_code, commithash, title = self.get_all_daily_info(fn)
-        logging.info('File %s matches date %s hash %s title %s', fn, day_code, commithash, title)
+        logger.info('File %s matches date %s hash %s title %s', fn, day_code, commithash, title)
 
         if not commithash:
-            logging.error('Could not find the commit hash; skipping augmentation')
+            logger.error('Could not find the commit hash; skipping augmentation')
             return
 
         # Find daily build test logs
         res = self.ds.cur.execute(DAILY_BUILDS_MATCHING_DATE_SQL,
                                   (howrecent, self.repo, day_code, ))
         daily = res.fetchall()
-        logging.info('%d jobs matching day %s', len(daily), day_code)
+        logger.info('%d jobs matching day %s', len(daily), day_code)
 
         if daily:
             # Find daily build test logs that already have commits
@@ -90,11 +93,11 @@ class CurlDailyAugmenter:
                                       (howrecent, self.repo, day_code, ))
             with_commit = frozenset(x[0] for x in res.fetchall())
             if with_commit:
-                logging.info('...but %d jobs already have a commit', len(with_commit))
+                logger.info('...but %d jobs already have a commit', len(with_commit))
 
             # Drop records from list that already have a commit
             recs_to_add_commits = [job[0] for job in daily if job[0] not in with_commit]
-            logging.info('...leaving %d jobs to modify', len(recs_to_add_commits))
+            logger.info('...leaving %d jobs to modify', len(recs_to_add_commits))
 
             # Add commit to daily build records that don't already have one
             if not self.dry_run:
@@ -111,7 +114,7 @@ def augment_curl_daily(args):
             since = int(datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
                         ) - args.howrecent * 3600
         else:
-            logging.warning('Use --howrecent to speed up augmentation')
+            logger.warning('Use --howrecent to speed up augmentation')
             since = 0
 
         for fn in args.filenames:
@@ -144,7 +147,7 @@ def main():
     log.setup(args)
 
     if not args.checkrepo.startswith('https://github.com/'):
-        logging.error('--checkrepo value seems wrong; using anyway')
+        logger.error('--checkrepo value seems wrong; using anyway')
 
     augment_curl_daily(args)
 

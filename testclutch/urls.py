@@ -9,6 +9,9 @@ import logging
 import urllib.parse
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
     """Return the source code owner and project to use for a CI system.
 
@@ -19,7 +22,7 @@ def get_generic_project_name(checkrepo: str) -> tuple[str, str]:
     parts = path.split('/')
     # Sanity check URL
     if len(parts) != 3:
-        logging.error('Unsupported repository URL: %s', checkrepo)
+        logger.error('Unsupported repository URL: %s', checkrepo)
         raise RuntimeError(f'Unsupported repository URL {checkrepo}')
     return tuple(path.split('/')[1:3])
 
@@ -69,11 +72,11 @@ def url_pr(url: str) -> int:
     """
     _scheme, netloc, path, _query, _fragment = urllib.parse.urlsplit(url)
     if netloc != 'github.com':
-        logging.error('Cannot extract PR from URL %s', url)
+        logger.error('Cannot extract PR from URL %s', url)
         return 0
     paths = path.split('/')
     if len(paths) < 5 or paths[3] != 'pull':
-        logging.error('Cannot extract PR from URL %s', url)
+        logger.error('Cannot extract PR from URL %s', url)
         return 0
     with contextlib.suppress(ValueError):
         return int(paths[4])

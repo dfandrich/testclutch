@@ -15,6 +15,8 @@ from testclutch import summarize
 from testclutch.testcasedef import TestResult
 
 
+logger = logging.getLogger(__name__)
+
 # OpenMetrics job label
 JOB = 'testclutch'
 
@@ -293,7 +295,7 @@ def main() -> int:
             # e.g. runid=1234567, runtestsduration>555000000
             val = NVO_RE.search(args.query)
             if not val:
-                logging.error('Invalid match query: %s', args.query)
+                logger.error('Invalid match query: %s', args.query)
                 return 1
             op = operator_from_matcher(val.group(2))
             rows = ds.select_meta_test_runs(args.checkrepo, since,

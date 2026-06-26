@@ -15,6 +15,8 @@ from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_EXT = '.log'
 LOGSUBDIR = 'appveyor'
 
@@ -38,12 +40,12 @@ class AppveyorIngestor:
         logcache.create_dirs(LOGSUBDIR)
 
     def ingest_a_run(self, run_id: int):
-        logging.debug('Getting run %s', run_id)
+        logger.debug('Getting run %s', run_id)
         run = self.av.get_run(run_id)
         self.ingest_run(run)
 
     def ingest_a_run_by_buildver(self, build_ver: str):
-        logging.debug('Getting run %s', build_ver)
+        logger.debug('Getting run %s', build_ver)
         run = self.av.get_run_by_buildver(build_ver)
         self.ingest_run(run)
 
@@ -54,7 +56,7 @@ class AppveyorIngestor:
         """
         t = AV_TIME_RE.search(timestamp)
         if not t:
-            logging.error('Cannot parse date: %s', timestamp)
+            logger.error('Cannot parse date: %s', timestamp)
             return datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc)
         microsec = t.group(2)[:7]
         return datetime.datetime.strptime(t.group(1) + microsec + t.group(3) + t.group(4),
@@ -76,7 +78,7 @@ class AppveyorIngestor:
         if project['repositoryScm'] == 'git' and project['repositoryType'] == 'gitHub':
             cimeta['sourcerepo'] = 'https://github.com/' + project['repositoryName']
         else:
-            logging.warning('Unknown source repository type: %s', project['repositoryType'])
+            logger.warning('Unknown source repository type: %s', project['repositoryType'])
         if 'pullRequestId' in build:
             cimeta['pullrequest'] = build['pullRequestId']
 
@@ -97,8 +99,8 @@ class AppveyorIngestor:
             # make duplicate, so this isn't ideal.
             if jobmeta['cijob'] in found_jobs:
                 # User needs to modify the CI job configuration to avoid duplicate job names
-                logging.error('Job name %s is not unique; skipping further duplicate instances',
-                              jobmeta['cijob'])
+                logger.error('Job name %s is not unique; skipping further duplicate instances',
+                             jobmeta['cijob'])
                 continue
             found_jobs.add(jobmeta['cijob'])
             jobmeta['url'] = f'https://ci.appveyor.com/project/{project["accountName"]}/{project["slug"]}/builds/{build["buildId"]}/job/{job["jobId"]}'
@@ -116,7 +118,7 @@ class AppveyorIngestor:
                 meta = {**cimeta, **jobmeta}
                 self.process_log_file(self._log_file_path(build_id, job_id), meta)
             else:
-                logging.info('No logs available to ingest')
+                logger.info('No logs available to ingest')
 
     def _log_file_path(self, build_id: int, job_id: str) -> str:
         if not job_id.isalnum():
@@ -127,11 +129,11 @@ class AppveyorIngestor:
     def download_log(self, build_id: int, job_id: str) -> str:
         newfn = self._log_file_path(build_id, job_id)
         if logcache.in_cache(newfn):
-            logging.debug('Log file is in cache as %s', newfn)
+            logger.debug('Log file is in cache as %s', newfn)
         else:
             fn, ft = self.av.get_logs(job_id)
-            logging.debug(f'fn {fn} type {ft}')
-            logging.debug('Moving file to %s', newfn)
+            logger.debug(f'fn {fn} type {ft}')
+            logger.debug('Moving file to %s', newfn)
             logcache.move_into_cache_compressed(fn, newfn)
         return newfn
 
@@ -141,22 +143,22 @@ class AppveyorIngestor:
         This method may be overridden to do something other than storing.
         """
         if not self.dry_run:
-            logging.info('Storing test result in database')
+            logger.info('Storing test result in database')
             try:
                 self.ds.store_test_run(meta, testcases)
             except db.IntegrityError:
-                logging.info('Log file has already been ingested!')
+                logger.info('Log file has already been ingested!')
                 if self.overwrite:
-                    logging.info('Overwriting old log')
+                    logger.info('Overwriting old log')
                     rec_id = self.ds.select_rec_id(meta)
                     if rec_id is None:
-                        logging.error(f'Unable to find existing test for run {meta["runid"]}')
+                        logger.error(f'Unable to find existing test for run {meta["runid"]}')
                     else:
                         self.ds.delete_test_run(rec_id)
                         self.ds.store_test_run(meta, testcases)
 
     def process_log_file(self, fn: str, cimeta: TestMeta):
-        logging.debug('Processing file %s', fn)
+        logger.debug('Processing file %s', fn)
         # TODO: Assuming local charset; probably convert from ISO-8859-1 instead
         readylog = msbuild.MsBuildLog(
             logprefix.FixedPrefixedLog(logcache.open_cache_file(fn), prefixlen=11))
@@ -166,14 +168,14 @@ class AppveyorIngestor:
                 meta = {**self.meta, **meta, **cimeta}
                 meta['uniquejobname'] = meta['cijob'] + '!' + meta['testformat']
 
-                logging.info('Retrieved test for %s %s %s',
-                             meta['origin'], meta['checkrepo'], meta['cijob'])
+                logger.info('Retrieved test for %s %s %s',
+                            meta['origin'], meta['checkrepo'], meta['cijob'])
                 for n, v in meta.items():
-                    logging.debug(f'{n}={v}')
+                    logger.debug(f'{n}={v}')
                 summary = summarize.summarize_totals(testcases)
                 for l in summary:
-                    logging.debug('%s', l.strip())
-                logging.debug('')
+                    logger.debug('%s', l.strip())
+                logger.debug('')
                 self.store_test_run(meta, testcases)
 
     def ingest_all_logs(self, branch: str, hours: int):
@@ -181,25 +183,25 @@ class AppveyorIngestor:
         count = 0
         skipped = 0
         if self.dry_run:
-            logging.info('Skipping ingestion into database')
+            logger.info('Skipping ingestion into database')
         # TODO: try to figure out how to filter by hours
         runs = self.av.get_runs(branch)
         for job in runs['builds']:
             if job['status'] not in frozenset(('success', 'failed', 'cancelled')):
                 # Run is not complete; ignore it
                 skipped += 1
-                logging.debug('Job %s status is %s', job['buildId'], job['status'])
+                logger.debug('Job %s status is %s', job['buildId'], job['status'])
                 continue
             if 'pullRequestId' in job:
                 # Not a normal run on a branch; ignore it
                 skipped += 1
-                logging.debug('Job %s is a pull request #%s', job['buildId'], job['pullRequestId'])
+                logger.debug('Job %s is a pull request #%s', job['buildId'], job['pullRequestId'])
                 continue
             if self._convert_time(job['created']) < since:
                 # Build is too old
                 skipped += 1
-                logging.debug('Job %s is too old: %s', job['buildId'], self._convert_time(job['created']).ctime())
+                logger.debug('Job %s is too old: %s', job['buildId'], self._convert_time(job['created']).ctime())
                 continue
             count += 1
             self.ingest_a_run_by_buildver(job['version'])
-        logging.debug(f'{count} matching runs found, {skipped} skipped')
+        logger.debug(f'{count} matching runs found, {skipped} skipped')

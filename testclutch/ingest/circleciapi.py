@@ -7,6 +7,9 @@ from typing import Any
 from testclutch import netreq
 from testclutch import urls
 
+
+logger = logging.getLogger(__name__)
+
 HTTPError = netreq.HTTPError
 
 # See https://circleci.com/docs/api/v1/
@@ -55,7 +58,7 @@ class CircleApi:
                       'offset': offset,
                       'shallow': 'true',  # non-shallow doesn't give enough info; rely on get_run
                       }
-            logging.debug('Retrieving runs from %s', url)
+            logger.debug('Retrieving runs from %s', url)
             with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
                 if resp.status_code == 400:
                     # No more builds to download
@@ -74,7 +77,7 @@ class CircleApi:
             return json.loads(resp.text)
 
     def get_logs(self, log_url: str) -> tuple[str, str]:
-        logging.info('Retrieving log from %s', log_url)
+        logger.info('Retrieving log from %s', log_url)
         with self.http.get(log_url, stream=True) as resp:
             return netreq.download_file(resp, log_url)
 

@@ -13,6 +13,8 @@ from requests import adapters
 import testclutch
 
 
+logger = logging.getLogger(__name__)
+
 HTTPError = requests.exceptions.HTTPError
 
 # The User-Agent: header to use
@@ -60,7 +62,7 @@ def retry_on_exception(func: Callable, exception: type[Exception],
             return func()
         except exception as e:
             exc = e
-            logging.info(f'Download attempt {attempt} failed; retrying after delay')
+            logger.info(f'Download attempt {attempt} failed; retrying after delay')
             # TODO: This will sleep once too often at the end, unnecessarily delaying the caller
             time.sleep(delay)
             continue
