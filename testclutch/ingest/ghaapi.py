@@ -75,7 +75,7 @@ class GithubApi:
         self.http = netreq.Session(total=5, backoff_factor=30,
                                    status_forcelist=[403, 429, 500, 502, 503, 504])
 
-    def _standard_headers(self) -> dict:
+    def _standard_headers(self) -> dict[str, str]:
         headers = {'Accept': DATA_TYPE,
                    'X-GitHub-Api-Version': API_VERSION,
                    'User-Agent': netreq.USER_AGENT

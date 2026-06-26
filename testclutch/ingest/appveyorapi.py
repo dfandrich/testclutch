@@ -30,7 +30,7 @@ class AppveyorApi:
         self.token = token
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> dict:
+    def _standard_headers(self) -> dict[str, str]:
         return {'Accept': DATA_TYPE,
                 'Content-Type': DATA_TYPE,
                 'User-Agent': netreq.USER_AGENT

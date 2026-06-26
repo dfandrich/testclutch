@@ -303,12 +303,12 @@ class CirrusApi:
         self.token = token
         self.http = netreq.Session()
 
-    def _standard_headers(self) -> dict:
+    def _standard_headers(self) -> dict[str, str]:
         return {'Accept': DATA_TYPE,
                 'User-Agent': netreq.USER_AGENT
                 }
 
-    def query_graphql(self, query: str, var: dict) -> dict:
+    def query_graphql(self, query: str, var: dict[str, str | int]) -> dict[str, Any]:
         """Send a GraphQL query to the server and return the raw Python data response."""
         jsonreq = {'query': query,
                    'variables': var,

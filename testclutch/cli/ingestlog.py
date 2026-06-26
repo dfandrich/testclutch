@@ -176,7 +176,7 @@ def curlauto_ingest_recent_runs(args: argparse.Namespace, ds: db.Datastore | Non
     return 0
 
 
-def parse_meta(args: argparse.Namespace) -> dict:
+def parse_meta(args: argparse.Namespace) -> dict[str, str]:
     """Parse the --meta option(s) to produce a dict."""
     meta = {}
     if args.meta:

@@ -69,7 +69,7 @@ class CurlAutoApi:
         # This should delay a total of 5+10+20+40 seconds before aborting
         self.http = netreq.Session(backoff_factor=5)
 
-    def _standard_headers(self) -> dict:
+    def _standard_headers(self) -> dict[str, str]:
         return {'Accept': DATA_TYPE,
                 'User-Agent': netreq.USER_AGENT
                 }
