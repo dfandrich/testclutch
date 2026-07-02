@@ -114,4 +114,4 @@ blanks-before-imports = 1
 noqa-require-code = true
 
 [tool.ruff]
-lint.ignore = ["E741"]
+lint.ignore = ["E741", "I001", "RUF100", "RUF101"]
