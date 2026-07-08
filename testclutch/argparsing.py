@@ -17,18 +17,26 @@ class ExpandUserFileName:
     nametimes is not an issue. This way (vs. argparse.FileType) introduces a race condition because
     the file permissions could change between the time we check them and the time the file is
     later opened, but this way at least lets us close the file when we're done with it when the
-    file is used more than once.
+    file is used more than once (which is a big reason FileType has been deprecated).
 
     Future improvements:
     - check if the file is the correct type (e.g. directory vs file)
     - if the file is writable but it doesn't exist, it should check the write status of the
       containing directory to ensure that the file can be created
+
+    Args:
+        mode - open-style mode string, used to check for read or write permission
+        allowdash - single dash is allowed as file name and unchecked
     """
 
-    def __init__(self, mode: str = 'r'):
+    def __init__(self, mode: str = 'r', allowdash: bool = False):
         self.mode = mode
+        self.allowdash = allowdash
 
     def __call__(self, filename: str):
+        if self.allowdash and filename == '-':
+            return filename
+
         fn = os.path.expanduser(filename)
         modebits = ((os.R_OK if 'r' in self.mode or '+' in self.mode else 0)
                     | (os.W_OK if 'w' in self.mode or 'x' in self.mode or 'a' in self.mode
