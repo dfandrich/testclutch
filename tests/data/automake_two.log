@@ -61,12 +61,12 @@ make  check-TESTS
 make[3]: Entering directory '/tmp/libexif/test'
 make[4]: Entering directory '/tmp/libexif/test'
 PASS: test-fuzzer
-PASS: test-mem
-PASS: test-value
+XPASS: test-mem
+XFAIL: test-value
 PASS: test-sorted
 PASS: test-tagtable
 PASS: test-parse-from-data
-PASS: test-integers
+ERROR: test-integers
 PASS: test-parse
 PASS: test-null
 SKIP: check-failmalloc.sh
@@ -78,12 +78,12 @@ PASS: extract-parse.sh
 Testsuite summary for EXIF library 0.6.24.1
 ============================================================================
 # TOTAL: 14
-# PASS:  13
+# PASS:  10
 # SKIP:  1
-# XFAIL: 0
+# XFAIL: 1
 # FAIL:  0
-# XPASS: 0
-# ERROR: 0
+# XPASS: 1
+# ERROR: 1
 ============================================================================
 make[4]: Leaving directory '/tmp/libexif/test'
 make[3]: Leaving directory '/tmp/libexif/test'
