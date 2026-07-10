@@ -57,7 +57,7 @@ def environ() -> dict[str, str]:
     This contains the process environment variables, plus the default config variables,
     plus the local config variables, plus a few guaranteed variables
     The config variables all take precedence over the environment variables, so that an
-    oddly-named environment variables doesn't override a configured value.
+    oddly-named environment variable doesn't override a configured value.
 
     See https://wiki.archlinux.org/title/XDG_Base_Directory for some standard vars.
     """
