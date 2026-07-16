@@ -27,7 +27,8 @@ def parse_log_files(f: TextIOReadline) -> Iterable[ParsedLog]:
     errors = [m[0] for m in module_functions if len(m) != 2]
     if errors:
         for err in errors:
-            logger.error('Invalid log_parsers entry %s; must have at least one dot', err)
+            logger.critical('Invalid log_parsers entry %s; must have at least one dot', err)
+        raise RuntimeError('Bad log_parsers configuration')
 
     # Try all functions in order until (at least) one returns a result
     found = False

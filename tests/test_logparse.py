@@ -68,5 +68,22 @@ class TestLogparse(unittest.TestCase):
                 ])
             ], result)
 
+    def test_wrong(self):
+        """Parse with one wrong parser, which will find nothing."""
+        with (patch_config_get('log_parsers', [
+                'testclutch.logparser.unittestparse.parse_log_file']),
+              patch_config_get('log_parse_single', True),
+              open_data('automake_pytest_multiple.log') as f):
+            result = [(meta, testcases) for meta, testcases in logparse.parse_log_files(f)]
+            self.assertCountEqual([], result)
+
+    def test_bad_parser(self):
+        """Configure an invalid parser name."""
+        with (patch_config_get('log_parsers', ['this-is-not-a-valid-name']),
+              patch_config_get('log_parse_single', True),
+              open_data('automake_pytest_multiple.log') as f,
+              self.assertRaises(RuntimeError)):
+            _ = [(meta, testcases) for meta, testcases in logparse.parse_log_files(f)]
+
     def dummy(self):
         """flake8 complains about the list in the previous method without something here."""
