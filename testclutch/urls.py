@@ -40,16 +40,16 @@ def get_project_name(args: str | argparse.Namespace) -> tuple[str, str]:
     Returns:
         tuple of account, project
     """
-    if hasattr(args, 'checkrepo'):
-        # We got an object with attributes
-        checkrepo = args.checkrepo
-        account = args.account
-        project = args.project
-    else:
+    if isinstance(args, str):
         # We just got a string
         checkrepo = args
         account = ''
         project = ''
+    else:
+        # We got an object with attributes
+        checkrepo = args.checkrepo
+        account = args.account
+        project = args.project
     gaccount, gproject = get_generic_project_name(checkrepo)
     if not account:
         account = gaccount
