@@ -24,4 +24,4 @@ class TestParseMeta(unittest.TestCase):
         ]:
             with self.subTest(a=a, b=b):
                 args = Mock(meta=a)
-                self.assertEqual(ingestlog.parse_meta(args), b)
+                self.assertEqual(b, ingestlog.parse_meta(args))

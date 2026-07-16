@@ -16,63 +16,60 @@ class TestOpenMetricsBuilder(unittest.TestCase):
 
     def test_escape(self):
         om = querytests.OpenMetricsBuilder()
-        self.assertEqual(om.escape('foo123'), 'foo123')
-        self.assertEqual(om.escape('quote:" nul:\u0000 nl:\n backslash:\\ d800:\ud800\udddd'),
-                         'quote:\\" nul:\u0000 nl:\\n backslash:\\\\ d800:\\\ud800\\\udddd')
+        self.assertEqual('foo123', om.escape('foo123'))
+        self.assertEqual('quote:\\" nul:\u0000 nl:\\n backslash:\\\\ d800:\\\ud800\\\udddd',
+                         om.escape('quote:" nul:\u0000 nl:\n backslash:\\ d800:\ud800\udddd'))
 
     def test_metric(self):
         om = querytests.OpenMetricsBuilder()
         om.set_labels({'std_label': 'std value'})
         om.set_timestamp(123)
         self.assertEqual(
-            om.metric('metric_name', 98765.4, {}),
-            'metric_name{std_label="std value"} 98765.4 123')
+            'metric_name{std_label="std value"} 98765.4 123',
+            om.metric('metric_name', 98765.4, {}))
 
     def test_metric_extra(self):
         om = querytests.OpenMetricsBuilder()
         om.set_labels({'std_label': 'std value'})
         om.set_timestamp(123)
         self.assertEqual(
-            om.metric('metric_name', 98765.4, {'extra_label': 'extra value'}),
-            'metric_name{std_label="std value",extra_label="extra value"} 98765.4 123')
+            'metric_name{std_label="std value",extra_label="extra value"} 98765.4 123',
+            om.metric('metric_name', 98765.4, {'extra_label': 'extra value'}))
 
     def test_metric_nostd(self):
         om = querytests.OpenMetricsBuilder()
         om.set_timestamp(123)
         self.assertEqual(
-            om.metric('metric_name', 98765.4, {'extra_label': 'extra value'}),
-            'metric_name{extra_label="extra value"} 98765.4 123')
+            'metric_name{extra_label="extra value"} 98765.4 123',
+            om.metric('metric_name', 98765.4, {'extra_label': 'extra value'}))
 
     def test_metric_nolabels(self):
         om = querytests.OpenMetricsBuilder()
         om.set_timestamp(123)
         self.assertEqual(
-            om.metric('metric_name', 98765.4, {}),
-            'metric_name 98765.4 123')
+            'metric_name 98765.4 123',
+            om.metric('metric_name', 98765.4, {}))
 
     def test_typeinfo_gauge(self):
         om = querytests.OpenMetricsBuilder()
         self.assertEqual(
-            om.typeinfo('testclutch_run_finish_seconds'),
             '# TYPE testclutch_run_finish_seconds gauge\n'
             '# UNIT testclutch_run_finish_seconds seconds\n'
-            '# HELP testclutch_run_finish_seconds When the run completed running.\n'
-        )
+            '# HELP testclutch_run_finish_seconds When the run completed running.\n',
+            om.typeinfo('testclutch_run_finish_seconds'))
 
     def test_typeinfo_summary(self):
         om = querytests.OpenMetricsBuilder()
         self.assertEqual(
-            om.typeinfo('testclutch_tests_seconds_sum'),
             '# TYPE testclutch_tests_seconds summary\n'
             '# UNIT testclutch_tests_seconds seconds\n'
-            '# HELP testclutch_tests_seconds Time taken to run each test in the job.\n'
-        )
+            '# HELP testclutch_tests_seconds Time taken to run each test in the job.\n',
+            om.typeinfo('testclutch_tests_seconds_sum'))
 
     def test_typeinfo_unknown(self):
         om = querytests.OpenMetricsBuilder()
         self.assertEqual(
-            om.typeinfo('metric_name'),
             '# TYPE metric_name gauge\n'
             '# UNIT metric_name name\n'
-            '# HELP metric_name unknown\n'
-        )
+            '# HELP metric_name unknown\n',
+            om.typeinfo('metric_name'))

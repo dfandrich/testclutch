@@ -24,42 +24,42 @@ class TestMetaDataStats(unittest.TestCase):
         super().tearDown()
 
     def test_idify(self):
-        self.assertEqual(metadatastats.idify('simple'), 'testsimple')
-        self.assertEqual(metadatastats.idify('01234:567-89'), 'test01234:567-89')
-        self.assertEqual(metadatastats.idify('with"quotes"'), 'testwith&quot;quotes&quot;')
-        self.assertEqual(metadatastats.idify("invalid_chars&>#'"), 'testinvalid_chars____')
+        self.assertEqual('testsimple', metadatastats.idify('simple'))
+        self.assertEqual('test01234:567-89', metadatastats.idify('01234:567-89'))
+        self.assertEqual('testwith&quot;quotes&quot;', metadatastats.idify('with"quotes"'))
+        self.assertEqual('testinvalid_chars____', metadatastats.idify("invalid_chars&>#'"))
 
     def test_num_precision(self):
-        self.assertEqual(metadatastats.num_precision(1.0, 1), 1)
-        self.assertEqual(metadatastats.num_precision(1.0, 2), 2)
-        self.assertEqual(metadatastats.num_precision(1.0, 3), 3)
-        self.assertEqual(metadatastats.num_precision(2.718, 3), 2)
-        self.assertEqual(metadatastats.num_precision(12345, 3), 0)
-        self.assertEqual(metadatastats.num_precision(0.000005555, 3), 8)
+        self.assertEqual(1, metadatastats.num_precision(1.0, 1))
+        self.assertEqual(2, metadatastats.num_precision(1.0, 2))
+        self.assertEqual(3, metadatastats.num_precision(1.0, 3))
+        self.assertEqual(2, metadatastats.num_precision(2.718, 3))
+        self.assertEqual(0, metadatastats.num_precision(12345, 3))
+        self.assertEqual(8, metadatastats.num_precision(0.000005555, 3))
 
     def test_try_integer(self):
         nums = ['98', '43', '77', '1', '1234567890', '56']
         self.assertEqual(
-            sorted(nums, key=metadatastats._try_integer),
-            ['1', '43', '56', '77', '98', '1234567890'])
+            ['1', '43', '56', '77', '98', '1234567890'],
+            sorted(nums, key=metadatastats._try_integer))
 
         mixed = ['test50', '43', '77', 'notanint', '1234567890', '56', 'x']
         self.assertEqual(
-            sorted(mixed, key=metadatastats._try_integer),
-            ['43', '56', '77', '1234567890', 'notanint', 'test50', 'x'])
+            ['43', '56', '77', '1234567890', 'notanint', 'test50', 'x'],
+            sorted(mixed, key=metadatastats._try_integer))
 
         mixed0 = ['0050', '043', '77', 'notanint', '1234567890', '000056', 'x', '00012']
         self.assertEqual(
-            sorted(mixed0, key=metadatastats._try_integer),
-            ['00012', '043', '0050', '000056', '77', '1234567890', 'notanint', 'x'])
+            ['00012', '043', '0050', '000056', '77', '1234567890', 'notanint', 'x'],
+            sorted(mixed0, key=metadatastats._try_integer))
 
     def test_MetadataAdjuster_split(self):
         adj = metadatastats.MetadataAdjuster({'testkey': r'::+', 'ignorekey': r' '}, {}, set({}))
-        self.assertEqual(adj.split('testkey', 'Single:Value'), ['Single:Value'])
-        self.assertEqual(adj.split('testkey', 'Just Two::Values'), ['Just Two', 'Values'])
-        self.assertEqual(adj.split('testkey', 'Some::Values::::Skipped::Blanks::'),
-                         ['Some', 'Values', 'Skipped', 'Blanks'])
-        self.assertEqual(adj.split('ignorekey', 'Not::Transformed'), ['Not::Transformed'])
+        self.assertEqual(['Single:Value'], adj.split('testkey', 'Single:Value'))
+        self.assertEqual(['Just Two', 'Values'], adj.split('testkey', 'Just Two::Values'))
+        self.assertEqual(['Some', 'Values', 'Skipped', 'Blanks'],
+                         adj.split('testkey', 'Some::Values::::Skipped::Blanks::'))
+        self.assertEqual(['Not::Transformed'], adj.split('ignorekey', 'Not::Transformed'))
 
     def test_MetadataAdjuster_transform(self):
         adj = metadatastats.MetadataAdjuster(
@@ -71,12 +71,12 @@ class TestMetaDataStats(unittest.TestCase):
                           (r'lay', 'place')],
              'ignorekey': [(r'.', 'XXX')]},
             set({}))
-        self.assertEqual(adj.transform('testkey', 'unchanged'), 'unchanged')
-        self.assertEqual(adj.transform('testkey', 'changeme'), 'ChangeMe')
-        self.assertEqual(adj.transform('testkey', 'deleteme'), '')
-        self.assertEqual(adj.transform('testkey', 'IsArename1234'), 'IsANewNamed1234:')
-        self.assertEqual(adj.transform('testkey', 'notrenamed'), 'notrenamed')
-        self.assertEqual(adj.transform('embedded', 'impartial'), 'imprpplaceical')
+        self.assertEqual('unchanged', adj.transform('testkey', 'unchanged'))
+        self.assertEqual('ChangeMe', adj.transform('testkey', 'changeme'))
+        self.assertEqual('', adj.transform('testkey', 'deleteme'))
+        self.assertEqual('IsANewNamed1234:', adj.transform('testkey', 'IsArename1234'))
+        self.assertEqual('notrenamed', adj.transform('testkey', 'notrenamed'))
+        self.assertEqual('imprpplaceical', adj.transform('embedded', 'impartial'))
 
     def test_MetadataAdjuster_adjust(self):
         adj = metadatastats.MetadataAdjuster(
@@ -86,6 +86,6 @@ class TestMetaDataStats(unittest.TestCase):
              'ignorekey': [(r'.', 'XXX')]},
             set({})
         )
-        self.assertEqual(adj.adjust('testkey', 'a bunch,of values'), ['a', 'bunch', 'of', 'values'])
-        self.assertEqual(adj.adjust('testkey', '  changeme deleteme,thenrename99me'),
-                         ['ChangeMe', 'thenNewNamed99:me'])
+        self.assertEqual(['a', 'bunch', 'of', 'values'], adj.adjust('testkey', 'a bunch,of values'))
+        self.assertEqual(['ChangeMe', 'thenNewNamed99:me'],
+                         adj.adjust('testkey', '  changeme deleteme,thenrename99me'))

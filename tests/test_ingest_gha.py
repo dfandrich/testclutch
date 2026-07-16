@@ -22,4 +22,4 @@ class TestSanitize(unittest.TestCase):
                  'slash must be removed'),
         ]:
             with self.subTest(raw=raw, sanitized=sanitized):
-                self.assertEqual(ghi.sanitize_log_fn(raw), sanitized)
+                self.assertEqual(sanitized, ghi.sanitize_log_fn(raw))

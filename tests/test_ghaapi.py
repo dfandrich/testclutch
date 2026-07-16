@@ -17,4 +17,4 @@ class TestConvertTime(unittest.TestCase):
                 ('2023-08-15T13:03:32.123Z', 1692104612.123),
         ]:
             with self.subTest(text=text, timestamp=timestamp):
-                self.assertEqual(ghaapi.convert_time(text).timestamp(), timestamp)
+                self.assertEqual(timestamp, ghaapi.convert_time(text).timestamp())

@@ -52,4 +52,4 @@ class TestPRAnalysisState(unittest.TestCase):
                 # Read back what was just stored
                 readdata = state.read_state(False)
 
-                self.assertEqual(readdata, fullstate)
+                self.assertEqual(fullstate, readdata)
