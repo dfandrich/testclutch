@@ -1,0 +1,37 @@
+Using curl: ../src/curl
+********* System characteristics ******** 
+* curl 8.22.0-DEV (x86_64-pc-linux-gnu) 
+* libcurl/8.22.0-DEV OpenSSL/3.0.21 zlib/1.2.13 brotli/1.0.9 zstd/1.5.7 libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 mit-krb5/1.20.1 OpenLDAP/2.5.14
+* Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt mqtts pop3 pop3s rtsp scp sftp smtp smtps telnet tftp ws wss
+* Features: alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz PSL SPNEGO SSL SSLS-EXPORT threadsafe UnixSockets zstd
+* Disabled: httpsig, win32-ca-searchpath, win32-ca-search-safe, override-dns
+* Host: localhost
+* System: Linux localhost 6.6.141 #1 SMP PREEMPT_DYNAMIC Sat May 23 20:28:01 UTC 2026 x86_64 GNU/Linux
+* OS: linux
+* Perl: v5.36.0 (/usr/bin/perl5.36.0)
+* Args: -a -n 1 to 2
+* Seed: 232361
+* Servers: SSL HTTP-IPv6 HTTP-unix FTP-IPv6 
+***************************************** 
+test 0001 [HTTP GET]
+--pd---em-- OK (1   out of 2  , remaining: 00:01, took 1.074s, duration: 00:01)
+test 0002 [HTTP GET with user and password]
+
+ 2: protocol FAILED:
+--- log/check-expected	2026-08-10 10:56:55.253470843 -0700
++++ log/check-generated	2026-08-10 10:56:55.253470843 -0700
+@@ -1,6 +1,6 @@
+ GET /2 HTTP/1.1[CR][LF]
+ Host: 127.0.0.1:36283[CR][LF]
+ Authorization: Basic ZmFrZTp1c2Vy[CR][LF]
+-User-Agent: MAKEITFAIL.curl/8.22.0-DEV[CR][LF]
++User-Agent: curl/8.22.0-DEV[CR][LF]
+ Accept: */*[CR][LF]
+ [CR][LF]
+TESTDONE: 2 tests were considered during 1 seconds.
+TESTDONE: 1 tests out of 2 reported OK: 50%
+
+FAIL 2: 'HTTP GET with user and password' HTTP, HTTP GET, HTTP Basic auth
+
+TESTFAIL: These test cases failed: 2
+

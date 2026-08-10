@@ -3832,3 +3832,89 @@ class TestCurlParse(unittest.TestCase):
             SingleTestFinding('500', curlparse.TestResult.FAIL, 'allocsize', 0)
         ],
             testcases)
+
+    def test_2026(self):
+        # Verbose log with altered log format from mid-2026
+        with open_data('curlparse_2026.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'curldeps': 'libcurl/8.22.0-DEV OpenSSL/3.0.21 zlib/1.2.13 brotli/1.0.9 zstd/1.5.7 '
+                        'libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 '
+                        'mit-krb5/1.20.1 OpenLDAP/2.5.14',
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns '
+                             'ldap ldaps mqtt mqtts pop3 pop3s rtsp scp sftp smtp smtps '
+                             'telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Kerberos Largefile libz PSL SPNEGO SSL SSLS-EXPORT threadsafe '
+                        'UnixSockets zstd',
+            'host': 'localhost',
+            'os': 'linux',
+            'perlver': '5.36.0',
+            'randomseed': '232361',
+            'runtestsopts': '-a -n 1 to 2',
+            'runtestsduration': '1000000',
+            'systemhost': 'localhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.141',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.22.0-DEV',
+            'testmode': 'normal',
+            'testresult': 'failure',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        },
+            meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1074000),
+            SingleTestFinding('2', curlparse.TestResult.FAIL, 'protocol', 0),
+        ],
+            testcases)
+
+    def test_short_2026(self):
+        # Short log with altered log format from mid-2026
+        with open_data('curlparse_short_2026.log') as f:
+            meta, testcases = curlparse.parse_log_file(f)
+        self.assertDictEqual({
+            'arch': 'x86_64',
+            'curldeps': 'libcurl/8.22.0-DEV OpenSSL/3.0.21 zlib/1.2.13 brotli/1.0.9 zstd/1.5.7 '
+                        'libidn2/2.3.4 libpsl/0.21.2 libssh/0.10.6/gnutls/zlib nghttp2/1.61.0 '
+                        'mit-krb5/1.20.1 OpenLDAP/2.5.14',
+            'curlprotocols': 'dict file ftp ftps gopher gophers http https imap imaps ipfs ipns '
+                             'ldap ldaps mqtt mqtts pop3 pop3s rtsp scp sftp smtp smtps '
+                             'telnet tftp ws wss',
+            'features': 'alt-svc AsynchDNS brotli Debug GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 '
+                        'Kerberos Largefile libz PSL SPNEGO SSL SSLS-EXPORT threadsafe '
+                        'UnixSockets zstd',
+            'host': 'localhost',
+            'os': 'linux',
+            'perlver': '5.36.0',
+            'randomseed': '232361',
+            'runtestsopts': '-a -n -s 1 to 2',
+            'runtestsduration': '1000000',
+            'systemhost': 'localhost',
+            'systemos': 'Linux',
+            'systemosver': '6.6.141',
+            'targetarch': 'x86_64',
+            'targetos': 'linux-gnu',
+            'targettriplet': 'x86_64-pc-linux-gnu',
+            'targetvendor': 'pc',
+            'testformat': 'curl',
+            'testingver': '8.22.0-DEV',
+            'testmode': 'normal',
+            'testresult': 'failure',
+            'withduphandle': 'no',
+            'withevent': 'no',
+            'withvalgrind': 'no',
+        },
+            meta)
+        self.assertEqual([
+            SingleTestFinding('1', curlparse.TestResult.PASS, '', 1077000),
+            SingleTestFinding('2', curlparse.TestResult.FAIL, '', 0),
+        ],
+            testcases)

@@ -105,7 +105,8 @@ RE_VALGRINDFAILED = re.compile(r'^ (valgrind) ERROR')
 RE_IGNORED = re.compile(r'^ (\d{1,5}): IGNORED: (.*)$')
 # Obsolete after 2023-06-21
 RE_EXITFAILED = re.compile(r'^ (exit) FAILED$')
-RE_TESTSTART = re.compile(r'^test (\d{4,5})\.\.\.\[')
+# "\.\.\.\" clause obsolete after 2026-08-06
+RE_TESTSTART = re.compile(r'^test (\d{4,5})(?:\.\.\.| )\[')
 RE_SKIPAFTERSTART = re.compile(r'^CMD |^RUN: |^Warning: |^postcheck |^curl returned |^Killed'
                                r'|(\d+) functions to make fail'
                                r'|(^\*\* [A-Z ]+$)'
@@ -131,9 +132,10 @@ RE_OKSUMMARY = re.compile(r'^TESTDONE: (\d+) tests out of (\d+) reported OK')
 RE_FAILSUMMARY = re.compile(r'^TESTFAIL: These test cases failed: ')
 
 # Test log results with -s option
-RE_TESTSTARTSHORT = re.compile(r'^test (\d{4,5})\.\.\.$')
-RE_TESTRESULTSHORT = re.compile(r'^test (\d{4,5})\.\.\.(\w+) \(.*, took (-?\d+\.\d+)s')
-RE_TESTFAILEDSHORT = re.compile(r'^test (\d{4,5})\.\.\.FAILED$')
+# The "\.\.\.\" clauses below obsolete after 2026-08-06
+RE_TESTSTARTSHORT = re.compile(r'^test (\d{4,5})(?:\.\.\.| )?$')
+RE_TESTRESULTSHORT = re.compile(r'^test (\d{4,5})(?:\.\.\.| )(\w+) \(.*, took (-?\d+\.\d+)s')
+RE_TESTFAILEDSHORT = re.compile(r'^test (\d{4,5})(?:\.\.\.| )FAILED$')
 
 # testcurl headers
 RE_TESTCURLCOMMITSTART = re.compile(r'^testcurl: The most recent curl git commits:')
