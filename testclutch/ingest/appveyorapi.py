@@ -54,7 +54,8 @@ class AppveyorApi:
             if 'project' in combined_resp:
                 params['startBuildId'] = last_resp['builds'][-1]['buildId']
             logger.debug('Retrieving runs from %s', url)
-            with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+            with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS,
+                               params=params) as resp:
                 resp.raise_for_status()
                 last_resp = json.loads(resp.text)
             if 'project' not in combined_resp:
@@ -72,7 +73,8 @@ class AppveyorApi:
             'recordsNumber': 1,
         }
         logger.debug('Retrieving run from %s', url)
-        with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS,
+                           params=params) as resp:
             resp.raise_for_status()
             run_search = json.loads(resp.text)
 
@@ -92,7 +94,7 @@ class AppveyorApi:
         url = RUN_BY_VERSION_URL.format(account=self.account, project=self.project,
                                         build_ver=build_ver)
         logger.debug('Retrieving run by version from %s', url)
-        with self.http.get(url, headers=self._standard_headers()) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS) as resp:
             resp.raise_for_status()
             return json.loads(resp.text)
 
@@ -102,6 +104,6 @@ class AppveyorApi:
         params = {'fullLog': 'true'
                   }
         logger.debug('Retrieving log from %s', url)
-        with self.http.get(url, headers=self._standard_headers(), params=params, stream=True
-                           ) as resp:
+        with self.http.get(url, headers=self._standard_headers(), params=params, stream=True,
+                           timeout=netreq.TIMEOUTS) as resp:
             return netreq.download_file(resp, url)

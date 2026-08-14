@@ -114,7 +114,7 @@ class GithubApi:
 
         done = False
         while not done and useparams['page'] <= MAX_RETRIEVED / PAGINATION:
-            resp = self.http.get(url, headers=headers, params=useparams)
+            resp = self.http.get(url, headers=headers, timeout=netreq.TIMEOUTS, params=useparams)
             resp.raise_for_status()
 
             j = json.loads(resp.text)
@@ -175,7 +175,7 @@ class GithubApi:
     def get_run(self, run_id: int) -> dict[str, Any]:
         """Returns info about a single workflow run on GitHub Actions."""
         url = RUN_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
-        resp = self.http.get(url, headers=self._standard_headers())
+        resp = self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS)
         resp.raise_for_status()
         return json.loads(resp.text)
 
@@ -188,7 +188,8 @@ class GithubApi:
 
     def get_logs(self, run_id: int) -> tuple[str, str]:
         url = LOGS_URL.format(owner=self.owner, repo=self.repo, endpoint='runs', run_id=run_id)
-        with self.http.get(url, headers=self._standard_auth_headers(), stream=True) as resp:
+        with self.http.get(url, headers=self._standard_auth_headers(), timeout=netreq.TIMEOUTS,
+                           stream=True) as resp:
             return netreq.download_file(resp, url)
 
     def get_pulls(self, state: str) -> list[Any]:
@@ -202,7 +203,7 @@ class GithubApi:
     def get_pull(self, pr: int) -> dict[str, Any]:
         """Returns info about a pull request on GitHub Actions."""
         url = PULL_URL.format(owner=self.owner, repo=self.repo, pull_number=pr)
-        resp = self.http.get(url, headers=self._standard_headers())
+        resp = self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS)
         resp.raise_for_status()
         return json.loads(resp.text)
 

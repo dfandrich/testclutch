@@ -23,12 +23,22 @@ USER_AGENT = f'testclutch/{testclutch.__version__}'
 # Block size to download
 CHUNK_SIZE = 0x10000
 
+# Connection timeout, in seconds
+CONNECT_TIMEOUT = 60
+
+# Transfer timeout, in seconds
+TRANSFER_TIMEOUT = 600
+
+# Timeout tuple to pass to requests
+# These timeouts are generous, but serve as a defence against hung servers
+TIMEOUTS = (CONNECT_TIMEOUT, TRANSFER_TIMEOUT)
+
 
 def get(url: str, headers: dict[str, str] | None = None, **args) -> requests.Response:
     """Perform an HTTP request with standard request headers if none are supplied."""
     if not headers:
         headers = {'User-Agent': USER_AGENT}
-    return requests.get(url=url, headers=headers, **args)
+    return requests.get(url=url, headers=headers, timeout=TIMEOUTS, **args)
 
 
 class Session(requests.Session):

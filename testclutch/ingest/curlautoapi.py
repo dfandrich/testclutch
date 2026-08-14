@@ -80,7 +80,7 @@ class CurlAutoApi:
         """Returns info about all recent workflow runs."""
         url = BASE_URL
         logger.debug('Retrieving index from %s', url)
-        with self.http.get(url, headers=self._standard_headers()) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS) as resp:
             resp.raise_for_status()
             htmlp = HTMLDirParser()
             htmlp.feed(resp.text)

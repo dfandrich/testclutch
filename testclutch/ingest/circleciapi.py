@@ -59,7 +59,8 @@ class CircleApi:
                       'shallow': 'true',  # non-shallow doesn't give enough info; rely on get_run
                       }
             logger.debug('Retrieving runs from %s', url)
-            with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+            with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS,
+                               params=params) as resp:
                 if resp.status_code == 400:
                     # No more builds to download
                     break
@@ -72,13 +73,13 @@ class CircleApi:
     def get_run(self, build_id: int) -> dict[str, Any]:
         """Returns info about a single run."""
         url = RUN_URL.format(vcs=self.vcs, user=self.owner, project=self.repo, build=build_id)
-        with self.http.get(url, headers=self._standard_headers()) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS) as resp:
             resp.raise_for_status()
             return json.loads(resp.text)
 
     def get_logs(self, log_url: str) -> tuple[str, str]:
         logger.info('Retrieving log from %s', log_url)
-        with self.http.get(log_url, stream=True) as resp:
+        with self.http.get(log_url, timeout=netreq.TIMEOUTS, stream=True) as resp:
             return netreq.download_file(resp, log_url)
 
     def make_log_url(self, build_id: int, step_id: str) -> str:

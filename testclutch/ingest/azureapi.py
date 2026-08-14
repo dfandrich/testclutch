@@ -58,7 +58,8 @@ class AzureApi:
                   }
         if branch:
             params['branchName'] = branch
-        with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+        with self.http.get(url, headers=self._standard_headers(), params=params,
+                           timeout=netreq.TIMEOUTS) as resp:
             resp.raise_for_status()
             return json.loads(resp.text)
 
@@ -70,7 +71,8 @@ class AzureApi:
         params = {'api-version': API_VERSION_A,
                   'propertyFilters': 'Build'
                   }
-        with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS,
+                           params=params) as resp:
             # Note: this can return 203 (Non-Authoritative Information) in case of bad account name,
             # which is not one of the errors to be raised.
             # TODO: perhaps treat that one similarly here, but consider that 203 is not intended as
@@ -86,7 +88,8 @@ class AzureApi:
         params = {'api-version': API_VERSION_B,
                   'propertyFilters': 'Build'
                   }
-        with self.http.get(url, headers=self._standard_headers(), params=params) as resp:
+        with self.http.get(url, headers=self._standard_headers(), timeout=netreq.TIMEOUTS,
+                           params=params) as resp:
             resp.raise_for_status()
             return json.loads(resp.text)
 
@@ -94,7 +97,7 @@ class AzureApi:
         url = LOGS_URL.format(organization=self.organization, project=self.project,
                               build_id=build_id, log_id=log_id)
         logger.info('Retrieving log from %s', url)
-        with self.http.get(url, stream=True) as resp:
+        with self.http.get(url, timeout=netreq.TIMEOUTS, stream=True) as resp:
             return netreq.download_file(resp, url)
 
     def get_build_log_url(self, build_id: int, job_uuid: str, log_uuid: str) -> str:
