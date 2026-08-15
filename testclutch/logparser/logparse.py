@@ -34,8 +34,16 @@ def parse_log_files(f: TextIOReadline) -> Iterable[ParsedLog]:
     found = False
     for mod, func in module_functions:
         logger.debug('Calling %s.%s()', mod, func)
-        module = importlib.import_module(mod)
-        meta, testcases = module.__dict__.get(func)(f)
+        try:
+            module = importlib.import_module(mod)
+        except ModuleNotFoundError:
+            logger.critical('Invalid log_parsers configuration; module "%s" does not exist', mod)
+            raise
+        parserfunc = module.__dict__.get(func)
+        if not parserfunc:
+            logger.critical('Invalid log_parsers configuration; function "%s" does not exist', func)
+            raise RuntimeError('Bad log_parsers configuration')
+        meta, testcases = parserfunc(f)
         if testcases:
             # Data is only valid if at least one test case was found
             yield meta, testcases
