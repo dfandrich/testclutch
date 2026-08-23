@@ -67,6 +67,7 @@ class Session(requests.Session):
 def retry_on_exception(func: Callable, exception: type[Exception],
                        retries: int = 10, delay: float = 10):
     """Retry a function call on an exception, with fixed delay."""
+    assert retries > 0
     for attempt in range(retries):
         try:
             return func()

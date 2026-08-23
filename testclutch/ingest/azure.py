@@ -210,6 +210,7 @@ class AzureIngestor:
                         self.ingest_log(build_id, logs_tasks, meta)
 
     def download_log(self, build_id: int, tasks: Iterable[dict[str, Any]]):
+        assert tasks
         for task in tasks:
             log_id = task['log']['id']
             newfn = self._log_file_path(build_id, log_id)
