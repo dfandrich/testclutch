@@ -100,7 +100,7 @@ def get(var: str) -> Any:
 def override_var(obj, name: str, value: Any):
     """Change an object variable within a with context.
 
-    The original value of the attribute is restore on context exit.
+    The original value of the attribute is restored on context exit.
 
     Args:
         obj: reference to object
@@ -109,8 +109,10 @@ def override_var(obj, name: str, value: Any):
     """
     saved_value = getattr(obj, name)
     setattr(obj, name, value)
-    yield saved_value
-    setattr(obj, name, saved_value)
+    try:
+        yield saved_value
+    finally:
+        setattr(obj, name, saved_value)
 
 
 def config() -> ModuleType:

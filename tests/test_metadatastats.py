@@ -33,7 +33,7 @@ class TestMetaDataStats(unittest.TestCase):
         self.assertEqual(1, metadatastats.num_precision(1.0, 1))
         self.assertEqual(2, metadatastats.num_precision(1.0, 2))
         self.assertEqual(3, metadatastats.num_precision(1.0, 3))
-        self.assertEqual(2, metadatastats.num_precision(2.718, 3))
+        self.assertEqual(2, metadatastats.num_precision(1.618, 3))
         self.assertEqual(0, metadatastats.num_precision(12345, 3))
         self.assertEqual(8, metadatastats.num_precision(0.000005555, 3))
 

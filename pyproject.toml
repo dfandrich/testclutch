@@ -115,3 +115,4 @@ noqa-require-code = true
 
 [tool.ruff]
 lint.ignore = ["E741", "I001", "RUF100", "RUF101"]
+lint.external = ["I100", "PAR104"]

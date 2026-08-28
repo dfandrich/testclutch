@@ -291,7 +291,7 @@ def idify(s: str) -> str:
     and the whole string is prefixed with "test" to guarantee the first character is a letter.
     """
     filtered = ID_TOKEN_RE.sub('_', s)
-    return 'test' + re.sub('"', '&quot;', filtered)
+    return 'test' + filtered.replace('"', '&quot;')
 
 
 class TestRunStats:
@@ -543,7 +543,7 @@ def output_test_run_stats(trstats: TestRunStats, print_func: Callable):
 
     print_func('Tests considered:', f'{total_tests} (100%)')
     # This sort key makes the results appear in a more logical progression
-    for status, count in sorted(results_count, key=lambda x: x[0] if x[0] else 99):
+    for status, count in sorted(results_count, key=lambda x: x[0] or 99):
         code = TestResult(status)
         pct = count / total_tests * 100
         print_func(f'{code.name}:', f'{count} ({pct:.{num_precision(pct, 2)}f}%)', indent=1)

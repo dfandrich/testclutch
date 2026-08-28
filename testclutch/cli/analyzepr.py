@@ -374,7 +374,7 @@ class GHAPRReady:
     def get_ready_prs(self, authors: Container[str]) -> list[int]:
         """Return recent PRs that have not been closed."""
         pulls = self.gh.get_pulls('open')
-        pr_recency = self.args.oldest if self.args.oldest else config.get('pr_ready_age_hours_max')
+        pr_recency = self.args.oldest or config.get('pr_ready_age_hours_max')
         recent = (datetime.datetime.now(tz=datetime.timezone.utc)
                   - datetime.timedelta(hours=pr_recency))
         recent_prs = [pr['number'] for pr in pulls

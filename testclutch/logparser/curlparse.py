@@ -493,7 +493,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
             # been set up. It is likely related to buildbot being set up to send PR build
             # results to the daily build server, not just pushes to master.
             if r := RE_TESTCURLCOMMIT.search(l):
-                meta['commit'] = r.group('shash') if r.group('shash') else r.group('lhash')
+                meta['commit'] = r.group('shash') or r.group('lhash')
         elif r := RE_TESTCURLDAILY .search(l):
             meta['executor'] = 'testcurl'
             meta['dailybuild'] = r.group(2)

@@ -35,7 +35,7 @@ class FindFailedRuns:
         jobruns = self.ds.db.cursor()
         if len(statuses) < 2:
             # Duplicate a single item
-            statuses = (iter(statuses).__next__(), ) * 2
+            statuses = (next(iter(statuses)), ) * 2
         assert len(statuses) == 2  # limitation for now due to simplification of the query
         oldest = int(since.timestamp())
         jobruns.execute(RUNS_BY_TEST_STATUS_SQL,

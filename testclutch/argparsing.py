@@ -70,7 +70,7 @@ class StoreMultipleConstAction(argparse.Action):
             default=default,
             required=required,
             help=help)
-        self.attrs = attrs if attrs else []
+        self.attrs = attrs or []
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, self.const)
