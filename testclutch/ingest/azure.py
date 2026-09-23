@@ -209,7 +209,7 @@ class AzureIngestor:
                         meta = {**cimeta, **jobmeta}
                         self.ingest_log(build_id, logs_tasks, meta)
 
-    def download_log(self, build_id: int, tasks: Iterable[dict[str, Any]]):
+    def download_log(self, build_id: int, tasks: list[dict[str, Any]]):
         assert tasks
         for task in tasks:
             log_id = task['log']['id']
