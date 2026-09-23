@@ -18,16 +18,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t", "3.15.0-rc.1", "pypy3.11"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t", "3.15.0-rc.2", "pypy3.11"]
 
     env:
       dev: "${{ matrix.python-version <= 3.12 &&
             !startsWith(matrix.python-version, 'pypy') && 'true' || '' }}"
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -39,10 +39,17 @@ jobs:
         run: |
           python -m compileall -x '/\.git/' -x /test.git/ -x /build/ .
       - name: Lint with flake8
+        background: true
         if: env.dev
         run: |
           flake8 --count --statistics --show-source --extend-exclude=build .
+      - name: Type check with pyrefly
+        if: env.dev
+        run: |
+          pyrefly check -p basic
+          pyrefly check -p default --ignore=unknown-name tests/*.py
       - name: Type check with pytype
+        background: true
         if: env.dev
         run: |
           pytype -j auto -k $(find testclutch tests -name '*.py')
