@@ -69,6 +69,7 @@ dev = [
     "flake8-super",
     "flake8-warnings",
     "flake8-wot",
+    "pyrefly",
     "pytype >= 2023.9.19",
     "types-requests",
     "types-zstd"
@@ -116,3 +117,8 @@ noqa-require-code = true
 [tool.ruff]
 lint.ignore = ["E741", "I001", "RUF100", "RUF101"]
 lint.external = ["I100", "PAR104"]
+
+[tool.pyrefly]
+preset = "basic"
+check-unannotated-defs = true
+project-includes = ["testclutch/**/*.py*"]
