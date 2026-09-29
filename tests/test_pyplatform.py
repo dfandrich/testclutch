@@ -63,6 +63,19 @@ class TestParsePlatform(unittest.TestCase):
             'systemosver': '5.4.134-qgki',
             'arch': 'aarch64'
         }, pyplatform.parse_platform('Linux-5.4.134-qgki-g544c77a8a651-aarch64-with-libc'))
+        # This comes from Micropython v1.29.0
+        # This is not handled version fully because it doesn't actually return the OS version
+        # number (so returning the version would be misleading), and the architecture isn't
+        # found in the same place as C-Python.  Since there is no indication that this is
+        # Micropython, and since it is unlikely to be a platform on which Test Clutch is ever
+        # run, this will likely never be improved.
+        self.assertDictEqual({
+            'systemos': 'Linux',
+        }, pyplatform.parse_platform('Linux-1.29.0-x86_64--with-glibc2.36'))
+        # This comes from Circuitpython v9.1.1, with the same caveats as Micropython
+        self.assertDictEqual({
+            'systemos': 'Linux',
+        }, pyplatform.parse_platform('Linux-9.1.1-x86_64--with-glibc2.36'))
 
     def test_platform_windows(self):
         self.assertDictEqual({
