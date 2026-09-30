@@ -43,14 +43,16 @@ Using these data types, where appropriate, will make analysis of data easier.
   depend on the "origin" field.
 - Boolean fields should be defined so that the complete absence of the field
   in the metadata should be treated as "no".
+- All instances of each field must have the same data type (integer, boolean
+  or string) so they can be consistently handled.
 
 ## Tests
 
 - Each test name for a checkrepo must refer to a single test, e.g. there may
   not be two completely different tests named "1". This does not mean that the
   same test may not be run under different conditions that test different
-  things, in which case there should be a way to differentiate the two
-  conditions in the metadata.
+  things, but in this case there should be a way to differentiate the two
+  conditions using the metadata.
 
 ## Mandatory
 
