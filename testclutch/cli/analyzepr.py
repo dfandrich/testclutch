@@ -867,8 +867,6 @@ def main() -> int:
 
         return ci_analyze_pr(analyzer, args, ds, prs)
 
-    return PRStatus.READY
-
 
 if __name__ == '__main__':
     main()
