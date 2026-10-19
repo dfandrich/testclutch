@@ -701,11 +701,11 @@ def output_tests_run_count(trstats: TestRunStats, print_func: Callable,
         print_missing_func('', '', 'No recent tests are missing', title=True)
 
     print_func('Tests Recently Run', 'Format', 'Test Name', 'Sample Log', title=True)
-    total_counts = trstats.get_tests_run()
-    logger.info('Found %d different tests', len(total_counts))
+    total_counts_url = trstats.get_tests_run()
+    logger.info('Found %d different tests', len(total_counts_url))
     # Sort by format, then by increasing test number
-    total_counts.sort(key=lambda x: (x[0], _try_integer(x[1])))
-    for testformat, testname, url in total_counts:
+    total_counts_url.sort(key=lambda x: (x[0], _try_integer(x[1])))
+    for testformat, testname, url in total_counts_url:
         print_func('', testformat, testname, url)
     print_func('', '', '', '', title=True)
 

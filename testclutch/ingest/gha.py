@@ -71,7 +71,7 @@ def read_token(authfile: str | None) -> str | None:
 class GithubIngestor:
     """Ingest logs from GitHub Actions."""
 
-    def __init__(self, owner: str, repo: str, token: str, ds: db.Datastore | None,
+    def __init__(self, owner: str, repo: str, token: str | None, ds: db.Datastore | None,
                  overwrite: bool = False):
         self.owner = owner
         self.repo = repo
