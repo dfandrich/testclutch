@@ -108,9 +108,12 @@ Clutch supports these CI services:
 * Appveyor
 * Azure
 * Circle CI
-* Cirrus
+* Cirrus (obsolete and subject to removal)
 * GitHub Actions
 * curl autobuild (specific to the curl project)
+
+Note that as of late 2026, only the GitHub Actions and curl autobuild services
+are regularly used and tested.
 
 Some of these may require credentials to access the log files. These are
 configured on the command-line according to each service's needs using the
@@ -292,10 +295,9 @@ optional metadata types.
 
 ## Compatibility
 
-Test Clutch is in rapid development and no guarantees of compatibility with
-future or previous versions is currently being made. Contact the developers if
-you would like to propose an API be stabilized. The first one is likely to be
-the test log parsing API.
+Test Clutch currently makes no guarantees of compatibility with future or
+previous versions. Contact the developers if you would like to propose an API
+be stabilized. The first one is likely to be the test log parsing API.
 
 ## Future Work
 
@@ -334,7 +336,7 @@ possibilities for its use. Here are some:
 
 ## License
 
-Copyright (C) 2023–2025  Daniel Fandrich dan@telarity.com
+Copyright (C) 2023–2026  Daniel Fandrich dan@telarity.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
