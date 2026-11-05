@@ -17,6 +17,9 @@ class TestCompareHashes(unittest.TestCase):
              'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
             ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', 'aaaaaab'),
             ('aaaaaab', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
+            ('000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', '00000011'),
+            ('000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
+             '000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeeffffffff'),
             ('12345', '123456')
         ]:
             with self.subTest(a=a, b=b):
@@ -30,6 +33,8 @@ class TestCompareHashes(unittest.TestCase):
             ('aaaaaac', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
             ('', 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'),
             ('aaaaaabbbbbbbbccccccdddddeeeeeefffffffff', ''),
+            ('000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeefffffffff',
+             '000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeeffffffffe'),
             ('', '')
         ]:
             with self.subTest(a=a, b=b):
@@ -39,7 +44,8 @@ class TestCompareHashes(unittest.TestCase):
 class TestCommitUrl(unittest.TestCase):
     """Test commit_url."""
 
-    HASH = 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'
+    HASH160 = 'aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'
+    HASH256 = '000000111111222222333333aaaaaabbbbbbbbccccccdddddeeeeeefffffffff'
 
     def test_commit_url(self):
         for repo, url in [
@@ -65,14 +71,18 @@ class TestCommitUrl(unittest.TestCase):
         ]:
             with self.subTest(repo=repo, url=url):
                 self.assertEqual(
-                    url + self.HASH,
+                    url + self.HASH160,
                     analysis.ResultsOverTimeByUniqueJob(
-                        Mock(), repo).commit_url(self.HASH))
+                        Mock(), repo).commit_url(self.HASH160))
+                self.assertEqual(
+                    url + self.HASH256,
+                    analysis.ResultsOverTimeByUniqueJob(
+                        Mock(), repo).commit_url(self.HASH256))
 
     def test_unknown(self):
         obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://some.unknown.site/xyzzy.git')
-        self.assertEqual('', obj.commit_url(self.HASH))
+        self.assertEqual('', obj.commit_url(self.HASH160))
 
     def test_invalid(self):
         obj = analysis.ResultsOverTimeByUniqueJob(Mock(), 'https://git.code.sf.net/p/')
-        self.assertEqual('', obj.commit_url(self.HASH))
+        self.assertEqual('', obj.commit_url(self.HASH160))
