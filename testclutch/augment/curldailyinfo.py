@@ -66,12 +66,16 @@ def get_daily_info(fn: str) -> tuple[str, datetime.datetime, str]:
 
         # Read the commit hash
         try:
-            with io.TextIOWrapper(tar.extractfile(posixpath.join(first, COMMIT_FILE)),
-                                  line_buffering=True, encoding=COMMIT_CHARMAP) as commitf:
-                commit = commitf.readline().strip()
+            commitfile = tar.extractfile(posixpath.join(first, COMMIT_FILE))
+            if commitfile is None:
+                raise KeyError  # Handle the bad file case the same as the missing file case
         except KeyError:
-            # COMMIT_FILE is not in archive
+            logger.error('%s not found in curl daily build archive', COMMIT_FILE)
             commit = ''
+        else:
+            with io.TextIOWrapper(
+                    commitfile, line_buffering=True, encoding=COMMIT_CHARMAP) as commitf:
+                commit = commitf.readline().strip()
 
     return (day_code, generated_time, commit)
 
