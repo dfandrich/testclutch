@@ -196,6 +196,7 @@ def parse_meta(args: argparse.Namespace) -> dict[str, str]:
 
 def ingest_files(args: argparse.Namespace):
     with db.Datastore() if not args.dry_run else contextlib.nullcontext() as ds:
+        assert ds  # satisfy pytype that this isn't None
         extrameta = parse_meta(args)
 
         for fn in args.files:
