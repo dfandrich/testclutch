@@ -126,8 +126,8 @@ def config() -> ModuleType:
     if (os.access(configfn, os.R_OK)
         and (spec := importlib.util.spec_from_loader(
              'testclutchrc',
-             importlib.machinery.SourceFileLoader(
-                 'testclutchrc', configfn)))):
+             importlib.machinery.SourceFileLoader('testclutchrc', configfn)))):
+        assert spec is not None and spec.loader is not None
         config_module = importlib.util.module_from_spec(spec)
 
         # Don't write the imported config file bytecode file to eliminate caching problems
