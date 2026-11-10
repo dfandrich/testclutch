@@ -3,11 +3,11 @@
 import datetime
 import logging
 import re
-from typing import TextIO
 
 from testclutch import db
 from testclutch import logcache
 from testclutch import summarize
+from testclutch.filedef import TextIOReadline
 from testclutch.ingest import curlautoapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
@@ -31,7 +31,7 @@ RE_TORTURESKIPPED = re.compile(r'^found (no functions to make fail)$')
 RE_VALGRINDFAILED = re.compile(r'^(valgrind) ERROR')
 
 
-class MassagedLog(TextIO):
+class MassagedLog(TextIOReadline):
     """Restore some missing spaces from logs.
 
     At some point in the data flow, leading spaces in log lines get removed in
@@ -56,6 +56,9 @@ class MassagedLog(TextIO):
                 or RE_VALGRINDFAILED.search(l)):
             return ' ' + l
         return l
+
+    def seek(self, offset: int, whence: int = 0, /) -> int:
+        return self.file_obj.seek(offset, whence)
 
 
 class CurlAutoIngestor:
