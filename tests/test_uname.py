@@ -155,6 +155,15 @@ class TestParseUname(unittest.TestCase):
             'Darwin Mac-1686140684611.local 21.6.0 Darwin Kernel Version 21.6.0: Thu Mar  9 '
             '20:08:59 PST 2023; root:xnu-8020.240.18.700.8~1/RELEASE_X86_64 x86_64')
         )
+        # TODO: this parsing is missing the arch
+        self.assertDictEqual({
+            'systemos': 'Darwin',
+            'systemhost': 'PureDarwin.local',
+            'systemosver': '9.5.0',
+        }, uname.parse_uname(
+            'Darwin PureDarwin.local 9.5.0 Darwin Kernel Version 9.5.0: Sat Dec  6 '
+            '19:39:54 IST 2008; Voodoo; Release 1.0 :xnu-1228.7.58/BUILD/obj/RELEASE_I386 i386')
+        )
         self.assertDictEqual({
             'systemos': 'FreeBSD',
             'systemosver': '14.1-RELEASE',
