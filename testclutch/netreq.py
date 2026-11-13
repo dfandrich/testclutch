@@ -12,7 +12,6 @@ from requests import adapters
 
 import testclutch
 
-
 logger = logging.getLogger(__name__)
 
 HTTPError = requests.exceptions.HTTPError

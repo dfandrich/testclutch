@@ -6,7 +6,6 @@ from testclutch import config
 from testclutch.ingest import appveyor
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
-
 logger = logging.getLogger(__name__)
 
 

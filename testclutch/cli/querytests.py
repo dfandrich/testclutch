@@ -14,7 +14,6 @@ from testclutch import log
 from testclutch import summarize
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # OpenMetrics job label

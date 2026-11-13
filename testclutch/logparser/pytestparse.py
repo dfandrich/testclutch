@@ -16,7 +16,6 @@ from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta 
 from testclutch.logparser import curlparse
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # pytest -r A format

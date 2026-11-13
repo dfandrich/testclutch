@@ -12,7 +12,6 @@ from typing import Any
 
 from testclutch import configdef
 
-
 logger = logging.getLogger(__name__)
 
 # Cache configuration module here

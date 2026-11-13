@@ -21,7 +21,6 @@ from testclutch.ingest import curlauto
 from testclutch.ingest import gha
 from testclutch.logparser import logparse
 
-
 logger = logging.getLogger(__name__)
 
 

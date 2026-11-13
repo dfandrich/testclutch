@@ -10,7 +10,6 @@ from testclutch import summarize
 from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog
 
-
 logger = logging.getLogger(__name__)
 
 FULL_TEST_OUTPUT = False

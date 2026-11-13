@@ -9,7 +9,6 @@ from testclutch import config
 from testclutch.gitdef import CommitInfo
 from testclutch.logdef import SingleTestFinding, TestCases, TestMeta, TestMetaStr
 
-
 logger = logging.getLogger(__name__)
 
 # Timeout for database writes. Needed to turn a concurrent write error into a retry.

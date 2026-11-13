@@ -8,7 +8,6 @@ from dataclasses import dataclass
 
 from testclutch import config
 
-
 logger = logging.getLogger(__name__)
 
 

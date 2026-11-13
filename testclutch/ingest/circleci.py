@@ -21,7 +21,6 @@ from testclutch.ingest import circleciapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
-
 logger = logging.getLogger(__name__)
 
 # Choose whether to use the private API to get the full log or the documented API that truncates it

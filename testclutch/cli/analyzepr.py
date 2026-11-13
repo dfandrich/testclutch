@@ -30,7 +30,6 @@ from testclutch.ingest import prgha
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # Test states that are considered to be failed tests

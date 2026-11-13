@@ -4,7 +4,6 @@ import re
 
 from testclutch.logdef import TestMetaStr  # noqa: F401
 
-
 # Python platform parsing regexes
 PLAT_LINUX_RE = re.compile(r'^Linux-(?P<release>.+?)(-(?P<mach>[^-]+))?-(?P<proc>[^-]+)-with(-(?P<libcnamever>.+))?$')
 PLAT_WINDOWS_RE = re.compile(r'^Windows-(?P<release>\d+)-(?P<version>[0-9.]+)(-(?P<csd>[^-]+))?$')

@@ -7,7 +7,6 @@ from typing import Any
 
 from testclutch import netreq
 
-
 logger = logging.getLogger(__name__)
 
 # https://learn.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-7.1

@@ -14,7 +14,6 @@ from testclutch.ingest import msbuild
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
-
 logger = logging.getLogger(__name__)
 
 DEFAULT_EXT = '.log'

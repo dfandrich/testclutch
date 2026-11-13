@@ -10,7 +10,6 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -11,7 +11,6 @@ from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta, TestMetaStr  # noqa: F401
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # Test result line

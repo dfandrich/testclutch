@@ -11,7 +11,6 @@ from testclutch import config
 from testclutch import db
 from testclutch import log
 
-
 logger = logging.getLogger(__name__)
 
 # Select records with short hashes

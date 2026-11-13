@@ -6,7 +6,6 @@ from testclutch import urls
 from testclutch.ingest import circleci
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
-
 logger = logging.getLogger(__name__)
 
 

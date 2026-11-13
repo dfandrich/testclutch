@@ -13,7 +13,6 @@ from typing import Any
 
 from testclutch import netreq
 
-
 logger = logging.getLogger(__name__)
 
 HTTPError = netreq.HTTPError

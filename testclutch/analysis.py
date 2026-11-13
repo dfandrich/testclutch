@@ -17,7 +17,6 @@ from testclutch.gitdef import CommitInfo
 from testclutch.logdef import TestMeta, TestMetaStr
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # Info on a single failed job result
@@ -34,12 +33,6 @@ UNIQUE_JOBS_SQL = r"SELECT DISTINCT (account || ',' || repo || ',' || origin || 
 # This includes runs from pull requests, which must be removed later if undesired
 RUNS_BY_UNIQUE_JOB_SQL = r"SELECT id, time FROM testruns WHERE (account || ',' || repo || ',' || origin || ',' || uniquejobname)=? AND repo = ? AND time >= ? AND time < ? ORDER BY time DESC"
 
-# Internal configuration consistency checks
-assert config.get('flaky_builds_min') >= config.get('flaky_failures_min') * 2
-assert (config.get('flaky_builds_min')
-        >= config.get('report_consecutive_failures') * 2 + config.get('flaky_failures_min'))
-
-
 # Displayed when no run was made for a commit
 NO_RUN = '-'
 
@@ -52,6 +45,11 @@ END_MARGIN_SECS = 28 * 3600
 
 # Regex to canonicalize some git repository URLs
 CANON_REPO_RE = re.compile(r'(\.git)?(/)*$')
+
+# Internal configuration consistency checks
+assert config.get('flaky_builds_min') >= config.get('flaky_failures_min') * 2
+assert (config.get('flaky_builds_min')
+        >= config.get('report_consecutive_failures') * 2 + config.get('flaky_failures_min'))
 
 
 @dataclass(slots=True)

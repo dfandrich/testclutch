@@ -12,7 +12,6 @@ from testclutch.ingest import curlautoapi
 from testclutch.logdef import TestCases, TestMeta
 from testclutch.logparser import logparse
 
-
 logger = logging.getLogger(__name__)
 
 LOGSUBDIR = 'curlauto'

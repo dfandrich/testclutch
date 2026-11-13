@@ -16,7 +16,6 @@ from testclutch import db
 from testclutch import log
 from testclutch.augment import curldailyinfo
 
-
 logger = logging.getLogger(__name__)
 
 # Select records for curlauto builds

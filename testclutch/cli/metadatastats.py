@@ -22,7 +22,6 @@ from testclutch import log
 from testclutch.logdef import TestMetaStr
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # Returns all unique name,value pairs since the given time

@@ -11,7 +11,6 @@ from testclutch import db
 from testclutch import log
 from testclutch.gitdef import CommitInfo
 
-
 logger = logging.getLogger(__name__)
 
 

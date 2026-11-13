@@ -8,7 +8,6 @@ import contextlib
 import logging
 import urllib.parse
 
-
 logger = logging.getLogger(__name__)
 
 

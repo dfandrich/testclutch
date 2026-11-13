@@ -6,7 +6,6 @@ from unittest.mock import patch
 
 from testclutch import config
 
-
 # Directory holding test data files
 DATADIR = 'data'
 

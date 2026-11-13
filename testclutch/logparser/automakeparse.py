@@ -12,7 +12,6 @@ from testclutch.filedef import TextIOReadline
 from testclutch.logdef import ParsedLog, SingleTestFinding, TestCases, TestMeta  # noqa: F401
 from testclutch.testcasedef import TestResult
 
-
 logger = logging.getLogger(__name__)
 
 # Pass/fail status for a test

@@ -9,7 +9,6 @@ import urllib.parse
 
 from testclutch import netreq
 
-
 logger = logging.getLogger(__name__)
 
 BASE_URL = 'https://curl.se/dev/inbox/'

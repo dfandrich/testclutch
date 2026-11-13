@@ -7,7 +7,6 @@ from testclutch import config
 from testclutch.ingest import gha
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
-
 logger = logging.getLogger(__name__)
 
 # We're only interested in pull requests here

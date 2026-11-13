@@ -5,7 +5,6 @@ import logging
 from testclutch.ingest import cirrus
 from testclutch.logdef import ParsedLog, TestCases, TestMeta
 
-
 logger = logging.getLogger(__name__)
 
 

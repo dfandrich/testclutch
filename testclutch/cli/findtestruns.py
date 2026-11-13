@@ -11,7 +11,6 @@ from testclutch import db
 from testclutch import log
 from testclutch.testcasedef import TestResult
 
-
 # Test status considered failed
 FAILED = frozenset((TestResult.FAIL, TestResult.TIMEOUT))
 

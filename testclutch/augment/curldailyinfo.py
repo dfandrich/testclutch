@@ -7,7 +7,6 @@ import posixpath
 import re
 import tarfile
 
-
 logger = logging.getLogger(__name__)
 
 # Extract the date from the directory name
