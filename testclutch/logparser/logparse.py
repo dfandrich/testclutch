@@ -65,7 +65,7 @@ def main():
         summarize.show_totals(testcases, details=True)
         if FULL_TEST_OUTPUT:
             for test in testcases:
-                print(test.name)
+                print(test)
 
 
 if __name__ == '__main__':
