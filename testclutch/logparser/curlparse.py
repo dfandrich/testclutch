@@ -154,6 +154,9 @@ TESTCURLBUILDCODEIGNORED = frozenset(('NOTES', 'version', 'date', 'timestamp'))
 # autoconf target (or host) triplet (sometimes quadruplet)
 RE_TARGETTRIPLET = re.compile(r'([\w.]+)-([\w.]+)-([-\w.]+)')
 
+# Maximum number of warnings to display for a single log file
+MAX_WARNINGS = 15
+
 
 def escs(s: str) -> str:
     """Escape non-ascii characters in a string.
@@ -279,6 +282,7 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
     testcases: TestCases = []
     toignore: set[str] = set()
     got_first = False
+    bad_lines = 0
     while l := f.readline():
         if not got_first:
             logger.debug('First log line: %s', escs(l))
@@ -422,7 +426,13 @@ def parse_log_file(f: TextIOReadline) -> ParsedLog:  # noqa: C901
                                         SingleTestFinding(testno, TestResult.SKIP, r.group(1), 0))
                                     meta['testmode'] = 'torture'
                                 else:
-                                    logger.warning('Expecting test status line, got: %s', escs(l))
+                                    if bad_lines < MAX_WARNINGS:
+                                        logger.warning('Expecting test status line, got: %s', escs(l))
+                                        bad_lines += 1
+                                        if bad_lines == MAX_WARNINGS:
+                                            logger.warning('Further "expecting" warnings will be '
+                                                           'suppressed for this test log')
+
                                     testno = strip0(r.group(1))
                                     testcases.append(SingleTestFinding(
                                         testno, TestResult.UNKNOWN, 'no test status line', 0))
