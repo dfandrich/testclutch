@@ -46,8 +46,8 @@ jobs:
       - name: Type check with pyrefly
         if: env.dev
         run: |
-          pyrefly check -p basic --summary
-          pyrefly check -p default --ignore=unknown-name --summary tests/*.py
+          pyrefly check -p basic --summary --progress-bar=no
+          pyrefly check -p default --ignore=unknown-name --summary --progress-bar=no tests/*.py
       - name: Type check with pytype
         background: true
         if: env.dev
